@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/wise/spends/bloc/login/index.dart';
-import 'package:wise_spends/wise/spends/bloc/login/state/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/index.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({key}) : super(key: key);

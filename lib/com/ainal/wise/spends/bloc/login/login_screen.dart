@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/wise/spends/bloc/login/event/index.dart';
-import 'package:wise_spends/wise/spends/bloc/login/index.dart';
-import 'package:wise_spends/wise/spends/bloc/login/state/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/event/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/index.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({

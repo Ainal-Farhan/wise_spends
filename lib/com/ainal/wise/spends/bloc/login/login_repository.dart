@@ -1,4 +1,4 @@
-import 'package:wise_spends/wise/spends/bloc/login/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/index.dart';
 
 class LoginRepository {
   final LoginProvider _loginProvider = LoginProvider();
