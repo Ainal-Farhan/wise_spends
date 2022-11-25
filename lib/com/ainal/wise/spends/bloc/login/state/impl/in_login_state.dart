@@ -11,4 +11,7 @@ class InLoginState extends LoginState {
 
   @override
   List<Object> get props => [hello];
+
+  @override
+  String get message => hello;
 }

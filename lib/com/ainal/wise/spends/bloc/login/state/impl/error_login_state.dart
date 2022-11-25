@@ -10,4 +10,7 @@ class ErrorLoginState extends LoginState {
 
   @override
   List<Object> get props => [errorMessage];
+
+  @override
+  String get message => errorMessage;
 }
