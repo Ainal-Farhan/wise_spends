@@ -1,7 +1,9 @@
 import 'dart:developer' as developer;
 
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/index.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/impl/error_login_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/impl/in_login_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/impl/un_login_state.dart';
 
 class LoadLoginEvent extends LoginEvent {
   @override

@@ -1,30 +1,22 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:wise_spends/main.dart';
+import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
+import 'package:wise_spends/com/ainal/wise/spends/service/local/impl/user_service.dart';
+import 'package:wise_spends/com/ainal/wise/spends/utils/uuid_generator.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('Test User Service', () async {
+    UserService userService = UserService();
+    CmnUser user = CmnUser(
+      id: UuidGenerator().v4(),
+      dateCreated: DateTime.now(),
+      dateUpdated: DateTime.now(),
+      name: "Ainal",
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await userService.add(user);
+    expect(1, (await userService.get()).length);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await userService.delete(user);
+    expect(0, (await userService.get()).length);
   });
 }

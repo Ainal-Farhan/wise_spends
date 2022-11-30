@@ -20,7 +20,7 @@ class LoadTransactionEvent extends TransactionEvent {
     try {
       yield const UnTransactionState(0);
       await Future.delayed(const Duration(seconds: 1));
-      transactionRepository.test(isError);
+      transactionManager.test(isError);
       yield const InTransactionState(0, 'Hello world');
     } catch (_, stackTrace) {
       developer.log('$_',

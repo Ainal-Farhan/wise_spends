@@ -11,6 +11,10 @@ abstract class ICrudRepository<T> {
     await db.into(table).insert(item);
   }
 
+  Future<void> update(final item) async {
+    await db.update(table).replace(item);
+  }
+
   Future<List<T>> findAll() async {
     return await db.select(table).get();
   }

@@ -21,7 +21,7 @@ class LoadHomeLoggedInEvent extends HomeLoggedInEvent {
     try {
       yield const UnHomeLoggedInState(0);
       await Future.delayed(const Duration(seconds: 1));
-      homeLoggedInRepository.test(isError);
+      homeLoggedInManager.test(isError);
       yield const InHomeLoggedInState(0, 'Hello world');
     } catch (_, stackTrace) {
       developer.log('$_',

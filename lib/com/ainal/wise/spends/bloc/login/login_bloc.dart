@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/index.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/impl/error_login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc(LoginState initialState) : super(initialState) {

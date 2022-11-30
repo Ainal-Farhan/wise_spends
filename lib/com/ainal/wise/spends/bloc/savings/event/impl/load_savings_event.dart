@@ -20,7 +20,7 @@ class LoadSavingsEvent extends SavingsEvent {
     try {
       yield const UnSavingsState(0);
       await Future.delayed(const Duration(seconds: 1));
-      savingsRepository.test(isError);
+      savingsManager.test(isError);
       yield const InSavingsState(0, 'Hello world');
     } catch (_, stackTrace) {
       developer.log('$_',
