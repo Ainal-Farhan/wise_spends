@@ -16,10 +16,17 @@ dependencies:
   flutter_bloc: ^8.1.1
   equatable: ^2.0.5
   ionicons: ^0.1.2
+  drift: ^1.0.1
+  sqlite3_flutter_libs: ^0.5.12
+  path: ^1.8.0
+  path_provider: ^2.0.10
+  uuid: ^3.0.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  drift_dev: ^1.0.2
+  build_runner: ^2.2.0
 
   flutter_lints: ^1.0.0
 

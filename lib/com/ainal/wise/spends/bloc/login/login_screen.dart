@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/event/login_event_factory.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/index.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/state/login_state_factory.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/widgets/bottom_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/widgets/center_widget/center_widget.dart';
@@ -57,19 +56,20 @@ class LoginScreenState extends State<LoginScreen> {
           if (LoginStateFactory()
               .isLoginState(currentState, LoginStateConstant.errorLoginState)) {
             return Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(currentState.message),
-                Padding(
-                  padding: const EdgeInsets.only(top: 32.0),
-                  child: ElevatedButton(
-                    child: const Text('reload'),
-                    onPressed: _load,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(currentState.message),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 32.0),
+                    child: ElevatedButton(
+                      child: const Text('reload'),
+                      onPressed: _load,
+                    ),
                   ),
-                ),
-              ],
-            ));
+                ],
+              ),
+            );
           }
           if (LoginStateFactory()
               .isLoginState(currentState, LoginStateConstant.inLoginState)) {
