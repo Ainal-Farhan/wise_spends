@@ -9,10 +9,7 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_sta
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/state/transaction_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_page.dart';
-import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
-import 'package:wise_spends/com/ainal/wise/spends/repository/common/impl/user_repository.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as route;
-import 'package:wise_spends/com/ainal/wise/spends/utils/uuid_generator.dart';
 
 void main() {
   runApp(
