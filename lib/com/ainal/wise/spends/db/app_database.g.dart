@@ -263,337 +263,6 @@ class $UserTableTable extends UserTable
   }
 }
 
-class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
-  final String id;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final String type;
-  final String description;
-  final double amount;
-  CmnTransaction(
-      {required this.id,
-      required this.dateCreated,
-      required this.dateUpdated,
-      required this.type,
-      required this.description,
-      required this.amount});
-  factory CmnTransaction.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return CmnTransaction(
-      id: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      dateCreated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
-      dateUpdated: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
-      type: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}type'])!,
-      description: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}description'])!,
-      amount: const RealType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
-    );
-  }
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['type'] = Variable<String>(type);
-    map['description'] = Variable<String>(description);
-    map['amount'] = Variable<double>(amount);
-    return map;
-  }
-
-  TransactionTableCompanion toCompanion(bool nullToAbsent) {
-    return TransactionTableCompanion(
-      id: Value(id),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      type: Value(type),
-      description: Value(description),
-      amount: Value(amount),
-    );
-  }
-
-  factory CmnTransaction.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CmnTransaction(
-      id: serializer.fromJson<String>(json['id']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      type: serializer.fromJson<String>(json['type']),
-      description: serializer.fromJson<String>(json['description']),
-      amount: serializer.fromJson<double>(json['amount']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'type': serializer.toJson<String>(type),
-      'description': serializer.toJson<String>(description),
-      'amount': serializer.toJson<double>(amount),
-    };
-  }
-
-  CmnTransaction copyWith(
-          {String? id,
-          DateTime? dateCreated,
-          DateTime? dateUpdated,
-          String? type,
-          String? description,
-          double? amount}) =>
-      CmnTransaction(
-        id: id ?? this.id,
-        dateCreated: dateCreated ?? this.dateCreated,
-        dateUpdated: dateUpdated ?? this.dateUpdated,
-        type: type ?? this.type,
-        description: description ?? this.description,
-        amount: amount ?? this.amount,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('CmnTransaction(')
-          ..write('id: $id, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('type: $type, ')
-          ..write('description: $description, ')
-          ..write('amount: $amount')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(id, dateCreated, dateUpdated, type, description, amount);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CmnTransaction &&
-          other.id == this.id &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.type == this.type &&
-          other.description == this.description &&
-          other.amount == this.amount);
-}
-
-class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
-  final Value<String> id;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<String> type;
-  final Value<String> description;
-  final Value<double> amount;
-  const TransactionTableCompanion({
-    this.id = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.type = const Value.absent(),
-    this.description = const Value.absent(),
-    this.amount = const Value.absent(),
-  });
-  TransactionTableCompanion.insert({
-    this.id = const Value.absent(),
-    required DateTime dateCreated,
-    required DateTime dateUpdated,
-    required String type,
-    required String description,
-    required double amount,
-  })  : dateCreated = Value(dateCreated),
-        dateUpdated = Value(dateUpdated),
-        type = Value(type),
-        description = Value(description),
-        amount = Value(amount);
-  static Insertable<CmnTransaction> custom({
-    Expression<String>? id,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<String>? type,
-    Expression<String>? description,
-    Expression<double>? amount,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (type != null) 'type': type,
-      if (description != null) 'description': description,
-      if (amount != null) 'amount': amount,
-    });
-  }
-
-  TransactionTableCompanion copyWith(
-      {Value<String>? id,
-      Value<DateTime>? dateCreated,
-      Value<DateTime>? dateUpdated,
-      Value<String>? type,
-      Value<String>? description,
-      Value<double>? amount}) {
-    return TransactionTableCompanion(
-      id: id ?? this.id,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      type: type ?? this.type,
-      description: description ?? this.description,
-      amount: amount ?? this.amount,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (type.present) {
-      map['type'] = Variable<String>(type.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (amount.present) {
-      map['amount'] = Variable<double>(amount.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('TransactionTableCompanion(')
-          ..write('id: $id, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('type: $type, ')
-          ..write('description: $description, ')
-          ..write('amount: $amount')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $TransactionTableTable extends TransactionTable
-    with TableInfo<$TransactionTableTable, CmnTransaction> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $TransactionTableTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
-      'id', aliasedName, false,
-      type: const StringType(),
-      requiredDuringInsert: false,
-      clientDefault: () => UuidGenerator().v4());
-  final VerificationMeta _dateCreatedMeta =
-      const VerificationMeta('dateCreated');
-  @override
-  late final GeneratedColumn<DateTime?> dateCreated =
-      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _dateUpdatedMeta =
-      const VerificationMeta('dateUpdated');
-  @override
-  late final GeneratedColumn<DateTime?> dateUpdated =
-      GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
-  final VerificationMeta _typeMeta = const VerificationMeta('type');
-  @override
-  late final GeneratedColumn<String?> type = GeneratedColumn<String?>(
-      'type', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
-  @override
-  late final GeneratedColumn<String?> description = GeneratedColumn<String?>(
-      'description', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
-  final VerificationMeta _amountMeta = const VerificationMeta('amount');
-  @override
-  late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
-      'amount', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, type, description, amount];
-  @override
-  String get aliasedName => _alias ?? 'transaction_table';
-  @override
-  String get actualTableName => 'transaction_table';
-  @override
-  VerificationContext validateIntegrity(Insertable<CmnTransaction> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-          _dateCreatedMeta,
-          dateCreated.isAcceptableOrUnknown(
-              data['date_created']!, _dateCreatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateCreatedMeta);
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-          _dateUpdatedMeta,
-          dateUpdated.isAcceptableOrUnknown(
-              data['date_updated']!, _dateUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('type')) {
-      context.handle(
-          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
-    } else if (isInserting) {
-      context.missing(_typeMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
-    }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  CmnTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CmnTransaction.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
-  }
-
-  @override
-  $TransactionTableTable createAlias(String alias) {
-    return $TransactionTableTable(attachedDatabase, alias);
-  }
-}
-
 class CmnSaving extends DataClass implements Insertable<CmnSaving> {
   final String id;
   final DateTime dateCreated;
@@ -1300,15 +969,384 @@ class $SavingTableTable extends SavingTable
   }
 }
 
+class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
+  final String id;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String type;
+  final String? description;
+  final double amount;
+  final String saving;
+  CmnTransaction(
+      {required this.id,
+      required this.dateCreated,
+      required this.dateUpdated,
+      required this.type,
+      this.description,
+      required this.amount,
+      required this.saving});
+  factory CmnTransaction.fromData(Map<String, dynamic> data, {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return CmnTransaction(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      dateCreated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
+      dateUpdated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
+      type: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}type'])!,
+      description: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}description']),
+      amount: const RealType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
+      saving: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}saving'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['type'] = Variable<String>(type);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String?>(description);
+    }
+    map['amount'] = Variable<double>(amount);
+    map['saving'] = Variable<String>(saving);
+    return map;
+  }
+
+  TransactionTableCompanion toCompanion(bool nullToAbsent) {
+    return TransactionTableCompanion(
+      id: Value(id),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      type: Value(type),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      amount: Value(amount),
+      saving: Value(saving),
+    );
+  }
+
+  factory CmnTransaction.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CmnTransaction(
+      id: serializer.fromJson<String>(json['id']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      type: serializer.fromJson<String>(json['type']),
+      description: serializer.fromJson<String?>(json['description']),
+      amount: serializer.fromJson<double>(json['amount']),
+      saving: serializer.fromJson<String>(json['saving']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'type': serializer.toJson<String>(type),
+      'description': serializer.toJson<String?>(description),
+      'amount': serializer.toJson<double>(amount),
+      'saving': serializer.toJson<String>(saving),
+    };
+  }
+
+  CmnTransaction copyWith(
+          {String? id,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          String? type,
+          String? description,
+          double? amount,
+          String? saving}) =>
+      CmnTransaction(
+        id: id ?? this.id,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        type: type ?? this.type,
+        description: description ?? this.description,
+        amount: amount ?? this.amount,
+        saving: saving ?? this.saving,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CmnTransaction(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('type: $type, ')
+          ..write('description: $description, ')
+          ..write('amount: $amount, ')
+          ..write('saving: $saving')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, dateCreated, dateUpdated, type, description, amount, saving);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CmnTransaction &&
+          other.id == this.id &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.type == this.type &&
+          other.description == this.description &&
+          other.amount == this.amount &&
+          other.saving == this.saving);
+}
+
+class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
+  final Value<String> id;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> type;
+  final Value<String?> description;
+  final Value<double> amount;
+  final Value<String> saving;
+  const TransactionTableCompanion({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.type = const Value.absent(),
+    this.description = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.saving = const Value.absent(),
+  });
+  TransactionTableCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime dateCreated,
+    required DateTime dateUpdated,
+    required String type,
+    this.description = const Value.absent(),
+    required double amount,
+    required String saving,
+  })  : dateCreated = Value(dateCreated),
+        dateUpdated = Value(dateUpdated),
+        type = Value(type),
+        amount = Value(amount),
+        saving = Value(saving);
+  static Insertable<CmnTransaction> custom({
+    Expression<String>? id,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? type,
+    Expression<String?>? description,
+    Expression<double>? amount,
+    Expression<String>? saving,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (type != null) 'type': type,
+      if (description != null) 'description': description,
+      if (amount != null) 'amount': amount,
+      if (saving != null) 'saving': saving,
+    });
+  }
+
+  TransactionTableCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<String>? type,
+      Value<String?>? description,
+      Value<double>? amount,
+      Value<String>? saving}) {
+    return TransactionTableCompanion(
+      id: id ?? this.id,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      type: type ?? this.type,
+      description: description ?? this.description,
+      amount: amount ?? this.amount,
+      saving: saving ?? this.saving,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String?>(description.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<double>(amount.value);
+    }
+    if (saving.present) {
+      map['saving'] = Variable<String>(saving.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TransactionTableCompanion(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('type: $type, ')
+          ..write('description: $description, ')
+          ..write('amount: $amount, ')
+          ..write('saving: $saving')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TransactionTableTable extends TransactionTable
+    with TableInfo<$TransactionTableTable, CmnTransaction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TransactionTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  final VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime?> dateCreated =
+      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
+          type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime?> dateUpdated =
+      GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
+          type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String?> type = GeneratedColumn<String?>(
+      'type', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String?> description = GeneratedColumn<String?>(
+      'description', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
+  final VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
+      'amount', aliasedName, false,
+      type: const RealType(), requiredDuringInsert: true);
+  final VerificationMeta _savingMeta = const VerificationMeta('saving');
+  @override
+  late final GeneratedColumn<String?> saving = GeneratedColumn<String?>(
+      'saving', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES saving_table (id)');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, dateCreated, dateUpdated, type, description, amount, saving];
+  @override
+  String get aliasedName => _alias ?? 'transaction_table';
+  @override
+  String get actualTableName => 'transaction_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<CmnTransaction> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateCreatedMeta);
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('saving')) {
+      context.handle(_savingMeta,
+          saving.isAcceptableOrUnknown(data['saving']!, _savingMeta));
+    } else if (isInserting) {
+      context.missing(_savingMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CmnTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return CmnTransaction.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $TransactionTableTable createAlias(String alias) {
+    return $TransactionTableTable(attachedDatabase, alias);
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $UserTableTable userTable = $UserTableTable(this);
+  late final $SavingTableTable savingTable = $SavingTableTable(this);
   late final $TransactionTableTable transactionTable =
       $TransactionTableTable(this);
-  late final $SavingTableTable savingTable = $SavingTableTable(this);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [userTable, transactionTable, savingTable];
+      [userTable, savingTable, transactionTable];
 }

@@ -1,11 +1,10 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
+import 'package:wise_spends/com/ainal/wise/spends/repository/common/i_stream_repository.dart';
 
-abstract class ICrudRepository<T> {
-  final AppDatabase db;
-  final TableInfo<Table, T> table;
-
-  const ICrudRepository(this.db, this.table);
+abstract class ICrudRepository<T> extends IStreamRepository<T> {
+  const ICrudRepository(AppDatabase db, TableInfo<Table, T> table)
+      : super(db, table);
 
   Future<void> save(final item) async {
     await db.into(table).insert(item);
