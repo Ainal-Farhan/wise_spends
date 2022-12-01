@@ -10,8 +10,14 @@ abstract class ICrudRepository<T> extends IStreamRepository<T> {
     await db.into(table).insert(item);
   }
 
+  // update all columns except primary key
   Future<void> update(final item) async {
     await db.update(table).replace(item);
+  }
+
+  // update all non null attributes from entity except primary key
+  Future<void> updatePart(final item) async {
+    await db.update(table).write(item);
   }
 
   Future<List<T>> findAll() async {
