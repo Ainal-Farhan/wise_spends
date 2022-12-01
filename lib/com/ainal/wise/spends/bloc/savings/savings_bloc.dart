@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/impl/error_savings_state.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/impl/un_savings_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/impl/un_load_list_savings_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
 
 class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
@@ -15,7 +15,7 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
     return _savingsBlocSingleton;
   }
 
-  SavingsBloc._internal() : super(const UnSavingsState(0)) {
+  SavingsBloc._internal() : super(const UnLoadListSavingsState(0)) {
     on<SavingsEvent>((event, emit) {
       return emit.forEach<SavingsState>(
         event.applyAsync(currentState: state, bloc: this),

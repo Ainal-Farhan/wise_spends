@@ -1,12 +1,12 @@
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/savings_event.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/savings_bloc.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/impl/un_savings_state.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/event/transaction_event.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/state/impl/un_transaction_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/state/transaction_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 
-class UnSavingsEvent extends SavingsEvent {
+class UnTransactionEvent extends TransactionEvent {
   @override
-  Stream<SavingsState> applyAsync(
-      {SavingsState? currentState, SavingsBloc? bloc}) async* {
-    yield const UnSavingsState(0);
+  Stream<TransactionState> applyAsync(
+      {TransactionState? currentState, TransactionBloc? bloc}) async* {
+    yield const UnTransactionState(0);
   }
 }
