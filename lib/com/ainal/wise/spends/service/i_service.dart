@@ -1,6 +1,6 @@
-abstract class IService<T> {
+abstract class IService {
   Future<List<dynamic>> get();
-  Future<void> delete(T item);
-  Future<void> update(T item);
-  Future<void> add(T item);
+  Future<void> delete(final item);
+  Future<void> update(final item);
+  Future<dynamic> add(final item);
 }

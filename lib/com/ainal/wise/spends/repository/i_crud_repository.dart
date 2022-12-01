@@ -2,17 +2,17 @@ import 'package:drift/drift.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/repository/common/i_stream_repository.dart';
 
-abstract class ICrudRepository<T, P extends UpdateCompanion<T>>
-    extends IStreamRepository<T, P> {
+abstract class ICrudRepository<T extends Insertable<T>,
+    P extends UpdateCompanion<T>> extends IStreamRepository<T, P> {
   const ICrudRepository(AppDatabase db, TableInfo<Table, T> table)
       : super(db, table);
 
-  Future<void> save(final item) async {
-    await db.into(table).insert(item);
+  Future<T> save(final item) async {
+    return await db.into(table).insertReturning(item);
   }
 
   // update all columns except primary key
-  Future<void> update(final item) async {
+  Future<void> update(final T item) async {
     await db.update(table).replace(item);
   }
 

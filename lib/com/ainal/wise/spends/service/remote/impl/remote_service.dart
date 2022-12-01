@@ -1,13 +1,13 @@
 import 'package:wise_spends/com/ainal/wise/spends/service/remote/i_remote_service.dart';
 
-class RemoteService<T> extends IRemoteService<T> {
+class RemoteService<T> extends IRemoteService {
   @override
-  Future<void> add(T item) async {
+  Future<dynamic> add(final item) async {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> delete(T item) async {
+  Future<void> delete(final item) async {
     throw UnimplementedError();
   }
 
@@ -17,7 +17,7 @@ class RemoteService<T> extends IRemoteService<T> {
   }
 
   @override
-  Future<void> update(T item) async {
+  Future<void> update(final item) async {
     throw UnimplementedError();
   }
 }

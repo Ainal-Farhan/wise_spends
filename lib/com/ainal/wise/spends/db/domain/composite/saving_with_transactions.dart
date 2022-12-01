@@ -5,4 +5,11 @@ class SavingWithTransactions {
   final List<CmnTransaction> transactions;
 
   SavingWithTransactions({required this.transactions, required this.saving});
+
+  @override
+  String toString() => (StringBuffer('SavingWithTransactions(')
+        ..write('saving: $saving, ')
+        ..write('transactions: $transactions')
+        ..write(')'))
+      .toString();
 }

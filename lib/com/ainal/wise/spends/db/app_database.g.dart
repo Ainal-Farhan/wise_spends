@@ -1112,9 +1112,10 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
     this.dateUpdated = const Value.absent(),
     required String type,
     this.description = const Value.absent(),
-    this.amount = const Value.absent(),
+    required double amount,
     required String saving,
   })  : type = Value(type),
+        amount = Value(amount),
         saving = Value(saving);
   static Insertable<CmnTransaction> custom({
     Expression<String>? id,
@@ -1230,9 +1231,7 @@ class $TransactionTableTable extends TransactionTable
   @override
   late final GeneratedColumn<String?> type = GeneratedColumn<String?>(
       'type', aliasedName, false,
-      check: () => type.isIn(DomainTableConstant.transactionTableTypeList),
-      type: const StringType(),
-      requiredDuringInsert: true);
+      type: const StringType(), requiredDuringInsert: true);
   final VerificationMeta _descriptionMeta =
       const VerificationMeta('description');
   @override
@@ -1245,9 +1244,9 @@ class $TransactionTableTable extends TransactionTable
   @override
   late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
       'amount', aliasedName, false,
+      check: () => amount.isBiggerThan(const Constant(0)),
       type: const RealType(),
-      requiredDuringInsert: false,
-      defaultValue: const Constant(.0));
+      requiredDuringInsert: true);
   final VerificationMeta _savingMeta = const VerificationMeta('saving');
   @override
   late final GeneratedColumn<String?> saving = GeneratedColumn<String?>(
@@ -1297,6 +1296,8 @@ class $TransactionTableTable extends TransactionTable
     if (data.containsKey('amount')) {
       context.handle(_amountMeta,
           amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
     }
     if (data.containsKey('saving')) {
       context.handle(_savingMeta,
