@@ -3,4 +3,10 @@ import 'package:wise_spends/com/ainal/wise/spends/repository/common/i_user.repos
 
 class UserRepository extends IUserRepository {
   UserRepository() : super(AppDatabase());
+
+  @override
+  Stream<CmnUser?> findById(String id) {
+    return (db.select(db.userTable)..where((tbl) => tbl.id.equals(id)))
+        .watchSingleOrNull();
+  }
 }

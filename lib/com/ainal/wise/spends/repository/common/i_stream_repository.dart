@@ -1,13 +1,14 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 
-abstract class IStreamRepository<T, P extends UpdateCompanion<T>> {
+abstract class IStreamRepository<A extends TableInfo<A, C>,
+    B extends UpdateCompanion<C>, C extends Insertable<C>> {
   final AppDatabase db;
-  final TableInfo<Table, T> table;
+  final A table;
 
   const IStreamRepository(this.db, this.table);
 
-  Stream<List<T>> watch() {
+  Stream<List<C>> watch() {
     return db.select(table).watch();
   }
 }
