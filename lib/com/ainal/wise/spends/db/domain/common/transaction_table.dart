@@ -5,8 +5,9 @@ import 'package:wise_spends/com/ainal/wise/spends/db/domain/common/saving_table.
 
 @DataClassName(DomainTableConstant.commonTablePrefix + "Transaction")
 class TransactionTable extends BaseEntityTable {
-  TextColumn get type => text()();
-  TextColumn get description => text().nullable()();
-  RealColumn get amount => real()();
+  TextColumn get type =>
+      text().check(type.isIn(DomainTableConstant.transactionTableTypeList))();
+  TextColumn get description => text().withDefault(const Constant(''))();
+  RealColumn get amount => real().withDefault(const Constant(.0))();
   TextColumn get saving => text().references(SavingTable, #id)();
 }

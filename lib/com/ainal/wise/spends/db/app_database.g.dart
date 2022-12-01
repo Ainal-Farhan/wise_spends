@@ -117,12 +117,10 @@ class UserTableCompanion extends UpdateCompanion<CmnUser> {
   });
   UserTableCompanion.insert({
     this.id = const Value.absent(),
-    required DateTime dateCreated,
-    required DateTime dateUpdated,
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
     required String name,
-  })  : dateCreated = Value(dateCreated),
-        dateUpdated = Value(dateUpdated),
-        name = Value(name);
+  }) : name = Value(name);
   static Insertable<CmnUser> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
@@ -198,13 +196,17 @@ class $UserTableTable extends UserTable
   @override
   late final GeneratedColumn<DateTime?> dateCreated =
       GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
   final VerificationMeta _dateUpdatedMeta =
       const VerificationMeta('dateUpdated');
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
@@ -229,16 +231,12 @@ class $UserTableTable extends UserTable
           _dateCreatedMeta,
           dateCreated.isAcceptableOrUnknown(
               data['date_created']!, _dateCreatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateCreatedMeta);
     }
     if (data.containsKey('date_updated')) {
       context.handle(
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -272,9 +270,9 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
   final bool isHasGoal;
   final double goal;
   final bool isHasStartDate;
-  final DateTime startDate;
+  final DateTime? startDate;
   final bool isHasEndDate;
-  final DateTime endDate;
+  final DateTime? endDate;
   final bool isSaveDaily;
   final bool isSaveWeekly;
   final bool isSaveMonthly;
@@ -288,9 +286,9 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       required this.isHasGoal,
       required this.goal,
       required this.isHasStartDate,
-      required this.startDate,
+      this.startDate,
       required this.isHasEndDate,
-      required this.endDate,
+      this.endDate,
       required this.isSaveDaily,
       required this.isSaveWeekly,
       required this.isSaveMonthly,
@@ -315,11 +313,11 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       isHasStartDate: const BoolType().mapFromDatabaseResponse(
           data['${effectivePrefix}is_has_start_date'])!,
       startDate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}start_date'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}start_date']),
       isHasEndDate: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}is_has_end_date'])!,
       endDate: const DateTimeType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}end_date'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}end_date']),
       isSaveDaily: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}is_save_daily'])!,
       isSaveWeekly: const BoolType()
@@ -341,9 +339,13 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
     map['is_has_goal'] = Variable<bool>(isHasGoal);
     map['goal'] = Variable<double>(goal);
     map['is_has_start_date'] = Variable<bool>(isHasStartDate);
-    map['start_date'] = Variable<DateTime>(startDate);
+    if (!nullToAbsent || startDate != null) {
+      map['start_date'] = Variable<DateTime?>(startDate);
+    }
     map['is_has_end_date'] = Variable<bool>(isHasEndDate);
-    map['end_date'] = Variable<DateTime>(endDate);
+    if (!nullToAbsent || endDate != null) {
+      map['end_date'] = Variable<DateTime?>(endDate);
+    }
     map['is_save_daily'] = Variable<bool>(isSaveDaily);
     map['is_save_weekly'] = Variable<bool>(isSaveWeekly);
     map['is_save_monthly'] = Variable<bool>(isSaveMonthly);
@@ -361,9 +363,13 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       isHasGoal: Value(isHasGoal),
       goal: Value(goal),
       isHasStartDate: Value(isHasStartDate),
-      startDate: Value(startDate),
+      startDate: startDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startDate),
       isHasEndDate: Value(isHasEndDate),
-      endDate: Value(endDate),
+      endDate: endDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endDate),
       isSaveDaily: Value(isSaveDaily),
       isSaveWeekly: Value(isSaveWeekly),
       isSaveMonthly: Value(isSaveMonthly),
@@ -383,9 +389,9 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       isHasGoal: serializer.fromJson<bool>(json['isHasGoal']),
       goal: serializer.fromJson<double>(json['goal']),
       isHasStartDate: serializer.fromJson<bool>(json['isHasStartDate']),
-      startDate: serializer.fromJson<DateTime>(json['startDate']),
+      startDate: serializer.fromJson<DateTime?>(json['startDate']),
       isHasEndDate: serializer.fromJson<bool>(json['isHasEndDate']),
-      endDate: serializer.fromJson<DateTime>(json['endDate']),
+      endDate: serializer.fromJson<DateTime?>(json['endDate']),
       isSaveDaily: serializer.fromJson<bool>(json['isSaveDaily']),
       isSaveWeekly: serializer.fromJson<bool>(json['isSaveWeekly']),
       isSaveMonthly: serializer.fromJson<bool>(json['isSaveMonthly']),
@@ -404,9 +410,9 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       'isHasGoal': serializer.toJson<bool>(isHasGoal),
       'goal': serializer.toJson<double>(goal),
       'isHasStartDate': serializer.toJson<bool>(isHasStartDate),
-      'startDate': serializer.toJson<DateTime>(startDate),
+      'startDate': serializer.toJson<DateTime?>(startDate),
       'isHasEndDate': serializer.toJson<bool>(isHasEndDate),
-      'endDate': serializer.toJson<DateTime>(endDate),
+      'endDate': serializer.toJson<DateTime?>(endDate),
       'isSaveDaily': serializer.toJson<bool>(isSaveDaily),
       'isSaveWeekly': serializer.toJson<bool>(isSaveWeekly),
       'isSaveMonthly': serializer.toJson<bool>(isSaveMonthly),
@@ -516,9 +522,9 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
   final Value<bool> isHasGoal;
   final Value<double> goal;
   final Value<bool> isHasStartDate;
-  final Value<DateTime> startDate;
+  final Value<DateTime?> startDate;
   final Value<bool> isHasEndDate;
-  final Value<DateTime> endDate;
+  final Value<DateTime?> endDate;
   final Value<bool> isSaveDaily;
   final Value<bool> isSaveWeekly;
   final Value<bool> isSaveMonthly;
@@ -542,34 +548,21 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
   });
   SavingTableCompanion.insert({
     this.id = const Value.absent(),
-    required DateTime dateCreated,
-    required DateTime dateUpdated,
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
     required String name,
-    required bool isPublic,
-    required bool isHasGoal,
-    required double goal,
-    required bool isHasStartDate,
-    required DateTime startDate,
-    required bool isHasEndDate,
-    required DateTime endDate,
-    required bool isSaveDaily,
-    required bool isSaveWeekly,
-    required bool isSaveMonthly,
-    required double currentAmount,
-  })  : dateCreated = Value(dateCreated),
-        dateUpdated = Value(dateUpdated),
-        name = Value(name),
-        isPublic = Value(isPublic),
-        isHasGoal = Value(isHasGoal),
-        goal = Value(goal),
-        isHasStartDate = Value(isHasStartDate),
-        startDate = Value(startDate),
-        isHasEndDate = Value(isHasEndDate),
-        endDate = Value(endDate),
-        isSaveDaily = Value(isSaveDaily),
-        isSaveWeekly = Value(isSaveWeekly),
-        isSaveMonthly = Value(isSaveMonthly),
-        currentAmount = Value(currentAmount);
+    this.isPublic = const Value.absent(),
+    this.isHasGoal = const Value.absent(),
+    this.goal = const Value.absent(),
+    this.isHasStartDate = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.isHasEndDate = const Value.absent(),
+    this.endDate = const Value.absent(),
+    this.isSaveDaily = const Value.absent(),
+    this.isSaveWeekly = const Value.absent(),
+    this.isSaveMonthly = const Value.absent(),
+    this.currentAmount = const Value.absent(),
+  }) : name = Value(name);
   static Insertable<CmnSaving> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
@@ -579,9 +572,9 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
     Expression<bool>? isHasGoal,
     Expression<double>? goal,
     Expression<bool>? isHasStartDate,
-    Expression<DateTime>? startDate,
+    Expression<DateTime?>? startDate,
     Expression<bool>? isHasEndDate,
-    Expression<DateTime>? endDate,
+    Expression<DateTime?>? endDate,
     Expression<bool>? isSaveDaily,
     Expression<bool>? isSaveWeekly,
     Expression<bool>? isSaveMonthly,
@@ -615,9 +608,9 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
       Value<bool>? isHasGoal,
       Value<double>? goal,
       Value<bool>? isHasStartDate,
-      Value<DateTime>? startDate,
+      Value<DateTime?>? startDate,
       Value<bool>? isHasEndDate,
-      Value<DateTime>? endDate,
+      Value<DateTime?>? endDate,
       Value<bool>? isSaveDaily,
       Value<bool>? isSaveWeekly,
       Value<bool>? isSaveMonthly,
@@ -669,13 +662,13 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
       map['is_has_start_date'] = Variable<bool>(isHasStartDate.value);
     }
     if (startDate.present) {
-      map['start_date'] = Variable<DateTime>(startDate.value);
+      map['start_date'] = Variable<DateTime?>(startDate.value);
     }
     if (isHasEndDate.present) {
       map['is_has_end_date'] = Variable<bool>(isHasEndDate.value);
     }
     if (endDate.present) {
-      map['end_date'] = Variable<DateTime>(endDate.value);
+      map['end_date'] = Variable<DateTime?>(endDate.value);
     }
     if (isSaveDaily.present) {
       map['is_save_daily'] = Variable<bool>(isSaveDaily.value);
@@ -733,13 +726,17 @@ class $SavingTableTable extends SavingTable
   @override
   late final GeneratedColumn<DateTime?> dateCreated =
       GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
   final VerificationMeta _dateUpdatedMeta =
       const VerificationMeta('dateUpdated');
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
@@ -750,76 +747,87 @@ class $SavingTableTable extends SavingTable
   late final GeneratedColumn<bool?> isPublic = GeneratedColumn<bool?>(
       'is_public', aliasedName, false,
       type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_public IN (0, 1))');
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_public IN (0, 1))',
+      defaultValue: const Constant(false));
   final VerificationMeta _isHasGoalMeta = const VerificationMeta('isHasGoal');
   @override
   late final GeneratedColumn<bool?> isHasGoal = GeneratedColumn<bool?>(
       'is_has_goal', aliasedName, false,
       type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_has_goal IN (0, 1))');
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_has_goal IN (0, 1))',
+      defaultValue: const Constant(false));
   final VerificationMeta _goalMeta = const VerificationMeta('goal');
   @override
   late final GeneratedColumn<double?> goal = GeneratedColumn<double?>(
       'goal', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
+      type: const RealType(),
+      requiredDuringInsert: false,
+      defaultValue: const Constant(.0));
   final VerificationMeta _isHasStartDateMeta =
       const VerificationMeta('isHasStartDate');
   @override
   late final GeneratedColumn<bool?> isHasStartDate = GeneratedColumn<bool?>(
       'is_has_start_date', aliasedName, false,
       type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_has_start_date IN (0, 1))');
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_has_start_date IN (0, 1))',
+      defaultValue: const Constant(false));
   final VerificationMeta _startDateMeta = const VerificationMeta('startDate');
   @override
   late final GeneratedColumn<DateTime?> startDate = GeneratedColumn<DateTime?>(
-      'start_date', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      'start_date', aliasedName, true,
+      type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _isHasEndDateMeta =
       const VerificationMeta('isHasEndDate');
   @override
   late final GeneratedColumn<bool?> isHasEndDate = GeneratedColumn<bool?>(
       'is_has_end_date', aliasedName, false,
       type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_has_end_date IN (0, 1))');
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_has_end_date IN (0, 1))',
+      defaultValue: const Constant(false));
   final VerificationMeta _endDateMeta = const VerificationMeta('endDate');
   @override
   late final GeneratedColumn<DateTime?> endDate = GeneratedColumn<DateTime?>(
-      'end_date', aliasedName, false,
-      type: const IntType(), requiredDuringInsert: true);
+      'end_date', aliasedName, true,
+      type: const IntType(), requiredDuringInsert: false);
   final VerificationMeta _isSaveDailyMeta =
       const VerificationMeta('isSaveDaily');
   @override
   late final GeneratedColumn<bool?> isSaveDaily = GeneratedColumn<bool?>(
       'is_save_daily', aliasedName, false,
       type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_save_daily IN (0, 1))');
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_save_daily IN (0, 1))',
+      defaultValue: const Constant(false));
   final VerificationMeta _isSaveWeeklyMeta =
       const VerificationMeta('isSaveWeekly');
   @override
   late final GeneratedColumn<bool?> isSaveWeekly = GeneratedColumn<bool?>(
       'is_save_weekly', aliasedName, false,
       type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_save_weekly IN (0, 1))');
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_save_weekly IN (0, 1))',
+      defaultValue: const Constant(false));
   final VerificationMeta _isSaveMonthlyMeta =
       const VerificationMeta('isSaveMonthly');
   @override
   late final GeneratedColumn<bool?> isSaveMonthly = GeneratedColumn<bool?>(
       'is_save_monthly', aliasedName, false,
       type: const BoolType(),
-      requiredDuringInsert: true,
-      defaultConstraints: 'CHECK (is_save_monthly IN (0, 1))');
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_save_monthly IN (0, 1))',
+      defaultValue: const Constant(false));
   final VerificationMeta _currentAmountMeta =
       const VerificationMeta('currentAmount');
   @override
   late final GeneratedColumn<double?> currentAmount = GeneratedColumn<double?>(
       'current_amount', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
+      type: const RealType(),
+      requiredDuringInsert: false,
+      defaultValue: const Constant(.0));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -855,16 +863,12 @@ class $SavingTableTable extends SavingTable
           _dateCreatedMeta,
           dateCreated.isAcceptableOrUnknown(
               data['date_created']!, _dateCreatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateCreatedMeta);
     }
     if (data.containsKey('date_updated')) {
       context.handle(
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -875,88 +879,70 @@ class $SavingTableTable extends SavingTable
     if (data.containsKey('is_public')) {
       context.handle(_isPublicMeta,
           isPublic.isAcceptableOrUnknown(data['is_public']!, _isPublicMeta));
-    } else if (isInserting) {
-      context.missing(_isPublicMeta);
     }
     if (data.containsKey('is_has_goal')) {
       context.handle(
           _isHasGoalMeta,
           isHasGoal.isAcceptableOrUnknown(
               data['is_has_goal']!, _isHasGoalMeta));
-    } else if (isInserting) {
-      context.missing(_isHasGoalMeta);
     }
     if (data.containsKey('goal')) {
       context.handle(
           _goalMeta, goal.isAcceptableOrUnknown(data['goal']!, _goalMeta));
-    } else if (isInserting) {
-      context.missing(_goalMeta);
     }
     if (data.containsKey('is_has_start_date')) {
       context.handle(
           _isHasStartDateMeta,
           isHasStartDate.isAcceptableOrUnknown(
               data['is_has_start_date']!, _isHasStartDateMeta));
-    } else if (isInserting) {
-      context.missing(_isHasStartDateMeta);
     }
     if (data.containsKey('start_date')) {
       context.handle(_startDateMeta,
           startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta));
-    } else if (isInserting) {
-      context.missing(_startDateMeta);
     }
     if (data.containsKey('is_has_end_date')) {
       context.handle(
           _isHasEndDateMeta,
           isHasEndDate.isAcceptableOrUnknown(
               data['is_has_end_date']!, _isHasEndDateMeta));
-    } else if (isInserting) {
-      context.missing(_isHasEndDateMeta);
     }
     if (data.containsKey('end_date')) {
       context.handle(_endDateMeta,
           endDate.isAcceptableOrUnknown(data['end_date']!, _endDateMeta));
-    } else if (isInserting) {
-      context.missing(_endDateMeta);
     }
     if (data.containsKey('is_save_daily')) {
       context.handle(
           _isSaveDailyMeta,
           isSaveDaily.isAcceptableOrUnknown(
               data['is_save_daily']!, _isSaveDailyMeta));
-    } else if (isInserting) {
-      context.missing(_isSaveDailyMeta);
     }
     if (data.containsKey('is_save_weekly')) {
       context.handle(
           _isSaveWeeklyMeta,
           isSaveWeekly.isAcceptableOrUnknown(
               data['is_save_weekly']!, _isSaveWeeklyMeta));
-    } else if (isInserting) {
-      context.missing(_isSaveWeeklyMeta);
     }
     if (data.containsKey('is_save_monthly')) {
       context.handle(
           _isSaveMonthlyMeta,
           isSaveMonthly.isAcceptableOrUnknown(
               data['is_save_monthly']!, _isSaveMonthlyMeta));
-    } else if (isInserting) {
-      context.missing(_isSaveMonthlyMeta);
     }
     if (data.containsKey('current_amount')) {
       context.handle(
           _currentAmountMeta,
           currentAmount.isAcceptableOrUnknown(
               data['current_amount']!, _currentAmountMeta));
-    } else if (isInserting) {
-      context.missing(_currentAmountMeta);
     }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+        {name},
+      ];
   @override
   CmnSaving map(Map<String, dynamic> data, {String? tablePrefix}) {
     return CmnSaving.fromData(data,
@@ -974,7 +960,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
   final DateTime dateCreated;
   final DateTime dateUpdated;
   final String type;
-  final String? description;
+  final String description;
   final double amount;
   final String saving;
   CmnTransaction(
@@ -982,7 +968,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       required this.dateCreated,
       required this.dateUpdated,
       required this.type,
-      this.description,
+      required this.description,
       required this.amount,
       required this.saving});
   factory CmnTransaction.fromData(Map<String, dynamic> data, {String? prefix}) {
@@ -997,7 +983,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       type: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}type'])!,
       description: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}description']),
+          .mapFromDatabaseResponse(data['${effectivePrefix}description'])!,
       amount: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
       saving: const StringType()
@@ -1011,9 +997,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
     map['type'] = Variable<String>(type);
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String?>(description);
-    }
+    map['description'] = Variable<String>(description);
     map['amount'] = Variable<double>(amount);
     map['saving'] = Variable<String>(saving);
     return map;
@@ -1025,9 +1009,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
       type: Value(type),
-      description: description == null && nullToAbsent
-          ? const Value.absent()
-          : Value(description),
+      description: Value(description),
       amount: Value(amount),
       saving: Value(saving),
     );
@@ -1041,7 +1023,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
       type: serializer.fromJson<String>(json['type']),
-      description: serializer.fromJson<String?>(json['description']),
+      description: serializer.fromJson<String>(json['description']),
       amount: serializer.fromJson<double>(json['amount']),
       saving: serializer.fromJson<String>(json['saving']),
     );
@@ -1054,7 +1036,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
       'type': serializer.toJson<String>(type),
-      'description': serializer.toJson<String?>(description),
+      'description': serializer.toJson<String>(description),
       'amount': serializer.toJson<double>(amount),
       'saving': serializer.toJson<String>(saving),
     };
@@ -1112,7 +1094,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
   final Value<String> type;
-  final Value<String?> description;
+  final Value<String> description;
   final Value<double> amount;
   final Value<String> saving;
   const TransactionTableCompanion({
@@ -1126,23 +1108,20 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
   });
   TransactionTableCompanion.insert({
     this.id = const Value.absent(),
-    required DateTime dateCreated,
-    required DateTime dateUpdated,
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
     required String type,
     this.description = const Value.absent(),
-    required double amount,
+    this.amount = const Value.absent(),
     required String saving,
-  })  : dateCreated = Value(dateCreated),
-        dateUpdated = Value(dateUpdated),
-        type = Value(type),
-        amount = Value(amount),
+  })  : type = Value(type),
         saving = Value(saving);
   static Insertable<CmnTransaction> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
     Expression<String>? type,
-    Expression<String?>? description,
+    Expression<String>? description,
     Expression<double>? amount,
     Expression<String>? saving,
   }) {
@@ -1162,7 +1141,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
       Value<String>? type,
-      Value<String?>? description,
+      Value<String>? description,
       Value<double>? amount,
       Value<String>? saving}) {
     return TransactionTableCompanion(
@@ -1192,7 +1171,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
       map['type'] = Variable<String>(type.value);
     }
     if (description.present) {
-      map['description'] = Variable<String?>(description.value);
+      map['description'] = Variable<String>(description.value);
     }
     if (amount.present) {
       map['amount'] = Variable<double>(amount.value);
@@ -1236,29 +1215,39 @@ class $TransactionTableTable extends TransactionTable
   @override
   late final GeneratedColumn<DateTime?> dateCreated =
       GeneratedColumn<DateTime?>('date_created', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
   final VerificationMeta _dateUpdatedMeta =
       const VerificationMeta('dateUpdated');
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(), requiredDuringInsert: true);
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
   final VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String?> type = GeneratedColumn<String?>(
       'type', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      check: () => type.isIn(DomainTableConstant.transactionTableTypeList),
+      type: const StringType(),
+      requiredDuringInsert: true);
   final VerificationMeta _descriptionMeta =
       const VerificationMeta('description');
   @override
   late final GeneratedColumn<String?> description = GeneratedColumn<String?>(
-      'description', aliasedName, true,
-      type: const StringType(), requiredDuringInsert: false);
+      'description', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
   final VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
       'amount', aliasedName, false,
-      type: const RealType(), requiredDuringInsert: true);
+      type: const RealType(),
+      requiredDuringInsert: false,
+      defaultValue: const Constant(.0));
   final VerificationMeta _savingMeta = const VerificationMeta('saving');
   @override
   late final GeneratedColumn<String?> saving = GeneratedColumn<String?>(
@@ -1286,16 +1275,12 @@ class $TransactionTableTable extends TransactionTable
           _dateCreatedMeta,
           dateCreated.isAcceptableOrUnknown(
               data['date_created']!, _dateCreatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateCreatedMeta);
     }
     if (data.containsKey('date_updated')) {
       context.handle(
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('type')) {
       context.handle(
@@ -1312,8 +1297,6 @@ class $TransactionTableTable extends TransactionTable
     if (data.containsKey('amount')) {
       context.handle(_amountMeta,
           amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
     }
     if (data.containsKey('saving')) {
       context.handle(_savingMeta,
