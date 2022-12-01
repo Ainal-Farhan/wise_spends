@@ -11,5 +11,5 @@ class TransactionTable extends BaseEntityTable {
   TextColumn get description => text().withDefault(const Constant(''))();
   RealColumn get amount =>
       real().check(amount.isBiggerThan(const Constant(0)))();
-  TextColumn get saving => text().references(SavingTable, #id)();
+  TextColumn get savingId => text().references(SavingTable, #id)();
 }

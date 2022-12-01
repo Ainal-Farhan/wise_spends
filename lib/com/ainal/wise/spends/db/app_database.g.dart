@@ -277,6 +277,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
   final bool isSaveWeekly;
   final bool isSaveMonthly;
   final double currentAmount;
+  final String userId;
   CmnSaving(
       {required this.id,
       required this.dateCreated,
@@ -292,7 +293,8 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       required this.isSaveDaily,
       required this.isSaveWeekly,
       required this.isSaveMonthly,
-      required this.currentAmount});
+      required this.currentAmount,
+      required this.userId});
   factory CmnSaving.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return CmnSaving(
@@ -326,6 +328,8 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
           .mapFromDatabaseResponse(data['${effectivePrefix}is_save_monthly'])!,
       currentAmount: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}current_amount'])!,
+      userId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}user_id'])!,
     );
   }
   @override
@@ -350,6 +354,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
     map['is_save_weekly'] = Variable<bool>(isSaveWeekly);
     map['is_save_monthly'] = Variable<bool>(isSaveMonthly);
     map['current_amount'] = Variable<double>(currentAmount);
+    map['user_id'] = Variable<String>(userId);
     return map;
   }
 
@@ -374,6 +379,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       isSaveWeekly: Value(isSaveWeekly),
       isSaveMonthly: Value(isSaveMonthly),
       currentAmount: Value(currentAmount),
+      userId: Value(userId),
     );
   }
 
@@ -396,6 +402,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       isSaveWeekly: serializer.fromJson<bool>(json['isSaveWeekly']),
       isSaveMonthly: serializer.fromJson<bool>(json['isSaveMonthly']),
       currentAmount: serializer.fromJson<double>(json['currentAmount']),
+      userId: serializer.fromJson<String>(json['userId']),
     );
   }
   @override
@@ -417,6 +424,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       'isSaveWeekly': serializer.toJson<bool>(isSaveWeekly),
       'isSaveMonthly': serializer.toJson<bool>(isSaveMonthly),
       'currentAmount': serializer.toJson<double>(currentAmount),
+      'userId': serializer.toJson<String>(userId),
     };
   }
 
@@ -435,7 +443,8 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
           bool? isSaveDaily,
           bool? isSaveWeekly,
           bool? isSaveMonthly,
-          double? currentAmount}) =>
+          double? currentAmount,
+          String? userId}) =>
       CmnSaving(
         id: id ?? this.id,
         dateCreated: dateCreated ?? this.dateCreated,
@@ -452,6 +461,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
         isSaveWeekly: isSaveWeekly ?? this.isSaveWeekly,
         isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
         currentAmount: currentAmount ?? this.currentAmount,
+        userId: userId ?? this.userId,
       );
   @override
   String toString() {
@@ -470,7 +480,8 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
           ..write('isSaveDaily: $isSaveDaily, ')
           ..write('isSaveWeekly: $isSaveWeekly, ')
           ..write('isSaveMonthly: $isSaveMonthly, ')
-          ..write('currentAmount: $currentAmount')
+          ..write('currentAmount: $currentAmount, ')
+          ..write('userId: $userId')
           ..write(')'))
         .toString();
   }
@@ -491,7 +502,8 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       isSaveDaily,
       isSaveWeekly,
       isSaveMonthly,
-      currentAmount);
+      currentAmount,
+      userId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -510,7 +522,8 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
           other.isSaveDaily == this.isSaveDaily &&
           other.isSaveWeekly == this.isSaveWeekly &&
           other.isSaveMonthly == this.isSaveMonthly &&
-          other.currentAmount == this.currentAmount);
+          other.currentAmount == this.currentAmount &&
+          other.userId == this.userId);
 }
 
 class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
@@ -529,6 +542,7 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
   final Value<bool> isSaveWeekly;
   final Value<bool> isSaveMonthly;
   final Value<double> currentAmount;
+  final Value<String> userId;
   const SavingTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -545,6 +559,7 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
     this.isSaveWeekly = const Value.absent(),
     this.isSaveMonthly = const Value.absent(),
     this.currentAmount = const Value.absent(),
+    this.userId = const Value.absent(),
   });
   SavingTableCompanion.insert({
     this.id = const Value.absent(),
@@ -562,7 +577,9 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
     this.isSaveWeekly = const Value.absent(),
     this.isSaveMonthly = const Value.absent(),
     this.currentAmount = const Value.absent(),
-  }) : name = Value(name);
+    required String userId,
+  })  : name = Value(name),
+        userId = Value(userId);
   static Insertable<CmnSaving> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
@@ -579,6 +596,7 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
     Expression<bool>? isSaveWeekly,
     Expression<bool>? isSaveMonthly,
     Expression<double>? currentAmount,
+    Expression<String>? userId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -596,6 +614,7 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
       if (isSaveWeekly != null) 'is_save_weekly': isSaveWeekly,
       if (isSaveMonthly != null) 'is_save_monthly': isSaveMonthly,
       if (currentAmount != null) 'current_amount': currentAmount,
+      if (userId != null) 'user_id': userId,
     });
   }
 
@@ -614,7 +633,8 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
       Value<bool>? isSaveDaily,
       Value<bool>? isSaveWeekly,
       Value<bool>? isSaveMonthly,
-      Value<double>? currentAmount}) {
+      Value<double>? currentAmount,
+      Value<String>? userId}) {
     return SavingTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -631,6 +651,7 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
       isSaveWeekly: isSaveWeekly ?? this.isSaveWeekly,
       isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
       currentAmount: currentAmount ?? this.currentAmount,
+      userId: userId ?? this.userId,
     );
   }
 
@@ -682,6 +703,9 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
     if (currentAmount.present) {
       map['current_amount'] = Variable<double>(currentAmount.value);
     }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
     return map;
   }
 
@@ -702,7 +726,8 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
           ..write('isSaveDaily: $isSaveDaily, ')
           ..write('isSaveWeekly: $isSaveWeekly, ')
           ..write('isSaveMonthly: $isSaveMonthly, ')
-          ..write('currentAmount: $currentAmount')
+          ..write('currentAmount: $currentAmount, ')
+          ..write('userId: $userId')
           ..write(')'))
         .toString();
   }
@@ -828,6 +853,13 @@ class $SavingTableTable extends SavingTable
       type: const RealType(),
       requiredDuringInsert: false,
       defaultValue: const Constant(.0));
+  final VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String?> userId = GeneratedColumn<String?>(
+      'user_id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES user_table (id)');
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -844,7 +876,8 @@ class $SavingTableTable extends SavingTable
         isSaveDaily,
         isSaveWeekly,
         isSaveMonthly,
-        currentAmount
+        currentAmount,
+        userId
       ];
   @override
   String get aliasedName => _alias ?? 'saving_table';
@@ -934,6 +967,12 @@ class $SavingTableTable extends SavingTable
           currentAmount.isAcceptableOrUnknown(
               data['current_amount']!, _currentAmountMeta));
     }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
     return context;
   }
 
@@ -962,7 +1001,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
   final String type;
   final String description;
   final double amount;
-  final String saving;
+  final String savingId;
   CmnTransaction(
       {required this.id,
       required this.dateCreated,
@@ -970,7 +1009,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       required this.type,
       required this.description,
       required this.amount,
-      required this.saving});
+      required this.savingId});
   factory CmnTransaction.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return CmnTransaction(
@@ -986,8 +1025,8 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
           .mapFromDatabaseResponse(data['${effectivePrefix}description'])!,
       amount: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
-      saving: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}saving'])!,
+      savingId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}saving_id'])!,
     );
   }
   @override
@@ -999,7 +1038,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
     map['type'] = Variable<String>(type);
     map['description'] = Variable<String>(description);
     map['amount'] = Variable<double>(amount);
-    map['saving'] = Variable<String>(saving);
+    map['saving_id'] = Variable<String>(savingId);
     return map;
   }
 
@@ -1011,7 +1050,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       type: Value(type),
       description: Value(description),
       amount: Value(amount),
-      saving: Value(saving),
+      savingId: Value(savingId),
     );
   }
 
@@ -1025,7 +1064,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       type: serializer.fromJson<String>(json['type']),
       description: serializer.fromJson<String>(json['description']),
       amount: serializer.fromJson<double>(json['amount']),
-      saving: serializer.fromJson<String>(json['saving']),
+      savingId: serializer.fromJson<String>(json['savingId']),
     );
   }
   @override
@@ -1038,7 +1077,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       'type': serializer.toJson<String>(type),
       'description': serializer.toJson<String>(description),
       'amount': serializer.toJson<double>(amount),
-      'saving': serializer.toJson<String>(saving),
+      'savingId': serializer.toJson<String>(savingId),
     };
   }
 
@@ -1049,7 +1088,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
           String? type,
           String? description,
           double? amount,
-          String? saving}) =>
+          String? savingId}) =>
       CmnTransaction(
         id: id ?? this.id,
         dateCreated: dateCreated ?? this.dateCreated,
@@ -1057,7 +1096,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
         type: type ?? this.type,
         description: description ?? this.description,
         amount: amount ?? this.amount,
-        saving: saving ?? this.saving,
+        savingId: savingId ?? this.savingId,
       );
   @override
   String toString() {
@@ -1068,14 +1107,14 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
           ..write('type: $type, ')
           ..write('description: $description, ')
           ..write('amount: $amount, ')
-          ..write('saving: $saving')
+          ..write('savingId: $savingId')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(
-      id, dateCreated, dateUpdated, type, description, amount, saving);
+      id, dateCreated, dateUpdated, type, description, amount, savingId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1086,7 +1125,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
           other.type == this.type &&
           other.description == this.description &&
           other.amount == this.amount &&
-          other.saving == this.saving);
+          other.savingId == this.savingId);
 }
 
 class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
@@ -1096,7 +1135,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
   final Value<String> type;
   final Value<String> description;
   final Value<double> amount;
-  final Value<String> saving;
+  final Value<String> savingId;
   const TransactionTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -1104,7 +1143,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
     this.type = const Value.absent(),
     this.description = const Value.absent(),
     this.amount = const Value.absent(),
-    this.saving = const Value.absent(),
+    this.savingId = const Value.absent(),
   });
   TransactionTableCompanion.insert({
     this.id = const Value.absent(),
@@ -1113,10 +1152,10 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
     required String type,
     this.description = const Value.absent(),
     required double amount,
-    required String saving,
+    required String savingId,
   })  : type = Value(type),
         amount = Value(amount),
-        saving = Value(saving);
+        savingId = Value(savingId);
   static Insertable<CmnTransaction> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
@@ -1124,7 +1163,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
     Expression<String>? type,
     Expression<String>? description,
     Expression<double>? amount,
-    Expression<String>? saving,
+    Expression<String>? savingId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1133,7 +1172,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
       if (type != null) 'type': type,
       if (description != null) 'description': description,
       if (amount != null) 'amount': amount,
-      if (saving != null) 'saving': saving,
+      if (savingId != null) 'saving_id': savingId,
     });
   }
 
@@ -1144,7 +1183,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
       Value<String>? type,
       Value<String>? description,
       Value<double>? amount,
-      Value<String>? saving}) {
+      Value<String>? savingId}) {
     return TransactionTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -1152,7 +1191,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
       type: type ?? this.type,
       description: description ?? this.description,
       amount: amount ?? this.amount,
-      saving: saving ?? this.saving,
+      savingId: savingId ?? this.savingId,
     );
   }
 
@@ -1177,8 +1216,8 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
     if (amount.present) {
       map['amount'] = Variable<double>(amount.value);
     }
-    if (saving.present) {
-      map['saving'] = Variable<String>(saving.value);
+    if (savingId.present) {
+      map['saving_id'] = Variable<String>(savingId.value);
     }
     return map;
   }
@@ -1192,7 +1231,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
           ..write('type: $type, ')
           ..write('description: $description, ')
           ..write('amount: $amount, ')
-          ..write('saving: $saving')
+          ..write('savingId: $savingId')
           ..write(')'))
         .toString();
   }
@@ -1247,16 +1286,16 @@ class $TransactionTableTable extends TransactionTable
       check: () => amount.isBiggerThan(const Constant(0)),
       type: const RealType(),
       requiredDuringInsert: true);
-  final VerificationMeta _savingMeta = const VerificationMeta('saving');
+  final VerificationMeta _savingIdMeta = const VerificationMeta('savingId');
   @override
-  late final GeneratedColumn<String?> saving = GeneratedColumn<String?>(
-      'saving', aliasedName, false,
+  late final GeneratedColumn<String?> savingId = GeneratedColumn<String?>(
+      'saving_id', aliasedName, false,
       type: const StringType(),
       requiredDuringInsert: true,
       defaultConstraints: 'REFERENCES saving_table (id)');
   @override
   List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, type, description, amount, saving];
+      [id, dateCreated, dateUpdated, type, description, amount, savingId];
   @override
   String get aliasedName => _alias ?? 'transaction_table';
   @override
@@ -1299,11 +1338,11 @@ class $TransactionTableTable extends TransactionTable
     } else if (isInserting) {
       context.missing(_amountMeta);
     }
-    if (data.containsKey('saving')) {
-      context.handle(_savingMeta,
-          saving.isAcceptableOrUnknown(data['saving']!, _savingMeta));
+    if (data.containsKey('saving_id')) {
+      context.handle(_savingIdMeta,
+          savingId.isAcceptableOrUnknown(data['saving_id']!, _savingIdMeta));
     } else if (isInserting) {
-      context.missing(_savingMeta);
+      context.missing(_savingIdMeta);
     }
     return context;
   }

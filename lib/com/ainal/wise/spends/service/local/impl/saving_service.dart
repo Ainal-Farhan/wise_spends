@@ -19,10 +19,11 @@ class SavingService extends ISavingService {
     final transactionStream = _transactionRepository.watch();
 
     return Rx.combineLatest2(savingStream, transactionStream,
-        (List<CmnSaving> a, List<CmnTransaction> b) {
-      return a.map((saving) {
-        final transactions =
-            b.where((transaction) => transaction.saving == saving.id).toList();
+        (List<CmnSaving> savingList, List<CmnTransaction> transactionList) {
+      return savingList.map((saving) {
+        final transactions = transactionList
+            .where((transaction) => transaction.savingId == saving.id)
+            .toList();
 
         return SavingWithTransactions(
             transactions: transactions, saving: saving);
