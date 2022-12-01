@@ -5,5 +5,7 @@ abstract class IUserRepository
     extends ICrudRepository<$UserTableTable, UserTableCompanion, CmnUser> {
   IUserRepository(AppDatabase db) : super(db, db.userTable);
 
-  Stream<CmnUser?> findById(String id);
+  Stream<CmnUser?> findById(final String id);
+
+  Stream<CmnUser?> findByName(final String name);
 }

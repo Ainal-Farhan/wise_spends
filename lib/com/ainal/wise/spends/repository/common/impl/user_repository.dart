@@ -9,4 +9,10 @@ class UserRepository extends IUserRepository {
     return (db.select(db.userTable)..where((tbl) => tbl.id.equals(id)))
         .watchSingleOrNull();
   }
+
+  @override
+  Stream<CmnUser?> findByName(final String name) {
+    return (db.select(db.userTable)..where((tbl) => tbl.name.equals(name)))
+        .watchSingleOrNull();
+  }
 }
