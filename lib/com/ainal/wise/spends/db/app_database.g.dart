@@ -250,6 +250,10 @@ class $UserTableTable extends UserTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+        {name},
+      ];
+  @override
   CmnUser map(Map<String, dynamic> data, {String? tablePrefix}) {
     return CmnUser.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);

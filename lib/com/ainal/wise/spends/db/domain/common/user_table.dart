@@ -5,4 +5,9 @@ import 'package:wise_spends/com/ainal/wise/spends/db/domain/base/base_entity_tab
 @DataClassName(DomainTableConstant.commonTablePrefix + "User")
 class UserTable extends BaseEntityTable {
   TextColumn get name => text()();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {name}
+      ];
 }
