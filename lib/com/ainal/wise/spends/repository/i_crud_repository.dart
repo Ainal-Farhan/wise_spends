@@ -2,7 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/repository/common/i_stream_repository.dart';
 
-abstract class ICrudRepository<T> extends IStreamRepository<T> {
+abstract class ICrudRepository<T, P extends UpdateCompanion<T>>
+    extends IStreamRepository<T, P> {
   const ICrudRepository(AppDatabase db, TableInfo<Table, T> table)
       : super(db, table);
 
@@ -16,7 +17,7 @@ abstract class ICrudRepository<T> extends IStreamRepository<T> {
   }
 
   // update all non null attributes from entity except primary key
-  Future<void> updatePart(final item) async {
+  Future<void> updatePart(final P item) async {
     await db.update(table).write(item);
   }
 
