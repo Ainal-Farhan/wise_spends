@@ -7,5 +7,5 @@ abstract class IUserService extends ILocalService {
 
   Stream<CmnUser?> findById(final String id);
 
-  Stream<CmnUser?> findByName(final String name);
+  Future<CmnUser?> findByName(final String name);
 }

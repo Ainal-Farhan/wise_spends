@@ -9,9 +9,17 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_sta
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/state/transaction_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_page.dart';
+import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as route;
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Do any requests before start the app
+  await () async {
+    await StartupManager().onRunApp("Ainal");
+  }();
+
   runApp(
     MultiBlocProvider(
       providers: [

@@ -20,9 +20,9 @@ class StartupManager extends IStartupManager {
   }
 
   Future _initCurrentUser(final String name) async {
-    if (_currentUser!.id.isNotEmpty) return;
+    if (_currentUser != null) return;
 
-    _currentUser = _userService.findByName(name) as CmnUser;
+    _currentUser = await _userService.findByName(name);
 
     if (_currentUser == null) {
       _currentUser = await _addUser(name);
@@ -33,4 +33,7 @@ class StartupManager extends IStartupManager {
   Future<CmnUser> _addUser(final String name) async {
     return await _userService.add(UserTableCompanion.insert(name: name));
   }
+
+  @override
+  CmnUser get currentUser => CmnUser.fromJson(_currentUser!.toJson());
 }

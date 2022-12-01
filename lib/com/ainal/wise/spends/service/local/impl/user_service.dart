@@ -13,7 +13,7 @@ class UserService extends IUserService {
   }
 
   @override
-  Stream<CmnUser?> findByName(String name) {
-    return _userRepository.findByName(name);
+  Future<CmnUser?> findByName(String name) async {
+    return await _userRepository.findByName(name).getSingleOrNull();
   }
 }
