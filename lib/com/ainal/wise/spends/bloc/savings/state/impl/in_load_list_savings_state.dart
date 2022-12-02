@@ -1,12 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 
 class InLoadListSavingsState extends SavingsState {
-  const InLoadListSavingsState(int version) : super(version);
+  final List<SavingWithTransactions> _savingWithTransactionsList;
+
+  const InLoadListSavingsState(int version, this._savingWithTransactionsList)
+      : super(version);
 
   @override
   Widget build(BuildContext context, VoidCallback load) {
-    final makeListTile = ListTile(
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: _savingWithTransactionsList.length,
+      itemBuilder: (BuildContext context, int index) {
+        return _makeCard(index);
+      },
+    );
+  }
+
+  Widget _makeCard(final int index) {
+    return Card(
+      elevation: 8.0,
+      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      child: Container(
+        decoration: const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
+        child: _makeListTile(_savingWithTransactionsList.elementAt(index)),
+      ),
+    );
+  }
+
+  Widget _makeListTile(SavingWithTransactions savingWithTransactions) {
+    return ListTile(
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
         leading: Container(
@@ -18,46 +44,33 @@ class InLoadListSavingsState extends SavingsState {
           ),
           child: const Icon(Icons.autorenew, color: Colors.white),
         ),
-        title: const Text(
-          "Introduction to Driving",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          savingWithTransactions.saving.name,
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
 
         subtitle: Row(
-          children: const <Widget>[
-            Icon(Icons.linear_scale, color: Colors.yellowAccent),
-            Text(" Intermediate", style: TextStyle(color: Colors.white))
+          children: <Widget>[
+            const Text(
+              "Total: ",
+              style: TextStyle(color: Colors.white),
+            ),
+            Text('RM${savingWithTransactions.saving.currentAmount}'),
           ],
         ),
         trailing: const Icon(Icons.keyboard_arrow_right,
             color: Colors.white, size: 30.0));
-    final makeCard = Card(
-      elevation: 8.0,
-      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-      child: Container(
-        decoration: const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
-        child: makeListTile,
-      ),
-    );
-
-    return ListView.builder(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      itemCount: 10,
-      itemBuilder: (BuildContext context, int index) {
-        return makeCard;
-      },
-    );
   }
 
   @override
   SavingsState getNewVersion() {
-    return InLoadListSavingsState(version + 1);
+    return InLoadListSavingsState(version + 1, _savingWithTransactionsList);
   }
 
   @override
   SavingsState getStateCopy() {
-    return InLoadListSavingsState(version);
+    return InLoadListSavingsState(version, _savingWithTransactionsList);
   }
 }

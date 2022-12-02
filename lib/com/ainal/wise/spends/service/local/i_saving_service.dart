@@ -5,5 +5,6 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/i_local_service.
 abstract class ISavingService extends ILocalService {
   ISavingService(ICrudRepository repository) : super(repository);
 
-  Stream<List<SavingWithTransactions>> watchAllSavingWithTransactions();
+  Stream<List<SavingWithTransactions>> watchAllSavingWithTransactions(
+      final String userId);
 }

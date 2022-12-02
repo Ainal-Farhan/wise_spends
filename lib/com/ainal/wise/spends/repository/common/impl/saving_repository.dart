@@ -3,4 +3,11 @@ import 'package:wise_spends/com/ainal/wise/spends/repository/common/i_saving_rep
 
 class SavingRepository extends ISavingRepository {
   SavingRepository() : super(AppDatabase());
+
+  @override
+  Stream<List<CmnSaving>> watchBasedOnUserId(final String userId) {
+    return (db.select(db.savingTable)
+          ..where((tbl) => tbl.userId.equals(userId)))
+        .watch();
+  }
 }

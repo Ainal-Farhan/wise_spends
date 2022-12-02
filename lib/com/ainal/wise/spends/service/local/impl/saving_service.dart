@@ -14,8 +14,9 @@ class SavingService extends ISavingService {
   SavingService() : super(SavingRepository());
 
   @override
-  Stream<List<SavingWithTransactions>> watchAllSavingWithTransactions() {
-    final savingStream = _savingRepository.watch();
+  Stream<List<SavingWithTransactions>> watchAllSavingWithTransactions(
+      final String userId) {
+    final savingStream = _savingRepository.watchBasedOnUserId(userId);
     final transactionStream = _transactionRepository.watch();
 
     return Rx.combineLatest2(savingStream, transactionStream,
@@ -24,7 +25,6 @@ class SavingService extends ISavingService {
         final transactions = transactionList
             .where((transaction) => transaction.savingId == saving.id)
             .toList();
-
         return SavingWithTransactions(
             transactions: transactions, saving: saving);
       }).toList();

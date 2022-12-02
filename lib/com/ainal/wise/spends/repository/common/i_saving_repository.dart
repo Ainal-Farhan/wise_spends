@@ -4,4 +4,6 @@ import 'package:wise_spends/com/ainal/wise/spends/repository/i_crud_repository.d
 abstract class ISavingRepository extends ICrudRepository<$SavingTableTable,
     SavingTableCompanion, CmnSaving> {
   ISavingRepository(AppDatabase db) : super(db, db.savingTable);
+
+  Stream<List<CmnSaving>> watchBasedOnUserId(final String userId);
 }
