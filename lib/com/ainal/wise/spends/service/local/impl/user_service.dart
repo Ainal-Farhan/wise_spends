@@ -8,12 +8,12 @@ class UserService extends IUserService {
   UserService() : super(UserRepository());
 
   @override
-  Stream<CmnUser?> findById(String id) {
+  Stream<CmmnUser?> findById(String id) {
     return _userRepository.findById(id);
   }
 
   @override
-  Future<CmnUser?> findByName(String name) async {
+  Future<CmmnUser?> findByName(String name) async {
     return await _userRepository.findByName(name).getSingleOrNull();
   }
 }

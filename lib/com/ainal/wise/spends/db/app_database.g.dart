@@ -7,19 +7,19 @@ part of 'app_database.dart';
 // **************************************************************************
 
 // ignore_for_file: type=lint
-class CmnUser extends DataClass implements Insertable<CmnUser> {
+class CmmnUser extends DataClass implements Insertable<CmmnUser> {
   final String id;
   final DateTime dateCreated;
   final DateTime dateUpdated;
   final String name;
-  CmnUser(
+  CmmnUser(
       {required this.id,
       required this.dateCreated,
       required this.dateUpdated,
       required this.name});
-  factory CmnUser.fromData(Map<String, dynamic> data, {String? prefix}) {
+  factory CmmnUser.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
-    return CmnUser(
+    return CmmnUser(
       id: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       dateCreated: const DateTimeType()
@@ -49,10 +49,10 @@ class CmnUser extends DataClass implements Insertable<CmnUser> {
     );
   }
 
-  factory CmnUser.fromJson(Map<String, dynamic> json,
+  factory CmmnUser.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CmnUser(
+    return CmmnUser(
       id: serializer.fromJson<String>(json['id']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
@@ -70,12 +70,12 @@ class CmnUser extends DataClass implements Insertable<CmnUser> {
     };
   }
 
-  CmnUser copyWith(
+  CmmnUser copyWith(
           {String? id,
           DateTime? dateCreated,
           DateTime? dateUpdated,
           String? name}) =>
-      CmnUser(
+      CmmnUser(
         id: id ?? this.id,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
@@ -83,7 +83,7 @@ class CmnUser extends DataClass implements Insertable<CmnUser> {
       );
   @override
   String toString() {
-    return (StringBuffer('CmnUser(')
+    return (StringBuffer('CmmnUser(')
           ..write('id: $id, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
@@ -97,14 +97,14 @@ class CmnUser extends DataClass implements Insertable<CmnUser> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CmnUser &&
+      (other is CmmnUser &&
           other.id == this.id &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
           other.name == this.name);
 }
 
-class UserTableCompanion extends UpdateCompanion<CmnUser> {
+class UserTableCompanion extends UpdateCompanion<CmmnUser> {
   final Value<String> id;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
@@ -121,7 +121,7 @@ class UserTableCompanion extends UpdateCompanion<CmnUser> {
     this.dateUpdated = const Value.absent(),
     required String name,
   }) : name = Value(name);
-  static Insertable<CmnUser> custom({
+  static Insertable<CmmnUser> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
@@ -179,7 +179,7 @@ class UserTableCompanion extends UpdateCompanion<CmnUser> {
 }
 
 class $UserTableTable extends UserTable
-    with TableInfo<$UserTableTable, CmnUser> {
+    with TableInfo<$UserTableTable, CmmnUser> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -219,7 +219,7 @@ class $UserTableTable extends UserTable
   @override
   String get actualTableName => 'user_table';
   @override
-  VerificationContext validateIntegrity(Insertable<CmnUser> instance,
+  VerificationContext validateIntegrity(Insertable<CmmnUser> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -254,8 +254,8 @@ class $UserTableTable extends UserTable
         {name},
       ];
   @override
-  CmnUser map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CmnUser.fromData(data,
+  CmmnUser map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return CmmnUser.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -265,7 +265,2428 @@ class $UserTableTable extends UserTable
   }
 }
 
-class CmnSaving extends DataClass implements Insertable<CmnSaving> {
+class MstrdtGroupReference extends DataClass
+    implements Insertable<MstrdtGroupReference> {
+  final String id;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String label;
+  final String value;
+  MstrdtGroupReference(
+      {required this.id,
+      required this.dateCreated,
+      required this.dateUpdated,
+      required this.label,
+      required this.value});
+  factory MstrdtGroupReference.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return MstrdtGroupReference(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      dateCreated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
+      dateUpdated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
+      label: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}label'])!,
+      value: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}value'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['label'] = Variable<String>(label);
+    map['value'] = Variable<String>(value);
+    return map;
+  }
+
+  GroupReferenceTableCompanion toCompanion(bool nullToAbsent) {
+    return GroupReferenceTableCompanion(
+      id: Value(id),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      label: Value(label),
+      value: Value(value),
+    );
+  }
+
+  factory MstrdtGroupReference.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MstrdtGroupReference(
+      id: serializer.fromJson<String>(json['id']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      label: serializer.fromJson<String>(json['label']),
+      value: serializer.fromJson<String>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'label': serializer.toJson<String>(label),
+      'value': serializer.toJson<String>(value),
+    };
+  }
+
+  MstrdtGroupReference copyWith(
+          {String? id,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          String? label,
+          String? value}) =>
+      MstrdtGroupReference(
+        id: id ?? this.id,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        label: label ?? this.label,
+        value: value ?? this.value,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('MstrdtGroupReference(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('label: $label, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, dateCreated, dateUpdated, label, value);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MstrdtGroupReference &&
+          other.id == this.id &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.label == this.label &&
+          other.value == this.value);
+}
+
+class GroupReferenceTableCompanion
+    extends UpdateCompanion<MstrdtGroupReference> {
+  final Value<String> id;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> label;
+  final Value<String> value;
+  const GroupReferenceTableCompanion({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.label = const Value.absent(),
+    this.value = const Value.absent(),
+  });
+  GroupReferenceTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    required String label,
+    required String value,
+  })  : label = Value(label),
+        value = Value(value);
+  static Insertable<MstrdtGroupReference> custom({
+    Expression<String>? id,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? label,
+    Expression<String>? value,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (label != null) 'label': label,
+      if (value != null) 'value': value,
+    });
+  }
+
+  GroupReferenceTableCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<String>? label,
+      Value<String>? value}) {
+    return GroupReferenceTableCompanion(
+      id: id ?? this.id,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      label: label ?? this.label,
+      value: value ?? this.value,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GroupReferenceTableCompanion(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('label: $label, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GroupReferenceTableTable extends GroupReferenceTable
+    with TableInfo<$GroupReferenceTableTable, MstrdtGroupReference> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GroupReferenceTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  final VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime?> dateCreated =
+      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime?> dateUpdated =
+      GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String?> label = GeneratedColumn<String?>(
+      'label', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String?> value = GeneratedColumn<String?>(
+      'value', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, dateCreated, dateUpdated, label, value];
+  @override
+  String get aliasedName => _alias ?? 'group_reference_table';
+  @override
+  String get actualTableName => 'group_reference_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MstrdtGroupReference> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+          _labelMeta, label.isAcceptableOrUnknown(data['label']!, _labelMeta));
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MstrdtGroupReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return MstrdtGroupReference.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $GroupReferenceTableTable createAlias(String alias) {
+    return $GroupReferenceTableTable(attachedDatabase, alias);
+  }
+}
+
+class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
+  final String id;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String label;
+  final String value;
+  final bool isActive;
+  final String belongTo;
+  final String groupId;
+  MstrdtReference(
+      {required this.id,
+      required this.dateCreated,
+      required this.dateUpdated,
+      required this.label,
+      required this.value,
+      required this.isActive,
+      required this.belongTo,
+      required this.groupId});
+  factory MstrdtReference.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return MstrdtReference(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      dateCreated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
+      dateUpdated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
+      label: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}label'])!,
+      value: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}value'])!,
+      isActive: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_active'])!,
+      belongTo: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}belong_to'])!,
+      groupId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}group_id'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['label'] = Variable<String>(label);
+    map['value'] = Variable<String>(value);
+    map['is_active'] = Variable<bool>(isActive);
+    map['belong_to'] = Variable<String>(belongTo);
+    map['group_id'] = Variable<String>(groupId);
+    return map;
+  }
+
+  ReferenceTableCompanion toCompanion(bool nullToAbsent) {
+    return ReferenceTableCompanion(
+      id: Value(id),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      label: Value(label),
+      value: Value(value),
+      isActive: Value(isActive),
+      belongTo: Value(belongTo),
+      groupId: Value(groupId),
+    );
+  }
+
+  factory MstrdtReference.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MstrdtReference(
+      id: serializer.fromJson<String>(json['id']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      label: serializer.fromJson<String>(json['label']),
+      value: serializer.fromJson<String>(json['value']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      belongTo: serializer.fromJson<String>(json['belongTo']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'label': serializer.toJson<String>(label),
+      'value': serializer.toJson<String>(value),
+      'isActive': serializer.toJson<bool>(isActive),
+      'belongTo': serializer.toJson<String>(belongTo),
+      'groupId': serializer.toJson<String>(groupId),
+    };
+  }
+
+  MstrdtReference copyWith(
+          {String? id,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          String? label,
+          String? value,
+          bool? isActive,
+          String? belongTo,
+          String? groupId}) =>
+      MstrdtReference(
+        id: id ?? this.id,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        label: label ?? this.label,
+        value: value ?? this.value,
+        isActive: isActive ?? this.isActive,
+        belongTo: belongTo ?? this.belongTo,
+        groupId: groupId ?? this.groupId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('MstrdtReference(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('label: $label, ')
+          ..write('value: $value, ')
+          ..write('isActive: $isActive, ')
+          ..write('belongTo: $belongTo, ')
+          ..write('groupId: $groupId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, dateCreated, dateUpdated, label, value, isActive, belongTo, groupId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MstrdtReference &&
+          other.id == this.id &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.label == this.label &&
+          other.value == this.value &&
+          other.isActive == this.isActive &&
+          other.belongTo == this.belongTo &&
+          other.groupId == this.groupId);
+}
+
+class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
+  final Value<String> id;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> label;
+  final Value<String> value;
+  final Value<bool> isActive;
+  final Value<String> belongTo;
+  final Value<String> groupId;
+  const ReferenceTableCompanion({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.label = const Value.absent(),
+    this.value = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.belongTo = const Value.absent(),
+    this.groupId = const Value.absent(),
+  });
+  ReferenceTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    required String label,
+    required String value,
+    this.isActive = const Value.absent(),
+    required String belongTo,
+    required String groupId,
+  })  : label = Value(label),
+        value = Value(value),
+        belongTo = Value(belongTo),
+        groupId = Value(groupId);
+  static Insertable<MstrdtReference> custom({
+    Expression<String>? id,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? label,
+    Expression<String>? value,
+    Expression<bool>? isActive,
+    Expression<String>? belongTo,
+    Expression<String>? groupId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (label != null) 'label': label,
+      if (value != null) 'value': value,
+      if (isActive != null) 'is_active': isActive,
+      if (belongTo != null) 'belong_to': belongTo,
+      if (groupId != null) 'group_id': groupId,
+    });
+  }
+
+  ReferenceTableCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<String>? label,
+      Value<String>? value,
+      Value<bool>? isActive,
+      Value<String>? belongTo,
+      Value<String>? groupId}) {
+    return ReferenceTableCompanion(
+      id: id ?? this.id,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      label: label ?? this.label,
+      value: value ?? this.value,
+      isActive: isActive ?? this.isActive,
+      belongTo: belongTo ?? this.belongTo,
+      groupId: groupId ?? this.groupId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (belongTo.present) {
+      map['belong_to'] = Variable<String>(belongTo.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReferenceTableCompanion(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('label: $label, ')
+          ..write('value: $value, ')
+          ..write('isActive: $isActive, ')
+          ..write('belongTo: $belongTo, ')
+          ..write('groupId: $groupId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReferenceTableTable extends ReferenceTable
+    with TableInfo<$ReferenceTableTable, MstrdtReference> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReferenceTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  final VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime?> dateCreated =
+      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime?> dateUpdated =
+      GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String?> label = GeneratedColumn<String?>(
+      'label', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String?> value = GeneratedColumn<String?>(
+      'value', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'UNIQUE');
+  final VerificationMeta _isActiveMeta = const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool?> isActive = GeneratedColumn<bool?>(
+      'is_active', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_active IN (0, 1))',
+      defaultValue: const Constant(false));
+  final VerificationMeta _belongToMeta = const VerificationMeta('belongTo');
+  @override
+  late final GeneratedColumn<String?> belongTo = GeneratedColumn<String?>(
+      'belong_to', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES reference_table (id)');
+  final VerificationMeta _groupIdMeta = const VerificationMeta('groupId');
+  @override
+  late final GeneratedColumn<String?> groupId = GeneratedColumn<String?>(
+      'group_id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES group_reference_table (id)');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, dateCreated, dateUpdated, label, value, isActive, belongTo, groupId];
+  @override
+  String get aliasedName => _alias ?? 'reference_table';
+  @override
+  String get actualTableName => 'reference_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<MstrdtReference> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+          _labelMeta, label.isAcceptableOrUnknown(data['label']!, _labelMeta));
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('belong_to')) {
+      context.handle(_belongToMeta,
+          belongTo.isAcceptableOrUnknown(data['belong_to']!, _belongToMeta));
+    } else if (isInserting) {
+      context.missing(_belongToMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(_groupIdMeta,
+          groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta));
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MstrdtReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return MstrdtReference.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $ReferenceTableTable createAlias(String alias) {
+    return $ReferenceTableTable(attachedDatabase, alias);
+  }
+}
+
+class MstrdtReferenceData extends DataClass
+    implements Insertable<MstrdtReferenceData> {
+  final String id;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String label;
+  final String groupLabel;
+  final String value;
+  final String groupValue;
+  final String? referenceId;
+  final bool isHasNext;
+  final String? nextReferenceDataId;
+  MstrdtReferenceData(
+      {required this.id,
+      required this.dateCreated,
+      required this.dateUpdated,
+      required this.label,
+      required this.groupLabel,
+      required this.value,
+      required this.groupValue,
+      this.referenceId,
+      required this.isHasNext,
+      this.nextReferenceDataId});
+  factory MstrdtReferenceData.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return MstrdtReferenceData(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      dateCreated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
+      dateUpdated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
+      label: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}label'])!,
+      groupLabel: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}group_label'])!,
+      value: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}value'])!,
+      groupValue: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}group_value'])!,
+      referenceId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}reference_id']),
+      isHasNext: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_has_next'])!,
+      nextReferenceDataId: const StringType().mapFromDatabaseResponse(
+          data['${effectivePrefix}next_reference_data_id']),
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['label'] = Variable<String>(label);
+    map['group_label'] = Variable<String>(groupLabel);
+    map['value'] = Variable<String>(value);
+    map['group_value'] = Variable<String>(groupValue);
+    if (!nullToAbsent || referenceId != null) {
+      map['reference_id'] = Variable<String?>(referenceId);
+    }
+    map['is_has_next'] = Variable<bool>(isHasNext);
+    if (!nullToAbsent || nextReferenceDataId != null) {
+      map['next_reference_data_id'] = Variable<String?>(nextReferenceDataId);
+    }
+    return map;
+  }
+
+  ReferenceDataTableCompanion toCompanion(bool nullToAbsent) {
+    return ReferenceDataTableCompanion(
+      id: Value(id),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      label: Value(label),
+      groupLabel: Value(groupLabel),
+      value: Value(value),
+      groupValue: Value(groupValue),
+      referenceId: referenceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(referenceId),
+      isHasNext: Value(isHasNext),
+      nextReferenceDataId: nextReferenceDataId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextReferenceDataId),
+    );
+  }
+
+  factory MstrdtReferenceData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MstrdtReferenceData(
+      id: serializer.fromJson<String>(json['id']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      label: serializer.fromJson<String>(json['label']),
+      groupLabel: serializer.fromJson<String>(json['groupLabel']),
+      value: serializer.fromJson<String>(json['value']),
+      groupValue: serializer.fromJson<String>(json['groupValue']),
+      referenceId: serializer.fromJson<String?>(json['referenceId']),
+      isHasNext: serializer.fromJson<bool>(json['isHasNext']),
+      nextReferenceDataId:
+          serializer.fromJson<String?>(json['nextReferenceDataId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'label': serializer.toJson<String>(label),
+      'groupLabel': serializer.toJson<String>(groupLabel),
+      'value': serializer.toJson<String>(value),
+      'groupValue': serializer.toJson<String>(groupValue),
+      'referenceId': serializer.toJson<String?>(referenceId),
+      'isHasNext': serializer.toJson<bool>(isHasNext),
+      'nextReferenceDataId': serializer.toJson<String?>(nextReferenceDataId),
+    };
+  }
+
+  MstrdtReferenceData copyWith(
+          {String? id,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          String? label,
+          String? groupLabel,
+          String? value,
+          String? groupValue,
+          String? referenceId,
+          bool? isHasNext,
+          String? nextReferenceDataId}) =>
+      MstrdtReferenceData(
+        id: id ?? this.id,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        label: label ?? this.label,
+        groupLabel: groupLabel ?? this.groupLabel,
+        value: value ?? this.value,
+        groupValue: groupValue ?? this.groupValue,
+        referenceId: referenceId ?? this.referenceId,
+        isHasNext: isHasNext ?? this.isHasNext,
+        nextReferenceDataId: nextReferenceDataId ?? this.nextReferenceDataId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('MstrdtReferenceData(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('label: $label, ')
+          ..write('groupLabel: $groupLabel, ')
+          ..write('value: $value, ')
+          ..write('groupValue: $groupValue, ')
+          ..write('referenceId: $referenceId, ')
+          ..write('isHasNext: $isHasNext, ')
+          ..write('nextReferenceDataId: $nextReferenceDataId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      dateCreated,
+      dateUpdated,
+      label,
+      groupLabel,
+      value,
+      groupValue,
+      referenceId,
+      isHasNext,
+      nextReferenceDataId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MstrdtReferenceData &&
+          other.id == this.id &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.label == this.label &&
+          other.groupLabel == this.groupLabel &&
+          other.value == this.value &&
+          other.groupValue == this.groupValue &&
+          other.referenceId == this.referenceId &&
+          other.isHasNext == this.isHasNext &&
+          other.nextReferenceDataId == this.nextReferenceDataId);
+}
+
+class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
+  final Value<String> id;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> label;
+  final Value<String> groupLabel;
+  final Value<String> value;
+  final Value<String> groupValue;
+  final Value<String?> referenceId;
+  final Value<bool> isHasNext;
+  final Value<String?> nextReferenceDataId;
+  const ReferenceDataTableCompanion({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.label = const Value.absent(),
+    this.groupLabel = const Value.absent(),
+    this.value = const Value.absent(),
+    this.groupValue = const Value.absent(),
+    this.referenceId = const Value.absent(),
+    this.isHasNext = const Value.absent(),
+    this.nextReferenceDataId = const Value.absent(),
+  });
+  ReferenceDataTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    required String label,
+    required String groupLabel,
+    required String value,
+    required String groupValue,
+    this.referenceId = const Value.absent(),
+    this.isHasNext = const Value.absent(),
+    this.nextReferenceDataId = const Value.absent(),
+  })  : label = Value(label),
+        groupLabel = Value(groupLabel),
+        value = Value(value),
+        groupValue = Value(groupValue);
+  static Insertable<MstrdtReferenceData> custom({
+    Expression<String>? id,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? label,
+    Expression<String>? groupLabel,
+    Expression<String>? value,
+    Expression<String>? groupValue,
+    Expression<String?>? referenceId,
+    Expression<bool>? isHasNext,
+    Expression<String?>? nextReferenceDataId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (label != null) 'label': label,
+      if (groupLabel != null) 'group_label': groupLabel,
+      if (value != null) 'value': value,
+      if (groupValue != null) 'group_value': groupValue,
+      if (referenceId != null) 'reference_id': referenceId,
+      if (isHasNext != null) 'is_has_next': isHasNext,
+      if (nextReferenceDataId != null)
+        'next_reference_data_id': nextReferenceDataId,
+    });
+  }
+
+  ReferenceDataTableCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<String>? label,
+      Value<String>? groupLabel,
+      Value<String>? value,
+      Value<String>? groupValue,
+      Value<String?>? referenceId,
+      Value<bool>? isHasNext,
+      Value<String?>? nextReferenceDataId}) {
+    return ReferenceDataTableCompanion(
+      id: id ?? this.id,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      label: label ?? this.label,
+      groupLabel: groupLabel ?? this.groupLabel,
+      value: value ?? this.value,
+      groupValue: groupValue ?? this.groupValue,
+      referenceId: referenceId ?? this.referenceId,
+      isHasNext: isHasNext ?? this.isHasNext,
+      nextReferenceDataId: nextReferenceDataId ?? this.nextReferenceDataId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (groupLabel.present) {
+      map['group_label'] = Variable<String>(groupLabel.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (groupValue.present) {
+      map['group_value'] = Variable<String>(groupValue.value);
+    }
+    if (referenceId.present) {
+      map['reference_id'] = Variable<String?>(referenceId.value);
+    }
+    if (isHasNext.present) {
+      map['is_has_next'] = Variable<bool>(isHasNext.value);
+    }
+    if (nextReferenceDataId.present) {
+      map['next_reference_data_id'] =
+          Variable<String?>(nextReferenceDataId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReferenceDataTableCompanion(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('label: $label, ')
+          ..write('groupLabel: $groupLabel, ')
+          ..write('value: $value, ')
+          ..write('groupValue: $groupValue, ')
+          ..write('referenceId: $referenceId, ')
+          ..write('isHasNext: $isHasNext, ')
+          ..write('nextReferenceDataId: $nextReferenceDataId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReferenceDataTableTable extends ReferenceDataTable
+    with TableInfo<$ReferenceDataTableTable, MstrdtReferenceData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReferenceDataTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  final VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime?> dateCreated =
+      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime?> dateUpdated =
+      GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String?> label = GeneratedColumn<String?>(
+      'label', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _groupLabelMeta = const VerificationMeta('groupLabel');
+  @override
+  late final GeneratedColumn<String?> groupLabel = GeneratedColumn<String?>(
+      'group_label', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String?> value = GeneratedColumn<String?>(
+      'value', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _groupValueMeta = const VerificationMeta('groupValue');
+  @override
+  late final GeneratedColumn<String?> groupValue = GeneratedColumn<String?>(
+      'group_value', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _referenceIdMeta =
+      const VerificationMeta('referenceId');
+  @override
+  late final GeneratedColumn<String?> referenceId = GeneratedColumn<String?>(
+      'reference_id', aliasedName, true,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'REFERENCES reference_table (id)');
+  final VerificationMeta _isHasNextMeta = const VerificationMeta('isHasNext');
+  @override
+  late final GeneratedColumn<bool?> isHasNext = GeneratedColumn<bool?>(
+      'is_has_next', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_has_next IN (0, 1))',
+      defaultValue: const Constant(false));
+  final VerificationMeta _nextReferenceDataIdMeta =
+      const VerificationMeta('nextReferenceDataId');
+  @override
+  late final GeneratedColumn<String?> nextReferenceDataId =
+      GeneratedColumn<String?>('next_reference_data_id', aliasedName, true,
+          type: const StringType(),
+          requiredDuringInsert: false,
+          defaultConstraints: 'REFERENCES reference_data_table (id)');
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        dateCreated,
+        dateUpdated,
+        label,
+        groupLabel,
+        value,
+        groupValue,
+        referenceId,
+        isHasNext,
+        nextReferenceDataId
+      ];
+  @override
+  String get aliasedName => _alias ?? 'reference_data_table';
+  @override
+  String get actualTableName => 'reference_data_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MstrdtReferenceData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+          _labelMeta, label.isAcceptableOrUnknown(data['label']!, _labelMeta));
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('group_label')) {
+      context.handle(
+          _groupLabelMeta,
+          groupLabel.isAcceptableOrUnknown(
+              data['group_label']!, _groupLabelMeta));
+    } else if (isInserting) {
+      context.missing(_groupLabelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('group_value')) {
+      context.handle(
+          _groupValueMeta,
+          groupValue.isAcceptableOrUnknown(
+              data['group_value']!, _groupValueMeta));
+    } else if (isInserting) {
+      context.missing(_groupValueMeta);
+    }
+    if (data.containsKey('reference_id')) {
+      context.handle(
+          _referenceIdMeta,
+          referenceId.isAcceptableOrUnknown(
+              data['reference_id']!, _referenceIdMeta));
+    }
+    if (data.containsKey('is_has_next')) {
+      context.handle(
+          _isHasNextMeta,
+          isHasNext.isAcceptableOrUnknown(
+              data['is_has_next']!, _isHasNextMeta));
+    }
+    if (data.containsKey('next_reference_data_id')) {
+      context.handle(
+          _nextReferenceDataIdMeta,
+          nextReferenceDataId.isAcceptableOrUnknown(
+              data['next_reference_data_id']!, _nextReferenceDataIdMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MstrdtReferenceData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return MstrdtReferenceData.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $ReferenceDataTableTable createAlias(String alias) {
+    return $ReferenceDataTableTable(attachedDatabase, alias);
+  }
+}
+
+class ExpenseTableData extends DataClass
+    implements Insertable<ExpenseTableData> {
+  final String id;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final double amount;
+  final String? description;
+  final DateTime expenseDate;
+  final String referenceDataId;
+  ExpenseTableData(
+      {required this.id,
+      required this.dateCreated,
+      required this.dateUpdated,
+      required this.amount,
+      this.description,
+      required this.expenseDate,
+      required this.referenceDataId});
+  factory ExpenseTableData.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return ExpenseTableData(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      dateCreated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
+      dateUpdated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
+      amount: const RealType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
+      description: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}description']),
+      expenseDate: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}expense_date'])!,
+      referenceDataId: const StringType().mapFromDatabaseResponse(
+          data['${effectivePrefix}reference_data_id'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['amount'] = Variable<double>(amount);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String?>(description);
+    }
+    map['expense_date'] = Variable<DateTime>(expenseDate);
+    map['reference_data_id'] = Variable<String>(referenceDataId);
+    return map;
+  }
+
+  ExpenseTableCompanion toCompanion(bool nullToAbsent) {
+    return ExpenseTableCompanion(
+      id: Value(id),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      amount: Value(amount),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      expenseDate: Value(expenseDate),
+      referenceDataId: Value(referenceDataId),
+    );
+  }
+
+  factory ExpenseTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExpenseTableData(
+      id: serializer.fromJson<String>(json['id']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      amount: serializer.fromJson<double>(json['amount']),
+      description: serializer.fromJson<String?>(json['description']),
+      expenseDate: serializer.fromJson<DateTime>(json['expenseDate']),
+      referenceDataId: serializer.fromJson<String>(json['referenceDataId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'amount': serializer.toJson<double>(amount),
+      'description': serializer.toJson<String?>(description),
+      'expenseDate': serializer.toJson<DateTime>(expenseDate),
+      'referenceDataId': serializer.toJson<String>(referenceDataId),
+    };
+  }
+
+  ExpenseTableData copyWith(
+          {String? id,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          double? amount,
+          String? description,
+          DateTime? expenseDate,
+          String? referenceDataId}) =>
+      ExpenseTableData(
+        id: id ?? this.id,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        amount: amount ?? this.amount,
+        description: description ?? this.description,
+        expenseDate: expenseDate ?? this.expenseDate,
+        referenceDataId: referenceDataId ?? this.referenceDataId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseTableData(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('amount: $amount, ')
+          ..write('description: $description, ')
+          ..write('expenseDate: $expenseDate, ')
+          ..write('referenceDataId: $referenceDataId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, dateCreated, dateUpdated, amount,
+      description, expenseDate, referenceDataId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExpenseTableData &&
+          other.id == this.id &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.amount == this.amount &&
+          other.description == this.description &&
+          other.expenseDate == this.expenseDate &&
+          other.referenceDataId == this.referenceDataId);
+}
+
+class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
+  final Value<String> id;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<double> amount;
+  final Value<String?> description;
+  final Value<DateTime> expenseDate;
+  final Value<String> referenceDataId;
+  const ExpenseTableCompanion({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.description = const Value.absent(),
+    this.expenseDate = const Value.absent(),
+    this.referenceDataId = const Value.absent(),
+  });
+  ExpenseTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    required double amount,
+    this.description = const Value.absent(),
+    required DateTime expenseDate,
+    required String referenceDataId,
+  })  : amount = Value(amount),
+        expenseDate = Value(expenseDate),
+        referenceDataId = Value(referenceDataId);
+  static Insertable<ExpenseTableData> custom({
+    Expression<String>? id,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<double>? amount,
+    Expression<String?>? description,
+    Expression<DateTime>? expenseDate,
+    Expression<String>? referenceDataId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (amount != null) 'amount': amount,
+      if (description != null) 'description': description,
+      if (expenseDate != null) 'expense_date': expenseDate,
+      if (referenceDataId != null) 'reference_data_id': referenceDataId,
+    });
+  }
+
+  ExpenseTableCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<double>? amount,
+      Value<String?>? description,
+      Value<DateTime>? expenseDate,
+      Value<String>? referenceDataId}) {
+    return ExpenseTableCompanion(
+      id: id ?? this.id,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      amount: amount ?? this.amount,
+      description: description ?? this.description,
+      expenseDate: expenseDate ?? this.expenseDate,
+      referenceDataId: referenceDataId ?? this.referenceDataId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<double>(amount.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String?>(description.value);
+    }
+    if (expenseDate.present) {
+      map['expense_date'] = Variable<DateTime>(expenseDate.value);
+    }
+    if (referenceDataId.present) {
+      map['reference_data_id'] = Variable<String>(referenceDataId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseTableCompanion(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('amount: $amount, ')
+          ..write('description: $description, ')
+          ..write('expenseDate: $expenseDate, ')
+          ..write('referenceDataId: $referenceDataId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExpenseTableTable extends ExpenseTable
+    with TableInfo<$ExpenseTableTable, ExpenseTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpenseTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  final VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime?> dateCreated =
+      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime?> dateUpdated =
+      GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
+      'amount', aliasedName, false,
+      type: const RealType(), requiredDuringInsert: true);
+  final VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String?> description = GeneratedColumn<String?>(
+      'description', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
+  final VerificationMeta _expenseDateMeta =
+      const VerificationMeta('expenseDate');
+  @override
+  late final GeneratedColumn<DateTime?> expenseDate =
+      GeneratedColumn<DateTime?>('expense_date', aliasedName, false,
+          type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _referenceDataIdMeta =
+      const VerificationMeta('referenceDataId');
+  @override
+  late final GeneratedColumn<String?> referenceDataId =
+      GeneratedColumn<String?>('reference_data_id', aliasedName, false,
+          type: const StringType(),
+          requiredDuringInsert: true,
+          defaultConstraints: 'REFERENCES reference_data_table (id)');
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        dateCreated,
+        dateUpdated,
+        amount,
+        description,
+        expenseDate,
+        referenceDataId
+      ];
+  @override
+  String get aliasedName => _alias ?? 'expense_table';
+  @override
+  String get actualTableName => 'expense_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<ExpenseTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('expense_date')) {
+      context.handle(
+          _expenseDateMeta,
+          expenseDate.isAcceptableOrUnknown(
+              data['expense_date']!, _expenseDateMeta));
+    } else if (isInserting) {
+      context.missing(_expenseDateMeta);
+    }
+    if (data.containsKey('reference_data_id')) {
+      context.handle(
+          _referenceDataIdMeta,
+          referenceDataId.isAcceptableOrUnknown(
+              data['reference_data_id']!, _referenceDataIdMeta));
+    } else if (isInserting) {
+      context.missing(_referenceDataIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExpenseTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return ExpenseTableData.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $ExpenseTableTable createAlias(String alias) {
+    return $ExpenseTableTable(attachedDatabase, alias);
+  }
+}
+
+class MstrdtExpenseReference extends DataClass
+    implements Insertable<MstrdtExpenseReference> {
+  final String id;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final double suggestedAmount;
+  final String? description;
+  final String referenceId;
+  MstrdtExpenseReference(
+      {required this.id,
+      required this.dateCreated,
+      required this.dateUpdated,
+      required this.suggestedAmount,
+      this.description,
+      required this.referenceId});
+  factory MstrdtExpenseReference.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return MstrdtExpenseReference(
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      dateCreated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
+      dateUpdated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
+      suggestedAmount: const RealType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}suggested_amount'])!,
+      description: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}description']),
+      referenceId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}reference_id'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['suggested_amount'] = Variable<double>(suggestedAmount);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String?>(description);
+    }
+    map['reference_id'] = Variable<String>(referenceId);
+    return map;
+  }
+
+  ExpenseReferenceTableCompanion toCompanion(bool nullToAbsent) {
+    return ExpenseReferenceTableCompanion(
+      id: Value(id),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      suggestedAmount: Value(suggestedAmount),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      referenceId: Value(referenceId),
+    );
+  }
+
+  factory MstrdtExpenseReference.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MstrdtExpenseReference(
+      id: serializer.fromJson<String>(json['id']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      suggestedAmount: serializer.fromJson<double>(json['suggestedAmount']),
+      description: serializer.fromJson<String?>(json['description']),
+      referenceId: serializer.fromJson<String>(json['referenceId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'suggestedAmount': serializer.toJson<double>(suggestedAmount),
+      'description': serializer.toJson<String?>(description),
+      'referenceId': serializer.toJson<String>(referenceId),
+    };
+  }
+
+  MstrdtExpenseReference copyWith(
+          {String? id,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          double? suggestedAmount,
+          String? description,
+          String? referenceId}) =>
+      MstrdtExpenseReference(
+        id: id ?? this.id,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        suggestedAmount: suggestedAmount ?? this.suggestedAmount,
+        description: description ?? this.description,
+        referenceId: referenceId ?? this.referenceId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('MstrdtExpenseReference(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('suggestedAmount: $suggestedAmount, ')
+          ..write('description: $description, ')
+          ..write('referenceId: $referenceId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, dateCreated, dateUpdated, suggestedAmount, description, referenceId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MstrdtExpenseReference &&
+          other.id == this.id &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.suggestedAmount == this.suggestedAmount &&
+          other.description == this.description &&
+          other.referenceId == this.referenceId);
+}
+
+class ExpenseReferenceTableCompanion
+    extends UpdateCompanion<MstrdtExpenseReference> {
+  final Value<String> id;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<double> suggestedAmount;
+  final Value<String?> description;
+  final Value<String> referenceId;
+  const ExpenseReferenceTableCompanion({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.suggestedAmount = const Value.absent(),
+    this.description = const Value.absent(),
+    this.referenceId = const Value.absent(),
+  });
+  ExpenseReferenceTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.suggestedAmount = const Value.absent(),
+    this.description = const Value.absent(),
+    required String referenceId,
+  }) : referenceId = Value(referenceId);
+  static Insertable<MstrdtExpenseReference> custom({
+    Expression<String>? id,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<double>? suggestedAmount,
+    Expression<String?>? description,
+    Expression<String>? referenceId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (suggestedAmount != null) 'suggested_amount': suggestedAmount,
+      if (description != null) 'description': description,
+      if (referenceId != null) 'reference_id': referenceId,
+    });
+  }
+
+  ExpenseReferenceTableCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<double>? suggestedAmount,
+      Value<String?>? description,
+      Value<String>? referenceId}) {
+    return ExpenseReferenceTableCompanion(
+      id: id ?? this.id,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      suggestedAmount: suggestedAmount ?? this.suggestedAmount,
+      description: description ?? this.description,
+      referenceId: referenceId ?? this.referenceId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (suggestedAmount.present) {
+      map['suggested_amount'] = Variable<double>(suggestedAmount.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String?>(description.value);
+    }
+    if (referenceId.present) {
+      map['reference_id'] = Variable<String>(referenceId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseReferenceTableCompanion(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('suggestedAmount: $suggestedAmount, ')
+          ..write('description: $description, ')
+          ..write('referenceId: $referenceId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExpenseReferenceTableTable extends ExpenseReferenceTable
+    with TableInfo<$ExpenseReferenceTableTable, MstrdtExpenseReference> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpenseReferenceTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  final VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime?> dateCreated =
+      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime?> dateUpdated =
+      GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _suggestedAmountMeta =
+      const VerificationMeta('suggestedAmount');
+  @override
+  late final GeneratedColumn<double?> suggestedAmount =
+      GeneratedColumn<double?>('suggested_amount', aliasedName, false,
+          type: const RealType(),
+          requiredDuringInsert: false,
+          defaultValue: const Constant(.0));
+  final VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String?> description = GeneratedColumn<String?>(
+      'description', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
+  final VerificationMeta _referenceIdMeta =
+      const VerificationMeta('referenceId');
+  @override
+  late final GeneratedColumn<String?> referenceId = GeneratedColumn<String?>(
+      'reference_id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      defaultConstraints: 'REFERENCES reference_table (id)');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, dateCreated, dateUpdated, suggestedAmount, description, referenceId];
+  @override
+  String get aliasedName => _alias ?? 'expense_reference_table';
+  @override
+  String get actualTableName => 'expense_reference_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<MstrdtExpenseReference> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    }
+    if (data.containsKey('suggested_amount')) {
+      context.handle(
+          _suggestedAmountMeta,
+          suggestedAmount.isAcceptableOrUnknown(
+              data['suggested_amount']!, _suggestedAmountMeta));
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('reference_id')) {
+      context.handle(
+          _referenceIdMeta,
+          referenceId.isAcceptableOrUnknown(
+              data['reference_id']!, _referenceIdMeta));
+    } else if (isInserting) {
+      context.missing(_referenceIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MstrdtExpenseReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return MstrdtExpenseReference.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $ExpenseReferenceTableTable createAlias(String alias) {
+    return $ExpenseReferenceTableTable(attachedDatabase, alias);
+  }
+}
+
+class NtfctnSavingReminder extends DataClass
+    implements Insertable<NtfctnSavingReminder> {
+  final String title;
+  final String description;
+  final bool isActive;
+  final DateTime activeStartDate;
+  final String notificationType;
+  final String id;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final double amount;
+  final String recurringType;
+  NtfctnSavingReminder(
+      {required this.title,
+      required this.description,
+      required this.isActive,
+      required this.activeStartDate,
+      required this.notificationType,
+      required this.id,
+      required this.dateCreated,
+      required this.dateUpdated,
+      required this.amount,
+      required this.recurringType});
+  factory NtfctnSavingReminder.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
+    final effectivePrefix = prefix ?? '';
+    return NtfctnSavingReminder(
+      title: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}title'])!,
+      description: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}description'])!,
+      isActive: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_active'])!,
+      activeStartDate: const DateTimeType().mapFromDatabaseResponse(
+          data['${effectivePrefix}active_start_date'])!,
+      notificationType: const StringType().mapFromDatabaseResponse(
+          data['${effectivePrefix}notification_type'])!,
+      id: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
+      dateCreated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_created'])!,
+      dateUpdated: const DateTimeType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
+      amount: const RealType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
+      recurringType: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}recurring_type'])!,
+    );
+  }
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['title'] = Variable<String>(title);
+    map['description'] = Variable<String>(description);
+    map['is_active'] = Variable<bool>(isActive);
+    map['active_start_date'] = Variable<DateTime>(activeStartDate);
+    map['notification_type'] = Variable<String>(notificationType);
+    map['id'] = Variable<String>(id);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['amount'] = Variable<double>(amount);
+    map['recurring_type'] = Variable<String>(recurringType);
+    return map;
+  }
+
+  SavingReminderTableCompanion toCompanion(bool nullToAbsent) {
+    return SavingReminderTableCompanion(
+      title: Value(title),
+      description: Value(description),
+      isActive: Value(isActive),
+      activeStartDate: Value(activeStartDate),
+      notificationType: Value(notificationType),
+      id: Value(id),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      amount: Value(amount),
+      recurringType: Value(recurringType),
+    );
+  }
+
+  factory NtfctnSavingReminder.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NtfctnSavingReminder(
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String>(json['description']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      activeStartDate: serializer.fromJson<DateTime>(json['activeStartDate']),
+      notificationType: serializer.fromJson<String>(json['notificationType']),
+      id: serializer.fromJson<String>(json['id']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      amount: serializer.fromJson<double>(json['amount']),
+      recurringType: serializer.fromJson<String>(json['recurringType']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String>(description),
+      'isActive': serializer.toJson<bool>(isActive),
+      'activeStartDate': serializer.toJson<DateTime>(activeStartDate),
+      'notificationType': serializer.toJson<String>(notificationType),
+      'id': serializer.toJson<String>(id),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'amount': serializer.toJson<double>(amount),
+      'recurringType': serializer.toJson<String>(recurringType),
+    };
+  }
+
+  NtfctnSavingReminder copyWith(
+          {String? title,
+          String? description,
+          bool? isActive,
+          DateTime? activeStartDate,
+          String? notificationType,
+          String? id,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          double? amount,
+          String? recurringType}) =>
+      NtfctnSavingReminder(
+        title: title ?? this.title,
+        description: description ?? this.description,
+        isActive: isActive ?? this.isActive,
+        activeStartDate: activeStartDate ?? this.activeStartDate,
+        notificationType: notificationType ?? this.notificationType,
+        id: id ?? this.id,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        amount: amount ?? this.amount,
+        recurringType: recurringType ?? this.recurringType,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('NtfctnSavingReminder(')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('isActive: $isActive, ')
+          ..write('activeStartDate: $activeStartDate, ')
+          ..write('notificationType: $notificationType, ')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('amount: $amount, ')
+          ..write('recurringType: $recurringType')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(title, description, isActive, activeStartDate,
+      notificationType, id, dateCreated, dateUpdated, amount, recurringType);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NtfctnSavingReminder &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.isActive == this.isActive &&
+          other.activeStartDate == this.activeStartDate &&
+          other.notificationType == this.notificationType &&
+          other.id == this.id &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.amount == this.amount &&
+          other.recurringType == this.recurringType);
+}
+
+class SavingReminderTableCompanion
+    extends UpdateCompanion<NtfctnSavingReminder> {
+  final Value<String> title;
+  final Value<String> description;
+  final Value<bool> isActive;
+  final Value<DateTime> activeStartDate;
+  final Value<String> notificationType;
+  final Value<String> id;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<double> amount;
+  final Value<String> recurringType;
+  const SavingReminderTableCompanion({
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.activeStartDate = const Value.absent(),
+    this.notificationType = const Value.absent(),
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.recurringType = const Value.absent(),
+  });
+  SavingReminderTableCompanion.insert({
+    required String title,
+    required String description,
+    this.isActive = const Value.absent(),
+    required DateTime activeStartDate,
+    required String notificationType,
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    required double amount,
+    required String recurringType,
+  })  : title = Value(title),
+        description = Value(description),
+        activeStartDate = Value(activeStartDate),
+        notificationType = Value(notificationType),
+        amount = Value(amount),
+        recurringType = Value(recurringType);
+  static Insertable<NtfctnSavingReminder> custom({
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<bool>? isActive,
+    Expression<DateTime>? activeStartDate,
+    Expression<String>? notificationType,
+    Expression<String>? id,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<double>? amount,
+    Expression<String>? recurringType,
+  }) {
+    return RawValuesInsertable({
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (isActive != null) 'is_active': isActive,
+      if (activeStartDate != null) 'active_start_date': activeStartDate,
+      if (notificationType != null) 'notification_type': notificationType,
+      if (id != null) 'id': id,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (amount != null) 'amount': amount,
+      if (recurringType != null) 'recurring_type': recurringType,
+    });
+  }
+
+  SavingReminderTableCompanion copyWith(
+      {Value<String>? title,
+      Value<String>? description,
+      Value<bool>? isActive,
+      Value<DateTime>? activeStartDate,
+      Value<String>? notificationType,
+      Value<String>? id,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<double>? amount,
+      Value<String>? recurringType}) {
+    return SavingReminderTableCompanion(
+      title: title ?? this.title,
+      description: description ?? this.description,
+      isActive: isActive ?? this.isActive,
+      activeStartDate: activeStartDate ?? this.activeStartDate,
+      notificationType: notificationType ?? this.notificationType,
+      id: id ?? this.id,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      amount: amount ?? this.amount,
+      recurringType: recurringType ?? this.recurringType,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (activeStartDate.present) {
+      map['active_start_date'] = Variable<DateTime>(activeStartDate.value);
+    }
+    if (notificationType.present) {
+      map['notification_type'] = Variable<String>(notificationType.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<double>(amount.value);
+    }
+    if (recurringType.present) {
+      map['recurring_type'] = Variable<String>(recurringType.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavingReminderTableCompanion(')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('isActive: $isActive, ')
+          ..write('activeStartDate: $activeStartDate, ')
+          ..write('notificationType: $notificationType, ')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('amount: $amount, ')
+          ..write('recurringType: $recurringType')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SavingReminderTableTable extends SavingReminderTable
+    with TableInfo<$SavingReminderTableTable, NtfctnSavingReminder> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavingReminderTableTable(this.attachedDatabase, [this._alias]);
+  final VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String?> title = GeneratedColumn<String?>(
+      'title', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String?> description = GeneratedColumn<String?>(
+      'description', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _isActiveMeta = const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool?> isActive = GeneratedColumn<bool?>(
+      'is_active', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_active IN (0, 1))',
+      defaultValue: const Constant(false));
+  final VerificationMeta _activeStartDateMeta =
+      const VerificationMeta('activeStartDate');
+  @override
+  late final GeneratedColumn<DateTime?> activeStartDate =
+      GeneratedColumn<DateTime?>('active_start_date', aliasedName, false,
+          type: const IntType(), requiredDuringInsert: true);
+  final VerificationMeta _notificationTypeMeta =
+      const VerificationMeta('notificationType');
+  @override
+  late final GeneratedColumn<String?> notificationType =
+      GeneratedColumn<String?>('notification_type', aliasedName, false,
+          type: const StringType(), requiredDuringInsert: true);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+      'id', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  final VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime?> dateCreated =
+      GeneratedColumn<DateTime?>('date_created', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime?> dateUpdated =
+      GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
+          type: const IntType(),
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  final VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
+      'amount', aliasedName, false,
+      type: const RealType(), requiredDuringInsert: true);
+  final VerificationMeta _recurringTypeMeta =
+      const VerificationMeta('recurringType');
+  @override
+  late final GeneratedColumn<String?> recurringType = GeneratedColumn<String?>(
+      'recurring_type', aliasedName, false,
+      type: const StringType(), requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        title,
+        description,
+        isActive,
+        activeStartDate,
+        notificationType,
+        id,
+        dateCreated,
+        dateUpdated,
+        amount,
+        recurringType
+      ];
+  @override
+  String get aliasedName => _alias ?? 'saving_reminder_table';
+  @override
+  String get actualTableName => 'saving_reminder_table';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<NtfctnSavingReminder> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('active_start_date')) {
+      context.handle(
+          _activeStartDateMeta,
+          activeStartDate.isAcceptableOrUnknown(
+              data['active_start_date']!, _activeStartDateMeta));
+    } else if (isInserting) {
+      context.missing(_activeStartDateMeta);
+    }
+    if (data.containsKey('notification_type')) {
+      context.handle(
+          _notificationTypeMeta,
+          notificationType.isAcceptableOrUnknown(
+              data['notification_type']!, _notificationTypeMeta));
+    } else if (isInserting) {
+      context.missing(_notificationTypeMeta);
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('recurring_type')) {
+      context.handle(
+          _recurringTypeMeta,
+          recurringType.isAcceptableOrUnknown(
+              data['recurring_type']!, _recurringTypeMeta));
+    } else if (isInserting) {
+      context.missing(_recurringTypeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NtfctnSavingReminder map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return NtfctnSavingReminder.fromData(data,
+        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+  }
+
+  @override
+  $SavingReminderTableTable createAlias(String alias) {
+    return $SavingReminderTableTable(attachedDatabase, alias);
+  }
+}
+
+class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   final String id;
   final DateTime dateCreated;
   final DateTime dateUpdated;
@@ -282,7 +2703,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
   final bool isSaveMonthly;
   final double currentAmount;
   final String userId;
-  CmnSaving(
+  SvngSaving(
       {required this.id,
       required this.dateCreated,
       required this.dateUpdated,
@@ -299,9 +2720,9 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       required this.isSaveMonthly,
       required this.currentAmount,
       required this.userId});
-  factory CmnSaving.fromData(Map<String, dynamic> data, {String? prefix}) {
+  factory SvngSaving.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
-    return CmnSaving(
+    return SvngSaving(
       id: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       dateCreated: const DateTimeType()
@@ -387,10 +2808,10 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
     );
   }
 
-  factory CmnSaving.fromJson(Map<String, dynamic> json,
+  factory SvngSaving.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CmnSaving(
+    return SvngSaving(
       id: serializer.fromJson<String>(json['id']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
@@ -432,7 +2853,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
     };
   }
 
-  CmnSaving copyWith(
+  SvngSaving copyWith(
           {String? id,
           DateTime? dateCreated,
           DateTime? dateUpdated,
@@ -449,7 +2870,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
           bool? isSaveMonthly,
           double? currentAmount,
           String? userId}) =>
-      CmnSaving(
+      SvngSaving(
         id: id ?? this.id,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
@@ -469,7 +2890,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
       );
   @override
   String toString() {
-    return (StringBuffer('CmnSaving(')
+    return (StringBuffer('SvngSaving(')
           ..write('id: $id, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
@@ -511,7 +2932,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CmnSaving &&
+      (other is SvngSaving &&
           other.id == this.id &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
@@ -530,7 +2951,7 @@ class CmnSaving extends DataClass implements Insertable<CmnSaving> {
           other.userId == this.userId);
 }
 
-class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
+class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<String> id;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
@@ -584,7 +3005,7 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
     required String userId,
   })  : name = Value(name),
         userId = Value(userId);
-  static Insertable<CmnSaving> custom({
+  static Insertable<SvngSaving> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
@@ -738,7 +3159,7 @@ class SavingTableCompanion extends UpdateCompanion<CmnSaving> {
 }
 
 class $SavingTableTable extends SavingTable
-    with TableInfo<$SavingTableTable, CmnSaving> {
+    with TableInfo<$SavingTableTable, SvngSaving> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -888,7 +3309,7 @@ class $SavingTableTable extends SavingTable
   @override
   String get actualTableName => 'saving_table';
   @override
-  VerificationContext validateIntegrity(Insertable<CmnSaving> instance,
+  VerificationContext validateIntegrity(Insertable<SvngSaving> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -987,8 +3408,8 @@ class $SavingTableTable extends SavingTable
         {name},
       ];
   @override
-  CmnSaving map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CmnSaving.fromData(data,
+  SvngSaving map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return SvngSaving.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -998,7 +3419,8 @@ class $SavingTableTable extends SavingTable
   }
 }
 
-class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
+class TrnsctnTransaction extends DataClass
+    implements Insertable<TrnsctnTransaction> {
   final String id;
   final DateTime dateCreated;
   final DateTime dateUpdated;
@@ -1006,7 +3428,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
   final String description;
   final double amount;
   final String savingId;
-  CmnTransaction(
+  TrnsctnTransaction(
       {required this.id,
       required this.dateCreated,
       required this.dateUpdated,
@@ -1014,9 +3436,10 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       required this.description,
       required this.amount,
       required this.savingId});
-  factory CmnTransaction.fromData(Map<String, dynamic> data, {String? prefix}) {
+  factory TrnsctnTransaction.fromData(Map<String, dynamic> data,
+      {String? prefix}) {
     final effectivePrefix = prefix ?? '';
-    return CmnTransaction(
+    return TrnsctnTransaction(
       id: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
       dateCreated: const DateTimeType()
@@ -1058,10 +3481,10 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
     );
   }
 
-  factory CmnTransaction.fromJson(Map<String, dynamic> json,
+  factory TrnsctnTransaction.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CmnTransaction(
+    return TrnsctnTransaction(
       id: serializer.fromJson<String>(json['id']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
@@ -1085,7 +3508,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
     };
   }
 
-  CmnTransaction copyWith(
+  TrnsctnTransaction copyWith(
           {String? id,
           DateTime? dateCreated,
           DateTime? dateUpdated,
@@ -1093,7 +3516,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
           String? description,
           double? amount,
           String? savingId}) =>
-      CmnTransaction(
+      TrnsctnTransaction(
         id: id ?? this.id,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
@@ -1104,7 +3527,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
       );
   @override
   String toString() {
-    return (StringBuffer('CmnTransaction(')
+    return (StringBuffer('TrnsctnTransaction(')
           ..write('id: $id, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
@@ -1122,7 +3545,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CmnTransaction &&
+      (other is TrnsctnTransaction &&
           other.id == this.id &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
@@ -1132,7 +3555,7 @@ class CmnTransaction extends DataClass implements Insertable<CmnTransaction> {
           other.savingId == this.savingId);
 }
 
-class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
+class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   final Value<String> id;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
@@ -1160,7 +3583,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
   })  : type = Value(type),
         amount = Value(amount),
         savingId = Value(savingId);
-  static Insertable<CmnTransaction> custom({
+  static Insertable<TrnsctnTransaction> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
@@ -1242,7 +3665,7 @@ class TransactionTableCompanion extends UpdateCompanion<CmnTransaction> {
 }
 
 class $TransactionTableTable extends TransactionTable
-    with TableInfo<$TransactionTableTable, CmnTransaction> {
+    with TableInfo<$TransactionTableTable, TrnsctnTransaction> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1305,7 +3728,7 @@ class $TransactionTableTable extends TransactionTable
   @override
   String get actualTableName => 'transaction_table';
   @override
-  VerificationContext validateIntegrity(Insertable<CmnTransaction> instance,
+  VerificationContext validateIntegrity(Insertable<TrnsctnTransaction> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1354,8 +3777,8 @@ class $TransactionTableTable extends TransactionTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  CmnTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CmnTransaction.fromData(data,
+  TrnsctnTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    return TrnsctnTransaction.fromData(data,
         prefix: tablePrefix != null ? '$tablePrefix.' : null);
   }
 
@@ -1368,12 +3791,31 @@ class $TransactionTableTable extends TransactionTable
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   late final $UserTableTable userTable = $UserTableTable(this);
+  late final $GroupReferenceTableTable groupReferenceTable =
+      $GroupReferenceTableTable(this);
+  late final $ReferenceTableTable referenceTable = $ReferenceTableTable(this);
+  late final $ReferenceDataTableTable referenceDataTable =
+      $ReferenceDataTableTable(this);
+  late final $ExpenseTableTable expenseTable = $ExpenseTableTable(this);
+  late final $ExpenseReferenceTableTable expenseReferenceTable =
+      $ExpenseReferenceTableTable(this);
+  late final $SavingReminderTableTable savingReminderTable =
+      $SavingReminderTableTable(this);
   late final $SavingTableTable savingTable = $SavingTableTable(this);
   late final $TransactionTableTable transactionTable =
       $TransactionTableTable(this);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [userTable, savingTable, transactionTable];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        userTable,
+        groupReferenceTable,
+        referenceTable,
+        referenceDataTable,
+        expenseTable,
+        expenseReferenceTable,
+        savingReminderTable,
+        savingTable,
+        transactionTable
+      ];
 }

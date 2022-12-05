@@ -5,7 +5,7 @@ class SavingRepository extends ISavingRepository {
   SavingRepository() : super(AppDatabase());
 
   @override
-  Stream<List<CmnSaving>> watchBasedOnUserId(final String userId) {
+  Stream<List<SvngSaving>> watchBasedOnUserId(final String userId) {
     return (db.select(db.savingTable)
           ..where((tbl) => tbl.userId.equals(userId)))
         .watch();

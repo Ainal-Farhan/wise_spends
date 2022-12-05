@@ -3,10 +3,10 @@ import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/repository/i_crud_repository.dart';
 
 abstract class IUserRepository
-    extends ICrudRepository<$UserTableTable, UserTableCompanion, CmnUser> {
+    extends ICrudRepository<$UserTableTable, UserTableCompanion, CmmnUser> {
   IUserRepository(AppDatabase db) : super(db, db.userTable);
 
-  Stream<CmnUser?> findById(final String id);
+  Stream<CmmnUser?> findById(final String id);
 
-  SingleOrNullSelectable<CmnUser?> findByName(final String name);
+  SingleOrNullSelectable<CmmnUser?> findByName(final String name);
 }

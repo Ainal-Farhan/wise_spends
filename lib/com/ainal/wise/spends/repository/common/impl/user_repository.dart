@@ -6,13 +6,13 @@ class UserRepository extends IUserRepository {
   UserRepository() : super(AppDatabase());
 
   @override
-  Stream<CmnUser?> findById(String id) {
+  Stream<CmmnUser?> findById(String id) {
     return (db.select(db.userTable)..where((tbl) => tbl.id.equals(id)))
         .watchSingleOrNull();
   }
 
   @override
-  SingleOrNullSelectable<CmnUser?> findByName(final String name) {
+  SingleOrNullSelectable<CmmnUser?> findByName(final String name) {
     return db.select(db.userTable)..where((tbl) => tbl.name.equals(name));
   }
 }

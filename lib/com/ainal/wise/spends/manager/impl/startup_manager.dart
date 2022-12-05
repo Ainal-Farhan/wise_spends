@@ -12,7 +12,7 @@ class StartupManager extends IStartupManager {
   }
 
   final UserService _userService = UserService();
-  CmnUser? _currentUser;
+  CmmnUser? _currentUser;
 
   @override
   Future onRunApp(final String name) async {
@@ -30,10 +30,10 @@ class StartupManager extends IStartupManager {
     }
   }
 
-  Future<CmnUser> _addUser(final String name) async {
+  Future<CmmnUser> _addUser(final String name) async {
     return await _userService.add(UserTableCompanion.insert(name: name));
   }
 
   @override
-  CmnUser get currentUser => CmnUser.fromJson(_currentUser!.toJson());
+  CmmnUser get currentUser => CmmnUser.fromJson(_currentUser!.toJson());
 }

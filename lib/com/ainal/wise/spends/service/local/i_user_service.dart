@@ -5,7 +5,7 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/i_local_service.
 abstract class IUserService extends ILocalService {
   IUserService(ICrudRepository repository) : super(repository);
 
-  Stream<CmnUser?> findById(final String id);
+  Stream<CmmnUser?> findById(final String id);
 
-  Future<CmnUser?> findByName(final String name);
+  Future<CmmnUser?> findByName(final String name);
 }
