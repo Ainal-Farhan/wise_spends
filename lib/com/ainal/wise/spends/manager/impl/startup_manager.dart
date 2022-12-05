@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/service/local/impl/user_service.dart';
+import 'package:wise_spends/com/ainal/wise/spends/service/local/common/impl/user_service.dart';
 
 class StartupManager extends IStartupManager {
   StartupManager._privateConstructor();
