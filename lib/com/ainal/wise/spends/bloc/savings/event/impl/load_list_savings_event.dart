@@ -10,6 +10,6 @@ class LoadListSavingsEvent extends SavingsEvent {
       {SavingsState? currentState, SavingsBloc? bloc}) async* {
     yield const LoadingSavingsState(0);
     yield InLoadListSavingsState(
-        0, await savingsManager.loadSavingWithManagersAsync());
+        0, await savingsManager.loadSavingWithTransactionsAsync());
   }
 }

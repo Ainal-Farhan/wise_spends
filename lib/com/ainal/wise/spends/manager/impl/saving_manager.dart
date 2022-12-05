@@ -10,7 +10,7 @@ class SavingManager extends ISavingManager {
   final IStartupManager _startupManager = StartupManager();
 
   @override
-  Future<List<SavingWithTransactions>> loadSavingWithManagersAsync() async {
+  Future<List<SavingWithTransactions>> loadSavingWithTransactionsAsync() async {
     Stream<List<SavingWithTransactions>> streamSavingWithTransactionsList =
         _savingService
             .watchAllSavingWithTransactions(_startupManager.currentUser.id);
