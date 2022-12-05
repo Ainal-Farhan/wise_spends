@@ -3428,6 +3428,8 @@ class TrnsctnTransaction extends DataClass
   final String description;
   final double amount;
   final String savingId;
+  final bool isExpense;
+  final String? expenseId;
   TrnsctnTransaction(
       {required this.id,
       required this.dateCreated,
@@ -3435,7 +3437,9 @@ class TrnsctnTransaction extends DataClass
       required this.type,
       required this.description,
       required this.amount,
-      required this.savingId});
+      required this.savingId,
+      required this.isExpense,
+      this.expenseId});
   factory TrnsctnTransaction.fromData(Map<String, dynamic> data,
       {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -3454,6 +3458,10 @@ class TrnsctnTransaction extends DataClass
           .mapFromDatabaseResponse(data['${effectivePrefix}amount'])!,
       savingId: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}saving_id'])!,
+      isExpense: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_expense'])!,
+      expenseId: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}expense_id']),
     );
   }
   @override
@@ -3466,6 +3474,10 @@ class TrnsctnTransaction extends DataClass
     map['description'] = Variable<String>(description);
     map['amount'] = Variable<double>(amount);
     map['saving_id'] = Variable<String>(savingId);
+    map['is_expense'] = Variable<bool>(isExpense);
+    if (!nullToAbsent || expenseId != null) {
+      map['expense_id'] = Variable<String?>(expenseId);
+    }
     return map;
   }
 
@@ -3478,6 +3490,10 @@ class TrnsctnTransaction extends DataClass
       description: Value(description),
       amount: Value(amount),
       savingId: Value(savingId),
+      isExpense: Value(isExpense),
+      expenseId: expenseId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expenseId),
     );
   }
 
@@ -3492,6 +3508,8 @@ class TrnsctnTransaction extends DataClass
       description: serializer.fromJson<String>(json['description']),
       amount: serializer.fromJson<double>(json['amount']),
       savingId: serializer.fromJson<String>(json['savingId']),
+      isExpense: serializer.fromJson<bool>(json['isExpense']),
+      expenseId: serializer.fromJson<String?>(json['expenseId']),
     );
   }
   @override
@@ -3505,6 +3523,8 @@ class TrnsctnTransaction extends DataClass
       'description': serializer.toJson<String>(description),
       'amount': serializer.toJson<double>(amount),
       'savingId': serializer.toJson<String>(savingId),
+      'isExpense': serializer.toJson<bool>(isExpense),
+      'expenseId': serializer.toJson<String?>(expenseId),
     };
   }
 
@@ -3515,7 +3535,9 @@ class TrnsctnTransaction extends DataClass
           String? type,
           String? description,
           double? amount,
-          String? savingId}) =>
+          String? savingId,
+          bool? isExpense,
+          String? expenseId}) =>
       TrnsctnTransaction(
         id: id ?? this.id,
         dateCreated: dateCreated ?? this.dateCreated,
@@ -3524,6 +3546,8 @@ class TrnsctnTransaction extends DataClass
         description: description ?? this.description,
         amount: amount ?? this.amount,
         savingId: savingId ?? this.savingId,
+        isExpense: isExpense ?? this.isExpense,
+        expenseId: expenseId ?? this.expenseId,
       );
   @override
   String toString() {
@@ -3534,14 +3558,16 @@ class TrnsctnTransaction extends DataClass
           ..write('type: $type, ')
           ..write('description: $description, ')
           ..write('amount: $amount, ')
-          ..write('savingId: $savingId')
+          ..write('savingId: $savingId, ')
+          ..write('isExpense: $isExpense, ')
+          ..write('expenseId: $expenseId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, dateCreated, dateUpdated, type, description, amount, savingId);
+  int get hashCode => Object.hash(id, dateCreated, dateUpdated, type,
+      description, amount, savingId, isExpense, expenseId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3552,7 +3578,9 @@ class TrnsctnTransaction extends DataClass
           other.type == this.type &&
           other.description == this.description &&
           other.amount == this.amount &&
-          other.savingId == this.savingId);
+          other.savingId == this.savingId &&
+          other.isExpense == this.isExpense &&
+          other.expenseId == this.expenseId);
 }
 
 class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
@@ -3563,6 +3591,8 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   final Value<String> description;
   final Value<double> amount;
   final Value<String> savingId;
+  final Value<bool> isExpense;
+  final Value<String?> expenseId;
   const TransactionTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -3571,6 +3601,8 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.description = const Value.absent(),
     this.amount = const Value.absent(),
     this.savingId = const Value.absent(),
+    this.isExpense = const Value.absent(),
+    this.expenseId = const Value.absent(),
   });
   TransactionTableCompanion.insert({
     this.id = const Value.absent(),
@@ -3580,6 +3612,8 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.description = const Value.absent(),
     required double amount,
     required String savingId,
+    this.isExpense = const Value.absent(),
+    this.expenseId = const Value.absent(),
   })  : type = Value(type),
         amount = Value(amount),
         savingId = Value(savingId);
@@ -3591,6 +3625,8 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     Expression<String>? description,
     Expression<double>? amount,
     Expression<String>? savingId,
+    Expression<bool>? isExpense,
+    Expression<String?>? expenseId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -3600,6 +3636,8 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       if (description != null) 'description': description,
       if (amount != null) 'amount': amount,
       if (savingId != null) 'saving_id': savingId,
+      if (isExpense != null) 'is_expense': isExpense,
+      if (expenseId != null) 'expense_id': expenseId,
     });
   }
 
@@ -3610,7 +3648,9 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       Value<String>? type,
       Value<String>? description,
       Value<double>? amount,
-      Value<String>? savingId}) {
+      Value<String>? savingId,
+      Value<bool>? isExpense,
+      Value<String?>? expenseId}) {
     return TransactionTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -3619,6 +3659,8 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       description: description ?? this.description,
       amount: amount ?? this.amount,
       savingId: savingId ?? this.savingId,
+      isExpense: isExpense ?? this.isExpense,
+      expenseId: expenseId ?? this.expenseId,
     );
   }
 
@@ -3646,6 +3688,12 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     if (savingId.present) {
       map['saving_id'] = Variable<String>(savingId.value);
     }
+    if (isExpense.present) {
+      map['is_expense'] = Variable<bool>(isExpense.value);
+    }
+    if (expenseId.present) {
+      map['expense_id'] = Variable<String?>(expenseId.value);
+    }
     return map;
   }
 
@@ -3658,7 +3706,9 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
           ..write('type: $type, ')
           ..write('description: $description, ')
           ..write('amount: $amount, ')
-          ..write('savingId: $savingId')
+          ..write('savingId: $savingId, ')
+          ..write('isExpense: $isExpense, ')
+          ..write('expenseId: $expenseId')
           ..write(')'))
         .toString();
   }
@@ -3720,9 +3770,33 @@ class $TransactionTableTable extends TransactionTable
       type: const StringType(),
       requiredDuringInsert: true,
       defaultConstraints: 'REFERENCES saving_table (id)');
+  final VerificationMeta _isExpenseMeta = const VerificationMeta('isExpense');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, type, description, amount, savingId];
+  late final GeneratedColumn<bool?> isExpense = GeneratedColumn<bool?>(
+      'is_expense', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'CHECK (is_expense IN (0, 1))',
+      defaultValue: const Constant(false));
+  final VerificationMeta _expenseIdMeta = const VerificationMeta('expenseId');
+  @override
+  late final GeneratedColumn<String?> expenseId = GeneratedColumn<String?>(
+      'expense_id', aliasedName, true,
+      type: const StringType(),
+      requiredDuringInsert: false,
+      defaultConstraints: 'REFERENCES expense_table (id)');
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        dateCreated,
+        dateUpdated,
+        type,
+        description,
+        amount,
+        savingId,
+        isExpense,
+        expenseId
+      ];
   @override
   String get aliasedName => _alias ?? 'transaction_table';
   @override
@@ -3770,6 +3844,14 @@ class $TransactionTableTable extends TransactionTable
           savingId.isAcceptableOrUnknown(data['saving_id']!, _savingIdMeta));
     } else if (isInserting) {
       context.missing(_savingIdMeta);
+    }
+    if (data.containsKey('is_expense')) {
+      context.handle(_isExpenseMeta,
+          isExpense.isAcceptableOrUnknown(data['is_expense']!, _isExpenseMeta));
+    }
+    if (data.containsKey('expense_id')) {
+      context.handle(_expenseIdMeta,
+          expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta));
     }
     return context;
   }
