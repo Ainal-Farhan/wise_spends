@@ -5,8 +5,7 @@ abstract class BaseEntityTable extends Table {
   TextColumn get id => text().clientDefault(() => UuidGenerator().v4())();
   DateTimeColumn get dateCreated =>
       dateTime().withDefault(currentDateAndTime)();
-  DateTimeColumn get dateUpdated =>
-      dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get dateUpdated => dateTime()();
 
   @override
   Set<Column> get primaryKey => {id};

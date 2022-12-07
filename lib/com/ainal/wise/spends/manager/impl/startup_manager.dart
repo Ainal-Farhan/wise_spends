@@ -31,7 +31,8 @@ class StartupManager extends IStartupManager {
   }
 
   Future<CmmnUser> _addUser(final String name) async {
-    return await _userService.add(UserTableCompanion.insert(name: name));
+    return await _userService.add(
+        UserTableCompanion.insert(name: name, dateUpdated: DateTime.now()));
   }
 
   @override

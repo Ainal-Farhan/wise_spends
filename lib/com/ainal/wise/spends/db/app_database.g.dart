@@ -118,9 +118,10 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
   UserTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     required String name,
-  }) : name = Value(name);
+  })  : dateUpdated = Value(dateUpdated),
+        name = Value(name);
   static Insertable<CmmnUser> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
@@ -204,9 +205,7 @@ class $UserTableTable extends UserTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
@@ -237,6 +236,8 @@ class $UserTableTable extends UserTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -393,10 +394,11 @@ class GroupReferenceTableCompanion
   GroupReferenceTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     required String label,
     required String value,
-  })  : label = Value(label),
+  })  : dateUpdated = Value(dateUpdated),
+        label = Value(label),
         value = Value(value);
   static Insertable<MstrdtGroupReference> custom({
     Expression<String>? id,
@@ -489,9 +491,7 @@ class $GroupReferenceTableTable extends GroupReferenceTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
   late final GeneratedColumn<String?> label = GeneratedColumn<String?>(
@@ -529,6 +529,8 @@ class $GroupReferenceTableTable extends GroupReferenceTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('label')) {
       context.handle(
@@ -728,13 +730,14 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
   ReferenceTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     required String label,
     required String value,
     this.isActive = const Value.absent(),
     required String belongTo,
     required String groupId,
-  })  : label = Value(label),
+  })  : dateUpdated = Value(dateUpdated),
+        label = Value(label),
         value = Value(value),
         belongTo = Value(belongTo),
         groupId = Value(groupId);
@@ -853,9 +856,7 @@ class $ReferenceTableTable extends ReferenceTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
   late final GeneratedColumn<String?> label = GeneratedColumn<String?>(
@@ -916,6 +917,8 @@ class $ReferenceTableTable extends ReferenceTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('label')) {
       context.handle(
@@ -1178,7 +1181,7 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
   ReferenceDataTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     required String label,
     required String groupLabel,
     required String value,
@@ -1186,7 +1189,8 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
     this.referenceId = const Value.absent(),
     this.isHasNext = const Value.absent(),
     this.nextReferenceDataId = const Value.absent(),
-  })  : label = Value(label),
+  })  : dateUpdated = Value(dateUpdated),
+        label = Value(label),
         groupLabel = Value(groupLabel),
         value = Value(value),
         groupValue = Value(groupValue);
@@ -1323,9 +1327,7 @@ class $ReferenceDataTableTable extends ReferenceDataTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
   late final GeneratedColumn<String?> label = GeneratedColumn<String?>(
@@ -1407,6 +1409,8 @@ class $ReferenceDataTableTable extends ReferenceDataTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('label')) {
       context.handle(
@@ -1631,12 +1635,13 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
   ExpenseTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     required double amount,
     this.description = const Value.absent(),
     required DateTime expenseDate,
     required String referenceDataId,
-  })  : amount = Value(amount),
+  })  : dateUpdated = Value(dateUpdated),
+        amount = Value(amount),
         expenseDate = Value(expenseDate),
         referenceDataId = Value(referenceDataId);
   static Insertable<ExpenseTableData> custom({
@@ -1746,9 +1751,7 @@ class $ExpenseTableTable extends ExpenseTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
@@ -1807,6 +1810,8 @@ class $ExpenseTableTable extends ExpenseTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('amount')) {
       context.handle(_amountMeta,
@@ -2000,11 +2005,12 @@ class ExpenseReferenceTableCompanion
   ExpenseReferenceTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     this.suggestedAmount = const Value.absent(),
     this.description = const Value.absent(),
     required String referenceId,
-  }) : referenceId = Value(referenceId);
+  })  : dateUpdated = Value(dateUpdated),
+        referenceId = Value(referenceId);
   static Insertable<MstrdtExpenseReference> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
@@ -2104,9 +2110,7 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _suggestedAmountMeta =
       const VerificationMeta('suggestedAmount');
   @override
@@ -2156,6 +2160,8 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('suggested_amount')) {
       context.handle(
@@ -2398,13 +2404,14 @@ class SavingReminderTableCompanion
     required String notificationType,
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     required double amount,
     required String recurringType,
   })  : title = Value(title),
         description = Value(description),
         activeStartDate = Value(activeStartDate),
         notificationType = Value(notificationType),
+        dateUpdated = Value(dateUpdated),
         amount = Value(amount),
         recurringType = Value(recurringType);
   static Insertable<NtfctnSavingReminder> custom({
@@ -2569,9 +2576,7 @@ class $SavingReminderTableTable extends SavingReminderTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<double?> amount = GeneratedColumn<double?>(
@@ -2654,6 +2659,8 @@ class $SavingReminderTableTable extends SavingReminderTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('amount')) {
       context.handle(_amountMeta,
@@ -2989,7 +2996,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   SavingTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     required String name,
     this.isPublic = const Value.absent(),
     this.isHasGoal = const Value.absent(),
@@ -3003,7 +3010,8 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.isSaveMonthly = const Value.absent(),
     this.currentAmount = const Value.absent(),
     required String userId,
-  })  : name = Value(name),
+  })  : dateUpdated = Value(dateUpdated),
+        name = Value(name),
         userId = Value(userId);
   static Insertable<SvngSaving> custom({
     Expression<String>? id,
@@ -3184,9 +3192,7 @@ class $SavingTableTable extends SavingTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
@@ -3327,6 +3333,8 @@ class $SavingTableTable extends SavingTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -3607,14 +3615,15 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   TransactionTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
+    required DateTime dateUpdated,
     required String type,
     this.description = const Value.absent(),
     required double amount,
     required String savingId,
     this.isExpense = const Value.absent(),
     this.expenseId = const Value.absent(),
-  })  : type = Value(type),
+  })  : dateUpdated = Value(dateUpdated),
+        type = Value(type),
         amount = Value(amount),
         savingId = Value(savingId);
   static Insertable<TrnsctnTransaction> custom({
@@ -3740,9 +3749,7 @@ class $TransactionTableTable extends TransactionTable
   @override
   late final GeneratedColumn<DateTime?> dateUpdated =
       GeneratedColumn<DateTime?>('date_updated', aliasedName, false,
-          type: const IntType(),
-          requiredDuringInsert: false,
-          defaultValue: currentDateAndTime);
+          type: const IntType(), requiredDuringInsert: true);
   final VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String?> type = GeneratedColumn<String?>(
@@ -3820,6 +3827,8 @@ class $TransactionTableTable extends TransactionTable
           _dateUpdatedMeta,
           dateUpdated.isAcceptableOrUnknown(
               data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
     }
     if (data.containsKey('type')) {
       context.handle(
