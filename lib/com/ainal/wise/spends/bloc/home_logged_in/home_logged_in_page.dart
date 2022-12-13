@@ -6,7 +6,7 @@ import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 class HomeLoggedInPage extends StatefulWidget {
   const HomeLoggedInPage({Key? key}) : super(key: key);
 
-  static const String routeName = router.Router.homeLoggedInPageRoute;
+  static const String routeName = router.homeLoggedInPageRoute;
 
   @override
   _HomeLoggedInPageState createState() => _HomeLoggedInPageState();
@@ -25,7 +25,7 @@ class _HomeLoggedInPageState extends State<HomeLoggedInPage> {
         ),
         body: HomeLoggedInScreen(homeLoggedInBloc: _homeLoggedInBloc),
         bottomNavigationBar: const LoggedInBottomNavigationBar(
-          pageRoute: router.Router.homeLoggedInPageRoute,
+          pageRoute: router.homeLoggedInPageRoute,
         ),
       ),
       onWillPop: () async => false,

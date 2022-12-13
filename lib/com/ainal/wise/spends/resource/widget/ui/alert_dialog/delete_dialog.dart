@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widget/ui/snack_bar/message.dart';
 
 void showDeleteDialog({
   required BuildContext context,
@@ -15,32 +16,32 @@ void showDeleteDialog({
           onPressed: () {
             Navigator.of(ctx).pop();
             onDelete();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Successfully delete the selected information'),
-              ),
-            );
+            showSnackBarMessage(
+                context, 'Successfully delete the selected information');
           },
           child: Container(
             color: Colors.red,
             padding: const EdgeInsets.all(14),
-            child: const Text("Yes"),
+            child: const Text(
+              "Yes",
+              style: TextStyle(color: Colors.black),
+            ),
           ),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(ctx).pop();
             if (onCancelled != null) onCancelled();
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Cancel to delete the selected information'),
-              ),
-            );
+            showSnackBarMessage(
+                context, 'Cancel to delete the selected information');
           },
           child: Container(
             color: Colors.green,
             padding: const EdgeInsets.all(14),
-            child: const Text("No"),
+            child: const Text(
+              "No",
+              style: TextStyle(color: Colors.black),
+            ),
           ),
         ),
       ],

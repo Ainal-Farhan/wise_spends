@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as route;
+import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 
 class LoggedInBottomNavigationBar extends StatelessWidget {
   static const Map<String, int> _indexBasedOnPageRoute = {
-    route.Router.homeLoggedInPageRoute: 0,
-    route.Router.savingsPageRoute: 1,
-    route.Router.transactionPageRoute: 2,
+    router.homeLoggedInPageRoute: 0,
+    router.savingsPageRoute: 1,
+    router.transactionPageRoute: 2,
   };
 
   const LoggedInBottomNavigationBar({

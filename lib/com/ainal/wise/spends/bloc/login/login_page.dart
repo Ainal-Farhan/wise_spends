@@ -6,7 +6,7 @@ import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 class LoginPage extends StatefulWidget {
   const LoginPage({key}) : super(key: key);
 
-  static const String routeName = router.Router.loginPageRoute;
+  static const String routeName = router.loginPageRoute;
 
   @override
   _LoginPageState createState() => _LoginPageState();

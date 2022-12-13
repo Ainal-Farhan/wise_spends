@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_screen.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widget/bottom_navigation_bar/logged_in_bottom_navigation_bar.dart';
-import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as route;
+import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 
 class TransactionPage extends StatefulWidget {
-  static const String routeName = route.Router.transactionPageRoute;
+  static const String routeName = router.transactionPageRoute;
 
   const TransactionPage({Key? key}) : super(key: key);
 
@@ -26,7 +26,7 @@ class _TransactionPageState extends State<TransactionPage> {
         ),
         body: TransactionScreen(transactionBloc: _transactionBloc),
         bottomNavigationBar: const LoggedInBottomNavigationBar(
-          pageRoute: route.Router.transactionPageRoute,
+          pageRoute: router.transactionPageRoute,
         ),
       ),
       onWillPop: () async => false,

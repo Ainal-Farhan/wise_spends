@@ -10,7 +10,7 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/state/transac
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as route;
+import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -72,8 +72,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: route.Router.homeLoggedInPageRoute,
-      onGenerateRoute: route.Router.generateRoute,
+      initialRoute: router.homeLoggedInPageRoute,
+      onGenerateRoute: router.generateRoute,
       debugShowCheckedModeBanner: false,
     );
   }

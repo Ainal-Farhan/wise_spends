@@ -3,9 +3,15 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_sa
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_list_savings_event.dart';
 
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/add_saving_form_vo.dart';
 
 class InLoadAddSavingFormState extends SavingsState {
-  const InLoadAddSavingFormState(int version) : super(version);
+  final AddSavingFormVO addSavingFormVO;
+
+  const InLoadAddSavingFormState({
+    required int version,
+    required this.addSavingFormVO,
+  }) : super(version);
 
   @override
   Widget build(BuildContext context, Function load) {
@@ -15,7 +21,10 @@ class InLoadAddSavingFormState extends SavingsState {
       children: <Widget>[
         Center(
           child: SizedBox(
-            child: SavingFormWidget(),
+            child: SavingFormWidget(
+              addSavingFormVO: addSavingFormVO,
+              eventLoader: load,
+            ),
             height: screenHeight * 0.65,
           ),
         ),
@@ -57,11 +66,13 @@ class InLoadAddSavingFormState extends SavingsState {
 
   @override
   SavingsState getNewVersion() {
-    return InLoadAddSavingFormState(version + 1);
+    return InLoadAddSavingFormState(
+        version: version + 1, addSavingFormVO: addSavingFormVO);
   }
 
   @override
   SavingsState getStateCopy() {
-    return InLoadAddSavingFormState(version);
+    return InLoadAddSavingFormState(
+        version: version, addSavingFormVO: addSavingFormVO);
   }
 }
