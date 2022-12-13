@@ -1,3 +1,4 @@
+import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart';
@@ -15,5 +16,18 @@ class SavingManager extends ISavingManager {
         _savingService
             .watchAllSavingWithTransactions(_startupManager.currentUser.id);
     return await streamSavingWithTransactionsList.first;
+  }
+
+  @override
+  Future<void> addNewSaving({
+    required String name,
+  }) async {
+    SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
+      dateUpdated: DateTime.now(),
+      name: name,
+      userId: _startupManager.currentUser.id,
+    );
+
+    return await _savingService.add(savingTableCompanion);
   }
 }

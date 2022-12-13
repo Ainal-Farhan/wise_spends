@@ -5,7 +5,7 @@ class LoadingSavingsState extends SavingsState {
   const LoadingSavingsState(final int version) : super(version);
 
   @override
-  Widget build(BuildContext context, VoidCallback load) {
+  Widget build(BuildContext context, Function load) {
     return Center(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,

@@ -20,22 +20,12 @@ class ErrorSavingsState extends SavingsState {
   }
 
   @override
-  Widget build(BuildContext context, VoidCallback load) {
+  Widget build(BuildContext context, Function load) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Text(errorMessage),
-          Padding(
-            padding: const EdgeInsets.only(top: 32.0),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-              ),
-              child: const Text('reload'),
-              onPressed: load,
-            ),
-          ),
         ],
       ),
     );

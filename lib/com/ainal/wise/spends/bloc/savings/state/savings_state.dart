@@ -13,7 +13,7 @@ abstract class SavingsState extends Equatable {
 
   SavingsState getNewVersion();
 
-  Widget build(BuildContext context, VoidCallback load);
+  Widget build(BuildContext context, Function load);
 
   @override
   List<Object> get props => [version];

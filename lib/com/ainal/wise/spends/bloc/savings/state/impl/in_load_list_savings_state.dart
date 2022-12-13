@@ -1,68 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/list_savings/list_savings_widget.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_add_savings_form_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 
 class InLoadListSavingsState extends SavingsState {
-  final List<SavingWithTransactions> _savingWithTransactionsList;
-
   const InLoadListSavingsState(int version, this._savingWithTransactionsList)
       : super(version);
 
-  @override
-  Widget build(BuildContext context, VoidCallback load) {
-    return ListView.builder(
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      itemCount: _savingWithTransactionsList.length,
-      itemBuilder: (BuildContext context, int index) {
-        return _makeCard(index);
-      },
-    );
-  }
-
-  Widget _makeCard(final int index) {
-    return Card(
-      elevation: 8.0,
-      margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-      child: Container(
-        decoration: const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
-        child: _makeListTile(_savingWithTransactionsList.elementAt(index)),
-      ),
-    );
-  }
-
-  Widget _makeListTile(SavingWithTransactions savingWithTransactions) {
-    return ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-        leading: Container(
-          padding: const EdgeInsets.only(right: 12.0),
-          decoration: const BoxDecoration(
-            border: Border(
-              right: BorderSide(width: 1.0, color: Colors.white24),
-            ),
-          ),
-          child: const Icon(Icons.autorenew, color: Colors.white),
-        ),
-        title: Text(
-          savingWithTransactions.saving.name,
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
-
-        subtitle: Row(
-          children: <Widget>[
-            const Text(
-              "Total: ",
-              style: TextStyle(color: Colors.white),
-            ),
-            Text('RM${savingWithTransactions.saving.currentAmount}'),
-          ],
-        ),
-        trailing: const Icon(Icons.keyboard_arrow_right,
-            color: Colors.white, size: 30.0));
-  }
+  final List<SavingWithTransactions> _savingWithTransactionsList;
 
   @override
   SavingsState getNewVersion() {
@@ -72,5 +18,53 @@ class InLoadListSavingsState extends SavingsState {
   @override
   SavingsState getStateCopy() {
     return InLoadListSavingsState(version, _savingWithTransactionsList);
+  }
+
+  @override
+  Widget build(BuildContext context, Function load) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    return Stack(
+      children: <Widget>[
+        SizedBox(
+          child: ListSavingsWidget(
+              savingWithTransactionsList: _savingWithTransactionsList),
+          height: screenHeight * 0.65,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Ink(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.green, width: 2),
+                      color: Colors.greenAccent,
+                      shape: BoxShape.circle,
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(400.0),
+                      onTap: () =>
+                          load(savingsEvent: LoadAddSavingsFormEvent()),
+                      child: const Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Icon(
+                          Icons.add,
+                          size: 30.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_list_savings_event.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/savings_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
 
@@ -25,7 +26,7 @@ class SavingsScreenState extends State<SavingsScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    _load(savingsEvent: LoadListSavingsEvent());
   }
 
   @override
@@ -44,7 +45,7 @@ class SavingsScreenState extends State<SavingsScreen> {
             currentState.build(context, _load));
   }
 
-  void _load() {
-    widget._savingsBloc.add(LoadListSavingsEvent());
+  void _load({SavingsEvent? savingsEvent}) {
+    if (savingsEvent != null) widget._savingsBloc.add(savingsEvent);
   }
 }
