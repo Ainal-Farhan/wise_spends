@@ -7,4 +7,6 @@ abstract class ISavingManager extends IManager {
   Future<void> addNewSaving({
     required String name,
   });
+
+  Future<bool> deleteSelectedSaving(String id);
 }

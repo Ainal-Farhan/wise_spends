@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
+import 'package:wise_spends/com/ainal/wise/spends/manager/i_saving_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/manager/impl/saving_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widget/components/delete_dialog.dart';
+import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as route;
 
+// ignore: must_be_immutable
 class ListSavingsWidget extends StatelessWidget {
   final List<SavingWithTransactions> _savingWithTransactionsList;
 
-  const ListSavingsWidget(
+  Function _onLongPressed = (SavingWithTransactions savingWithTransactions) {};
+
+  ListSavingsWidget(
       {key, required List<SavingWithTransactions> savingWithTransactionsList})
       : _savingWithTransactionsList = savingWithTransactionsList,
         super(key: key);
@@ -12,6 +19,19 @@ class ListSavingsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int listLength = _savingWithTransactionsList.length;
+    _onLongPressed = (SavingWithTransactions savingWithTransactions) async {
+      showDeleteDialog(
+        context: context,
+        onDelete: () async {
+          ISavingManager savingManager = SavingManager();
+          await savingManager
+              .deleteSelectedSaving(savingWithTransactions.saving.id);
+          Navigator.pushReplacementNamed(
+              context, route.Router.savingsPageRoute);
+        },
+      );
+    };
+
     return listLength > 0
         ? ListView.builder(
             scrollDirection: Axis.vertical,
@@ -39,6 +59,7 @@ class ListSavingsWidget extends StatelessWidget {
 
   Widget _makeListTile(SavingWithTransactions savingWithTransactions) {
     return ListTile(
+      onLongPress: () => _onLongPressed(savingWithTransactions),
       contentPadding:
           const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
       leading: Container(

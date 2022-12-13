@@ -5,5 +5,7 @@ abstract class ISavingRepository extends ICrudRepository<$SavingTableTable,
     SavingTableCompanion, SvngSaving> {
   ISavingRepository(AppDatabase db) : super(db, db.savingTable);
 
+  Stream<SvngSaving> watchBasedOnSavingId(final String savingId);
+
   Stream<List<SvngSaving>> watchBasedOnUserId(final String userId);
 }

@@ -5,9 +5,12 @@ import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/i_saving_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/impl/saving_service.dart';
+import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/i_transaction_service.dart';
+import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/impl/transaction_service.dart';
 
 class SavingManager extends ISavingManager {
   final ISavingService _savingService = SavingService();
+  final ITransactionService _transactionService = TransactionService();
   final IStartupManager _startupManager = StartupManager();
 
   @override
@@ -29,5 +32,23 @@ class SavingManager extends ISavingManager {
     );
 
     return await _savingService.add(savingTableCompanion);
+  }
+
+  @override
+  Future<bool> deleteSelectedSaving(String id) async {
+    try {
+      // get saving
+      SvngSaving saving = await _savingService.watchSavingById(id).first;
+
+      // delete all transactions based on savingId
+      await _transactionService.deleteAllBasedOnSavingId(saving.id);
+
+      // delete saving
+      await _savingService.delete(saving);
+
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 }

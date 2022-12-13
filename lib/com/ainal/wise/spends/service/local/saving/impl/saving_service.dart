@@ -31,4 +31,9 @@ class SavingService extends ISavingService {
       }).toList();
     });
   }
+
+  @override
+  Stream<SvngSaving> watchSavingById(String savingId) {
+    return _savingRepository.watchBasedOnSavingId(savingId);
+  }
 }

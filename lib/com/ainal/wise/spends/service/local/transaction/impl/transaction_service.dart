@@ -3,4 +3,11 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/i_tr
 
 class TransactionService extends ITransactionService {
   TransactionService() : super(TransactionRepository());
+
+  final TransactionRepository _transactionRepository = TransactionRepository();
+
+  @override
+  Future<void> deleteAllBasedOnSavingId(String savingId) async {
+    await _transactionRepository.deleteBasedOnSavingId(savingId);
+  }
 }

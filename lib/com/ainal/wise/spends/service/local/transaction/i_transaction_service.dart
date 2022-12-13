@@ -3,4 +3,6 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/i_local_service.
 
 abstract class ITransactionService extends ILocalService {
   ITransactionService(ICrudRepository repository) : super(repository);
+
+  Future<void> deleteAllBasedOnSavingId(String savingId);
 }

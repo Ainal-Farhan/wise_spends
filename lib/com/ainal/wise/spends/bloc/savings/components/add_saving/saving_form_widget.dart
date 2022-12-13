@@ -29,11 +29,10 @@ class SavingFormWidget extends StatelessWidget {
           ),
         );
 
-        Future.delayed(const Duration(seconds: 1))
-            .then((_) => Navigator.pushReplacementNamed(
-                  context,
-                  route.Router.savingsPageRoute,
-                ));
+        Navigator.pushReplacementNamed(
+          context,
+          route.Router.savingsPageRoute,
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

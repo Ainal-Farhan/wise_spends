@@ -4,4 +4,6 @@ import 'package:wise_spends/com/ainal/wise/spends/repository/i_crud_repository.d
 abstract class ITransactionRepository extends ICrudRepository<
     $TransactionTableTable, TransactionTableCompanion, TrnsctnTransaction> {
   ITransactionRepository(AppDatabase db) : super(db, db.transactionTable);
+
+  Future<void> deleteBasedOnSavingId(String savingId);
 }

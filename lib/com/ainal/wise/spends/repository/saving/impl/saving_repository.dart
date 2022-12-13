@@ -10,4 +10,10 @@ class SavingRepository extends ISavingRepository {
           ..where((tbl) => tbl.userId.equals(userId)))
         .watch();
   }
+
+  @override
+  Stream<SvngSaving> watchBasedOnSavingId(String savingId) {
+    return (db.select(db.savingTable)..where((tbl) => tbl.id.equals(savingId)))
+        .watchSingle();
+  }
 }
