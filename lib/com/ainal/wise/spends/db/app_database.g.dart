@@ -2697,7 +2697,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   final String id;
   final DateTime dateCreated;
   final DateTime dateUpdated;
-  final String name;
+  final String? name;
   final bool isPublic;
   final bool isHasGoal;
   final double goal;
@@ -2709,12 +2709,12 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   final bool isSaveWeekly;
   final bool isSaveMonthly;
   final double currentAmount;
-  final String userId;
+  final String? userId;
   SvngSaving(
       {required this.id,
       required this.dateCreated,
       required this.dateUpdated,
-      required this.name,
+      this.name,
       required this.isPublic,
       required this.isHasGoal,
       required this.goal,
@@ -2726,7 +2726,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       required this.isSaveWeekly,
       required this.isSaveMonthly,
       required this.currentAmount,
-      required this.userId});
+      this.userId});
   factory SvngSaving.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return SvngSaving(
@@ -2737,7 +2737,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       dateUpdated: const DateTimeType()
           .mapFromDatabaseResponse(data['${effectivePrefix}date_updated'])!,
       name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}name']),
       isPublic: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}is_public'])!,
       isHasGoal: const BoolType()
@@ -2761,7 +2761,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       currentAmount: const RealType()
           .mapFromDatabaseResponse(data['${effectivePrefix}current_amount'])!,
       userId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}user_id'])!,
+          .mapFromDatabaseResponse(data['${effectivePrefix}user_id']),
     );
   }
   @override
@@ -2770,7 +2770,9 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     map['id'] = Variable<String>(id);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String?>(name);
+    }
     map['is_public'] = Variable<bool>(isPublic);
     map['is_has_goal'] = Variable<bool>(isHasGoal);
     map['goal'] = Variable<double>(goal);
@@ -2786,7 +2788,9 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     map['is_save_weekly'] = Variable<bool>(isSaveWeekly);
     map['is_save_monthly'] = Variable<bool>(isSaveMonthly);
     map['current_amount'] = Variable<double>(currentAmount);
-    map['user_id'] = Variable<String>(userId);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String?>(userId);
+    }
     return map;
   }
 
@@ -2795,7 +2799,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       id: Value(id),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
-      name: Value(name),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       isPublic: Value(isPublic),
       isHasGoal: Value(isHasGoal),
       goal: Value(goal),
@@ -2811,7 +2815,8 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       isSaveWeekly: Value(isSaveWeekly),
       isSaveMonthly: Value(isSaveMonthly),
       currentAmount: Value(currentAmount),
-      userId: Value(userId),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
     );
   }
 
@@ -2822,7 +2827,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       id: serializer.fromJson<String>(json['id']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      name: serializer.fromJson<String>(json['name']),
+      name: serializer.fromJson<String?>(json['name']),
       isPublic: serializer.fromJson<bool>(json['isPublic']),
       isHasGoal: serializer.fromJson<bool>(json['isHasGoal']),
       goal: serializer.fromJson<double>(json['goal']),
@@ -2834,7 +2839,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       isSaveWeekly: serializer.fromJson<bool>(json['isSaveWeekly']),
       isSaveMonthly: serializer.fromJson<bool>(json['isSaveMonthly']),
       currentAmount: serializer.fromJson<double>(json['currentAmount']),
-      userId: serializer.fromJson<String>(json['userId']),
+      userId: serializer.fromJson<String?>(json['userId']),
     );
   }
   @override
@@ -2844,7 +2849,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       'id': serializer.toJson<String>(id),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'name': serializer.toJson<String>(name),
+      'name': serializer.toJson<String?>(name),
       'isPublic': serializer.toJson<bool>(isPublic),
       'isHasGoal': serializer.toJson<bool>(isHasGoal),
       'goal': serializer.toJson<double>(goal),
@@ -2856,7 +2861,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       'isSaveWeekly': serializer.toJson<bool>(isSaveWeekly),
       'isSaveMonthly': serializer.toJson<bool>(isSaveMonthly),
       'currentAmount': serializer.toJson<double>(currentAmount),
-      'userId': serializer.toJson<String>(userId),
+      'userId': serializer.toJson<String?>(userId),
     };
   }
 
@@ -2962,7 +2967,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<String> id;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
-  final Value<String> name;
+  final Value<String?> name;
   final Value<bool> isPublic;
   final Value<bool> isHasGoal;
   final Value<double> goal;
@@ -2974,7 +2979,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<bool> isSaveWeekly;
   final Value<bool> isSaveMonthly;
   final Value<double> currentAmount;
-  final Value<String> userId;
+  final Value<String?> userId;
   const SavingTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -2997,7 +3002,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
-    required String name,
+    this.name = const Value.absent(),
     this.isPublic = const Value.absent(),
     this.isHasGoal = const Value.absent(),
     this.goal = const Value.absent(),
@@ -3009,15 +3014,13 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.isSaveWeekly = const Value.absent(),
     this.isSaveMonthly = const Value.absent(),
     this.currentAmount = const Value.absent(),
-    required String userId,
-  })  : dateUpdated = Value(dateUpdated),
-        name = Value(name),
-        userId = Value(userId);
+    this.userId = const Value.absent(),
+  }) : dateUpdated = Value(dateUpdated);
   static Insertable<SvngSaving> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
-    Expression<String>? name,
+    Expression<String?>? name,
     Expression<bool>? isPublic,
     Expression<bool>? isHasGoal,
     Expression<double>? goal,
@@ -3029,7 +3032,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     Expression<bool>? isSaveWeekly,
     Expression<bool>? isSaveMonthly,
     Expression<double>? currentAmount,
-    Expression<String>? userId,
+    Expression<String?>? userId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -3055,7 +3058,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       {Value<String>? id,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
-      Value<String>? name,
+      Value<String?>? name,
       Value<bool>? isPublic,
       Value<bool>? isHasGoal,
       Value<double>? goal,
@@ -3067,7 +3070,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       Value<bool>? isSaveWeekly,
       Value<bool>? isSaveMonthly,
       Value<double>? currentAmount,
-      Value<String>? userId}) {
+      Value<String?>? userId}) {
     return SavingTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -3101,7 +3104,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
     }
     if (name.present) {
-      map['name'] = Variable<String>(name.value);
+      map['name'] = Variable<String?>(name.value);
     }
     if (isPublic.present) {
       map['is_public'] = Variable<bool>(isPublic.value);
@@ -3137,7 +3140,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       map['current_amount'] = Variable<double>(currentAmount.value);
     }
     if (userId.present) {
-      map['user_id'] = Variable<String>(userId.value);
+      map['user_id'] = Variable<String?>(userId.value);
     }
     return map;
   }
@@ -3196,8 +3199,8 @@ class $SavingTableTable extends SavingTable
   final VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
-      'name', aliasedName, false,
-      type: const StringType(), requiredDuringInsert: true);
+      'name', aliasedName, true,
+      type: const StringType(), requiredDuringInsert: false);
   final VerificationMeta _isPublicMeta = const VerificationMeta('isPublic');
   @override
   late final GeneratedColumn<bool?> isPublic = GeneratedColumn<bool?>(
@@ -3287,9 +3290,9 @@ class $SavingTableTable extends SavingTable
   final VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
   late final GeneratedColumn<String?> userId = GeneratedColumn<String?>(
-      'user_id', aliasedName, false,
+      'user_id', aliasedName, true,
       type: const StringType(),
-      requiredDuringInsert: true,
+      requiredDuringInsert: false,
       defaultConstraints: 'REFERENCES user_table (id)');
   @override
   List<GeneratedColumn> get $columns => [
@@ -3339,8 +3342,6 @@ class $SavingTableTable extends SavingTable
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
     }
     if (data.containsKey('is_public')) {
       context.handle(_isPublicMeta,
@@ -3403,8 +3404,6 @@ class $SavingTableTable extends SavingTable
     if (data.containsKey('user_id')) {
       context.handle(_userIdMeta,
           userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
-    } else if (isInserting) {
-      context.missing(_userIdMeta);
     }
     return context;
   }

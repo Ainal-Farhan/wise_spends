@@ -70,10 +70,10 @@ class ListSavingsWidget extends StatelessWidget {
             right: BorderSide(width: 1.0, color: Colors.white24),
           ),
         ),
-        child: const Icon(Icons.autorenew, color: Colors.white),
+        child: const Icon(Icons.money, color: Colors.white),
       ),
       title: Text(
-        savingWithTransactions.saving.name,
+        savingWithTransactions.saving.name ?? '-',
         style:
             const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
@@ -83,7 +83,8 @@ class ListSavingsWidget extends StatelessWidget {
             "Total: ",
             style: TextStyle(color: Colors.white),
           ),
-          Text('RM${savingWithTransactions.saving.currentAmount}'),
+          Text(
+              'RM${savingWithTransactions.saving.currentAmount.toStringAsFixed(2)}'),
         ],
       ),
       onTap: () => SavingsBloc().add(LoadSavingTransactionEvent(

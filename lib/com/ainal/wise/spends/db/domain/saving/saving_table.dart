@@ -5,7 +5,7 @@ import 'package:wise_spends/com/ainal/wise/spends/db/domain/common/user_table.da
 
 @DataClassName(DomainTableConstant.savingTablePrefix + "Saving")
 class SavingTable extends BaseEntityTable {
-  TextColumn get name => text()();
+  TextColumn get name => text().nullable()();
   BoolColumn get isPublic => boolean().withDefault(const Constant(false))();
   BoolColumn get isHasGoal => boolean().withDefault(const Constant(false))();
   RealColumn get goal => real().withDefault(const Constant(.0))();
@@ -19,7 +19,7 @@ class SavingTable extends BaseEntityTable {
   BoolColumn get isSaveMonthly =>
       boolean().withDefault(const Constant(false))();
   RealColumn get currentAmount => real().withDefault(const Constant(.0))();
-  TextColumn get userId => text().references(UserTable, #id)();
+  TextColumn get userId => text().nullable().references(UserTable, #id)();
 
   @override
   List<Set<Column>> get uniqueKeys => [

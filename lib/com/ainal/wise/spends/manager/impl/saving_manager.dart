@@ -30,8 +30,8 @@ class SavingManager extends ISavingManager {
   }) async {
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
       dateUpdated: DateTime.now(),
-      name: name,
-      userId: _startupManager.currentUser.id,
+      name: Value(name),
+      userId: Value(_startupManager.currentUser.id),
       currentAmount: Value(initialAmount),
     );
 
@@ -80,8 +80,6 @@ class SavingManager extends ISavingManager {
         currentAmount -= transactionAmount;
     }
     SavingTableCompanion updatedSaving = SavingTableCompanion.insert(
-      name: currentSaving.name,
-      userId: currentSaving.userId,
       id: Value(savingId),
       dateUpdated: DateTime.now(),
       currentAmount: Value(currentAmount),
