@@ -8,8 +8,6 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/impl/loadin
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
 
 class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
-  // todo: check singleton for logic in project
-  // use GetIt for DI in projct
   static final SavingsBloc _savingsBlocSingleton = SavingsBloc._internal();
   factory SavingsBloc() {
     return _savingsBlocSingleton;

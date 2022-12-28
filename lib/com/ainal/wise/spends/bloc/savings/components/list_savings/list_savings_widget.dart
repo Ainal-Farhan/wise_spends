@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_saving_transaction_event.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/saving_manager.dart';
@@ -75,8 +77,6 @@ class ListSavingsWidget extends StatelessWidget {
         style:
             const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
-      // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
-
       subtitle: Row(
         children: <Widget>[
           const Text(
@@ -86,11 +86,8 @@ class ListSavingsWidget extends StatelessWidget {
           Text('RM${savingWithTransactions.saving.currentAmount}'),
         ],
       ),
-      trailing: const Icon(
-        Icons.keyboard_arrow_right,
-        color: Colors.white,
-        size: 30.0,
-      ),
+      onTap: () => SavingsBloc().add(LoadSavingTransactionEvent(
+          savingId: savingWithTransactions.saving.id)),
     );
   }
 }

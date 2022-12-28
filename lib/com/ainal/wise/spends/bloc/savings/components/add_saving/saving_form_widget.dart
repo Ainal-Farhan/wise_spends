@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_saving/input_fields/current_amount_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_saving/input_fields/save_saving_input_field_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_saving/input_fields/saving_name_input_field_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/save_new_saving_event.dart';
@@ -7,20 +8,20 @@ import 'package:wise_spends/com/ainal/wise/spends/resource/widget/ui/snack_bar/m
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/add_saving_form_vo.dart';
 
 class SavingFormWidget extends StatelessWidget {
-  final AddSavingFormVO _addSavingFormVO;
+  final AddSavingFormVO _addSavingFormVO = AddSavingFormVO();
   final Function _eventLoader;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // fields Controller
   final TextEditingController _savingNamecontroller = TextEditingController();
+  final TextEditingController _currentAmountcontroller =
+      TextEditingController();
 
   SavingFormWidget({
     Key? key,
-    required AddSavingFormVO addSavingFormVO,
     required Function eventLoader,
-  })  : _addSavingFormVO = addSavingFormVO,
-        _eventLoader = eventLoader,
+  })  : _eventLoader = eventLoader,
         super(key: key);
 
   @override
@@ -28,6 +29,8 @@ class SavingFormWidget extends StatelessWidget {
     Future<void> _onSave() async {
       if (_formKey.currentState!.validate()) {
         _addSavingFormVO.savingName = _savingNamecontroller.text;
+        _addSavingFormVO.currentAmount =
+            double.parse(_currentAmountcontroller.text);
         _eventLoader(
             savingsEvent:
                 SaveNewSavingEvent(addSavingFormVO: _addSavingFormVO));
@@ -42,12 +45,27 @@ class SavingFormWidget extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: <Widget>[
-            SavingNameInputFieldWidget(controller: _savingNamecontroller),
+            _inputField(
+              SavingNameInputFieldWidget(controller: _savingNamecontroller),
+              context,
+            ),
+            verticalSpacing(40),
+            _inputField(
+              CurrentAmountWidget(controller: _currentAmountcontroller),
+              context,
+            ),
             verticalSpacing(40),
             SaveSavingInputFieldWidget(onTap: _onSave),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _inputField(Widget widget, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: widget,
     );
   }
 }

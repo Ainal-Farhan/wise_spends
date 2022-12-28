@@ -23,7 +23,9 @@ class _SavingsPageState extends State<SavingsPage> {
           title: const Text('Savings'),
           automaticallyImplyLeading: false,
         ),
-        body: SavingsScreen(savingsBloc: _savingsBloc),
+        body: SingleChildScrollView(
+          child: SavingsScreen(savingsBloc: _savingsBloc),
+        ),
         bottomNavigationBar: const LoggedInBottomNavigationBar(
           pageRoute: router.savingsPageRoute,
         ),

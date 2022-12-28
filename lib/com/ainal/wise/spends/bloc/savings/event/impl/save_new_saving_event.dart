@@ -17,7 +17,10 @@ class SaveNewSavingEvent extends SavingsEvent {
     const LoadingSavingsState(0);
 
     try {
-      await savingsManager.addNewSaving(name: _addSavingFormVO.savingName!);
+      await savingsManager.addNewSaving(
+        name: _addSavingFormVO.savingName!,
+        initialAmount: _addSavingFormVO.currentAmount!,
+      );
     } catch (_) {}
 
     bloc!.add(LoadListSavingsEvent());

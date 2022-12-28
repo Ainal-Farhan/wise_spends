@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: router.homeLoggedInPageRoute,
+      initialRoute: router.savingsPageRoute,
       onGenerateRoute: router.generateRoute,
       debugShowCheckedModeBanner: false,
     );

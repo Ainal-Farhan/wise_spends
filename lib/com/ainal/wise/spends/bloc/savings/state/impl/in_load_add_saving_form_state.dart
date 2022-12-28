@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_saving/saving_form_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_list_savings_event.dart';
-
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
-import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/add_saving_form_vo.dart';
 
 class InLoadAddSavingFormState extends SavingsState {
-  final AddSavingFormVO addSavingFormVO;
-
   const InLoadAddSavingFormState({
     required int version,
-    required this.addSavingFormVO,
   }) : super(version);
 
   @override
@@ -22,7 +17,6 @@ class InLoadAddSavingFormState extends SavingsState {
         Center(
           child: SizedBox(
             child: SavingFormWidget(
-              addSavingFormVO: addSavingFormVO,
               eventLoader: load,
             ),
             height: screenHeight * 0.65,
@@ -66,13 +60,11 @@ class InLoadAddSavingFormState extends SavingsState {
 
   @override
   SavingsState getNewVersion() {
-    return InLoadAddSavingFormState(
-        version: version + 1, addSavingFormVO: addSavingFormVO);
+    return InLoadAddSavingFormState(version: version + 1);
   }
 
   @override
   SavingsState getStateCopy() {
-    return InLoadAddSavingFormState(
-        version: version, addSavingFormVO: addSavingFormVO);
+    return InLoadAddSavingFormState(version: version);
   }
 }
