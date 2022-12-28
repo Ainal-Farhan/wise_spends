@@ -16,4 +16,11 @@ class SavingRepository extends ISavingRepository {
     return (db.select(db.savingTable)..where((tbl) => tbl.id.equals(savingId)))
         .watchSingle();
   }
+
+  @override
+  Future<void> updatePart(
+      SavingTableCompanion savingTableCompanion, final String savingId) async {
+    await (db.update(db.savingTable)..where((tbl) => tbl.id.equals(savingId)))
+        .write(savingTableCompanion);
+  }
 }

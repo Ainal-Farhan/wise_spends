@@ -17,11 +17,6 @@ abstract class ICrudRepository<
     await db.update(table).replace(item);
   }
 
-  // update all non null attributes from entity except primary key
-  Future<void> updatePart(final B item) async {
-    await db.update(table).write(item);
-  }
-
   Future<List<C>> findAll() async {
     return await db.select(table).get();
   }

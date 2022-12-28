@@ -25,8 +25,4 @@ abstract class ILocalService implements IService {
   Future<void> update(final item) async {
     await crudRepository.update(item);
   }
-
-  Future<void> updatePart(final item) async {
-    await crudRepository.updatePart(item);
-  }
 }

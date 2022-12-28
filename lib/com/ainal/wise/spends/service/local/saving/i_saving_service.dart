@@ -10,4 +10,6 @@ abstract class ISavingService extends ILocalService {
       final String userId);
 
   Stream<SvngSaving> watchSavingById(final String savingId);
+
+  Future<void> updatePart(final SavingTableCompanion savingTableCompanion);
 }

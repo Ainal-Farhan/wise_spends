@@ -36,4 +36,10 @@ class SavingService extends ISavingService {
   Stream<SvngSaving> watchSavingById(String savingId) {
     return _savingRepository.watchBasedOnSavingId(savingId);
   }
+
+  @override
+  Future<void> updatePart(SavingTableCompanion savingTableCompanion) async {
+    await _savingRepository.updatePart(
+        savingTableCompanion, savingTableCompanion.id.value);
+  }
 }
