@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_saving/saving_form_widget.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/saving_transaction/saving_transaction_form_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_list_savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 
-class InLoadAddSavingFormState extends SavingsState {
-  const InLoadAddSavingFormState({
+class InSavingTransactionFormState extends SavingsState {
+  final SvngSaving saving;
+
+  const InSavingTransactionFormState({
     required int version,
+    required this.saving,
   }) : super(version);
 
   @override
@@ -17,8 +21,8 @@ class InLoadAddSavingFormState extends SavingsState {
       children: <Widget>[
         Center(
           child: SizedBox(
-            child: SavingFormWidget(
-              eventLoader: load,
+            child: SavingTransactionFormWidget(
+              saving: saving,
             ),
             height: screenHeight * 0.65,
           ),
@@ -61,11 +65,14 @@ class InLoadAddSavingFormState extends SavingsState {
 
   @override
   SavingsState getNewVersion() {
-    return InLoadAddSavingFormState(version: version + 1);
+    return InSavingTransactionFormState(
+      version: version + 1,
+      saving: SvngSaving.fromData(saving.toJson()),
+    );
   }
 
   @override
   SavingsState getStateCopy() {
-    return InLoadAddSavingFormState(version: version);
+    return InSavingTransactionFormState(version: version, saving: saving);
   }
 }
