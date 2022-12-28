@@ -15,12 +15,16 @@ class InLoadAddSavingFormState extends SavingsState {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
+        SizedBox(
+          child: Container(),
+          height: screenHeight * 0.1,
+        ),
         Center(
           child: SizedBox(
             child: SavingFormWidget(
               eventLoader: load,
             ),
-            height: screenHeight * 0.65,
+            height: screenHeight * .7,
           ),
         ),
         Padding(

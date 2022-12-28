@@ -32,7 +32,7 @@ class InLoadListSavingsState extends SavingsState {
           SizedBox(
             child: ListSavingsWidget(
                 savingWithTransactionsList: _savingWithTransactionsList),
-            height: screenHeight * 0.70,
+            height: screenHeight * 0.8,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
