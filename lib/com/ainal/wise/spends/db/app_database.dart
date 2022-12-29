@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/db_connection.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/common/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/expense/index.dart';
@@ -8,7 +9,6 @@ import 'package:wise_spends/com/ainal/wise/spends/db/domain/masterdata/index.dar
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/notification/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/saving/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/transaction/index.dart';
-import 'package:wise_spends/com/ainal/wise/spends/utils/app_path.dart';
 import 'package:wise_spends/com/ainal/wise/spends/utils/uuid_generator.dart';
 
 part 'app_database.g.dart';
@@ -44,12 +44,15 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<bool> restore() async {
-    File restoreFile =
-        File('${await AppPath().getDownloadsDirectory()}/wise_spends.sqlite');
-    if (await restoreFile.exists()) {
-      await DbConnection.dbFile.writeAsBytes(await restoreFile.readAsBytes());
-      return true;
-    }
+    try {
+      final filePicker = await FilePicker.platform
+          .pickFiles(allowMultiple: false, allowedExtensions: ['sqlite']);
+      if (filePicker != null && filePicker.count == 1) {
+        File file = File(filePicker.files.single.path ?? '');
+        await DbConnection.dbFile.writeAsBytes(await file.readAsBytes());
+        return true;
+      }
+    } catch (_) {}
 
     return false;
   }
