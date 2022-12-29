@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'dart:io' show Directory;
 import 'dart:async';
 
+import 'package:external_path/external_path.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart' as path;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:wise_spends/com/ainal/wise/spends/utils/platform/i_platform.dart';
 
 class AppPath {
@@ -20,8 +23,14 @@ class AppPath {
   Future<Directory> getApplicationDocumentsDirectory() async =>
       await path_provider.getApplicationDocumentsDirectory();
 
-  Future<Directory?> getDownloadsDirectory() async =>
-      await path_provider.getDownloadsDirectory();
+  Future<String> getDownloadsDirectory() async {
+    PermissionStatus status = await Permission.storage.request();
+    if (status.isGranted) {
+      return await ExternalPath.getExternalStoragePublicDirectory(
+          ExternalPath.DIRECTORY_DOWNLOADS);
+    }
+    return "";
+  }
 
   String setFilePath({
     required Directory directory,

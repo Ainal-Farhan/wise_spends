@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/db_connection.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/common/index.dart';
@@ -27,4 +29,16 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  Future<void> exportInto(File file) async {
+    // Make sure the directory of the target file exists
+    await file.parent.create(recursive: true);
+
+    // Override an existing backup, sqlite expects the target file to be empty
+    if (file.existsSync()) {
+      file.deleteSync();
+    }
+
+    await customStatement('VACUUM INTO ?', [file.path]);
+  }
 }

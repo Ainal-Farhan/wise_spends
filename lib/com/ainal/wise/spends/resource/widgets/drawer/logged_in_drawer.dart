@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/constant/app/color_ref.dart';
+import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/drawer/components/txt.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/ui/snack_bar/message.dart';
+import 'package:wise_spends/com/ainal/wise/spends/utils/app_path.dart';
 
 class LoggedInDrawer extends StatefulWidget {
   const LoggedInDrawer({Key? key}) : super(key: key);
@@ -16,6 +21,20 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    cdms.add(CDM(
+        iconData: Icons.backup,
+        title: "Backup DB",
+        onPressed: () async {
+          final file = File(
+              '${await AppPath().getDownloadsDirectory()}/wise_spends.sqlite');
+
+          await AppDatabase().exportInto(file);
+
+          showSnackBarMessage(
+            context,
+            "Successfully export the db into ${file.path}",
+          );
+        }));
     return Container(
       child: row(),
       color: const Color.fromRGBO(227, 233, 247, 0.8),
@@ -50,7 +69,7 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
                         selectedIndex = z ? index : -1;
                       });
                     },
-                    leading: Icon(cdm.icon, color: Colors.white),
+                    leading: cdms[index].icon,
                     title: Txt(
                       text: cdm.title,
                       color: Colors.white,
@@ -113,7 +132,7 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
                     child: Container(
                       height: 45,
                       alignment: Alignment.center,
-                      child: Icon(cdms[index].icon, color: Colors.white),
+                      child: cdms[index].icon,
                     ),
                   );
                 }),
@@ -243,20 +262,44 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
     );
   }
 
-  static List<CDM> cdms = [
+  List<CDM> cdms = [
     // CDM(Icons.grid_view, "Control", []),
 
-    CDM(Icons.grid_view, "Dashboard", []),
-    CDM(Icons.subscriptions, "Category",
-        ["HTML & CSS", "Javascript", "PHP & MySQL"]),
-    CDM(Icons.markunread_mailbox, "Posts", ["Add", "Edit", "Delete"]),
-    CDM(Icons.pie_chart, "Analytics", []),
-    CDM(Icons.trending_up, "Chart", []),
-
-    CDM(Icons.power, "Plugins",
-        ["Ad Blocker", "Everything Https", "Dark Mode"]),
-    CDM(Icons.explore, "Explore", []),
-    CDM(Icons.settings, "Setting", []),
+    CDM(
+      iconData: Icons.grid_view,
+      title: "Dashboard",
+    ),
+    CDM(
+      iconData: Icons.subscriptions,
+      title: "Category",
+      submenus: ["HTML & CSS", "Javascript", "PHP & MySQL"],
+    ),
+    CDM(
+      iconData: Icons.markunread_mailbox,
+      title: "Posts",
+      submenus: ["Add", "Edit", "Delete"],
+    ),
+    CDM(
+      iconData: Icons.pie_chart,
+      title: "Analytics",
+    ),
+    CDM(
+      iconData: Icons.trending_up,
+      title: "Chart",
+    ),
+    CDM(
+      iconData: Icons.power,
+      title: "Plugins",
+      submenus: ["Ad Blocker", "Everything Https", "Dark Mode"],
+    ),
+    CDM(
+      iconData: Icons.explore,
+      title: "Explore",
+    ),
+    CDM(
+      iconData: Icons.settings,
+      title: "Setting",
+    ),
   ];
 
   void expandOrShrinkDrawer() {
@@ -268,9 +311,19 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
 
 class CDM {
   //complex drawer menu
-  final IconData icon;
+  final IconButton icon;
   final String title;
   final List<String> submenus;
+  static void defaultOnPressed() {}
 
-  CDM(this.icon, this.title, this.submenus);
+  CDM({
+    required IconData iconData,
+    required this.title,
+    this.submenus = const [],
+    VoidCallback? onPressed,
+  }) : icon = IconButton(
+          icon: Icon(iconData),
+          onPressed: onPressed ?? defaultOnPressed,
+          color: Colors.white,
+        );
 }
