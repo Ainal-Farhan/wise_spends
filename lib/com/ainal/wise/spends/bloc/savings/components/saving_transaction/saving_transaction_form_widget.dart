@@ -7,8 +7,8 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/saving
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/save_saving_transaction_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/components/form_field_spacing_widget.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/ui/snack_bar/message.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/components/form_field_spacing_widget.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/ui/snack_bar/message.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/saving_transaction_form_vo.dart';
 
 // ignore: must_be_immutable

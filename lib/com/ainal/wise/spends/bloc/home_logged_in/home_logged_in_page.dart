@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/home_logged_in/index.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/main_template/logged_in_main_template.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/main_template/logged_in_main_template.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 
 class HomeLoggedInPage extends StatefulWidget {

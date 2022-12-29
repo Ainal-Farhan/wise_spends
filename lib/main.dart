@@ -9,6 +9,7 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_sta
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/state/transaction_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_page.dart';
+import 'package:wise_spends/com/ainal/wise/spends/constant/app/color_ref.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 
@@ -69,12 +70,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Wise Spends',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: theme,
       initialRoute: router.savingsPageRoute,
       onGenerateRoute: router.generateRoute,
       debugShowCheckedModeBanner: false,
     );
   }
+
+  ThemeData get theme => ThemeData.light().copyWith(
+        brightness: Brightness.light,
+        primaryColor: ColorRef.backgroundBlue,
+      );
 }

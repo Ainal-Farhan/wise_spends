@@ -3,8 +3,8 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_sa
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_saving/input_fields/save_saving_input_field_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_saving/input_fields/saving_name_input_field_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/save_new_saving_event.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/components/form_field_spacing_widget.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/ui/snack_bar/message.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/components/form_field_spacing_widget.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/ui/snack_bar/message.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/add_saving_form_vo.dart';
 
 class SavingFormWidget extends StatelessWidget {

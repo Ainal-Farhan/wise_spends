@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class AnimatedAppBar extends StatelessWidget {
+class LoggedInAppBar extends StatelessWidget {
+  final String loggedInUserName;
   AnimationController colorAnimationController;
   Animation colorTween, homeTween, workOutTween, iconTween, drawerTween;
-  Function onPressed;
+  VoidCallback onPressed;
 
-  AnimatedAppBar({
+  LoggedInAppBar({
     Key? key,
+    required this.loggedInUserName,
     required this.colorAnimationController,
     required this.onPressed,
     required this.colorTween,
@@ -29,7 +31,7 @@ class AnimatedAppBar extends StatelessWidget {
               Icons.dehaze,
               color: drawerTween.value,
             ),
-            onPressed: () => onPressed,
+            onPressed: onPressed,
           ),
           backgroundColor: colorTween.value,
           elevation: 0,
@@ -45,7 +47,7 @@ class AnimatedAppBar extends StatelessWidget {
                     letterSpacing: 1),
               ),
               Text(
-                'Ainal',
+                loggedInUserName,
                 style: TextStyle(
                     color: workOutTween.value,
                     fontWeight: FontWeight.bold,

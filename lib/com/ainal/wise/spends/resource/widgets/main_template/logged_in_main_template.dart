@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/com/ainal/wise/spends/constant/app/color_ref.dart';
+import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/notifiers/nav_bar_notifier.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/app_bar/animated_app_bar.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/bottom_navigation_bar/logged_in_bottom_navigation_bar.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/app_bar/logged_in_app_bar.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/bottom_navigation_bar/logged_in_bottom_navigation_bar.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/drawer/logged_in_drawer.dart';
 
 class LoggedInMainTemplate extends StatefulWidget {
   final StatefulWidget screen;
@@ -11,6 +15,7 @@ class LoggedInMainTemplate extends StatefulWidget {
   final Bloc bloc;
   final NavBarNotifier navBarNotifier = NavBarNotifier();
   final List<FloatingActionButton> floatingActionButtons;
+  final IStartupManager startupManager = StartupManager();
 
   LoggedInMainTemplate({
     Key? key,
@@ -96,8 +101,9 @@ class _LoggedInMainTemplate extends State<LoggedInMainTemplate>
       onWillPop: () async => false,
       child: Scaffold(
         key: scaffoldKey,
-        drawer: const Drawer(),
-        backgroundColor: const Color(0xFFEEEEEE),
+        drawer: const LoggedInDrawer(),
+        drawerScrimColor: Colors.transparent,
+        backgroundColor: ColorRef.compexDrawerCanvasColor,
         body: NotificationListener<ScrollNotification>(
           onNotification: scrollListener,
           child: Stack(
@@ -121,17 +127,18 @@ class _LoggedInMainTemplate extends State<LoggedInMainTemplate>
                         ],
                       ),
                     ),
-                    AnimatedAppBar(
+                    LoggedInAppBar(
                       drawerTween: _drawerTween,
                       onPressed: () {
-                        scaffoldKey.currentState?.openDrawer();
+                        scaffoldKey.currentState!.openDrawer();
                       },
                       colorAnimationController: _colorAnimationController,
                       colorTween: _colorTween,
                       homeTween: _homeTween,
                       iconTween: _iconTween,
                       workOutTween: _workOutTween,
-                    )
+                      loggedInUserName: widget.startupManager.currentUser.name,
+                    ),
                   ],
                 ),
               ),

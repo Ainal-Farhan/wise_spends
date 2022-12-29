@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_screen.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/main_template/logged_in_main_template.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/main_template/logged_in_main_template.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 
 class TransactionPage extends StatefulWidget {

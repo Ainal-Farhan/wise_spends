@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widget/ui/snack_bar/message.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/ui/snack_bar/message.dart';
 
 void showDeleteDialog({
   required BuildContext context,
