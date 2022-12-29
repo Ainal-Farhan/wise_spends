@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/drawer/components/txt.dart';
 
-@Deprecated('Use Widgets.instance')
 class Common {
   Common._privateConstructor();
   static final Common _instance = Common._privateConstructor();
@@ -43,11 +42,6 @@ class Widgets {
   Widgets._privateConstructor();
   static final Widgets _instance = Widgets._privateConstructor();
   static Widgets get instance => _instance;
-
-  static String avatar(String phoneNumberOrRemoteKey) {
-    String fileName = phoneNumberOrRemoteKey.replaceAll("+", "%2B");
-    return "https://firebasestorage.googleapis.com/v0/b/service-ad14a.appspot.com/o/avatars%2F$fileName.jpg?alt=media";
-  }
 
   static Widget loadingCircle({Color? color, double size = 26}) {
     return Material(
