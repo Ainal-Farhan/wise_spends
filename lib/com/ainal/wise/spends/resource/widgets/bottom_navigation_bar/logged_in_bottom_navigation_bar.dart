@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/notifiers/nav_bar_notifier.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/notifiers/bottom_nav_bar_notifier.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
 
 class LoggedInBottomNavigationBar extends StatefulWidget {
@@ -10,7 +10,7 @@ class LoggedInBottomNavigationBar extends StatefulWidget {
   };
 
   final String pageRoute;
-  final NavBarNotifier model;
+  final BottomNavBarNotifier model;
 
   const LoggedInBottomNavigationBar({
     Key? key,

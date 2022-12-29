@@ -142,22 +142,8 @@ class Widgets {
     return List<String>.generate((list).length, (index) => "${list[index]}");
   }
 
-  // static List<Logg> generateLogs(List? list) {
-  //   if (list == null) return [];
-  //   return List<Logg>.generate((list).length, (index) => Logg.fromJson(list[index]));
-  // }
-
   static String get today =>
       "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-
-  // static Future<bool?> call(String number) async {
-  // return await FlutterPhoneDirectCaller.callNumber(number);
-  // }
-
-  // static Future<void> sendSMS(String phoneNumber, {required String text}) async {
-  //   String url = 'sms:$phoneNumber?body=$text';
-  //   await launchurl(url);
-  // }
 
   static Widget deleted() {
     return const Center(
@@ -170,28 +156,6 @@ class Widgets {
       ),
     );
   }
-
-  // static RichTxt staffLabel(StaffType type, {String? prefix, int? time}) {
-  //   return RichTxt(maxLines: 1, richStrings: [
-  //     RichString(_staffTypeLabel(type)),
-  //     if (prefix != null) RichString(prefix, color: Colors.grey),
-  //     if (time != null) RichString(ago(time), color: Colors.grey),
-  //   ]);
-  // }
-
-  // static Widget _staffTypeLabel(StaffType type) {
-  //   return Container(
-  //       child: Txt(
-  //         text: type.viewer,
-  //         fontSize: 8,
-  //         color: Colors.white,
-  //       ),
-  //       padding: EdgeInsets.all(2),
-  //       decoration: BoxDecoration(
-  //         color: type.color,
-  //         borderRadius: BorderRadius.circular(4),
-  //       ));
-  // }
 
   static String ago(int millisecondsSinceEpoch, {bool numericDates = true}) {
     DateTime dateTime =
@@ -256,44 +220,10 @@ class Widgets {
   static bool isLight(BuildContext context) =>
       Theme.of(context).brightness == Brightness.light;
 
-  // static Future<bool> sendEmail(String email) async {
-  //   bool success = false;
-  //   email = email.toLowerCase();
-  //   if (email.contains('@')) {
-  //     success = true;
-  //     await launch("mailto:$email", forceSafariVC: false, forceWebView: false);
-  //   } else {
-  //     showToast("Email address not found");
-  //   }
-  //   return success;
-  // }
-
   static Future<void> copy(dynamic text) async {
     await Clipboard.setData(ClipboardData(text: "$text"));
-    // showToast("Text copied!");
   }
 
-  // static void debugToast(dynamic message) {
-  //   if (debugging) showToast(message);
-  // }
-
-  // static void showToast(dynamic message) {
-  //   if (debugging) print("$message");
-  //   try {
-  //     Fluttertoast.showToast(
-  //       msg: '$message',
-  //       toastLength: Toast.LENGTH_SHORT,
-  //       gravity: ToastGravity.CENTER,
-  //       backgroundColor: Colorz.primaryColor,
-  //       textColor: Colors.white,
-  //       fontSize: 16,
-  //     );
-  //   } catch (e) {
-  //     print("Error showing Toast: $e");
-  //   }
-  // }
-
-  ///[filter] Removes all the special characters and spaces
   static String filter(String text) {
     return (text
         .replaceAll(RegExp(r'[^\w\s]+'), '')
@@ -397,19 +327,6 @@ class Widgets {
     'Dec',
   ];
 
-  // static Future<void> launchurl(String? url, {bool inApp = false}) async {
-  //   try {
-  //     if (url != null) {
-  //       print("URL: $url");
-  //       await launch(url, forceSafariVC: inApp, forceWebView: inApp);
-  //     } else {
-  //       showToast("No url!");
-  //     }
-  //   } catch (exception) {
-  //     showToast("Error $exception");
-  //   }
-  // }
-
   static Future wait(int milliseconds) async {
     await Future.delayed(Duration(milliseconds: milliseconds));
   }
@@ -417,13 +334,9 @@ class Widgets {
   static void push(Widget? child, BuildContext context) {
     if (child != null) {
       Navigator.push(context, FadePageRoute(widget: child));
-    } else {
-      // String _log = "No destination page found";
-      // debugMode ? showToast(_log) : print(_log);
     }
   }
 
-  @Deprecated('Use pop')
   static void close(BuildContext context) => pop(context);
   static void pop(BuildContext context) {
     try {

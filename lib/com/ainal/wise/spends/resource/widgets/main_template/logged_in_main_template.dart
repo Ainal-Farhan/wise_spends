@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/constant/app/color_ref.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/notifiers/nav_bar_notifier.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/notifiers/bottom_nav_bar_notifier.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/app_bar/logged_in_app_bar.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/bottom_navigation_bar/logged_in_bottom_navigation_bar.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/drawer/logged_in_drawer.dart';
@@ -13,7 +13,7 @@ class LoggedInMainTemplate extends StatefulWidget {
   final StatefulWidget screen;
   final String pageRoute;
   final Bloc bloc;
-  final NavBarNotifier navBarNotifier = NavBarNotifier();
+  final BottomNavBarNotifier bottomNavBarNotifier = BottomNavBarNotifier();
   final List<FloatingActionButton> floatingActionButtons;
   final IStartupManager startupManager = StartupManager();
 
@@ -82,12 +82,12 @@ class _LoggedInMainTemplate extends State<LoggedInMainTemplate>
     _scrollController.addListener(() {
       if (_scrollController.position.userScrollDirection ==
           ScrollDirection.forward) {
-        if (widget.navBarNotifier.hideBottomNavBar) {
-          widget.navBarNotifier.hideBottomNavBar = false;
+        if (widget.bottomNavBarNotifier.hideBottomNavBar) {
+          widget.bottomNavBarNotifier.hideBottomNavBar = false;
         }
       } else {
-        if (!widget.navBarNotifier.hideBottomNavBar) {
-          widget.navBarNotifier.hideBottomNavBar = true;
+        if (!widget.bottomNavBarNotifier.hideBottomNavBar) {
+          widget.bottomNavBarNotifier.hideBottomNavBar = true;
         }
       }
     });
@@ -151,7 +151,7 @@ class _LoggedInMainTemplate extends State<LoggedInMainTemplate>
         ),
         bottomNavigationBar: LoggedInBottomNavigationBar(
           pageRoute: widget.pageRoute,
-          model: widget.navBarNotifier,
+          model: widget.bottomNavBarNotifier,
         ),
       ),
     );

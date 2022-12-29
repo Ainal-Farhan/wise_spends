@@ -8,6 +8,7 @@ import 'package:wise_spends/com/ainal/wise/spends/db/domain/masterdata/index.dar
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/notification/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/saving/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/transaction/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/utils/app_path.dart';
 import 'package:wise_spends/com/ainal/wise/spends/utils/uuid_generator.dart';
 
 part 'app_database.g.dart';
@@ -40,5 +41,16 @@ class AppDatabase extends _$AppDatabase {
     }
 
     await customStatement('VACUUM INTO ?', [file.path]);
+  }
+
+  Future<bool> restore() async {
+    File restoreFile =
+        File('${await AppPath().getDownloadsDirectory()}/wise_spends.sqlite');
+    if (await restoreFile.exists()) {
+      await DbConnection.dbFile.writeAsBytes(await restoreFile.readAsBytes());
+      return true;
+    }
+
+    return false;
   }
 }
