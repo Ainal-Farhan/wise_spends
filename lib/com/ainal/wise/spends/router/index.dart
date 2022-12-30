@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/home_logged_in/home_logged_in_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/index.dart';
@@ -8,6 +9,7 @@ const String loginPageRoute = "/loginPage";
 const String homeLoggedInPageRoute = "/homeLoggedInPage";
 const String savingsPageRoute = "/savingsPage";
 const String transactionPageRoute = "/transactionPage";
+const String editSavingsPageRoute = "/editSavingsPageRoute";
 
 Route<dynamic> generateRoute(RouteSettings settings) {
   switch (settings.name) {
@@ -19,6 +21,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => const SavingsPage());
     case transactionPageRoute:
       return MaterialPageRoute(builder: (_) => const TransactionPage());
+    case editSavingsPageRoute:
+      return MaterialPageRoute(builder: (_) => const EditSavingsPage());
     default:
       return MaterialPageRoute(
         builder: (_) => Scaffold(
