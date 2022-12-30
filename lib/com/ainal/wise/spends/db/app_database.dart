@@ -65,7 +65,10 @@ class AppDatabase extends _$AppDatabase {
 
       final List<String> allowedExtensions = ['sqlite'];
 
-      if (FileUtil.isMatchCustomExtensions(file, allowedExtensions)) {
+      if (FileUtil.isMatchCustomExtensions(
+        file: file,
+        allowedExtensions: allowedExtensions,
+      )) {
         await DbConnection.dbFile.writeAsBytes(await file.readAsBytes());
         return true;
       } else {

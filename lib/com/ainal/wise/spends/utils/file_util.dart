@@ -7,8 +7,9 @@ abstract class FileUtil {
     return RegExp(r'\.[^.]{1,}$').firstMatch(file.path)?[0] ?? '';
   }
 
-  static bool isMatchCustomExtensions(File file, List<String> extensions) {
-    return RegExp('\\.${extensions.join("|")}\$').hasMatch(file.path);
+  static bool isMatchCustomExtensions(
+      {required File file, required List<String> allowedExtensions}) {
+    return RegExp('\\.${allowedExtensions.join("|")}\$').hasMatch(file.path);
   }
 
   // format file name is as below
