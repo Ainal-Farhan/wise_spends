@@ -71,7 +71,7 @@ class InSavingTransactionFormState extends SavingsState {
   SavingsState getNewVersion() {
     return InSavingTransactionFormState(
       version: version + 1,
-      saving: SvngSaving.fromData(saving.toJson()),
+      saving: SvngSaving.fromJson(saving.toJson()),
     );
   }
 

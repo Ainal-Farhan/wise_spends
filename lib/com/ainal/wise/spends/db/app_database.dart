@@ -45,8 +45,9 @@ class AppDatabase extends _$AppDatabase {
 
   Future<bool> restore() async {
     try {
-      final filePicker = await FilePicker.platform
-          .pickFiles(allowMultiple: false, allowedExtensions: ['sqlite']);
+      final filePicker = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+      );
       if (filePicker != null && filePicker.count == 1) {
         File file = File(filePicker.files.single.path ?? '');
         await DbConnection.dbFile.writeAsBytes(await file.readAsBytes());
