@@ -32,8 +32,8 @@ class ErrorTransactionState extends TransactionState {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
               ),
-              child: const Text('reload'),
               onPressed: load,
+              child: const Text('reload'),
             ),
           ),
         ],

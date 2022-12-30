@@ -3,7 +3,7 @@ import 'package:wise_spends/com/ainal/wise/spends/constant/domain/domain_table_c
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/common/user_table.dart';
 
-@DataClassName(DomainTableConstant.savingTablePrefix + "Saving")
+@DataClassName("${DomainTableConstant.savingTablePrefix}Saving")
 class SavingTable extends BaseEntityTable {
   TextColumn get name => text().nullable()();
   BoolColumn get isPublic => boolean().withDefault(const Constant(false))();

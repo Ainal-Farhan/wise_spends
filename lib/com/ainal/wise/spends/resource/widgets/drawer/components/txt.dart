@@ -44,7 +44,7 @@ class Txt extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TxtState createState() => _TxtState();
+  State<Txt> createState() => _TxtState();
 }
 
 class _TxtState extends State<Txt> {

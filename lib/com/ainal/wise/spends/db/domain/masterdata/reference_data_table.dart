@@ -3,7 +3,7 @@ import 'package:wise_spends/com/ainal/wise/spends/constant/domain/domain_table_c
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/masterdata/reference_table.dart';
 
-@DataClassName(DomainTableConstant.masterdataTablePrefix + 'ReferenceData')
+@DataClassName('${DomainTableConstant.masterdataTablePrefix}ReferenceData')
 class ReferenceDataTable extends BaseEntityTable {
   TextColumn get label => text()();
   TextColumn get groupLabel => text()();

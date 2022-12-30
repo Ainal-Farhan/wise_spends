@@ -9,6 +9,7 @@ class SaveSavingInputFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: onTap,
       child: Container(
         height: 70,
         decoration: BoxDecoration(
@@ -29,7 +30,6 @@ class SaveSavingInputFieldWidget extends StatelessWidget {
           ],
         ),
       ),
-      onTap: onTap,
     );
   }
 }

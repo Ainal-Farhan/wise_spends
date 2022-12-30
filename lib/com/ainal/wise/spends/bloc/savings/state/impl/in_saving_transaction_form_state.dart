@@ -20,15 +20,15 @@ class InSavingTransactionFormState extends SavingsState {
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         SizedBox(
-          child: Container(),
           height: screenHeight * .1,
+          child: Container(),
         ),
         Center(
           child: SizedBox(
+            height: screenHeight * .7,
             child: SavingTransactionFormWidget(
               saving: saving,
             ),
-            height: screenHeight * .7,
           ),
         ),
         Padding(

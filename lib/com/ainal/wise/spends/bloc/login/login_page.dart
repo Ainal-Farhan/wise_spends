@@ -9,7 +9,7 @@ class LoginPage extends StatefulWidget {
   static const String routeName = router.loginPageRoute;
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {

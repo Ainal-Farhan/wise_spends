@@ -26,7 +26,7 @@ class SavingFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> _onSave() async {
+    Future<void> onSave() async {
       if (_formKey.currentState!.validate()) {
         _addSavingFormVO.savingName = _savingNamecontroller.text;
         _addSavingFormVO.currentAmount =
@@ -55,7 +55,7 @@ class SavingFormWidget extends StatelessWidget {
               context,
             ),
             verticalSpacing(40),
-            SaveSavingInputFieldWidget(onTap: _onSave),
+            SaveSavingInputFieldWidget(onTap: onSave),
           ],
         ),
       ),

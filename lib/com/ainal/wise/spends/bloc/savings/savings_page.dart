@@ -9,7 +9,7 @@ class SavingsPage extends StatefulWidget {
   const SavingsPage({Key? key}) : super(key: key);
 
   @override
-  _SavingsPageState createState() => _SavingsPageState();
+  State<SavingsPage> createState() => _SavingsPageState();
 }
 
 class _SavingsPageState extends State<SavingsPage> {

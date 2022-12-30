@@ -118,8 +118,8 @@ class _LoggedInMainTemplate extends State<LoggedInMainTemplate>
                           Column(
                             children: <Widget>[
                               SizedBox(
-                                child: Container(),
                                 height: screenHeight * 0.05,
+                                child: Container(),
                               ),
                               widget.screen,
                             ],

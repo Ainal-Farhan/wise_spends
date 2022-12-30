@@ -4,7 +4,7 @@ import 'package:wise_spends/com/ainal/wise/spends/db/domain/base/base_entity_tab
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/expense/expense_table.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/saving/saving_table.dart';
 
-@DataClassName(DomainTableConstant.transactionTablePrefix + "Transaction")
+@DataClassName("${DomainTableConstant.transactionTablePrefix}Transaction")
 class TransactionTable extends BaseEntityTable {
   // TextColumn get type =>
   //     text().check(type.isIn(DomainTableConstant.transactionTableTypeList))();

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/notifiers/drawer_notifier.dart';
@@ -10,7 +8,6 @@ import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/drawer/compon
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/drawer/components/sub_menu_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/ui/snack_bar/message.dart';
-import 'package:wise_spends/com/ainal/wise/spends/utils/app_path.dart';
 
 class LoggedInDrawer extends StatefulWidget {
   const LoggedInDrawer({
@@ -18,7 +15,7 @@ class LoggedInDrawer extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _LoggedInDrawerState createState() => _LoggedInDrawerState();
+  State<LoggedInDrawer> createState() => _LoggedInDrawerState();
 }
 
 class _LoggedInDrawerState extends State<LoggedInDrawer> {
@@ -72,13 +69,9 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
                   context: context,
                   message: "Backup database?",
                   onConfirm: () async {
-                    final file = File(
-                        '${await AppPath().getDownloadsDirectory()}/wise_spends.sqlite');
-
-                    await AppDatabase().exportInto(file);
                     showSnackBarMessage(
                       context,
-                      "Successfully export the db into ${file.path}",
+                      "Successfully export the db into ${await AppDatabase().exportInto()}",
                     );
                   },
                 );
@@ -92,7 +85,15 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
                   onConfirm: () async {
                     showSnackBarMessage(
                       context,
-                      "${await AppDatabase().restore() ? 'Successfully' : 'Failed to'} restore the db",
+                      "${await (() async {
+                        try {
+                          return await AppDatabase().restore()
+                              ? 'Successfully'
+                              : 'Failed to';
+                        } catch (e) {
+                          return e.toString();
+                        }
+                      })()} restore the db",
                     );
                   },
                 );
@@ -117,6 +118,7 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: const Color.fromRGBO(227, 233, 247, 0.8),
       child: Row(
         children: [
           drawerNotifier.isExpanded
@@ -138,7 +140,6 @@ class _LoggedInDrawerState extends State<LoggedInDrawer> {
           ),
         ],
       ),
-      color: const Color.fromRGBO(227, 233, 247, 0.8),
     );
   }
 }

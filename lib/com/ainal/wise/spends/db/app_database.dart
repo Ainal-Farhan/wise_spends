@@ -9,6 +9,9 @@ import 'package:wise_spends/com/ainal/wise/spends/db/domain/masterdata/index.dar
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/notification/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/saving/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/transaction/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/utils/app_path.dart';
+import 'package:wise_spends/com/ainal/wise/spends/utils/file_util.dart';
+import 'package:wise_spends/com/ainal/wise/spends/utils/permission_util.dart';
 import 'package:wise_spends/com/ainal/wise/spends/utils/uuid_generator.dart';
 
 part 'app_database.g.dart';
@@ -31,30 +34,44 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 
-  Future<void> exportInto(File file) async {
-    // Make sure the directory of the target file exists
-    await file.parent.create(recursive: true);
+  Future<String> exportInto() async {
+    final File file = FileUtil.createFileWithCurrentDateTime(
+      path: '${await AppPath().getDownloadsDirectory()}/backup/db',
+      fileName: 'backup',
+      extension: 'sqlite',
+    );
 
-    // Override an existing backup, sqlite expects the target file to be empty
-    if (file.existsSync()) {
-      file.deleteSync();
+    if (await PermissionUtil.isManageExternalStoragePermissionGranted()) {
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
+
+      FileUtil.createFileIntoDirectory(file);
+      await customStatement('VACUUM INTO ?', [file.path]);
+
+      return file.path;
     }
 
-    await customStatement('VACUUM INTO ?', [file.path]);
+    throw 'Permission Manage External Storage is not granted';
   }
 
   Future<bool> restore() async {
-    try {
-      final filePicker = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-      );
-      if (filePicker != null && filePicker.count == 1) {
-        File file = File(filePicker.files.single.path ?? '');
+    final filePicker = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.any,
+    );
+    if (filePicker != null && filePicker.count == 1) {
+      File file = File(filePicker.files.single.path ?? '');
+
+      final List<String> allowedExtensions = ['sqlite'];
+
+      if (FileUtil.isMatchCustomExtensions(file, allowedExtensions)) {
         await DbConnection.dbFile.writeAsBytes(await file.readAsBytes());
         return true;
+      } else {
+        throw 'The file extension is ${FileUtil.getFileExtension(file)}, it must be ${allowedExtensions.join(", ")}';
       }
-    } catch (_) {}
-
+    }
     return false;
   }
 }

@@ -26,6 +26,9 @@ dependencies:
   permission_handler: ^10.2.0
   external_path: ^1.0.3
   file_picker: ^5.2.4
+  intl: ^0.18.0
+  bloc: ^8.1.0
+  meta: ^1.8.0
 
 dev_dependencies:
   flutter_test:

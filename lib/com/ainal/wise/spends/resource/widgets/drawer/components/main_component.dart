@@ -90,16 +90,16 @@ class Widgets {
   static bool debugMode = kDebugMode;
 
   static List<String> generateTags(List sentences) {
-    List<String> _tags = [];
+    List<String> tags = [];
     for (var sentence in sentences) {
       if (sentence != null) {
         List words = '$sentence'.toLowerCase().split(' ');
         for (var word in words) {
-          if (_tags.contains(word) == false) _tags.add(word);
+          if (tags.contains(word) == false) tags.add(word);
         }
       }
     }
-    return _tags
+    return tags
       ..sort((b, a) => a.length.compareTo(b.length))
       ..removeWhere((element) => element.length < 3);
   }
@@ -119,11 +119,11 @@ class Widgets {
 
   ///An [Ios] style tiny arrow widget, which can be used on [ListTile] widgets with customizations
   static Widget arrow({Color? color, bool back = false, double angle = 90}) {
-    final Color _color = color ?? Colors.grey.shade200;
+    final Color colorz = color ?? Colors.grey.shade200;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: _color.withOpacity(0.15),
+        color: colorz.withOpacity(0.15),
         shape: BoxShape.circle,
       ),
       child: Transform.rotate(
@@ -131,7 +131,7 @@ class Widgets {
         child: Icon(
           back ? Icons.chevron_left : Icons.chevron_right,
           size: 18,
-          color: _color,
+          color: colorz,
         ),
       ),
     );
@@ -289,8 +289,8 @@ class Widgets {
       {bool showFullYear = true, bool showYear = true}) {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(createdAt);
     int day = date.day;
-    int _month = date.month;
-    String month = toMonth(_month);
+    int monthInt = date.month;
+    String month = toMonth(monthInt);
     String year = showYear ? toYear(createdAt, showFullYear: showFullYear) : "";
     return '$day $month $year';
   }
@@ -304,8 +304,8 @@ class Widgets {
   }
 
   static String toYear(int createdAt, {bool showFullYear = true}) {
-    int _yr = DateTime.fromMillisecondsSinceEpoch(createdAt).year;
-    return showFullYear ? "$_yr" : "$_yr".substring(0, 2);
+    int yr = DateTime.fromMillisecondsSinceEpoch(createdAt).year;
+    return showFullYear ? "$yr" : "$yr".substring(0, 2);
   }
 
   static String toMonth(int month) {

@@ -8,6 +8,7 @@ class SaveButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: onTap,
       child: Container(
         height: 70,
         decoration: BoxDecoration(
@@ -28,7 +29,6 @@ class SaveButtonWidget extends StatelessWidget {
           ],
         ),
       ),
-      onTap: onTap,
     );
   }
 }

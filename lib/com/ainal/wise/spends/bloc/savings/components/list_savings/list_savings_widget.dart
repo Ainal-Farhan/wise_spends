@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_list_savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_saving_transaction_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/saving_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/ui/alert_dialog/delete_dialog.dart';
-import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as route;
 
 // ignore: must_be_immutable
 class ListSavingsWidget extends StatelessWidget {
@@ -28,7 +28,7 @@ class ListSavingsWidget extends StatelessWidget {
           ISavingManager savingManager = SavingManager();
           await savingManager
               .deleteSelectedSaving(savingWithTransactions.saving.id);
-          Navigator.pushReplacementNamed(context, route.savingsPageRoute);
+          SavingsBloc().add(LoadListSavingsEvent());
         },
       );
     };

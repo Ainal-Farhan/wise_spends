@@ -32,8 +32,8 @@ class ErrorHomeLoggedInState extends HomeLoggedInState {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
               ),
-              child: const Text('reload'),
               onPressed: load,
+              child: const Text('reload'),
             ),
           ),
         ],

@@ -34,7 +34,7 @@ class SavingTransactionFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> _onSave() async {
+    Future<void> onSave() async {
       if (_formKey.currentState!.validate()) {
         _savingTransactionFormVO.transactionAmount =
             double.parse(_transactionAmountController.text);
@@ -75,7 +75,7 @@ class SavingTransactionFormWidget extends StatelessWidget {
               context,
             ),
             verticalSpacing(40),
-            SaveButtonWidget(onTap: _onSave),
+            SaveButtonWidget(onTap: onSave),
           ],
         ),
       ),

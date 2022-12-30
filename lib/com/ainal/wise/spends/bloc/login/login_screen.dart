@@ -63,8 +63,8 @@ class LoginScreenState extends State<LoginScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 32.0),
                     child: ElevatedButton(
-                      child: const Text('reload'),
                       onPressed: _load,
+                      child: const Text('reload'),
                     ),
                   ),
                 ],

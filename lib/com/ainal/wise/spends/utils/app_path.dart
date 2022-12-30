@@ -5,7 +5,8 @@ import 'dart:async';
 import 'package:external_path/external_path.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart' as path;
-import 'package:permission_handler/permission_handler.dart';
+import 'package:wise_spends/com/ainal/wise/spends/utils/permission_util.dart';
+import 'package:wise_spends/com/ainal/wise/spends/utils/platform/android_platform.dart';
 import 'package:wise_spends/com/ainal/wise/spends/utils/platform/i_platform.dart';
 
 class AppPath {
@@ -24,10 +25,10 @@ class AppPath {
       await path_provider.getApplicationDocumentsDirectory();
 
   Future<String> getDownloadsDirectory() async {
-    PermissionStatus status = await Permission.storage.request();
-    if (status.isGranted) {
-      return await ExternalPath.getExternalStoragePublicDirectory(
-          ExternalPath.DIRECTORY_DOWNLOADS);
+    if (await PermissionUtil.isStoragePermissionGranted()) {
+      if (platform is AndroidPlatform) {
+        return '${await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS)}/wise_spends';
+      }
     }
     return "";
   }

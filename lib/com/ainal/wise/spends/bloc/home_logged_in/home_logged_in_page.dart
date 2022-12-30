@@ -9,7 +9,7 @@ class HomeLoggedInPage extends StatefulWidget {
   static const String routeName = router.homeLoggedInPageRoute;
 
   @override
-  _HomeLoggedInPageState createState() => _HomeLoggedInPageState();
+  State<HomeLoggedInPage> createState() => _HomeLoggedInPageState();
 }
 
 class _HomeLoggedInPageState extends State<HomeLoggedInPage> {
