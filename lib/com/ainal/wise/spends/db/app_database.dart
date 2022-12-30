@@ -72,7 +72,7 @@ class AppDatabase extends _$AppDatabase {
         await DbConnection.dbFile.writeAsBytes(await file.readAsBytes());
         return true;
       } else {
-        throw 'The file extension is ${FileUtil.getFileExtension(file)}, it must be ${allowedExtensions.join(", ")}';
+        throw 'The file extension is ${FileUtil.getFileExtension(file)}, it must be ${allowedExtensions.join(" or ")}';
       }
     }
     return false;
