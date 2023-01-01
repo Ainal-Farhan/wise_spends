@@ -59,7 +59,16 @@ abstract class FileUtil {
     return File('$path/$newFileName');
   }
 
-  static Future createFileIntoDirectory(File file) async {
+  static Future<void> createFileIntoDirectory(File file) async {
     await file.create(recursive: true);
+  }
+
+  static Future<File?> getFileFromDirectory(
+      {required fileNameWithDirectory}) async {
+    File file = File(fileNameWithDirectory);
+    if (await file.exists()) {
+      return file;
+    }
+    return null;
   }
 }

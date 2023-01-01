@@ -54,4 +54,3 @@ flutter:
   assets:
     - assets/images/facebook.png
     - assets/images/google.png
-    - assets/db/backup.sqlite
