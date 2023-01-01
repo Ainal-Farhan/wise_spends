@@ -25,7 +25,9 @@ class ConfigurationManager with IConfigurationManager {
 
   Future<File> _getConfigFile() async {
     String fileNameWithPath =
-        '${(await AppPath().getApplicationDocumentsDirectory()).path}/app_config.json';
+        (await AppPath().getApplicationDocumentsDirectory()).path +
+            ConfigConstant.configFileNameForPath;
+
     File? configFile = await FileUtil.getFileFromDirectory(
         fileNameWithDirectory: fileNameWithPath);
 
@@ -84,6 +86,6 @@ class ConfigurationManager with IConfigurationManager {
 
   @override
   String getTheme() {
-    return _configurationModel.theme ?? '';
+    return _configurationModel.theme ?? ConfigConstant.emptyString;
   }
 }

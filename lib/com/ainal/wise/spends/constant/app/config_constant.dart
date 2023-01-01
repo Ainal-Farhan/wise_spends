@@ -10,4 +10,16 @@ abstract class ConfigConstant {
     themeDefault,
   ]);
   static const defaultLanguage = languageEnglish;
+
+  static const emptyString = '';
+
+  // file name
+  static const String configFileName = 'app_config.json';
+
+  // file name with /
+  static const String configFileNameForPath = '/app_config.json';
+
+  // json label
+  static const String jsonLabelTheme = 'theme';
+  static const String jsonLabelLanguage = 'language';
 }

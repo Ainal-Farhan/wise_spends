@@ -1,3 +1,5 @@
+import 'package:wise_spends/com/ainal/wise/spends/constant/app/config_constant.dart';
+
 class ConfigurationModel {
   String? theme;
   String? language;
@@ -9,15 +11,15 @@ class ConfigurationModel {
 
   factory ConfigurationModel.fromJson(Map<String, dynamic> json) {
     return ConfigurationModel(
-      language: json['language'],
-      theme: json['theme'],
+      language: json[ConfigConstant.jsonLabelLanguage],
+      theme: json[ConfigConstant.jsonLabelTheme],
     );
   }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'theme': theme,
-      'language': language,
+      ConfigConstant.jsonLabelLanguage: theme,
+      ConfigConstant.jsonLabelTheme: language,
     };
   }
 }
