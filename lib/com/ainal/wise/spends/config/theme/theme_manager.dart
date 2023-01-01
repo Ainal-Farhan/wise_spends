@@ -3,6 +3,8 @@ import 'package:wise_spends/com/ainal/wise/spends/config/configuration/i_configu
 import 'package:wise_spends/com/ainal/wise/spends/config/theme/i_theme_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/config/theme/theme_list/default/default_theme.dart';
 import 'package:wise_spends/com/ainal/wise/spends/config/theme/theme_list/i_theme.dart';
+import 'package:wise_spends/com/ainal/wise/spends/config/theme/widgets/default/widgets_default.dart';
+import 'package:wise_spends/com/ainal/wise/spends/config/theme/widgets/i_widget_theme.dart';
 import 'package:wise_spends/com/ainal/wise/spends/constant/app/config_constant.dart';
 
 class ThemeManager implements IThemeManager {
@@ -14,24 +16,36 @@ class ThemeManager implements IThemeManager {
 
   final IConfigurationManager _configurationManager = ConfigurationManager();
   late ITheme _currentTheme;
+  late IWidgetTheme _widgetTheme;
 
-  Future<void> _init() async {
-    switch (await _configurationManager.getTheme()) {
-      case ConfigConstant.themeDefault:
-        _currentTheme = DefaultTheme();
-        break;
-      default:
-        _currentTheme = DefaultTheme();
-    }
-  }
-
-  Future<void> _refresh() async {
-    await _init();
+  Future<void> refresh() async {
+    await init();
   }
 
   @override
-  Future<ITheme> getCurrentTheme() async {
-    await _refresh();
+  Future<void> init() async {
+    switch (_configurationManager.getTheme()) {
+      case ConfigConstant.themeDefault:
+        _currentTheme = DefaultTheme();
+        _widgetTheme = WidgetsDefault();
+        break;
+      default:
+        _currentTheme = DefaultTheme();
+        _widgetTheme = WidgetsDefault();
+    }
+
+    if (!validateListOfWidgets()) {
+      throw 'The Theme Widgets is incomplete';
+    }
+  }
+
+  @override
+  ITheme getCurrentTheme() {
     return _currentTheme;
+  }
+
+  @override
+  bool validateListOfWidgets() {
+    return _widgetTheme.allWidgetsAreExist();
   }
 }

@@ -19,13 +19,8 @@ class ConfigurationManager with IConfigurationManager {
     return _configuration;
   }
 
-  Future<void> _init() async {
-    _configFile = await _getConfigFile();
-    await _initModel();
-  }
-
   Future<void> _refresh() async {
-    await _init();
+    await init();
   }
 
   Future<File> _getConfigFile() async {
@@ -65,6 +60,12 @@ class ConfigurationManager with IConfigurationManager {
   }
 
   @override
+  Future<void> init() async {
+    _configFile = await _getConfigFile();
+    await _initModel();
+  }
+
+  @override
   Future<void> update({
     String? theme,
     String? language,
@@ -82,9 +83,7 @@ class ConfigurationManager with IConfigurationManager {
   }
 
   @override
-  Future<String> getTheme() async {
-    await _refresh();
-
+  String getTheme() {
     return _configurationModel.theme ?? '';
   }
 }

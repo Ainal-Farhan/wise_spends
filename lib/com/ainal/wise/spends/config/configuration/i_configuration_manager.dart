@@ -1,8 +1,10 @@
 abstract class IConfigurationManager {
+  Future<void> init();
+
   Future<void> update({
     String? theme,
     String? language,
   });
 
-  Future<String> getTheme();
+  String getTheme();
 }

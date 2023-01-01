@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/home_logged_in/state/home_logged_in_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/config/theme/widgets/components/buttons/i_th_back_button.dart';
 
 /// Initialized
 class InHomeLoggedInState extends HomeLoggedInState {
@@ -37,8 +38,8 @@ class InHomeLoggedInState extends HomeLoggedInState {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
-              child: const Text('throw error'),
-              onPressed: () => load(true),
+              child: IThBackButton(),
+              onPressed: () {},
             ),
           ),
         ],
