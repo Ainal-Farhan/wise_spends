@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:wise_spends/com/ainal/wise/spends/config/configuration/configuration_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/config/configuration/i_configuration_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/config/theme/i_theme_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/config/theme/theme_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/i_theme_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/theme_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/common/impl/user_service.dart';

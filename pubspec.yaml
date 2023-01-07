@@ -29,6 +29,7 @@ dependencies:
   intl: ^0.18.0
   bloc: ^8.1.0
   meta: ^1.8.0
+  settings_ui: ^2.0.2
 
 dev_dependencies:
   flutter_test:

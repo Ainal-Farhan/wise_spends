@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/add_saving/saving_form_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_list_savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms/saving/i_th_add_saving_form.dart';
 
 class InLoadAddSavingFormState extends SavingsState {
   const InLoadAddSavingFormState({
@@ -22,7 +22,7 @@ class InLoadAddSavingFormState extends SavingsState {
         Center(
           child: SizedBox(
             height: screenHeight * .7,
-            child: SavingFormWidget(
+            child: IThAddSavingForm(
               eventLoader: load,
             ),
           ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings_screen.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/main_template/logged_in_main_template.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
 
 class EditSavingsPage extends StatefulWidget {
   static const String routeName = router.editSavingsPageRoute;
@@ -18,9 +18,10 @@ class _EditSavingsPageState extends State<EditSavingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LoggedInMainTemplate(
-        screen: EditSavingsScreen(editSavingsBloc: _editSavingsBloc),
-        pageRoute: router.editSavingsPageRoute,
-        bloc: _editSavingsBloc);
+    return IThLoggedInMainTemplate(
+      screen: EditSavingsScreen(editSavingsBloc: _editSavingsBloc),
+      pageRoute: router.editSavingsPageRoute,
+      bloc: _editSavingsBloc,
+    );
   }
 }

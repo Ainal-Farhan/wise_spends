@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/index.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/main_template/logged_in_main_template.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
 
 class SavingsPage extends StatefulWidget {
   static const String routeName = router.savingsPageRoute;
@@ -17,7 +17,7 @@ class _SavingsPageState extends State<SavingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return LoggedInMainTemplate(
+    return IThLoggedInMainTemplate(
       pageRoute: router.savingsPageRoute,
       screen: SavingsScreen(savingsBloc: _savingsBloc),
       bloc: _savingsBloc,

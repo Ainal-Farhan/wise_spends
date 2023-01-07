@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/saving_transaction/input_fields/current_amount_widget.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/saving_transaction/input_fields/save_button_widget.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/saving_transaction/input_fields/saving_title_widget.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/saving_transaction/input_fields/transaction_amount_widget.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/saving_transaction/input_fields/transaction_type_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/save_saving_transaction_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/index.dart';
+import 'package:wise_spends/com/ainal/wise/spends/constant/saving/saving_constant.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/buttons/i_th_save_button.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_number_form_fields.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_radio_form_fields.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_output_number_form_fields.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_output_text_form_fields.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_vertical_spacing_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/components/form_field_spacing_widget.dart';
-import 'package:wise_spends/com/ainal/wise/spends/resource/widgets/ui/snack_bar/message.dart';
+import 'package:wise_spends/com/ainal/wise/spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/saving_transaction_form_vo.dart';
 
 // ignore: must_be_immutable
@@ -53,29 +54,34 @@ class SavingTransactionFormWidget extends StatelessWidget {
         child: Column(
           children: <Widget>[
             _inputField(
-              SavingTitleWidget(
+              IThOutputTextFormFields(
                   title: _savingTransactionFormVO.saving?.name ?? '-'),
               context,
             ),
-            verticalSpacing(40),
+            IThVerticalSpacingFormFields(height: 40),
             _inputField(
-              CurrentAmountWidget(
-                  currentAmount:
-                      _savingTransactionFormVO.saving?.currentAmount ?? .0),
+              IThOutputNumberFormFields(
+                  value: _savingTransactionFormVO.saving?.currentAmount ?? .0),
               context,
             ),
-            verticalSpacing(40),
+            IThVerticalSpacingFormFields(height: 40),
             _inputField(
-              TransactionTypeWidget(setValueFunc: setSelectedTypeOfTransaction),
+              IThInputRadioFormFields(
+                setValueFunc: setSelectedTypeOfTransaction,
+                optionsList: SavingConstant.savingTransactionList,
+              ),
               context,
             ),
-            verticalSpacing(40),
+            IThVerticalSpacingFormFields(height: 40),
             _inputField(
-              TransactionAmountWidget(controller: _transactionAmountController),
+              IThInputNumberFormFields(
+                label: 'Transaction Amount',
+                controller: _transactionAmountController,
+              ),
               context,
             ),
-            verticalSpacing(40),
-            SaveButtonWidget(onTap: onSave),
+            IThVerticalSpacingFormFields(height: 40),
+            IThSaveButton(onTap: onSave),
           ],
         ),
       ),
