@@ -1,5 +1,6 @@
 import 'package:wise_spends/com/ainal/wise/spends/config/configuration/configuration_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/config/configuration/i_configuration_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/colors/i_color_theme.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/i_theme_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/theme_list/default/default_theme.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/theme_list/i_theme.dart';
@@ -17,6 +18,7 @@ class ThemeManager implements IThemeManager {
   final IConfigurationManager _configurationManager = ConfigurationManager();
   late ITheme _currentTheme;
   late IWidgetTheme _widgetTheme;
+  late IColorTheme _colorTheme;
 
   Future<void> refresh() async {
     await init();
@@ -24,6 +26,8 @@ class ThemeManager implements IThemeManager {
 
   @override
   Future<void> init() async {
+    _colorTheme = IColorTheme();
+
     switch (_configurationManager.getTheme()) {
       case ConfigConstant.themeDefault:
         _currentTheme = DefaultTheme();
@@ -51,4 +55,7 @@ class ThemeManager implements IThemeManager {
   bool validateListOfWidgets() {
     return _widgetTheme.getMissingWidgetsFromCurrentTheme().isEmpty;
   }
+
+  @override
+  IColorTheme get colorTheme => _colorTheme;
 }

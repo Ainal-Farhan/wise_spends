@@ -117,7 +117,7 @@ class _ThLoggedInMainTemplateDefaultState
         key: scaffoldKey,
         drawer: IThLoggedInDrawer(),
         drawerScrimColor: Colors.transparent,
-        backgroundColor: IColorTheme().compexDrawerCanvasColor,
+        backgroundColor: IColorTheme().complexDrawerCanvasColor,
         body: NotificationListener<ScrollNotification>(
           onNotification: scrollListener,
           child: Stack(
