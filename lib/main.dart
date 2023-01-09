@@ -11,7 +11,7 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_b
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/constant/app/color_ref.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
+import 'package:wise_spends/com/ainal/wise/spends/router/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,8 +71,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Wise Spends',
       theme: theme,
-      initialRoute: router.savingsPageRoute,
-      onGenerateRoute: router.generateRoute,
+      initialRoute: AppRouter.savingsPageRoute,
+      onGenerateRoute: AppRouter.generateRoute,
       debugShowCheckedModeBanner: false,
     );
   }

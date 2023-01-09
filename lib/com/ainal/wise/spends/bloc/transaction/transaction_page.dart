@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_screen.dart';
-import 'package:wise_spends/com/ainal/wise/spends/router/index.dart' as router;
+import 'package:wise_spends/com/ainal/wise/spends/router/app_router.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
 
 class TransactionPage extends StatefulWidget {
-  static const String routeName = router.transactionPageRoute;
+  static const String routeName = AppRouter.transactionPageRoute;
 
   const TransactionPage({Key? key}) : super(key: key);
 
@@ -20,7 +20,7 @@ class _TransactionPageState extends State<TransactionPage> {
   Widget build(BuildContext context) {
     return IThLoggedInMainTemplate(
       screen: TransactionScreen(transactionBloc: _transactionBloc),
-      pageRoute: router.transactionPageRoute,
+      pageRoute: TransactionPage.routeName,
       bloc: _transactionBloc,
     );
   }
