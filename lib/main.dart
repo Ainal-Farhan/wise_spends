@@ -9,16 +9,16 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_sta
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/state/transaction_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_page.dart';
-import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/app_router.dart';
-import 'package:wise_spends/com/ainal/wise/spends/theme/colors/i_color_theme.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/i_theme_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Do any requests before start the app
   await () async {
-    await StartupManager().onRunApp("Ainal");
+    await IStartupManager().onRunApp("Ainal");
   }();
 
   runApp(
@@ -79,6 +79,6 @@ class MyApp extends StatelessWidget {
 
   ThemeData get theme => ThemeData.light().copyWith(
         brightness: Brightness.light,
-        primaryColor: IColorTheme().backgroundBlue,
+        primaryColor: IThemeManager().colorTheme.backgroundBlue,
       );
 }

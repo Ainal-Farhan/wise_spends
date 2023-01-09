@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/com/ainal/wise/spends/theme/colors/i_color_theme.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/i_theme_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/account_button_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/control_button_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/menu_widget.dart';
@@ -23,7 +23,7 @@ class BlackIconMenuWidget extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(seconds: 1),
       width: 100,
-      color: IColorTheme().complexDrawerBlack,
+      color: IThemeManager().colorTheme.complexDrawerBlack,
       child: Column(
         children: [
           ControlButtonWidget(expandOrShrinkDrawer: _expandOrShrinkDrawer),

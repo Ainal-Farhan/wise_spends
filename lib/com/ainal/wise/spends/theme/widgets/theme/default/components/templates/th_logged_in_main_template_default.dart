@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/manager/impl/startup_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/notifiers/bottom_nav_bar_notifier.dart';
-import 'package:wise_spends/com/ainal/wise/spends/theme/colors/i_color_theme.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/i_theme_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/appbar/i_th_logged_in_appbar.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/drawer/i_th_logged_in_drawer.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/navbar/i_th_logged_in_bottom_navbar.dart';
@@ -17,7 +16,7 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
   final Bloc bloc;
   final BottomNavBarNotifier bottomNavBarNotifier = BottomNavBarNotifier();
   final List<FloatingActionButton> floatingActionButtons;
-  final IStartupManager startupManager = StartupManager();
+  final IStartupManager startupManager = IStartupManager();
 
   ThLoggedInMainTemplateDefault({
     Key? key,
@@ -117,7 +116,7 @@ class _ThLoggedInMainTemplateDefaultState
         key: scaffoldKey,
         drawer: IThLoggedInDrawer(),
         drawerScrimColor: Colors.transparent,
-        backgroundColor: IColorTheme().complexDrawerCanvasColor,
+        backgroundColor: IThemeManager().colorTheme.complexDrawerCanvasColor,
         body: NotificationListener<ScrollNotification>(
           onNotification: scrollListener,
           child: Stack(

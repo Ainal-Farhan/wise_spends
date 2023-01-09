@@ -4,7 +4,6 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_s
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_saving_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/manager/impl/saving_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/ui/alert_dialog/delete_dialog.dart';
 
 // ignore: must_be_immutable
@@ -25,7 +24,7 @@ class ListSavingsWidget extends StatelessWidget {
       showDeleteDialog(
         context: context,
         onDelete: () async {
-          ISavingManager savingManager = SavingManager();
+          ISavingManager savingManager = ISavingManager();
           await savingManager
               .deleteSelectedSaving(savingWithTransactions.saving.id);
           SavingsBloc().add(LoadListSavingsEvent());

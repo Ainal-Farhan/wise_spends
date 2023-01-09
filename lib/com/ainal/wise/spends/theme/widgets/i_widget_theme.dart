@@ -1,5 +1,4 @@
 import 'package:wise_spends/com/ainal/wise/spends/theme/i_theme_manager.dart';
-import 'package:wise_spends/com/ainal/wise/spends/theme/theme_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/appbar/i_th_logged_in_appbar.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/buttons/i_th_back_button.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/buttons/i_th_save_button.dart';
@@ -17,7 +16,7 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/navba
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
 
 abstract class IWidgetTheme {
-  static final IThemeManager themeManager = ThemeManager();
+  static final IThemeManager themeManager = IThemeManager();
   static final List<Type> widgetThemeList = List.unmodifiable([
     //templates
     IThLoggedInMainTemplate,

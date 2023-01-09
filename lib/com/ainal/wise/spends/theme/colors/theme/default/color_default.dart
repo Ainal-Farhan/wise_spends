@@ -9,7 +9,6 @@ class ColorDefault implements IColorTheme {
   }
 
   static const Color _primaryColor = Color(0xff5b60ec);
-
   static const Color _backgroundBlue = Color(0xff1b81f1);
 
   static const Color _complexDrawerCanvasColor = Color(0xffe3e9f7);
