@@ -8,10 +8,14 @@ class ThInputRadioFormFieldsDefault extends StatefulWidget
   String? value;
   final List<String> optionsList;
   final Function setValueFunc;
+  final bool isInline;
 
-  ThInputRadioFormFieldsDefault(
-      {Key? key, required this.setValueFunc, required this.optionsList})
-      : super(key: key);
+  ThInputRadioFormFieldsDefault({
+    Key? key,
+    required this.setValueFunc,
+    required this.optionsList,
+    this.isInline = false,
+  }) : super(key: key);
 
   @override
   State<ThInputRadioFormFieldsDefault> createState() =>
@@ -29,6 +33,8 @@ class _ThInputRadioFormFieldsDefaultState
   @override
   Widget build(BuildContext context) {
     return RadioGroup<String>.builder(
+      horizontalAlignment: MainAxisAlignment.spaceAround,
+      direction: widget.isInline ? Axis.horizontal : Axis.vertical,
       groupValue: widget.value ?? '',
       onChanged: (value) => setState(() {
         widget.value = value ?? '';
@@ -39,6 +45,7 @@ class _ThInputRadioFormFieldsDefaultState
         item,
       ),
       fillColor: Colors.purple,
+      activeColor: Colors.amber,
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/drawe
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/errors/i_th_error_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_horizontal_spacing_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_number_form_fields.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_select_one_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_text_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_radio_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_output_number_form_fields.dart';
@@ -39,6 +40,7 @@ abstract class IWidgetTheme {
     IThInputNumberFormFields,
     IThInputTextFormFields,
     IThInputRadioFormFields,
+    IThInputSelectOneFormFields,
     IThOutputTextFormFields,
     IThOutputNumberFormFields,
 

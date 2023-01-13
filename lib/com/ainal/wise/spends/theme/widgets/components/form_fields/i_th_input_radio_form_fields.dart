@@ -9,12 +9,14 @@ abstract class IThInputRadioFormFields extends IThWidget {
     Key? key,
     required Function setValueFunc,
     required List<String> optionsList,
+    bool isInline = false,
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThInputRadioFormFieldsDefault(
         key: key,
         setValueFunc: setValueFunc,
         optionsList: optionsList,
+        isInline: isInline,
       );
     }
 
@@ -22,6 +24,7 @@ abstract class IThInputRadioFormFields extends IThWidget {
       key: key,
       setValueFunc: setValueFunc,
       optionsList: optionsList,
+      isInline: isInline,
     );
   }
 }

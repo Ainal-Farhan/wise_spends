@@ -6,6 +6,7 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/co
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/errors/th_error_widget_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_horizontal_spacing_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_input_number_form_fields_default.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_input_select_one_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_input_text_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_input_radio_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_output_number_form_fields_default.dart';
@@ -39,6 +40,7 @@ class WidgetsDefault extends IWidgetTheme {
           ThInputNumberFormFieldsDefault,
           ThInputTextFormFieldsDefault,
           ThInputRadioFormFieldsDefault,
+          ThInputSelectOneFormFieldsDefault,
           ThOutputTextFormFieldsDefault,
           ThOutputNumberFormFieldsDefault,
 

@@ -14,10 +14,10 @@ class ThInputNumberFormFieldsDefault extends StatelessWidget
     Key? key,
     required this.label,
     required this.controller,
-    this.isRequired = false,
-    this.isNegative = true,
-    this.isAcceptZero = true,
-    this.isPositive = true,
+    required this.isRequired,
+    required this.isNegative,
+    required this.isAcceptZero,
+    required this.isPositive,
   }) : super(key: key);
 
   @override

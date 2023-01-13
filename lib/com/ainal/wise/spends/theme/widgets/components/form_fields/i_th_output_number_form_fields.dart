@@ -9,10 +9,24 @@ abstract class IThOutputNumberFormFields extends IThWidget {
     Key? key,
     required double value,
     int decimalPoint = 0,
+    String prefix = '',
+    String postfix = '',
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
-      return ThOutputNumberFormFieldsDefault(value: value);
+      return ThOutputNumberFormFieldsDefault(
+        key: key,
+        value: value,
+        decimalPoint: decimalPoint,
+        prefix: prefix,
+        postfix: postfix,
+      );
     }
-    return ThOutputNumberFormFieldsDefault(value: value);
+    return ThOutputNumberFormFieldsDefault(
+      key: key,
+      value: value,
+      decimalPoint: decimalPoint,
+      prefix: prefix,
+      postfix: postfix,
+    );
   }
 }

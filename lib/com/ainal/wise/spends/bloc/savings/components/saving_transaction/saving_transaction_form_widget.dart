@@ -61,7 +61,10 @@ class SavingTransactionFormWidget extends StatelessWidget {
             IThVerticalSpacingFormFields(height: 40),
             _inputField(
               IThOutputNumberFormFields(
-                  value: _savingTransactionFormVO.saving?.currentAmount ?? .0),
+                value: _savingTransactionFormVO.saving?.currentAmount ?? .0,
+                decimalPoint: 2,
+                prefix: 'RM ',
+              ),
               context,
             ),
             IThVerticalSpacingFormFields(height: 40),
@@ -69,6 +72,7 @@ class SavingTransactionFormWidget extends StatelessWidget {
               IThInputRadioFormFields(
                 setValueFunc: setSelectedTypeOfTransaction,
                 optionsList: SavingConstant.savingTransactionList,
+                isInline: true,
               ),
               context,
             ),

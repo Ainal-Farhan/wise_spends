@@ -197,6 +197,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.1"
+  dropdown_textfield:
+    dependency: "direct main"
+    description:
+      name: dropdown_textfield
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.7"
   equatable:
     dependency: "direct main"
     description:
