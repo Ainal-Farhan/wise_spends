@@ -42,17 +42,19 @@ class _ThInputSelectOneFormFieldsDefaultState
     extends State<ThInputSelectOneFormFieldsDefault> {
   @override
   Widget build(BuildContext context) {
-    return DropDownTextField(
-      clearOption: widget.clearOption,
-      textFieldFocusNode: widget.textFieldFocusNode,
-      searchFocusNode: widget.searchFocusNode,
-      searchAutofocus: widget.searchAutofocus,
-      dropDownItemCount: widget.dropDownValues.length,
-      searchShowCursor: widget.searchShowCursor,
-      enableSearch: widget.enableSearch,
-      searchKeyboardType: widget.searchKeyboardType,
-      dropDownList: widget.dropDownValues,
-      onChanged: widget.onChanged,
+    return Expanded(
+      child: DropDownTextField(
+        clearOption: widget.clearOption,
+        textFieldFocusNode: widget.textFieldFocusNode,
+        searchFocusNode: widget.searchFocusNode,
+        searchAutofocus: widget.searchAutofocus,
+        dropDownItemCount: widget.dropDownValues.length,
+        searchShowCursor: widget.searchShowCursor,
+        enableSearch: widget.enableSearch,
+        searchKeyboardType: widget.searchKeyboardType,
+        dropDownList: widget.dropDownValues,
+        onChanged: widget.onChanged,
+      ),
     );
   }
 }

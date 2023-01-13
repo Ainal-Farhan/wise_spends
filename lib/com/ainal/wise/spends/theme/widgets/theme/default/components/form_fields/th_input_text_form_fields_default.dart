@@ -16,27 +16,29 @@ class ThInputTextFormFieldsDefault extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
+    return Expanded(
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(
+            fontSize: 20,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        style: const TextStyle(
           fontSize: 20,
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        validator: (value) {
+          if (isRequired && value!.isEmpty) {
+            return 'Please enter the saving name';
+          }
+          return null;
+        },
+        keyboardType: TextInputType.text,
       ),
-      style: const TextStyle(
-        fontSize: 20,
-      ),
-      validator: (value) {
-        if (isRequired && value!.isEmpty) {
-          return 'Please enter the saving name';
-        }
-        return null;
-      },
-      keyboardType: TextInputType.text,
     );
   }
 

@@ -7,6 +7,8 @@ class SavingTransactionFormVO with IVO {
   double? transactionAmount;
   String? typeOfTransaction;
   double? maxTransactionOut;
+  bool? isHasGoal;
+  double? goalAmount;
 
   SavingTransactionFormVO({
     this.saving,

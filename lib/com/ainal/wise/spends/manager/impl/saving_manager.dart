@@ -26,12 +26,16 @@ class SavingManager implements ISavingManager {
   Future<void> addNewSaving({
     required String name,
     required double initialAmount,
+    required bool isHasGoal,
+    required double goalAmount,
   }) async {
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
       dateUpdated: DateTime.now(),
       name: Value(name),
       userId: Value(_startupManager.currentUser.id),
       currentAmount: Value(initialAmount),
+      isHasGoal: Value(isHasGoal),
+      goal: Value(goalAmount),
     );
 
     return await _savingService.add(savingTableCompanion);

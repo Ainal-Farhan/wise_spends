@@ -5,6 +5,7 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/co
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/th_logged_in_drawer_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/errors/th_error_widget_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_horizontal_spacing_form_fields_default.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_input_label_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_input_number_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_input_select_one_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_input_text_form_fields_default.dart';
@@ -43,6 +44,7 @@ class WidgetsDefault extends IWidgetTheme {
           ThInputSelectOneFormFieldsDefault,
           ThOutputTextFormFieldsDefault,
           ThOutputNumberFormFieldsDefault,
+          ThInputLabelFormFieldsDefault,
 
           // buttons
           ThBackButtonDefault,

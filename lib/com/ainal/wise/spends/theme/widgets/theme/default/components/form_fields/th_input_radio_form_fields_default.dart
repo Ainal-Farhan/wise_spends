@@ -5,16 +5,19 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_
 // ignore: must_be_immutable
 class ThInputRadioFormFieldsDefault extends StatefulWidget
     implements IThInputRadioFormFields {
-  String? value;
+  String value;
   final List<String> optionsList;
   final Function setValueFunc;
   final bool isInline;
+  final String label;
 
   ThInputRadioFormFieldsDefault({
     Key? key,
     required this.setValueFunc,
     required this.optionsList,
-    this.isInline = false,
+    required this.isInline,
+    required this.label,
+    required this.value,
   }) : super(key: key);
 
   @override
@@ -32,20 +35,30 @@ class _ThInputRadioFormFieldsDefaultState
     extends State<ThInputRadioFormFieldsDefault> {
   @override
   Widget build(BuildContext context) {
-    return RadioGroup<String>.builder(
-      horizontalAlignment: MainAxisAlignment.spaceAround,
-      direction: widget.isInline ? Axis.horizontal : Axis.vertical,
-      groupValue: widget.value ?? '',
-      onChanged: (value) => setState(() {
-        widget.value = value ?? '';
-        widget.setValueFunc(value);
-      }),
-      items: widget.optionsList,
-      itemBuilder: (item) => RadioButtonBuilder(
-        item,
+    return Expanded(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text('${widget.label}: '),
+          Expanded(
+            child: RadioGroup<String>.builder(
+              horizontalAlignment: MainAxisAlignment.spaceAround,
+              direction: widget.isInline ? Axis.horizontal : Axis.vertical,
+              groupValue: widget.value,
+              onChanged: (value) => setState(() {
+                widget.value = value ?? '';
+                widget.setValueFunc(value);
+              }),
+              items: widget.optionsList,
+              itemBuilder: (item) => RadioButtonBuilder(
+                item,
+              ),
+              fillColor: Colors.purple,
+              activeColor: Colors.amber,
+            ),
+          ),
+        ],
       ),
-      fillColor: Colors.purple,
-      activeColor: Colors.amber,
     );
   }
 }

@@ -47,46 +47,64 @@ class SavingTransactionFormWidget extends StatelessWidget {
       }
     }
 
+    List<Widget> formFields = <Widget>[
+      _inputField(
+        IThOutputTextFormFields(
+            title: _savingTransactionFormVO.saving?.name ?? '-'),
+        context,
+      ),
+      IThVerticalSpacingFormFields(height: 40),
+      _inputField(
+        IThOutputNumberFormFields(
+          value: _savingTransactionFormVO.saving?.currentAmount ?? .0,
+          decimalPoint: 2,
+          prefix: 'RM ',
+        ),
+        context,
+      ),
+      IThVerticalSpacingFormFields(height: 40),
+    ];
+
+    if (_savingTransactionFormVO.saving!.isHasGoal) {
+      formFields.add(
+        _inputField(
+          IThOutputTextFormFields(
+            title:
+                'Goal: RM ${_savingTransactionFormVO.saving!.goal.toStringAsFixed(2)}',
+          ),
+          context,
+        ),
+      );
+    }
+
+    formFields.addAll([
+      _inputField(
+        IThInputRadioFormFields(
+          label: 'Type',
+          setValueFunc: setSelectedTypeOfTransaction,
+          optionsList: SavingConstant.savingTransactionList,
+          isInline: true,
+        ),
+        context,
+      ),
+      IThVerticalSpacingFormFields(height: 40),
+      _inputField(
+        IThInputNumberFormFields(
+          label: 'Transaction Amount',
+          controller: _transactionAmountController,
+        ),
+        context,
+      ),
+      IThVerticalSpacingFormFields(height: 40),
+      IThSaveButton(onTap: onSave),
+    ]);
+
     return Form(
       key: _formKey,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          children: <Widget>[
-            _inputField(
-              IThOutputTextFormFields(
-                  title: _savingTransactionFormVO.saving?.name ?? '-'),
-              context,
-            ),
-            IThVerticalSpacingFormFields(height: 40),
-            _inputField(
-              IThOutputNumberFormFields(
-                value: _savingTransactionFormVO.saving?.currentAmount ?? .0,
-                decimalPoint: 2,
-                prefix: 'RM ',
-              ),
-              context,
-            ),
-            IThVerticalSpacingFormFields(height: 40),
-            _inputField(
-              IThInputRadioFormFields(
-                setValueFunc: setSelectedTypeOfTransaction,
-                optionsList: SavingConstant.savingTransactionList,
-                isInline: true,
-              ),
-              context,
-            ),
-            IThVerticalSpacingFormFields(height: 40),
-            _inputField(
-              IThInputNumberFormFields(
-                label: 'Transaction Amount',
-                controller: _transactionAmountController,
-              ),
-              context,
-            ),
-            IThVerticalSpacingFormFields(height: 40),
-            IThSaveButton(onTap: onSave),
-          ],
+          children: formFields,
         ),
       ),
     );
@@ -95,7 +113,12 @@ class SavingTransactionFormWidget extends StatelessWidget {
   Widget _inputField(Widget widget, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: widget,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          widget,
+        ],
+      ),
     );
   }
 }

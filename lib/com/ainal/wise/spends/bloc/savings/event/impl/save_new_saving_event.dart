@@ -20,6 +20,8 @@ class SaveNewSavingEvent extends SavingsEvent {
       await savingsManager.addNewSaving(
         name: _addSavingFormVO.savingName!,
         initialAmount: _addSavingFormVO.currentAmount!,
+        isHasGoal: _addSavingFormVO.isHasGoal!,
+        goalAmount: _addSavingFormVO.goalAmount!,
       );
     } catch (_) {}
 

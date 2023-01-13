@@ -13,6 +13,8 @@ abstract class ISavingManager extends IManager {
   Future<void> addNewSaving({
     required String name,
     required double initialAmount,
+    required bool isHasGoal,
+    required double goalAmount,
   });
 
   Future<void> updateSavingCurrentAmount({
