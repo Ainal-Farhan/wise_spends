@@ -14,6 +14,7 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/co
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_output_text_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_vertical_spacing_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/forms/saving/th_add_saving_form_default.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/list_tiles/th_list_tiles_one_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/navbar/th_logged_in_bottom_navbar_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/templates/th_logged_in_main_template_default.dart';
 
@@ -45,6 +46,9 @@ class WidgetsDefault extends IWidgetTheme {
           ThOutputTextFormFieldsDefault,
           ThOutputNumberFormFieldsDefault,
           ThInputLabelFormFieldsDefault,
+
+          //list_tiles
+          ThListTilesOneDefault,
 
           // buttons
           ThBackButtonDefault,

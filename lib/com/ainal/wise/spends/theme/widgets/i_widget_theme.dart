@@ -14,6 +14,7 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_output_text_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_vertical_spacing_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms/saving/i_th_add_saving_form.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/navbar/i_th_logged_in_bottom_navbar.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
 
@@ -46,7 +47,10 @@ abstract class IWidgetTheme {
     IThOutputNumberFormFields,
     IThInputLabelFormFields,
 
-    // buttons
+    //list_tiles
+    IThListTilesOne,
+
+    //buttons
     IThBackButton,
     IThSaveButton,
 

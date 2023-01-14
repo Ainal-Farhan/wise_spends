@@ -59,10 +59,8 @@ class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
         _addSavingFormVO.currentAmount =
             double.parse(_currentAmountcontroller.text);
         _addSavingFormVO.isHasGoal = _isHasGoal;
-        if (_isHasGoal) {
-          _addSavingFormVO.goalAmount =
-              double.parse(_goalAmountController.text);
-        }
+        _addSavingFormVO.goalAmount =
+            _isHasGoal ? double.parse(_goalAmountController.text) : 0;
         widget.eventLoader(
           savingsEvent: SaveNewSavingEvent(
             addSavingFormVO: _addSavingFormVO,
