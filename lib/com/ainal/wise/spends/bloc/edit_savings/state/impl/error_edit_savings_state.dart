@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings_bloc.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/event/impl/un_edit_savings_event.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/event/impl/load_edit_savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/state/edit_savings_state.dart';
 
 class ErrorEditSavingsState extends EditSavingsState {
@@ -40,7 +40,7 @@ class ErrorEditSavingsState extends EditSavingsState {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
             ),
-            onPressed: () => EditSavingsBloc().add(UnEditSavingsEvent()),
+            onPressed: () => EditSavingsBloc().add(LoadEditSavingsEvent('')),
             child: const Text('reload'),
           ),
         ),

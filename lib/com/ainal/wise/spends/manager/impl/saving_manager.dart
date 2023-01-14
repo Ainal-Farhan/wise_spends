@@ -8,6 +8,7 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/i_saving_
 import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/impl/saving_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/i_transaction_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/impl/transaction_service.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
 
 class SavingManager implements ISavingManager {
   final ISavingService _savingService = SavingService();
@@ -86,6 +87,23 @@ class SavingManager implements ISavingManager {
       id: Value(savingId),
       dateUpdated: DateTime.now(),
       currentAmount: Value(currentAmount),
+    );
+
+    await _savingService.updatePart(updatedSaving);
+  }
+
+  @override
+  Future<void> updateSaving(
+      {required EditSavingFormVO editSavingFormVO}) async {
+    SavingTableCompanion updatedSaving = SavingTableCompanion(
+      id: Value(editSavingFormVO.savingId),
+      name: Value(editSavingFormVO.savingName),
+      currentAmount: Value(editSavingFormVO.currentAmount),
+      isHasGoal: Value(editSavingFormVO.isHasGoal),
+      goal: Value(
+        editSavingFormVO.isHasGoal ? editSavingFormVO.goalAmount : .0,
+      ),
+      dateUpdated: Value(DateTime.now()),
     );
 
     await _savingService.updatePart(updatedSaving);

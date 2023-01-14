@@ -4,6 +4,7 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/home_logged_in/home_logge
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/login_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/savings_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_page.dart';
+import 'package:wise_spends/com/ainal/wise/spends/router/screen_argument.dart';
 
 abstract class AppRouter {
   static const String loginPageRoute = "/loginPage";
@@ -13,6 +14,9 @@ abstract class AppRouter {
   static const String editSavingsPageRoute = "/editSavingsPageRoute";
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
+    ScreenArgument screenArgument =
+        (settings.arguments ?? ScreenArgument({})) as ScreenArgument;
+
     switch (settings.name) {
       case loginPageRoute:
         return MaterialPageRoute(builder: (_) => const LoginPage());
@@ -23,7 +27,9 @@ abstract class AppRouter {
       case transactionPageRoute:
         return MaterialPageRoute(builder: (_) => const TransactionPage());
       case editSavingsPageRoute:
-        return MaterialPageRoute(builder: (_) => const EditSavingsPage());
+        return MaterialPageRoute(
+            builder: (_) => EditSavingsPage(
+                savingId: screenArgument.arguments['savingId']));
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

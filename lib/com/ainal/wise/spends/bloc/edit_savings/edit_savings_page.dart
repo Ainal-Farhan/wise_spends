@@ -6,8 +6,12 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/templ
 
 class EditSavingsPage extends StatefulWidget {
   static const String routeName = AppRouter.editSavingsPageRoute;
+  final String savingId;
 
-  const EditSavingsPage({Key? key}) : super(key: key);
+  const EditSavingsPage({
+    Key? key,
+    required this.savingId,
+  }) : super(key: key);
 
   @override
   State<EditSavingsPage> createState() => _EditSavingsPageState();
@@ -19,7 +23,10 @@ class _EditSavingsPageState extends State<EditSavingsPage> {
   @override
   Widget build(BuildContext context) {
     return IThLoggedInMainTemplate(
-      screen: EditSavingsScreen(editSavingsBloc: _editSavingsBloc),
+      screen: EditSavingsScreen(
+        editSavingsBloc: _editSavingsBloc,
+        savingId: widget.savingId,
+      ),
       pageRoute: EditSavingsPage.routeName,
       bloc: _editSavingsBloc,
     );

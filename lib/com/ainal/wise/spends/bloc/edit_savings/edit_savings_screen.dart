@@ -5,8 +5,11 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/event/impl/l
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/state/edit_savings_state.dart';
 
 class EditSavingsScreen extends StatefulWidget {
+  final String savingId;
+
   const EditSavingsScreen({
     required EditSavingsBloc editSavingsBloc,
+    required this.savingId,
     Key? key,
   })  : _editSavingsBloc = editSavingsBloc,
         super(key: key);
@@ -25,7 +28,7 @@ class EditSavingsScreenState extends State<EditSavingsScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    widget._editSavingsBloc.add(LoadEditSavingsEvent(widget.savingId));
   }
 
   @override
@@ -42,9 +45,5 @@ class EditSavingsScreenState extends State<EditSavingsScreen> {
           EditSavingsState currentState,
         ) =>
             currentState.build(context));
-  }
-
-  void _load([bool isError = false]) {
-    widget._editSavingsBloc.add(LoadEditSavingsEvent(isError));
   }
 }
