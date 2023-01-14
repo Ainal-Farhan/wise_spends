@@ -45,16 +45,7 @@ class _ThEditSavingFormDefaultState extends State<ThEditSavingFormDefault> {
 
   bool _isHasGoal = false;
 
-  void setIsSavingsHasGoal(String value) {
-    setState(() {
-      _isHasGoal = value == 'Yes';
-    });
-  }
-
-  List<IThWidget> _formFields = [];
-
-  @override
-  Widget build(BuildContext context) {
+  _ThEditSavingFormDefaultState() {
     _editSavingFormVO = EditSavingFormVO(
       savingId: widget.saving.id,
       savingName: widget.saving.name ?? '',
@@ -73,7 +64,18 @@ class _ThEditSavingFormDefaultState extends State<ThEditSavingFormDefault> {
       text: _editSavingFormVO.goalAmount.toStringAsFixed(2),
     );
     _isHasGoal = _editSavingFormVO.isHasGoal;
+  }
 
+  void setIsSavingsHasGoal(String value) {
+    setState(() {
+      _isHasGoal = value == 'Yes';
+    });
+  }
+
+  List<IThWidget> _formFields = [];
+
+  @override
+  Widget build(BuildContext context) {
     Future<void> onSave() async {
       if (_formKey.currentState!.validate()) {
         _editSavingFormVO.savingName = _savingNamecontroller.text;
