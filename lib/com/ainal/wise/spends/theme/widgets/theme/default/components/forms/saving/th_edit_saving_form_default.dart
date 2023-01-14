@@ -12,14 +12,44 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/i_th_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
 
+// ignore: must_be_immutable
 class ThEditSavingFormDefault extends StatefulWidget
     implements IThEditSavingForm {
   final SvngSaving saving;
 
-  const ThEditSavingFormDefault({
+  late EditSavingFormVO _editSavingFormVO;
+
+  // fields Controller
+  final TextEditingController _savingNamecontroller = TextEditingController();
+  final TextEditingController _currentAmountcontroller =
+      TextEditingController();
+  final TextEditingController _goalAmountController = TextEditingController();
+  bool _isHasGoal = false;
+
+  ThEditSavingFormDefault({
     Key? key,
     required this.saving,
-  }) : super(key: key);
+  }) : super(key: key) {
+    _editSavingFormVO = EditSavingFormVO(
+      savingId: saving.id,
+      savingName: saving.name ?? '',
+      currentAmount: saving.currentAmount,
+      isHasGoal: saving.isHasGoal,
+      goalAmount: saving.goal,
+    );
+
+    _savingNamecontroller.value = TextEditingValue(
+      text: _editSavingFormVO.savingName,
+    );
+    _currentAmountcontroller.value = TextEditingValue(
+      text: _editSavingFormVO.currentAmount.toStringAsFixed(2),
+    );
+    _goalAmountController.value = TextEditingValue(
+      text: _editSavingFormVO.goalAmount.toStringAsFixed(2),
+    );
+
+    _isHasGoal = _editSavingFormVO.isHasGoal;
+  }
 
   @override
   State<ThEditSavingFormDefault> createState() =>
@@ -33,42 +63,11 @@ class ThEditSavingFormDefault extends StatefulWidget
 }
 
 class _ThEditSavingFormDefaultState extends State<ThEditSavingFormDefault> {
-  late EditSavingFormVO _editSavingFormVO;
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  // fields Controller
-  final TextEditingController _savingNamecontroller = TextEditingController();
-  final TextEditingController _currentAmountcontroller =
-      TextEditingController();
-  final TextEditingController _goalAmountController = TextEditingController();
-
-  bool _isHasGoal = false;
-
-  _ThEditSavingFormDefaultState() {
-    _editSavingFormVO = EditSavingFormVO(
-      savingId: widget.saving.id,
-      savingName: widget.saving.name ?? '',
-      currentAmount: widget.saving.currentAmount,
-      isHasGoal: widget.saving.isHasGoal,
-      goalAmount: widget.saving.goal,
-    );
-
-    _savingNamecontroller.value = TextEditingValue(
-      text: _editSavingFormVO.savingName,
-    );
-    _currentAmountcontroller.value = TextEditingValue(
-      text: _editSavingFormVO.currentAmount.toStringAsFixed(2),
-    );
-    _goalAmountController.value = TextEditingValue(
-      text: _editSavingFormVO.goalAmount.toStringAsFixed(2),
-    );
-    _isHasGoal = _editSavingFormVO.isHasGoal;
-  }
 
   void setIsSavingsHasGoal(String value) {
     setState(() {
-      _isHasGoal = value == 'Yes';
+      widget._isHasGoal = value == 'Yes';
     });
   }
 
@@ -78,13 +77,14 @@ class _ThEditSavingFormDefaultState extends State<ThEditSavingFormDefault> {
   Widget build(BuildContext context) {
     Future<void> onSave() async {
       if (_formKey.currentState!.validate()) {
-        _editSavingFormVO.savingName = _savingNamecontroller.text;
-        _editSavingFormVO.currentAmount =
-            double.parse(_currentAmountcontroller.text);
-        _editSavingFormVO.isHasGoal = _isHasGoal;
-        _editSavingFormVO.goalAmount =
-            _isHasGoal ? double.parse(_goalAmountController.text) : 0;
-        EditSavingsBloc().add(UpdateEditSavingsEvent(_editSavingFormVO));
+        widget._editSavingFormVO.savingName = widget._savingNamecontroller.text;
+        widget._editSavingFormVO.currentAmount =
+            double.parse(widget._currentAmountcontroller.text);
+        widget._editSavingFormVO.isHasGoal = widget._isHasGoal;
+        widget._editSavingFormVO.goalAmount = widget._isHasGoal
+            ? double.parse(widget._goalAmountController.text)
+            : 0;
+        EditSavingsBloc().add(UpdateEditSavingsEvent(widget._editSavingFormVO));
       } else {
         showSnackBarMessage(context, 'Please fill every field');
       }
@@ -93,26 +93,26 @@ class _ThEditSavingFormDefaultState extends State<ThEditSavingFormDefault> {
     _formFields = [
       IThInputTextFormFields(
         label: 'Saving Name',
-        controller: _savingNamecontroller,
+        controller: widget._savingNamecontroller,
       ),
       IThInputNumberFormFields(
         label: 'Current Amount (RM)',
-        controller: _currentAmountcontroller,
+        controller: widget._currentAmountcontroller,
       ),
       IThInputRadioFormFields(
         label: 'Has Goal',
         isInline: true,
         optionsList: const ["Yes", "No"],
         setValueFunc: setIsSavingsHasGoal,
-        value: _isHasGoal ? 'Yes' : 'No',
+        value: widget._isHasGoal ? 'Yes' : 'No',
       ),
     ];
 
-    if (_isHasGoal) {
+    if (widget._isHasGoal) {
       _formFields.add(
         IThInputNumberFormFields(
           label: 'Goal Amount (RM)',
-          controller: _goalAmountController,
+          controller: widget._goalAmountController,
         ),
       );
     }
