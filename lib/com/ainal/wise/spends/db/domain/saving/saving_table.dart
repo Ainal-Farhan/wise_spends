@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:wise_spends/com/ainal/wise/spends/constant/domain/domain_table_constant.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/common/user_table.dart';
+import 'package:wise_spends/com/ainal/wise/spends/db/domain/saving/money_storage_table.dart';
 
 @DataClassName("${DomainTableConstant.savingTablePrefix}Saving")
 class SavingTable extends BaseEntityTable {
@@ -20,6 +21,8 @@ class SavingTable extends BaseEntityTable {
       boolean().withDefault(const Constant(false))();
   RealColumn get currentAmount => real().withDefault(const Constant(.0))();
   TextColumn get userId => text().nullable().references(UserTable, #id)();
+  TextColumn get moneyStorageId =>
+      text().nullable().references(MoneyStorageTable, #id)();
 
   @override
   List<Set<Column>> get uniqueKeys => [

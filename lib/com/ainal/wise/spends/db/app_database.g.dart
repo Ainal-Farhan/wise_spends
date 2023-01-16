@@ -3,6 +3,102 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class $UserTableTable extends UserTable
+    with TableInfo<$UserTableTable, CmmnUser> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+      'date_updated', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [id, dateCreated, dateUpdated, name];
+  @override
+  String get aliasedName => _alias ?? 'user_table';
+  @override
+  String get actualTableName => 'user_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<CmmnUser> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+        {name},
+      ];
+  @override
+  CmmnUser map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CmmnUser(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+      dateUpdated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
+  }
+
+  @override
+  $UserTableTable createAlias(String alias) {
+    return $UserTableTable(attachedDatabase, alias);
+  }
+}
+
 class CmmnUser extends DataClass implements Insertable<CmmnUser> {
   final String id;
   final DateTime dateCreated;
@@ -162,12 +258,12 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
   }
 }
 
-class $UserTableTable extends UserTable
-    with TableInfo<$UserTableTable, CmmnUser> {
+class $GroupReferenceTableTable extends GroupReferenceTable
+    with TableInfo<$GroupReferenceTableTable, MstrdtGroupReference> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $UserTableTable(this.attachedDatabase, [this._alias]);
+  $GroupReferenceTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -189,19 +285,26 @@ class $UserTableTable extends UserTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+      'label', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+      'value', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, dateCreated, dateUpdated, name];
+  List<GeneratedColumn> get $columns =>
+      [id, dateCreated, dateUpdated, label, value];
   @override
-  String get aliasedName => _alias ?? 'user_table';
+  String get aliasedName => _alias ?? 'group_reference_table';
   @override
-  String get actualTableName => 'user_table';
+  String get actualTableName => 'group_reference_table';
   @override
-  VerificationContext validateIntegrity(Insertable<CmmnUser> instance,
+  VerificationContext validateIntegrity(
+      Insertable<MstrdtGroupReference> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -222,11 +325,17 @@ class $UserTableTable extends UserTable
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
     }
-    if (data.containsKey('name')) {
+    if (data.containsKey('label')) {
       context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+          _labelMeta, label.isAcceptableOrUnknown(data['label']!, _labelMeta));
     } else if (isInserting) {
-      context.missing(_nameMeta);
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
     }
     return context;
   }
@@ -234,27 +343,25 @@ class $UserTableTable extends UserTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-        {name},
-      ];
-  @override
-  CmmnUser map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MstrdtGroupReference map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CmmnUser(
+    return MstrdtGroupReference(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      label: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}label'])!,
+      value: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
     );
   }
 
   @override
-  $UserTableTable createAlias(String alias) {
-    return $UserTableTable(attachedDatabase, alias);
+  $GroupReferenceTableTable createAlias(String alias) {
+    return $GroupReferenceTableTable(attachedDatabase, alias);
   }
 }
 
@@ -441,12 +548,12 @@ class GroupReferenceTableCompanion
   }
 }
 
-class $GroupReferenceTableTable extends GroupReferenceTable
-    with TableInfo<$GroupReferenceTableTable, MstrdtGroupReference> {
+class $ReferenceTableTable extends ReferenceTable
+    with TableInfo<$ReferenceTableTable, MstrdtReference> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $GroupReferenceTableTable(this.attachedDatabase, [this._alias]);
+  $ReferenceTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -477,17 +584,49 @@ class $GroupReferenceTableTable extends GroupReferenceTable
   @override
   late final GeneratedColumn<String> value = GeneratedColumn<String>(
       'value', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool> isActive =
+      GeneratedColumn<bool>('is_active', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_active" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  static const VerificationMeta _belongToMeta =
+      const VerificationMeta('belongTo');
+  @override
+  late final GeneratedColumn<String> belongTo = GeneratedColumn<String>(
+      'belong_to', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES reference_table (id)'));
+  static const VerificationMeta _groupIdMeta =
+      const VerificationMeta('groupId');
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+      'group_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES group_reference_table (id)'));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, label, value];
+      [id, dateCreated, dateUpdated, label, value, isActive, belongTo, groupId];
   @override
-  String get aliasedName => _alias ?? 'group_reference_table';
+  String get aliasedName => _alias ?? 'reference_table';
   @override
-  String get actualTableName => 'group_reference_table';
+  String get actualTableName => 'reference_table';
   @override
-  VerificationContext validateIntegrity(
-      Insertable<MstrdtGroupReference> instance,
+  VerificationContext validateIntegrity(Insertable<MstrdtReference> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -520,15 +659,31 @@ class $GroupReferenceTableTable extends GroupReferenceTable
     } else if (isInserting) {
       context.missing(_valueMeta);
     }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('belong_to')) {
+      context.handle(_belongToMeta,
+          belongTo.isAcceptableOrUnknown(data['belong_to']!, _belongToMeta));
+    } else if (isInserting) {
+      context.missing(_belongToMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(_groupIdMeta,
+          groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta));
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MstrdtGroupReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MstrdtReference map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MstrdtGroupReference(
+    return MstrdtReference(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       dateCreated: attachedDatabase.typeMapping
@@ -539,12 +694,18 @@ class $GroupReferenceTableTable extends GroupReferenceTable
           .read(DriftSqlType.string, data['${effectivePrefix}label'])!,
       value: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      belongTo: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}belong_to'])!,
+      groupId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}group_id'])!,
     );
   }
 
   @override
-  $GroupReferenceTableTable createAlias(String alias) {
-    return $GroupReferenceTableTable(attachedDatabase, alias);
+  $ReferenceTableTable createAlias(String alias) {
+    return $ReferenceTableTable(attachedDatabase, alias);
   }
 }
 
@@ -795,12 +956,12 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
   }
 }
 
-class $ReferenceTableTable extends ReferenceTable
-    with TableInfo<$ReferenceTableTable, MstrdtReference> {
+class $ReferenceDataTableTable extends ReferenceDataTable
+    with TableInfo<$ReferenceDataTableTable, MstrdtReferenceData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ReferenceTableTable(this.attachedDatabase, [this._alias]);
+  $ReferenceDataTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -827,53 +988,74 @@ class $ReferenceTableTable extends ReferenceTable
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
       'label', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _groupLabelMeta =
+      const VerificationMeta('groupLabel');
+  @override
+  late final GeneratedColumn<String> groupLabel = GeneratedColumn<String>(
+      'group_label', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _valueMeta = const VerificationMeta('value');
   @override
   late final GeneratedColumn<String> value = GeneratedColumn<String>(
       'value', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
-  static const VerificationMeta _isActiveMeta =
-      const VerificationMeta('isActive');
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _groupValueMeta =
+      const VerificationMeta('groupValue');
   @override
-  late final GeneratedColumn<bool> isActive =
-      GeneratedColumn<bool>('is_active', aliasedName, false,
+  late final GeneratedColumn<String> groupValue = GeneratedColumn<String>(
+      'group_value', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _referenceIdMeta =
+      const VerificationMeta('referenceId');
+  @override
+  late final GeneratedColumn<String> referenceId = GeneratedColumn<String>(
+      'reference_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES reference_table (id)'));
+  static const VerificationMeta _isHasNextMeta =
+      const VerificationMeta('isHasNext');
+  @override
+  late final GeneratedColumn<bool> isHasNext =
+      GeneratedColumn<bool>('is_has_next', aliasedName, false,
           type: DriftSqlType.bool,
           requiredDuringInsert: false,
           defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_active" IN (0, 1))',
+            SqlDialect.sqlite: 'CHECK ("is_has_next" IN (0, 1))',
             SqlDialect.mysql: '',
             SqlDialect.postgres: '',
           }),
           defaultValue: const Constant(false));
-  static const VerificationMeta _belongToMeta =
-      const VerificationMeta('belongTo');
+  static const VerificationMeta _nextReferenceDataIdMeta =
+      const VerificationMeta('nextReferenceDataId');
   @override
-  late final GeneratedColumn<String> belongTo = GeneratedColumn<String>(
-      'belong_to', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES reference_table (id)'));
-  static const VerificationMeta _groupIdMeta =
-      const VerificationMeta('groupId');
+  late final GeneratedColumn<String> nextReferenceDataId =
+      GeneratedColumn<String>('next_reference_data_id', aliasedName, true,
+          type: DriftSqlType.string,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintIsAlways(
+              'REFERENCES reference_data_table (id)'));
   @override
-  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
-      'group_id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES group_reference_table (id)'));
+  List<GeneratedColumn> get $columns => [
+        id,
+        dateCreated,
+        dateUpdated,
+        label,
+        groupLabel,
+        value,
+        groupValue,
+        referenceId,
+        isHasNext,
+        nextReferenceDataId
+      ];
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, label, value, isActive, belongTo, groupId];
+  String get aliasedName => _alias ?? 'reference_data_table';
   @override
-  String get aliasedName => _alias ?? 'reference_table';
+  String get actualTableName => 'reference_data_table';
   @override
-  String get actualTableName => 'reference_table';
-  @override
-  VerificationContext validateIntegrity(Insertable<MstrdtReference> instance,
+  VerificationContext validateIntegrity(
+      Insertable<MstrdtReferenceData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -900,27 +1082,45 @@ class $ReferenceTableTable extends ReferenceTable
     } else if (isInserting) {
       context.missing(_labelMeta);
     }
+    if (data.containsKey('group_label')) {
+      context.handle(
+          _groupLabelMeta,
+          groupLabel.isAcceptableOrUnknown(
+              data['group_label']!, _groupLabelMeta));
+    } else if (isInserting) {
+      context.missing(_groupLabelMeta);
+    }
     if (data.containsKey('value')) {
       context.handle(
           _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
     } else if (isInserting) {
       context.missing(_valueMeta);
     }
-    if (data.containsKey('is_active')) {
-      context.handle(_isActiveMeta,
-          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
-    }
-    if (data.containsKey('belong_to')) {
-      context.handle(_belongToMeta,
-          belongTo.isAcceptableOrUnknown(data['belong_to']!, _belongToMeta));
+    if (data.containsKey('group_value')) {
+      context.handle(
+          _groupValueMeta,
+          groupValue.isAcceptableOrUnknown(
+              data['group_value']!, _groupValueMeta));
     } else if (isInserting) {
-      context.missing(_belongToMeta);
+      context.missing(_groupValueMeta);
     }
-    if (data.containsKey('group_id')) {
-      context.handle(_groupIdMeta,
-          groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta));
-    } else if (isInserting) {
-      context.missing(_groupIdMeta);
+    if (data.containsKey('reference_id')) {
+      context.handle(
+          _referenceIdMeta,
+          referenceId.isAcceptableOrUnknown(
+              data['reference_id']!, _referenceIdMeta));
+    }
+    if (data.containsKey('is_has_next')) {
+      context.handle(
+          _isHasNextMeta,
+          isHasNext.isAcceptableOrUnknown(
+              data['is_has_next']!, _isHasNextMeta));
+    }
+    if (data.containsKey('next_reference_data_id')) {
+      context.handle(
+          _nextReferenceDataIdMeta,
+          nextReferenceDataId.isAcceptableOrUnknown(
+              data['next_reference_data_id']!, _nextReferenceDataIdMeta));
     }
     return context;
   }
@@ -928,9 +1128,9 @@ class $ReferenceTableTable extends ReferenceTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MstrdtReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MstrdtReferenceData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MstrdtReference(
+    return MstrdtReferenceData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       dateCreated: attachedDatabase.typeMapping
@@ -939,20 +1139,25 @@ class $ReferenceTableTable extends ReferenceTable
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
       label: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}label'])!,
+      groupLabel: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}group_label'])!,
       value: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
-      isActive: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
-      belongTo: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}belong_to'])!,
-      groupId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}group_id'])!,
+      groupValue: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}group_value'])!,
+      referenceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}reference_id']),
+      isHasNext: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_has_next'])!,
+      nextReferenceDataId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}next_reference_data_id']),
     );
   }
 
   @override
-  $ReferenceTableTable createAlias(String alias) {
-    return $ReferenceTableTable(attachedDatabase, alias);
+  $ReferenceDataTableTable createAlias(String alias) {
+    return $ReferenceDataTableTable(attachedDatabase, alias);
   }
 }
 
@@ -1268,12 +1473,12 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
   }
 }
 
-class $ReferenceDataTableTable extends ReferenceDataTable
-    with TableInfo<$ReferenceDataTableTable, MstrdtReferenceData> {
+class $ExpenseTableTable extends ExpenseTable
+    with TableInfo<$ExpenseTableTable, ExpenseTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ReferenceDataTableTable(this.attachedDatabase, [this._alias]);
+  $ExpenseTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -1295,79 +1500,48 @@ class $ReferenceDataTableTable extends ReferenceDataTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<String> label = GeneratedColumn<String>(
-      'label', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _groupLabelMeta =
-      const VerificationMeta('groupLabel');
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
   @override
-  late final GeneratedColumn<String> groupLabel = GeneratedColumn<String>(
-      'group_label', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _expenseDateMeta =
+      const VerificationMeta('expenseDate');
   @override
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-      'value', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _groupValueMeta =
-      const VerificationMeta('groupValue');
+  late final GeneratedColumn<DateTime> expenseDate = GeneratedColumn<DateTime>(
+      'expense_date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _referenceDataIdMeta =
+      const VerificationMeta('referenceDataId');
   @override
-  late final GeneratedColumn<String> groupValue = GeneratedColumn<String>(
-      'group_value', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _referenceIdMeta =
-      const VerificationMeta('referenceId');
-  @override
-  late final GeneratedColumn<String> referenceId = GeneratedColumn<String>(
-      'reference_id', aliasedName, true,
+  late final GeneratedColumn<String> referenceDataId = GeneratedColumn<String>(
+      'reference_data_id', aliasedName, false,
       type: DriftSqlType.string,
-      requiredDuringInsert: false,
+      requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES reference_table (id)'));
-  static const VerificationMeta _isHasNextMeta =
-      const VerificationMeta('isHasNext');
-  @override
-  late final GeneratedColumn<bool> isHasNext =
-      GeneratedColumn<bool>('is_has_next', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_has_next" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
-  static const VerificationMeta _nextReferenceDataIdMeta =
-      const VerificationMeta('nextReferenceDataId');
-  @override
-  late final GeneratedColumn<String> nextReferenceDataId =
-      GeneratedColumn<String>('next_reference_data_id', aliasedName, true,
-          type: DriftSqlType.string,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintIsAlways(
-              'REFERENCES reference_data_table (id)'));
+          'REFERENCES reference_data_table (id)'));
   @override
   List<GeneratedColumn> get $columns => [
         id,
         dateCreated,
         dateUpdated,
-        label,
-        groupLabel,
-        value,
-        groupValue,
-        referenceId,
-        isHasNext,
-        nextReferenceDataId
+        amount,
+        description,
+        expenseDate,
+        referenceDataId
       ];
   @override
-  String get aliasedName => _alias ?? 'reference_data_table';
+  String get aliasedName => _alias ?? 'expense_table';
   @override
-  String get actualTableName => 'reference_data_table';
+  String get actualTableName => 'expense_table';
   @override
-  VerificationContext validateIntegrity(
-      Insertable<MstrdtReferenceData> instance,
+  VerificationContext validateIntegrity(Insertable<ExpenseTableData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1388,51 +1562,33 @@ class $ReferenceDataTableTable extends ReferenceDataTable
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
     }
-    if (data.containsKey('label')) {
-      context.handle(
-          _labelMeta, label.isAcceptableOrUnknown(data['label']!, _labelMeta));
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
     } else if (isInserting) {
-      context.missing(_labelMeta);
+      context.missing(_amountMeta);
     }
-    if (data.containsKey('group_label')) {
+    if (data.containsKey('description')) {
       context.handle(
-          _groupLabelMeta,
-          groupLabel.isAcceptableOrUnknown(
-              data['group_label']!, _groupLabelMeta));
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('expense_date')) {
+      context.handle(
+          _expenseDateMeta,
+          expenseDate.isAcceptableOrUnknown(
+              data['expense_date']!, _expenseDateMeta));
     } else if (isInserting) {
-      context.missing(_groupLabelMeta);
+      context.missing(_expenseDateMeta);
     }
-    if (data.containsKey('value')) {
+    if (data.containsKey('reference_data_id')) {
       context.handle(
-          _valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+          _referenceDataIdMeta,
+          referenceDataId.isAcceptableOrUnknown(
+              data['reference_data_id']!, _referenceDataIdMeta));
     } else if (isInserting) {
-      context.missing(_valueMeta);
-    }
-    if (data.containsKey('group_value')) {
-      context.handle(
-          _groupValueMeta,
-          groupValue.isAcceptableOrUnknown(
-              data['group_value']!, _groupValueMeta));
-    } else if (isInserting) {
-      context.missing(_groupValueMeta);
-    }
-    if (data.containsKey('reference_id')) {
-      context.handle(
-          _referenceIdMeta,
-          referenceId.isAcceptableOrUnknown(
-              data['reference_id']!, _referenceIdMeta));
-    }
-    if (data.containsKey('is_has_next')) {
-      context.handle(
-          _isHasNextMeta,
-          isHasNext.isAcceptableOrUnknown(
-              data['is_has_next']!, _isHasNextMeta));
-    }
-    if (data.containsKey('next_reference_data_id')) {
-      context.handle(
-          _nextReferenceDataIdMeta,
-          nextReferenceDataId.isAcceptableOrUnknown(
-              data['next_reference_data_id']!, _nextReferenceDataIdMeta));
+      context.missing(_referenceDataIdMeta);
     }
     return context;
   }
@@ -1440,36 +1596,29 @@ class $ReferenceDataTableTable extends ReferenceDataTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MstrdtReferenceData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ExpenseTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MstrdtReferenceData(
+    return ExpenseTableData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
-      label: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}label'])!,
-      groupLabel: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}group_label'])!,
-      value: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}value'])!,
-      groupValue: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}group_value'])!,
-      referenceId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}reference_id']),
-      isHasNext: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_has_next'])!,
-      nextReferenceDataId: attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}next_reference_data_id']),
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      expenseDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}expense_date'])!,
+      referenceDataId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}reference_data_id'])!,
     );
   }
 
   @override
-  $ReferenceDataTableTable createAlias(String alias) {
-    return $ReferenceDataTableTable(attachedDatabase, alias);
+  $ExpenseTableTable createAlias(String alias) {
+    return $ExpenseTableTable(attachedDatabase, alias);
   }
 }
 
@@ -1703,12 +1852,12 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
   }
 }
 
-class $ExpenseTableTable extends ExpenseTable
-    with TableInfo<$ExpenseTableTable, ExpenseTableData> {
+class $ExpenseReferenceTableTable extends ExpenseReferenceTable
+    with TableInfo<$ExpenseReferenceTableTable, MstrdtExpenseReference> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ExpenseTableTable(this.attachedDatabase, [this._alias]);
+  $ExpenseReferenceTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -1730,48 +1879,39 @@ class $ExpenseTableTable extends ExpenseTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  static const VerificationMeta _suggestedAmountMeta =
+      const VerificationMeta('suggestedAmount');
   @override
-  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
-      'amount', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
+  late final GeneratedColumn<double> suggestedAmount = GeneratedColumn<double>(
+      'suggested_amount', aliasedName, false,
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(.0));
   static const VerificationMeta _descriptionMeta =
       const VerificationMeta('description');
   @override
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _expenseDateMeta =
-      const VerificationMeta('expenseDate');
+  static const VerificationMeta _referenceIdMeta =
+      const VerificationMeta('referenceId');
   @override
-  late final GeneratedColumn<DateTime> expenseDate = GeneratedColumn<DateTime>(
-      'expense_date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _referenceDataIdMeta =
-      const VerificationMeta('referenceDataId');
-  @override
-  late final GeneratedColumn<String> referenceDataId = GeneratedColumn<String>(
-      'reference_data_id', aliasedName, false,
+  late final GeneratedColumn<String> referenceId = GeneratedColumn<String>(
+      'reference_id', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES reference_data_table (id)'));
+          'REFERENCES reference_table (id)'));
   @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        dateCreated,
-        dateUpdated,
-        amount,
-        description,
-        expenseDate,
-        referenceDataId
-      ];
+  List<GeneratedColumn> get $columns =>
+      [id, dateCreated, dateUpdated, suggestedAmount, description, referenceId];
   @override
-  String get aliasedName => _alias ?? 'expense_table';
+  String get aliasedName => _alias ?? 'expense_reference_table';
   @override
-  String get actualTableName => 'expense_table';
+  String get actualTableName => 'expense_reference_table';
   @override
-  VerificationContext validateIntegrity(Insertable<ExpenseTableData> instance,
+  VerificationContext validateIntegrity(
+      Insertable<MstrdtExpenseReference> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1792,11 +1932,11 @@ class $ExpenseTableTable extends ExpenseTable
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
     }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
+    if (data.containsKey('suggested_amount')) {
+      context.handle(
+          _suggestedAmountMeta,
+          suggestedAmount.isAcceptableOrUnknown(
+              data['suggested_amount']!, _suggestedAmountMeta));
     }
     if (data.containsKey('description')) {
       context.handle(
@@ -1804,21 +1944,13 @@ class $ExpenseTableTable extends ExpenseTable
           description.isAcceptableOrUnknown(
               data['description']!, _descriptionMeta));
     }
-    if (data.containsKey('expense_date')) {
+    if (data.containsKey('reference_id')) {
       context.handle(
-          _expenseDateMeta,
-          expenseDate.isAcceptableOrUnknown(
-              data['expense_date']!, _expenseDateMeta));
+          _referenceIdMeta,
+          referenceId.isAcceptableOrUnknown(
+              data['reference_id']!, _referenceIdMeta));
     } else if (isInserting) {
-      context.missing(_expenseDateMeta);
-    }
-    if (data.containsKey('reference_data_id')) {
-      context.handle(
-          _referenceDataIdMeta,
-          referenceDataId.isAcceptableOrUnknown(
-              data['reference_data_id']!, _referenceDataIdMeta));
-    } else if (isInserting) {
-      context.missing(_referenceDataIdMeta);
+      context.missing(_referenceIdMeta);
     }
     return context;
   }
@@ -1826,29 +1958,27 @@ class $ExpenseTableTable extends ExpenseTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ExpenseTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MstrdtExpenseReference map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ExpenseTableData(
+    return MstrdtExpenseReference(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
-      amount: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      suggestedAmount: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}suggested_amount'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description']),
-      expenseDate: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}expense_date'])!,
-      referenceDataId: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}reference_data_id'])!,
+      referenceId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}reference_id'])!,
     );
   }
 
   @override
-  $ExpenseTableTable createAlias(String alias) {
-    return $ExpenseTableTable(attachedDatabase, alias);
+  $ExpenseReferenceTableTable createAlias(String alias) {
+    return $ExpenseReferenceTableTable(attachedDatabase, alias);
   }
 }
 
@@ -2060,12 +2190,48 @@ class ExpenseReferenceTableCompanion
   }
 }
 
-class $ExpenseReferenceTableTable extends ExpenseReferenceTable
-    with TableInfo<$ExpenseReferenceTableTable, MstrdtExpenseReference> {
+class $SavingReminderTableTable extends SavingReminderTable
+    with TableInfo<$SavingReminderTableTable, NtfctnSavingReminder> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ExpenseReferenceTableTable(this.attachedDatabase, [this._alias]);
+  $SavingReminderTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool> isActive =
+      GeneratedColumn<bool>('is_active', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_active" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  static const VerificationMeta _activeStartDateMeta =
+      const VerificationMeta('activeStartDate');
+  @override
+  late final GeneratedColumn<DateTime> activeStartDate =
+      GeneratedColumn<DateTime>('active_start_date', aliasedName, false,
+          type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _notificationTypeMeta =
+      const VerificationMeta('notificationType');
+  @override
+  late final GeneratedColumn<String> notificationType = GeneratedColumn<String>(
+      'notification_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -2087,42 +2253,74 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _suggestedAmountMeta =
-      const VerificationMeta('suggestedAmount');
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<double> suggestedAmount = GeneratedColumn<double>(
-      'suggested_amount', aliasedName, false,
-      type: DriftSqlType.double,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(.0));
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _recurringTypeMeta =
+      const VerificationMeta('recurringType');
   @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _referenceIdMeta =
-      const VerificationMeta('referenceId');
+  late final GeneratedColumn<String> recurringType = GeneratedColumn<String>(
+      'recurring_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  late final GeneratedColumn<String> referenceId = GeneratedColumn<String>(
-      'reference_id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES reference_table (id)'));
+  List<GeneratedColumn> get $columns => [
+        title,
+        description,
+        isActive,
+        activeStartDate,
+        notificationType,
+        id,
+        dateCreated,
+        dateUpdated,
+        amount,
+        recurringType
+      ];
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, suggestedAmount, description, referenceId];
+  String get aliasedName => _alias ?? 'saving_reminder_table';
   @override
-  String get aliasedName => _alias ?? 'expense_reference_table';
-  @override
-  String get actualTableName => 'expense_reference_table';
+  String get actualTableName => 'saving_reminder_table';
   @override
   VerificationContext validateIntegrity(
-      Insertable<MstrdtExpenseReference> instance,
+      Insertable<NtfctnSavingReminder> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('active_start_date')) {
+      context.handle(
+          _activeStartDateMeta,
+          activeStartDate.isAcceptableOrUnknown(
+              data['active_start_date']!, _activeStartDateMeta));
+    } else if (isInserting) {
+      context.missing(_activeStartDateMeta);
+    }
+    if (data.containsKey('notification_type')) {
+      context.handle(
+          _notificationTypeMeta,
+          notificationType.isAcceptableOrUnknown(
+              data['notification_type']!, _notificationTypeMeta));
+    } else if (isInserting) {
+      context.missing(_notificationTypeMeta);
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
@@ -2140,25 +2338,19 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
     }
-    if (data.containsKey('suggested_amount')) {
-      context.handle(
-          _suggestedAmountMeta,
-          suggestedAmount.isAcceptableOrUnknown(
-              data['suggested_amount']!, _suggestedAmountMeta));
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
-    }
-    if (data.containsKey('reference_id')) {
-      context.handle(
-          _referenceIdMeta,
-          referenceId.isAcceptableOrUnknown(
-              data['reference_id']!, _referenceIdMeta));
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
     } else if (isInserting) {
-      context.missing(_referenceIdMeta);
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('recurring_type')) {
+      context.handle(
+          _recurringTypeMeta,
+          recurringType.isAcceptableOrUnknown(
+              data['recurring_type']!, _recurringTypeMeta));
+    } else if (isInserting) {
+      context.missing(_recurringTypeMeta);
     }
     return context;
   }
@@ -2166,27 +2358,35 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MstrdtExpenseReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+  NtfctnSavingReminder map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MstrdtExpenseReference(
+    return NtfctnSavingReminder(
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      activeStartDate: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}active_start_date'])!,
+      notificationType: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}notification_type'])!,
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
-      suggestedAmount: attachedDatabase.typeMapping.read(
-          DriftSqlType.double, data['${effectivePrefix}suggested_amount'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description']),
-      referenceId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}reference_id'])!,
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      recurringType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}recurring_type'])!,
     );
   }
 
   @override
-  $ExpenseReferenceTableTable createAlias(String alias) {
-    return $ExpenseReferenceTableTable(attachedDatabase, alias);
+  $SavingReminderTableTable createAlias(String alias) {
+    return $SavingReminderTableTable(attachedDatabase, alias);
   }
 }
 
@@ -2483,48 +2683,12 @@ class SavingReminderTableCompanion
   }
 }
 
-class $SavingReminderTableTable extends SavingReminderTable
-    with TableInfo<$SavingReminderTableTable, NtfctnSavingReminder> {
+class $MoneyStorageTableTable extends MoneyStorageTable
+    with TableInfo<$MoneyStorageTableTable, SvngMoneyStorage> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $SavingReminderTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _isActiveMeta =
-      const VerificationMeta('isActive');
-  @override
-  late final GeneratedColumn<bool> isActive =
-      GeneratedColumn<bool>('is_active', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_active" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
-  static const VerificationMeta _activeStartDateMeta =
-      const VerificationMeta('activeStartDate');
-  @override
-  late final GeneratedColumn<DateTime> activeStartDate =
-      GeneratedColumn<DateTime>('active_start_date', aliasedName, false,
-          type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _notificationTypeMeta =
-      const VerificationMeta('notificationType');
-  @override
-  late final GeneratedColumn<String> notificationType = GeneratedColumn<String>(
-      'notification_type', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  $MoneyStorageTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -2546,74 +2710,47 @@ class $SavingReminderTableTable extends SavingReminderTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  static const VerificationMeta _iconUrlMeta =
+      const VerificationMeta('iconUrl');
   @override
-  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
-      'amount', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
-  static const VerificationMeta _recurringTypeMeta =
-      const VerificationMeta('recurringType');
+  late final GeneratedColumn<String> iconUrl = GeneratedColumn<String>(
+      'icon_url', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _longNameMeta =
+      const VerificationMeta('longName');
   @override
-  late final GeneratedColumn<String> recurringType = GeneratedColumn<String>(
-      'recurring_type', aliasedName, false,
+  late final GeneratedColumn<String> longName = GeneratedColumn<String>(
+      'long_name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+  static const VerificationMeta _shortNameMeta =
+      const VerificationMeta('shortName');
+  @override
+  late final GeneratedColumn<String> shortName = GeneratedColumn<String>(
+      'short_name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [
-        title,
-        description,
-        isActive,
-        activeStartDate,
-        notificationType,
-        id,
-        dateCreated,
-        dateUpdated,
-        amount,
-        recurringType
-      ];
+  List<GeneratedColumn> get $columns =>
+      [id, dateCreated, dateUpdated, iconUrl, longName, shortName, type];
   @override
-  String get aliasedName => _alias ?? 'saving_reminder_table';
+  String get aliasedName => _alias ?? 'money_storage_table';
   @override
-  String get actualTableName => 'saving_reminder_table';
+  String get actualTableName => 'money_storage_table';
   @override
-  VerificationContext validateIntegrity(
-      Insertable<NtfctnSavingReminder> instance,
+  VerificationContext validateIntegrity(Insertable<SvngMoneyStorage> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    } else if (isInserting) {
-      context.missing(_titleMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
-    }
-    if (data.containsKey('is_active')) {
-      context.handle(_isActiveMeta,
-          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
-    }
-    if (data.containsKey('active_start_date')) {
-      context.handle(
-          _activeStartDateMeta,
-          activeStartDate.isAcceptableOrUnknown(
-              data['active_start_date']!, _activeStartDateMeta));
-    } else if (isInserting) {
-      context.missing(_activeStartDateMeta);
-    }
-    if (data.containsKey('notification_type')) {
-      context.handle(
-          _notificationTypeMeta,
-          notificationType.isAcceptableOrUnknown(
-              data['notification_type']!, _notificationTypeMeta));
-    } else if (isInserting) {
-      context.missing(_notificationTypeMeta);
-    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
@@ -2631,19 +2768,27 @@ class $SavingReminderTableTable extends SavingReminderTable
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
     }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
+    if (data.containsKey('icon_url')) {
+      context.handle(_iconUrlMeta,
+          iconUrl.isAcceptableOrUnknown(data['icon_url']!, _iconUrlMeta));
     }
-    if (data.containsKey('recurring_type')) {
-      context.handle(
-          _recurringTypeMeta,
-          recurringType.isAcceptableOrUnknown(
-              data['recurring_type']!, _recurringTypeMeta));
+    if (data.containsKey('long_name')) {
+      context.handle(_longNameMeta,
+          longName.isAcceptableOrUnknown(data['long_name']!, _longNameMeta));
     } else if (isInserting) {
-      context.missing(_recurringTypeMeta);
+      context.missing(_longNameMeta);
+    }
+    if (data.containsKey('short_name')) {
+      context.handle(_shortNameMeta,
+          shortName.isAcceptableOrUnknown(data['short_name']!, _shortNameMeta));
+    } else if (isInserting) {
+      context.missing(_shortNameMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
     }
     return context;
   }
@@ -2651,148 +2796,85 @@ class $SavingReminderTableTable extends SavingReminderTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  NtfctnSavingReminder map(Map<String, dynamic> data, {String? tablePrefix}) {
+  SvngMoneyStorage map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return NtfctnSavingReminder(
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      isActive: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
-      activeStartDate: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}active_start_date'])!,
-      notificationType: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}notification_type'])!,
+    return SvngMoneyStorage(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
-      amount: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
-      recurringType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}recurring_type'])!,
+      iconUrl: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}icon_url'])!,
+      longName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}long_name'])!,
+      shortName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}short_name'])!,
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
     );
   }
 
   @override
-  $SavingReminderTableTable createAlias(String alias) {
-    return $SavingReminderTableTable(attachedDatabase, alias);
+  $MoneyStorageTableTable createAlias(String alias) {
+    return $MoneyStorageTableTable(attachedDatabase, alias);
   }
 }
 
-class SvngSaving extends DataClass implements Insertable<SvngSaving> {
+class SvngMoneyStorage extends DataClass
+    implements Insertable<SvngMoneyStorage> {
   final String id;
   final DateTime dateCreated;
   final DateTime dateUpdated;
-  final String? name;
-  final bool isPublic;
-  final bool isHasGoal;
-  final double goal;
-  final bool isHasStartDate;
-  final DateTime? startDate;
-  final bool isHasEndDate;
-  final DateTime? endDate;
-  final bool isSaveDaily;
-  final bool isSaveWeekly;
-  final bool isSaveMonthly;
-  final double currentAmount;
-  final String? userId;
-  const SvngSaving(
+  final String iconUrl;
+  final String longName;
+  final String shortName;
+  final String type;
+  const SvngMoneyStorage(
       {required this.id,
       required this.dateCreated,
       required this.dateUpdated,
-      this.name,
-      required this.isPublic,
-      required this.isHasGoal,
-      required this.goal,
-      required this.isHasStartDate,
-      this.startDate,
-      required this.isHasEndDate,
-      this.endDate,
-      required this.isSaveDaily,
-      required this.isSaveWeekly,
-      required this.isSaveMonthly,
-      required this.currentAmount,
-      this.userId});
+      required this.iconUrl,
+      required this.longName,
+      required this.shortName,
+      required this.type});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
-    if (!nullToAbsent || name != null) {
-      map['name'] = Variable<String>(name);
-    }
-    map['is_public'] = Variable<bool>(isPublic);
-    map['is_has_goal'] = Variable<bool>(isHasGoal);
-    map['goal'] = Variable<double>(goal);
-    map['is_has_start_date'] = Variable<bool>(isHasStartDate);
-    if (!nullToAbsent || startDate != null) {
-      map['start_date'] = Variable<DateTime>(startDate);
-    }
-    map['is_has_end_date'] = Variable<bool>(isHasEndDate);
-    if (!nullToAbsent || endDate != null) {
-      map['end_date'] = Variable<DateTime>(endDate);
-    }
-    map['is_save_daily'] = Variable<bool>(isSaveDaily);
-    map['is_save_weekly'] = Variable<bool>(isSaveWeekly);
-    map['is_save_monthly'] = Variable<bool>(isSaveMonthly);
-    map['current_amount'] = Variable<double>(currentAmount);
-    if (!nullToAbsent || userId != null) {
-      map['user_id'] = Variable<String>(userId);
-    }
+    map['icon_url'] = Variable<String>(iconUrl);
+    map['long_name'] = Variable<String>(longName);
+    map['short_name'] = Variable<String>(shortName);
+    map['type'] = Variable<String>(type);
     return map;
   }
 
-  SavingTableCompanion toCompanion(bool nullToAbsent) {
-    return SavingTableCompanion(
+  MoneyStorageTableCompanion toCompanion(bool nullToAbsent) {
+    return MoneyStorageTableCompanion(
       id: Value(id),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
-      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
-      isPublic: Value(isPublic),
-      isHasGoal: Value(isHasGoal),
-      goal: Value(goal),
-      isHasStartDate: Value(isHasStartDate),
-      startDate: startDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(startDate),
-      isHasEndDate: Value(isHasEndDate),
-      endDate: endDate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(endDate),
-      isSaveDaily: Value(isSaveDaily),
-      isSaveWeekly: Value(isSaveWeekly),
-      isSaveMonthly: Value(isSaveMonthly),
-      currentAmount: Value(currentAmount),
-      userId:
-          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      iconUrl: Value(iconUrl),
+      longName: Value(longName),
+      shortName: Value(shortName),
+      type: Value(type),
     );
   }
 
-  factory SvngSaving.fromJson(Map<String, dynamic> json,
+  factory SvngMoneyStorage.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SvngSaving(
+    return SvngMoneyStorage(
       id: serializer.fromJson<String>(json['id']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      name: serializer.fromJson<String?>(json['name']),
-      isPublic: serializer.fromJson<bool>(json['isPublic']),
-      isHasGoal: serializer.fromJson<bool>(json['isHasGoal']),
-      goal: serializer.fromJson<double>(json['goal']),
-      isHasStartDate: serializer.fromJson<bool>(json['isHasStartDate']),
-      startDate: serializer.fromJson<DateTime?>(json['startDate']),
-      isHasEndDate: serializer.fromJson<bool>(json['isHasEndDate']),
-      endDate: serializer.fromJson<DateTime?>(json['endDate']),
-      isSaveDaily: serializer.fromJson<bool>(json['isSaveDaily']),
-      isSaveWeekly: serializer.fromJson<bool>(json['isSaveWeekly']),
-      isSaveMonthly: serializer.fromJson<bool>(json['isSaveMonthly']),
-      currentAmount: serializer.fromJson<double>(json['currentAmount']),
-      userId: serializer.fromJson<String?>(json['userId']),
+      iconUrl: serializer.fromJson<String>(json['iconUrl']),
+      longName: serializer.fromJson<String>(json['longName']),
+      shortName: serializer.fromJson<String>(json['shortName']),
+      type: serializer.fromJson<String>(json['type']),
     );
   }
   @override
@@ -2802,245 +2884,125 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       'id': serializer.toJson<String>(id),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'name': serializer.toJson<String?>(name),
-      'isPublic': serializer.toJson<bool>(isPublic),
-      'isHasGoal': serializer.toJson<bool>(isHasGoal),
-      'goal': serializer.toJson<double>(goal),
-      'isHasStartDate': serializer.toJson<bool>(isHasStartDate),
-      'startDate': serializer.toJson<DateTime?>(startDate),
-      'isHasEndDate': serializer.toJson<bool>(isHasEndDate),
-      'endDate': serializer.toJson<DateTime?>(endDate),
-      'isSaveDaily': serializer.toJson<bool>(isSaveDaily),
-      'isSaveWeekly': serializer.toJson<bool>(isSaveWeekly),
-      'isSaveMonthly': serializer.toJson<bool>(isSaveMonthly),
-      'currentAmount': serializer.toJson<double>(currentAmount),
-      'userId': serializer.toJson<String?>(userId),
+      'iconUrl': serializer.toJson<String>(iconUrl),
+      'longName': serializer.toJson<String>(longName),
+      'shortName': serializer.toJson<String>(shortName),
+      'type': serializer.toJson<String>(type),
     };
   }
 
-  SvngSaving copyWith(
+  SvngMoneyStorage copyWith(
           {String? id,
           DateTime? dateCreated,
           DateTime? dateUpdated,
-          Value<String?> name = const Value.absent(),
-          bool? isPublic,
-          bool? isHasGoal,
-          double? goal,
-          bool? isHasStartDate,
-          Value<DateTime?> startDate = const Value.absent(),
-          bool? isHasEndDate,
-          Value<DateTime?> endDate = const Value.absent(),
-          bool? isSaveDaily,
-          bool? isSaveWeekly,
-          bool? isSaveMonthly,
-          double? currentAmount,
-          Value<String?> userId = const Value.absent()}) =>
-      SvngSaving(
+          String? iconUrl,
+          String? longName,
+          String? shortName,
+          String? type}) =>
+      SvngMoneyStorage(
         id: id ?? this.id,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
-        name: name.present ? name.value : this.name,
-        isPublic: isPublic ?? this.isPublic,
-        isHasGoal: isHasGoal ?? this.isHasGoal,
-        goal: goal ?? this.goal,
-        isHasStartDate: isHasStartDate ?? this.isHasStartDate,
-        startDate: startDate.present ? startDate.value : this.startDate,
-        isHasEndDate: isHasEndDate ?? this.isHasEndDate,
-        endDate: endDate.present ? endDate.value : this.endDate,
-        isSaveDaily: isSaveDaily ?? this.isSaveDaily,
-        isSaveWeekly: isSaveWeekly ?? this.isSaveWeekly,
-        isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
-        currentAmount: currentAmount ?? this.currentAmount,
-        userId: userId.present ? userId.value : this.userId,
+        iconUrl: iconUrl ?? this.iconUrl,
+        longName: longName ?? this.longName,
+        shortName: shortName ?? this.shortName,
+        type: type ?? this.type,
       );
   @override
   String toString() {
-    return (StringBuffer('SvngSaving(')
+    return (StringBuffer('SvngMoneyStorage(')
           ..write('id: $id, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
-          ..write('name: $name, ')
-          ..write('isPublic: $isPublic, ')
-          ..write('isHasGoal: $isHasGoal, ')
-          ..write('goal: $goal, ')
-          ..write('isHasStartDate: $isHasStartDate, ')
-          ..write('startDate: $startDate, ')
-          ..write('isHasEndDate: $isHasEndDate, ')
-          ..write('endDate: $endDate, ')
-          ..write('isSaveDaily: $isSaveDaily, ')
-          ..write('isSaveWeekly: $isSaveWeekly, ')
-          ..write('isSaveMonthly: $isSaveMonthly, ')
-          ..write('currentAmount: $currentAmount, ')
-          ..write('userId: $userId')
+          ..write('iconUrl: $iconUrl, ')
+          ..write('longName: $longName, ')
+          ..write('shortName: $shortName, ')
+          ..write('type: $type')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(
-      id,
-      dateCreated,
-      dateUpdated,
-      name,
-      isPublic,
-      isHasGoal,
-      goal,
-      isHasStartDate,
-      startDate,
-      isHasEndDate,
-      endDate,
-      isSaveDaily,
-      isSaveWeekly,
-      isSaveMonthly,
-      currentAmount,
-      userId);
+      id, dateCreated, dateUpdated, iconUrl, longName, shortName, type);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is SvngSaving &&
+      (other is SvngMoneyStorage &&
           other.id == this.id &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
-          other.name == this.name &&
-          other.isPublic == this.isPublic &&
-          other.isHasGoal == this.isHasGoal &&
-          other.goal == this.goal &&
-          other.isHasStartDate == this.isHasStartDate &&
-          other.startDate == this.startDate &&
-          other.isHasEndDate == this.isHasEndDate &&
-          other.endDate == this.endDate &&
-          other.isSaveDaily == this.isSaveDaily &&
-          other.isSaveWeekly == this.isSaveWeekly &&
-          other.isSaveMonthly == this.isSaveMonthly &&
-          other.currentAmount == this.currentAmount &&
-          other.userId == this.userId);
+          other.iconUrl == this.iconUrl &&
+          other.longName == this.longName &&
+          other.shortName == this.shortName &&
+          other.type == this.type);
 }
 
-class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
+class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   final Value<String> id;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
-  final Value<String?> name;
-  final Value<bool> isPublic;
-  final Value<bool> isHasGoal;
-  final Value<double> goal;
-  final Value<bool> isHasStartDate;
-  final Value<DateTime?> startDate;
-  final Value<bool> isHasEndDate;
-  final Value<DateTime?> endDate;
-  final Value<bool> isSaveDaily;
-  final Value<bool> isSaveWeekly;
-  final Value<bool> isSaveMonthly;
-  final Value<double> currentAmount;
-  final Value<String?> userId;
-  const SavingTableCompanion({
+  final Value<String> iconUrl;
+  final Value<String> longName;
+  final Value<String> shortName;
+  final Value<String> type;
+  const MoneyStorageTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
-    this.name = const Value.absent(),
-    this.isPublic = const Value.absent(),
-    this.isHasGoal = const Value.absent(),
-    this.goal = const Value.absent(),
-    this.isHasStartDate = const Value.absent(),
-    this.startDate = const Value.absent(),
-    this.isHasEndDate = const Value.absent(),
-    this.endDate = const Value.absent(),
-    this.isSaveDaily = const Value.absent(),
-    this.isSaveWeekly = const Value.absent(),
-    this.isSaveMonthly = const Value.absent(),
-    this.currentAmount = const Value.absent(),
-    this.userId = const Value.absent(),
+    this.iconUrl = const Value.absent(),
+    this.longName = const Value.absent(),
+    this.shortName = const Value.absent(),
+    this.type = const Value.absent(),
   });
-  SavingTableCompanion.insert({
+  MoneyStorageTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
-    this.name = const Value.absent(),
-    this.isPublic = const Value.absent(),
-    this.isHasGoal = const Value.absent(),
-    this.goal = const Value.absent(),
-    this.isHasStartDate = const Value.absent(),
-    this.startDate = const Value.absent(),
-    this.isHasEndDate = const Value.absent(),
-    this.endDate = const Value.absent(),
-    this.isSaveDaily = const Value.absent(),
-    this.isSaveWeekly = const Value.absent(),
-    this.isSaveMonthly = const Value.absent(),
-    this.currentAmount = const Value.absent(),
-    this.userId = const Value.absent(),
-  }) : dateUpdated = Value(dateUpdated);
-  static Insertable<SvngSaving> custom({
+    this.iconUrl = const Value.absent(),
+    required String longName,
+    required String shortName,
+    required String type,
+  })  : dateUpdated = Value(dateUpdated),
+        longName = Value(longName),
+        shortName = Value(shortName),
+        type = Value(type);
+  static Insertable<SvngMoneyStorage> custom({
     Expression<String>? id,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
-    Expression<String>? name,
-    Expression<bool>? isPublic,
-    Expression<bool>? isHasGoal,
-    Expression<double>? goal,
-    Expression<bool>? isHasStartDate,
-    Expression<DateTime>? startDate,
-    Expression<bool>? isHasEndDate,
-    Expression<DateTime>? endDate,
-    Expression<bool>? isSaveDaily,
-    Expression<bool>? isSaveWeekly,
-    Expression<bool>? isSaveMonthly,
-    Expression<double>? currentAmount,
-    Expression<String>? userId,
+    Expression<String>? iconUrl,
+    Expression<String>? longName,
+    Expression<String>? shortName,
+    Expression<String>? type,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (name != null) 'name': name,
-      if (isPublic != null) 'is_public': isPublic,
-      if (isHasGoal != null) 'is_has_goal': isHasGoal,
-      if (goal != null) 'goal': goal,
-      if (isHasStartDate != null) 'is_has_start_date': isHasStartDate,
-      if (startDate != null) 'start_date': startDate,
-      if (isHasEndDate != null) 'is_has_end_date': isHasEndDate,
-      if (endDate != null) 'end_date': endDate,
-      if (isSaveDaily != null) 'is_save_daily': isSaveDaily,
-      if (isSaveWeekly != null) 'is_save_weekly': isSaveWeekly,
-      if (isSaveMonthly != null) 'is_save_monthly': isSaveMonthly,
-      if (currentAmount != null) 'current_amount': currentAmount,
-      if (userId != null) 'user_id': userId,
+      if (iconUrl != null) 'icon_url': iconUrl,
+      if (longName != null) 'long_name': longName,
+      if (shortName != null) 'short_name': shortName,
+      if (type != null) 'type': type,
     });
   }
 
-  SavingTableCompanion copyWith(
+  MoneyStorageTableCompanion copyWith(
       {Value<String>? id,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
-      Value<String?>? name,
-      Value<bool>? isPublic,
-      Value<bool>? isHasGoal,
-      Value<double>? goal,
-      Value<bool>? isHasStartDate,
-      Value<DateTime?>? startDate,
-      Value<bool>? isHasEndDate,
-      Value<DateTime?>? endDate,
-      Value<bool>? isSaveDaily,
-      Value<bool>? isSaveWeekly,
-      Value<bool>? isSaveMonthly,
-      Value<double>? currentAmount,
-      Value<String?>? userId}) {
-    return SavingTableCompanion(
+      Value<String>? iconUrl,
+      Value<String>? longName,
+      Value<String>? shortName,
+      Value<String>? type}) {
+    return MoneyStorageTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
-      name: name ?? this.name,
-      isPublic: isPublic ?? this.isPublic,
-      isHasGoal: isHasGoal ?? this.isHasGoal,
-      goal: goal ?? this.goal,
-      isHasStartDate: isHasStartDate ?? this.isHasStartDate,
-      startDate: startDate ?? this.startDate,
-      isHasEndDate: isHasEndDate ?? this.isHasEndDate,
-      endDate: endDate ?? this.endDate,
-      isSaveDaily: isSaveDaily ?? this.isSaveDaily,
-      isSaveWeekly: isSaveWeekly ?? this.isSaveWeekly,
-      isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
-      currentAmount: currentAmount ?? this.currentAmount,
-      userId: userId ?? this.userId,
+      iconUrl: iconUrl ?? this.iconUrl,
+      longName: longName ?? this.longName,
+      shortName: shortName ?? this.shortName,
+      type: type ?? this.type,
     );
   }
 
@@ -3056,67 +3018,31 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
     }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
+    if (iconUrl.present) {
+      map['icon_url'] = Variable<String>(iconUrl.value);
     }
-    if (isPublic.present) {
-      map['is_public'] = Variable<bool>(isPublic.value);
+    if (longName.present) {
+      map['long_name'] = Variable<String>(longName.value);
     }
-    if (isHasGoal.present) {
-      map['is_has_goal'] = Variable<bool>(isHasGoal.value);
+    if (shortName.present) {
+      map['short_name'] = Variable<String>(shortName.value);
     }
-    if (goal.present) {
-      map['goal'] = Variable<double>(goal.value);
-    }
-    if (isHasStartDate.present) {
-      map['is_has_start_date'] = Variable<bool>(isHasStartDate.value);
-    }
-    if (startDate.present) {
-      map['start_date'] = Variable<DateTime>(startDate.value);
-    }
-    if (isHasEndDate.present) {
-      map['is_has_end_date'] = Variable<bool>(isHasEndDate.value);
-    }
-    if (endDate.present) {
-      map['end_date'] = Variable<DateTime>(endDate.value);
-    }
-    if (isSaveDaily.present) {
-      map['is_save_daily'] = Variable<bool>(isSaveDaily.value);
-    }
-    if (isSaveWeekly.present) {
-      map['is_save_weekly'] = Variable<bool>(isSaveWeekly.value);
-    }
-    if (isSaveMonthly.present) {
-      map['is_save_monthly'] = Variable<bool>(isSaveMonthly.value);
-    }
-    if (currentAmount.present) {
-      map['current_amount'] = Variable<double>(currentAmount.value);
-    }
-    if (userId.present) {
-      map['user_id'] = Variable<String>(userId.value);
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('SavingTableCompanion(')
+    return (StringBuffer('MoneyStorageTableCompanion(')
           ..write('id: $id, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
-          ..write('name: $name, ')
-          ..write('isPublic: $isPublic, ')
-          ..write('isHasGoal: $isHasGoal, ')
-          ..write('goal: $goal, ')
-          ..write('isHasStartDate: $isHasStartDate, ')
-          ..write('startDate: $startDate, ')
-          ..write('isHasEndDate: $isHasEndDate, ')
-          ..write('endDate: $endDate, ')
-          ..write('isSaveDaily: $isSaveDaily, ')
-          ..write('isSaveWeekly: $isSaveWeekly, ')
-          ..write('isSaveMonthly: $isSaveMonthly, ')
-          ..write('currentAmount: $currentAmount, ')
-          ..write('userId: $userId')
+          ..write('iconUrl: $iconUrl, ')
+          ..write('longName: $longName, ')
+          ..write('shortName: $shortName, ')
+          ..write('type: $type')
           ..write(')'))
         .toString();
   }
@@ -3280,6 +3206,15 @@ class $SavingTableTable extends SavingTable
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES user_table (id)'));
+  static const VerificationMeta _moneyStorageIdMeta =
+      const VerificationMeta('moneyStorageId');
+  @override
+  late final GeneratedColumn<String> moneyStorageId = GeneratedColumn<String>(
+      'money_storage_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES money_storage_table (id)'));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -3297,7 +3232,8 @@ class $SavingTableTable extends SavingTable
         isSaveWeekly,
         isSaveMonthly,
         currentAmount,
-        userId
+        userId,
+        moneyStorageId
       ];
   @override
   String get aliasedName => _alias ?? 'saving_table';
@@ -3391,6 +3327,12 @@ class $SavingTableTable extends SavingTable
       context.handle(_userIdMeta,
           userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
     }
+    if (data.containsKey('money_storage_id')) {
+      context.handle(
+          _moneyStorageIdMeta,
+          moneyStorageId.isAcceptableOrUnknown(
+              data['money_storage_id']!, _moneyStorageIdMeta));
+    }
     return context;
   }
 
@@ -3436,12 +3378,664 @@ class $SavingTableTable extends SavingTable
           .read(DriftSqlType.double, data['${effectivePrefix}current_amount'])!,
       userId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
+      moneyStorageId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}money_storage_id']),
     );
   }
 
   @override
   $SavingTableTable createAlias(String alias) {
     return $SavingTableTable(attachedDatabase, alias);
+  }
+}
+
+class SvngSaving extends DataClass implements Insertable<SvngSaving> {
+  final String id;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String? name;
+  final bool isPublic;
+  final bool isHasGoal;
+  final double goal;
+  final bool isHasStartDate;
+  final DateTime? startDate;
+  final bool isHasEndDate;
+  final DateTime? endDate;
+  final bool isSaveDaily;
+  final bool isSaveWeekly;
+  final bool isSaveMonthly;
+  final double currentAmount;
+  final String? userId;
+  final String? moneyStorageId;
+  const SvngSaving(
+      {required this.id,
+      required this.dateCreated,
+      required this.dateUpdated,
+      this.name,
+      required this.isPublic,
+      required this.isHasGoal,
+      required this.goal,
+      required this.isHasStartDate,
+      this.startDate,
+      required this.isHasEndDate,
+      this.endDate,
+      required this.isSaveDaily,
+      required this.isSaveWeekly,
+      required this.isSaveMonthly,
+      required this.currentAmount,
+      this.userId,
+      this.moneyStorageId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    if (!nullToAbsent || name != null) {
+      map['name'] = Variable<String>(name);
+    }
+    map['is_public'] = Variable<bool>(isPublic);
+    map['is_has_goal'] = Variable<bool>(isHasGoal);
+    map['goal'] = Variable<double>(goal);
+    map['is_has_start_date'] = Variable<bool>(isHasStartDate);
+    if (!nullToAbsent || startDate != null) {
+      map['start_date'] = Variable<DateTime>(startDate);
+    }
+    map['is_has_end_date'] = Variable<bool>(isHasEndDate);
+    if (!nullToAbsent || endDate != null) {
+      map['end_date'] = Variable<DateTime>(endDate);
+    }
+    map['is_save_daily'] = Variable<bool>(isSaveDaily);
+    map['is_save_weekly'] = Variable<bool>(isSaveWeekly);
+    map['is_save_monthly'] = Variable<bool>(isSaveMonthly);
+    map['current_amount'] = Variable<double>(currentAmount);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    if (!nullToAbsent || moneyStorageId != null) {
+      map['money_storage_id'] = Variable<String>(moneyStorageId);
+    }
+    return map;
+  }
+
+  SavingTableCompanion toCompanion(bool nullToAbsent) {
+    return SavingTableCompanion(
+      id: Value(id),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      isPublic: Value(isPublic),
+      isHasGoal: Value(isHasGoal),
+      goal: Value(goal),
+      isHasStartDate: Value(isHasStartDate),
+      startDate: startDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startDate),
+      isHasEndDate: Value(isHasEndDate),
+      endDate: endDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endDate),
+      isSaveDaily: Value(isSaveDaily),
+      isSaveWeekly: Value(isSaveWeekly),
+      isSaveMonthly: Value(isSaveMonthly),
+      currentAmount: Value(currentAmount),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      moneyStorageId: moneyStorageId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(moneyStorageId),
+    );
+  }
+
+  factory SvngSaving.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SvngSaving(
+      id: serializer.fromJson<String>(json['id']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      name: serializer.fromJson<String?>(json['name']),
+      isPublic: serializer.fromJson<bool>(json['isPublic']),
+      isHasGoal: serializer.fromJson<bool>(json['isHasGoal']),
+      goal: serializer.fromJson<double>(json['goal']),
+      isHasStartDate: serializer.fromJson<bool>(json['isHasStartDate']),
+      startDate: serializer.fromJson<DateTime?>(json['startDate']),
+      isHasEndDate: serializer.fromJson<bool>(json['isHasEndDate']),
+      endDate: serializer.fromJson<DateTime?>(json['endDate']),
+      isSaveDaily: serializer.fromJson<bool>(json['isSaveDaily']),
+      isSaveWeekly: serializer.fromJson<bool>(json['isSaveWeekly']),
+      isSaveMonthly: serializer.fromJson<bool>(json['isSaveMonthly']),
+      currentAmount: serializer.fromJson<double>(json['currentAmount']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      moneyStorageId: serializer.fromJson<String?>(json['moneyStorageId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'name': serializer.toJson<String?>(name),
+      'isPublic': serializer.toJson<bool>(isPublic),
+      'isHasGoal': serializer.toJson<bool>(isHasGoal),
+      'goal': serializer.toJson<double>(goal),
+      'isHasStartDate': serializer.toJson<bool>(isHasStartDate),
+      'startDate': serializer.toJson<DateTime?>(startDate),
+      'isHasEndDate': serializer.toJson<bool>(isHasEndDate),
+      'endDate': serializer.toJson<DateTime?>(endDate),
+      'isSaveDaily': serializer.toJson<bool>(isSaveDaily),
+      'isSaveWeekly': serializer.toJson<bool>(isSaveWeekly),
+      'isSaveMonthly': serializer.toJson<bool>(isSaveMonthly),
+      'currentAmount': serializer.toJson<double>(currentAmount),
+      'userId': serializer.toJson<String?>(userId),
+      'moneyStorageId': serializer.toJson<String?>(moneyStorageId),
+    };
+  }
+
+  SvngSaving copyWith(
+          {String? id,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          Value<String?> name = const Value.absent(),
+          bool? isPublic,
+          bool? isHasGoal,
+          double? goal,
+          bool? isHasStartDate,
+          Value<DateTime?> startDate = const Value.absent(),
+          bool? isHasEndDate,
+          Value<DateTime?> endDate = const Value.absent(),
+          bool? isSaveDaily,
+          bool? isSaveWeekly,
+          bool? isSaveMonthly,
+          double? currentAmount,
+          Value<String?> userId = const Value.absent(),
+          Value<String?> moneyStorageId = const Value.absent()}) =>
+      SvngSaving(
+        id: id ?? this.id,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        name: name.present ? name.value : this.name,
+        isPublic: isPublic ?? this.isPublic,
+        isHasGoal: isHasGoal ?? this.isHasGoal,
+        goal: goal ?? this.goal,
+        isHasStartDate: isHasStartDate ?? this.isHasStartDate,
+        startDate: startDate.present ? startDate.value : this.startDate,
+        isHasEndDate: isHasEndDate ?? this.isHasEndDate,
+        endDate: endDate.present ? endDate.value : this.endDate,
+        isSaveDaily: isSaveDaily ?? this.isSaveDaily,
+        isSaveWeekly: isSaveWeekly ?? this.isSaveWeekly,
+        isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
+        currentAmount: currentAmount ?? this.currentAmount,
+        userId: userId.present ? userId.value : this.userId,
+        moneyStorageId:
+            moneyStorageId.present ? moneyStorageId.value : this.moneyStorageId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('SvngSaving(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('name: $name, ')
+          ..write('isPublic: $isPublic, ')
+          ..write('isHasGoal: $isHasGoal, ')
+          ..write('goal: $goal, ')
+          ..write('isHasStartDate: $isHasStartDate, ')
+          ..write('startDate: $startDate, ')
+          ..write('isHasEndDate: $isHasEndDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('isSaveDaily: $isSaveDaily, ')
+          ..write('isSaveWeekly: $isSaveWeekly, ')
+          ..write('isSaveMonthly: $isSaveMonthly, ')
+          ..write('currentAmount: $currentAmount, ')
+          ..write('userId: $userId, ')
+          ..write('moneyStorageId: $moneyStorageId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      dateCreated,
+      dateUpdated,
+      name,
+      isPublic,
+      isHasGoal,
+      goal,
+      isHasStartDate,
+      startDate,
+      isHasEndDate,
+      endDate,
+      isSaveDaily,
+      isSaveWeekly,
+      isSaveMonthly,
+      currentAmount,
+      userId,
+      moneyStorageId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SvngSaving &&
+          other.id == this.id &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.name == this.name &&
+          other.isPublic == this.isPublic &&
+          other.isHasGoal == this.isHasGoal &&
+          other.goal == this.goal &&
+          other.isHasStartDate == this.isHasStartDate &&
+          other.startDate == this.startDate &&
+          other.isHasEndDate == this.isHasEndDate &&
+          other.endDate == this.endDate &&
+          other.isSaveDaily == this.isSaveDaily &&
+          other.isSaveWeekly == this.isSaveWeekly &&
+          other.isSaveMonthly == this.isSaveMonthly &&
+          other.currentAmount == this.currentAmount &&
+          other.userId == this.userId &&
+          other.moneyStorageId == this.moneyStorageId);
+}
+
+class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
+  final Value<String> id;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String?> name;
+  final Value<bool> isPublic;
+  final Value<bool> isHasGoal;
+  final Value<double> goal;
+  final Value<bool> isHasStartDate;
+  final Value<DateTime?> startDate;
+  final Value<bool> isHasEndDate;
+  final Value<DateTime?> endDate;
+  final Value<bool> isSaveDaily;
+  final Value<bool> isSaveWeekly;
+  final Value<bool> isSaveMonthly;
+  final Value<double> currentAmount;
+  final Value<String?> userId;
+  final Value<String?> moneyStorageId;
+  const SavingTableCompanion({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.name = const Value.absent(),
+    this.isPublic = const Value.absent(),
+    this.isHasGoal = const Value.absent(),
+    this.goal = const Value.absent(),
+    this.isHasStartDate = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.isHasEndDate = const Value.absent(),
+    this.endDate = const Value.absent(),
+    this.isSaveDaily = const Value.absent(),
+    this.isSaveWeekly = const Value.absent(),
+    this.isSaveMonthly = const Value.absent(),
+    this.currentAmount = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.moneyStorageId = const Value.absent(),
+  });
+  SavingTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    this.name = const Value.absent(),
+    this.isPublic = const Value.absent(),
+    this.isHasGoal = const Value.absent(),
+    this.goal = const Value.absent(),
+    this.isHasStartDate = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.isHasEndDate = const Value.absent(),
+    this.endDate = const Value.absent(),
+    this.isSaveDaily = const Value.absent(),
+    this.isSaveWeekly = const Value.absent(),
+    this.isSaveMonthly = const Value.absent(),
+    this.currentAmount = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.moneyStorageId = const Value.absent(),
+  }) : dateUpdated = Value(dateUpdated);
+  static Insertable<SvngSaving> custom({
+    Expression<String>? id,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? name,
+    Expression<bool>? isPublic,
+    Expression<bool>? isHasGoal,
+    Expression<double>? goal,
+    Expression<bool>? isHasStartDate,
+    Expression<DateTime>? startDate,
+    Expression<bool>? isHasEndDate,
+    Expression<DateTime>? endDate,
+    Expression<bool>? isSaveDaily,
+    Expression<bool>? isSaveWeekly,
+    Expression<bool>? isSaveMonthly,
+    Expression<double>? currentAmount,
+    Expression<String>? userId,
+    Expression<String>? moneyStorageId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (name != null) 'name': name,
+      if (isPublic != null) 'is_public': isPublic,
+      if (isHasGoal != null) 'is_has_goal': isHasGoal,
+      if (goal != null) 'goal': goal,
+      if (isHasStartDate != null) 'is_has_start_date': isHasStartDate,
+      if (startDate != null) 'start_date': startDate,
+      if (isHasEndDate != null) 'is_has_end_date': isHasEndDate,
+      if (endDate != null) 'end_date': endDate,
+      if (isSaveDaily != null) 'is_save_daily': isSaveDaily,
+      if (isSaveWeekly != null) 'is_save_weekly': isSaveWeekly,
+      if (isSaveMonthly != null) 'is_save_monthly': isSaveMonthly,
+      if (currentAmount != null) 'current_amount': currentAmount,
+      if (userId != null) 'user_id': userId,
+      if (moneyStorageId != null) 'money_storage_id': moneyStorageId,
+    });
+  }
+
+  SavingTableCompanion copyWith(
+      {Value<String>? id,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<String?>? name,
+      Value<bool>? isPublic,
+      Value<bool>? isHasGoal,
+      Value<double>? goal,
+      Value<bool>? isHasStartDate,
+      Value<DateTime?>? startDate,
+      Value<bool>? isHasEndDate,
+      Value<DateTime?>? endDate,
+      Value<bool>? isSaveDaily,
+      Value<bool>? isSaveWeekly,
+      Value<bool>? isSaveMonthly,
+      Value<double>? currentAmount,
+      Value<String?>? userId,
+      Value<String?>? moneyStorageId}) {
+    return SavingTableCompanion(
+      id: id ?? this.id,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      name: name ?? this.name,
+      isPublic: isPublic ?? this.isPublic,
+      isHasGoal: isHasGoal ?? this.isHasGoal,
+      goal: goal ?? this.goal,
+      isHasStartDate: isHasStartDate ?? this.isHasStartDate,
+      startDate: startDate ?? this.startDate,
+      isHasEndDate: isHasEndDate ?? this.isHasEndDate,
+      endDate: endDate ?? this.endDate,
+      isSaveDaily: isSaveDaily ?? this.isSaveDaily,
+      isSaveWeekly: isSaveWeekly ?? this.isSaveWeekly,
+      isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
+      currentAmount: currentAmount ?? this.currentAmount,
+      userId: userId ?? this.userId,
+      moneyStorageId: moneyStorageId ?? this.moneyStorageId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (isPublic.present) {
+      map['is_public'] = Variable<bool>(isPublic.value);
+    }
+    if (isHasGoal.present) {
+      map['is_has_goal'] = Variable<bool>(isHasGoal.value);
+    }
+    if (goal.present) {
+      map['goal'] = Variable<double>(goal.value);
+    }
+    if (isHasStartDate.present) {
+      map['is_has_start_date'] = Variable<bool>(isHasStartDate.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<DateTime>(startDate.value);
+    }
+    if (isHasEndDate.present) {
+      map['is_has_end_date'] = Variable<bool>(isHasEndDate.value);
+    }
+    if (endDate.present) {
+      map['end_date'] = Variable<DateTime>(endDate.value);
+    }
+    if (isSaveDaily.present) {
+      map['is_save_daily'] = Variable<bool>(isSaveDaily.value);
+    }
+    if (isSaveWeekly.present) {
+      map['is_save_weekly'] = Variable<bool>(isSaveWeekly.value);
+    }
+    if (isSaveMonthly.present) {
+      map['is_save_monthly'] = Variable<bool>(isSaveMonthly.value);
+    }
+    if (currentAmount.present) {
+      map['current_amount'] = Variable<double>(currentAmount.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (moneyStorageId.present) {
+      map['money_storage_id'] = Variable<String>(moneyStorageId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavingTableCompanion(')
+          ..write('id: $id, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('name: $name, ')
+          ..write('isPublic: $isPublic, ')
+          ..write('isHasGoal: $isHasGoal, ')
+          ..write('goal: $goal, ')
+          ..write('isHasStartDate: $isHasStartDate, ')
+          ..write('startDate: $startDate, ')
+          ..write('isHasEndDate: $isHasEndDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('isSaveDaily: $isSaveDaily, ')
+          ..write('isSaveWeekly: $isSaveWeekly, ')
+          ..write('isSaveMonthly: $isSaveMonthly, ')
+          ..write('currentAmount: $currentAmount, ')
+          ..write('userId: $userId, ')
+          ..write('moneyStorageId: $moneyStorageId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TransactionTableTable extends TransactionTable
+    with TableInfo<$TransactionTableTable, TrnsctnTransaction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TransactionTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+      'date_updated', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(''));
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+      'amount', aliasedName, false,
+      check: () => amount.isBiggerThan(const Constant(0)),
+      type: DriftSqlType.double,
+      requiredDuringInsert: true);
+  static const VerificationMeta _savingIdMeta =
+      const VerificationMeta('savingId');
+  @override
+  late final GeneratedColumn<String> savingId = GeneratedColumn<String>(
+      'saving_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES saving_table (id)'));
+  static const VerificationMeta _isExpenseMeta =
+      const VerificationMeta('isExpense');
+  @override
+  late final GeneratedColumn<bool> isExpense =
+      GeneratedColumn<bool>('is_expense', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_expense" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  static const VerificationMeta _expenseIdMeta =
+      const VerificationMeta('expenseId');
+  @override
+  late final GeneratedColumn<String> expenseId = GeneratedColumn<String>(
+      'expense_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES expense_table (id)'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        dateCreated,
+        dateUpdated,
+        type,
+        description,
+        amount,
+        savingId,
+        isExpense,
+        expenseId
+      ];
+  @override
+  String get aliasedName => _alias ?? 'transaction_table';
+  @override
+  String get actualTableName => 'transaction_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<TrnsctnTransaction> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('saving_id')) {
+      context.handle(_savingIdMeta,
+          savingId.isAcceptableOrUnknown(data['saving_id']!, _savingIdMeta));
+    } else if (isInserting) {
+      context.missing(_savingIdMeta);
+    }
+    if (data.containsKey('is_expense')) {
+      context.handle(_isExpenseMeta,
+          isExpense.isAcceptableOrUnknown(data['is_expense']!, _isExpenseMeta));
+    }
+    if (data.containsKey('expense_id')) {
+      context.handle(_expenseIdMeta,
+          expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TrnsctnTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrnsctnTransaction(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+      dateUpdated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      savingId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}saving_id'])!,
+      isExpense: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_expense'])!,
+      expenseId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}expense_id']),
+    );
+  }
+
+  @override
+  $TransactionTableTable createAlias(String alias) {
+    return $TransactionTableTable(attachedDatabase, alias);
   }
 }
 
@@ -3717,190 +4311,6 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   }
 }
 
-class $TransactionTableTable extends TransactionTable
-    with TableInfo<$TransactionTableTable, TrnsctnTransaction> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $TransactionTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      clientDefault: () => UuidGenerator().v4());
-  static const VerificationMeta _dateCreatedMeta =
-      const VerificationMeta('dateCreated');
-  @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-      'date_created', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _dateUpdatedMeta =
-      const VerificationMeta('dateUpdated');
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-      'date_updated', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
-  @override
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(''));
-  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
-  @override
-  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
-      'amount', aliasedName, false,
-      check: () => amount.isBiggerThan(const Constant(0)),
-      type: DriftSqlType.double,
-      requiredDuringInsert: true);
-  static const VerificationMeta _savingIdMeta =
-      const VerificationMeta('savingId');
-  @override
-  late final GeneratedColumn<String> savingId = GeneratedColumn<String>(
-      'saving_id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES saving_table (id)'));
-  static const VerificationMeta _isExpenseMeta =
-      const VerificationMeta('isExpense');
-  @override
-  late final GeneratedColumn<bool> isExpense =
-      GeneratedColumn<bool>('is_expense', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_expense" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
-  static const VerificationMeta _expenseIdMeta =
-      const VerificationMeta('expenseId');
-  @override
-  late final GeneratedColumn<String> expenseId = GeneratedColumn<String>(
-      'expense_id', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES expense_table (id)'));
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        dateCreated,
-        dateUpdated,
-        type,
-        description,
-        amount,
-        savingId,
-        isExpense,
-        expenseId
-      ];
-  @override
-  String get aliasedName => _alias ?? 'transaction_table';
-  @override
-  String get actualTableName => 'transaction_table';
-  @override
-  VerificationContext validateIntegrity(Insertable<TrnsctnTransaction> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-          _dateCreatedMeta,
-          dateCreated.isAcceptableOrUnknown(
-              data['date_created']!, _dateCreatedMeta));
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-          _dateUpdatedMeta,
-          dateUpdated.isAcceptableOrUnknown(
-              data['date_updated']!, _dateUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('type')) {
-      context.handle(
-          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
-    } else if (isInserting) {
-      context.missing(_typeMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
-    }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
-    }
-    if (data.containsKey('saving_id')) {
-      context.handle(_savingIdMeta,
-          savingId.isAcceptableOrUnknown(data['saving_id']!, _savingIdMeta));
-    } else if (isInserting) {
-      context.missing(_savingIdMeta);
-    }
-    if (data.containsKey('is_expense')) {
-      context.handle(_isExpenseMeta,
-          isExpense.isAcceptableOrUnknown(data['is_expense']!, _isExpenseMeta));
-    }
-    if (data.containsKey('expense_id')) {
-      context.handle(_expenseIdMeta,
-          expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  TrnsctnTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return TrnsctnTransaction(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      dateCreated: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
-      dateUpdated: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      amount: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
-      savingId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}saving_id'])!,
-      isExpense: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_expense'])!,
-      expenseId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}expense_id']),
-    );
-  }
-
-  @override
-  $TransactionTableTable createAlias(String alias) {
-    return $TransactionTableTable(attachedDatabase, alias);
-  }
-}
-
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $UserTableTable userTable = $UserTableTable(this);
@@ -3914,6 +4324,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $ExpenseReferenceTableTable(this);
   late final $SavingReminderTableTable savingReminderTable =
       $SavingReminderTableTable(this);
+  late final $MoneyStorageTableTable moneyStorageTable =
+      $MoneyStorageTableTable(this);
   late final $SavingTableTable savingTable = $SavingTableTable(this);
   late final $TransactionTableTable transactionTable =
       $TransactionTableTable(this);
@@ -3929,6 +4341,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         expenseTable,
         expenseReferenceTable,
         savingReminderTable,
+        moneyStorageTable,
         savingTable,
         transactionTable
       ];
