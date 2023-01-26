@@ -36,10 +36,6 @@ class DisplayListMoneyStorageState extends ViewListMoneyStorageState {
               Text('RM${moneyStorageVOList[index].amount.toStringAsFixed(2)}'),
             ],
           ),
-          trailingWidget: IconButton(
-            onPressed: () => {},
-            icon: const Icon(Icons.attach_money_outlined),
-          ),
           onTap: () async => {},
           onLongPressed: () async {
             showDeleteDialog(

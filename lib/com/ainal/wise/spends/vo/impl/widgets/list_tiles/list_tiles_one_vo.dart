@@ -7,7 +7,7 @@ class ListTilesOneVO extends IVO {
   final Future Function() onLongPressed;
   final Future Function() onTap;
   final Widget subtitleWidget;
-  final Widget trailingWidget;
+  final Widget? trailingWidget;
   final int index;
 
   ListTilesOneVO({
@@ -16,7 +16,7 @@ class ListTilesOneVO extends IVO {
     required this.subtitleWidget,
     required this.onTap,
     required this.onLongPressed,
-    required this.trailingWidget,
+    this.trailingWidget,
     required this.index,
   });
 

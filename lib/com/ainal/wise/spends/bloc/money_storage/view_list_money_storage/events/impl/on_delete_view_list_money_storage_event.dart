@@ -1,9 +1,9 @@
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/events/view_list_money_storage_event.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/state/impl/display_list_money_storage_state.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/state/impl/success_process_view_list_money_storage_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/state/impl/un_view_list_money_storage_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/state/view_list_money_storage_state.dart';
-import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/money_storage_vo.dart';
+import 'package:wise_spends/com/ainal/wise/spends/router/app_router.dart';
 
 class OnDeleteViewListMoneyStorageEvent extends ViewListMoneyStorageEvent {
   final String selectedMoneyStorageId;
@@ -16,14 +16,11 @@ class OnDeleteViewListMoneyStorageEvent extends ViewListMoneyStorageEvent {
     ViewListMoneyStorageBloc? bloc,
   }) async* {
     yield const UnViewListMoneyStorageState(version: 0);
-    await savingManager.deleteSelectedSaving(selectedMoneyStorageId);
-
-    List<MoneyStorageVO> moneyStorageVOList =
-        await savingManager.getCurrentUserMoneyStorageVOList();
-
-    yield DisplayListMoneyStorageState(
+    await savingManager.deleteSelectedMoneyStorage(selectedMoneyStorageId);
+    yield const SuccessProcessViewListMoneyStorageState(
       version: 0,
-      moneyStorageVOList: moneyStorageVOList,
+      message: 'Successfully Delete Selected Money Storage',
+      nextPageRoute: AppRouter.viewListMoneyStoragePageRoute,
     );
   }
 }

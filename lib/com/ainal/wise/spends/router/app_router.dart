@@ -9,6 +9,7 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_p
 import 'package:wise_spends/com/ainal/wise/spends/router/screen_argument.dart';
 
 abstract class AppRouter {
+  static const String rootRoute = "/";
   static const String loginPageRoute = "/loginPage";
   static const String homeLoggedInPageRoute = "/homeLoggedInPage";
   static const String savingsPageRoute = "/savingsPage";

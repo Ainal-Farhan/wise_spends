@@ -38,7 +38,12 @@ class _ViewListMoneyStorageScreenState
         builder: (
           BuildContext context,
           ViewListMoneyStorageState currentState,
-        ) =>
-            currentState.build(context));
+        ) {
+          try {
+            return currentState.build(context);
+          } catch (_) {
+            return currentState as Widget;
+          }
+        });
   }
 }
