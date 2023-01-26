@@ -14,6 +14,7 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/impl
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/money_storage_vo.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/list_saving_vo.dart';
 
 class SavingManager implements ISavingManager {
   final ISavingService _savingService = SavingService();
@@ -224,5 +225,17 @@ class SavingManager implements ISavingManager {
     );
 
     await _moneyStorageService.updatePart(updatedMoneyStorage);
+  }
+
+  @override
+  Future<List<ListSavingVO>> loadListSavingVOList() async {
+    return (await _savingService
+            .watchAllSavingWithMoneyStorageBasedOnUserId(
+                _startupManager.currentUser.id)
+            .first)
+        .map((savingWithMoneyStorage) => ListSavingVO(
+            saving: savingWithMoneyStorage.saving,
+            moneyStorage: savingWithMoneyStorage.moneyStorage))
+        .toList();
   }
 }

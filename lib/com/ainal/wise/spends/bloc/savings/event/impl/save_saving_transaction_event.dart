@@ -26,6 +26,8 @@ class SaveSavingTransactionEvent extends SavingsEvent {
     }
 
     yield InLoadListSavingsState(
-        0, await savingsManager.loadSavingWithTransactionsAsync());
+      0,
+      await savingsManager.loadListSavingVOList(),
+    );
   }
 }

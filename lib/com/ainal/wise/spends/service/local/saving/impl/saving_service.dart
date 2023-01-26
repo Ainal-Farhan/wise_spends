@@ -1,5 +1,6 @@
 import 'package:rxdart/rxdart.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
+import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_money_storage.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 import 'package:wise_spends/com/ainal/wise/spends/repository/saving/i_saving_repository.dart';
 import 'package:wise_spends/com/ainal/wise/spends/repository/transaction/i_transaction_repository.dart';
@@ -47,5 +48,12 @@ class SavingService extends ISavingService {
   Stream<List<SvngSaving>> watchAllSavingBasedOnMoneyStorageId(
       String moneyStorageId) {
     return _savingRepository.watchBasedOnMoneyStorageId(moneyStorageId);
+  }
+
+  @override
+  Stream<List<SavingWithMoneyStorage>>
+      watchAllSavingWithMoneyStorageBasedOnUserId(String userId) {
+    return _savingRepository
+        .watchSavingListWithMoneyStorageBasedOnUserId(userId);
   }
 }

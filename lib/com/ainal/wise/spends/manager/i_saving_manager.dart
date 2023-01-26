@@ -6,6 +6,7 @@ import 'package:wise_spends/com/ainal/wise/spends/manager/impl/saving_manager.da
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/money_storage_vo.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/list_saving_vo.dart';
 
 abstract class ISavingManager extends IManager {
   factory ISavingManager() {
@@ -13,6 +14,8 @@ abstract class ISavingManager extends IManager {
   }
 
   Future<List<SavingWithTransactions>> loadSavingWithTransactionsAsync();
+
+  Future<List<ListSavingVO>> loadListSavingVOList();
 
   Future<SvngSaving> addNewSaving({
     required String name,

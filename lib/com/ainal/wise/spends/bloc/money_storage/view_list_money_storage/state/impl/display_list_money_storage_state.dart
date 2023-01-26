@@ -26,15 +26,15 @@ class DisplayListMoneyStorageState extends ViewListMoneyStorageState {
       moneyStorageListTilesOneVOList.add(
         ListTilesOneVO(
           index: index,
-          title: moneyStorageVOList[index].moneyStorage.shortName,
+          title:
+              '${moneyStorageVOList[index].moneyStorage.shortName} - ${moneyStorageVOList[index].moneyStorage.longName}',
           icon: const Icon(Icons.money, color: Colors.white),
           subtitleWidget: Row(
             children: <Widget>[
               const Text(
-                "Total: ",
-                style: TextStyle(color: Colors.white),
+                "RM",
               ),
-              Text('RM${moneyStorageVOList[index].amount.toStringAsFixed(2)}'),
+              Text(moneyStorageVOList[index].amount.toStringAsFixed(2)),
             ],
           ),
           onTap: () => Navigator.pushReplacementNamed(

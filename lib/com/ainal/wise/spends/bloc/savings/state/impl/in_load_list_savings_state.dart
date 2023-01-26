@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/components/list_savings/list_savings_widget.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_add_savings_form_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
-import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/list_saving_vo.dart';
 
 class InLoadListSavingsState extends SavingsState {
-  const InLoadListSavingsState(int version, this._savingWithTransactionsList)
+  const InLoadListSavingsState(int version, this._listSavingVOList)
       : super(version);
 
-  final List<SavingWithTransactions> _savingWithTransactionsList;
+  final List<ListSavingVO> _listSavingVOList;
 
   @override
   SavingsState getNewVersion() {
-    return InLoadListSavingsState(version + 1, _savingWithTransactionsList);
+    return InLoadListSavingsState(version + 1, _listSavingVOList);
   }
 
   @override
   SavingsState getStateCopy() {
-    return InLoadListSavingsState(version, _savingWithTransactionsList);
+    return InLoadListSavingsState(version, _listSavingVOList);
   }
 
   @override
@@ -31,8 +31,7 @@ class InLoadListSavingsState extends SavingsState {
         children: [
           SizedBox(
             height: screenHeight * 0.8,
-            child: ListSavingsWidget(
-                savingWithTransactionsList: _savingWithTransactionsList),
+            child: ListSavingsWidget(listSavingVOList: _listSavingVOList),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,

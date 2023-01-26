@@ -1,4 +1,6 @@
+import 'package:drift/drift.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
+import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_money_storage.dart';
 import 'package:wise_spends/com/ainal/wise/spends/repository/saving/i_saving_repository.dart';
 
 class SavingRepository extends ISavingRepository {
@@ -29,5 +31,21 @@ class SavingRepository extends ISavingRepository {
     return (db.select(db.savingTable)
           ..where((tbl) => tbl.moneyStorageId.equals(moneyStorageId)))
         .watch();
+  }
+
+  @override
+  Stream<List<SavingWithMoneyStorage>>
+      watchSavingListWithMoneyStorageBasedOnUserId(String userId) {
+    final query = db.select(db.savingTable).join([
+      innerJoin(db.moneyStorageTable,
+          db.moneyStorageTable.id.equalsExp(db.savingTable.moneyStorageId)),
+    ])
+      ..where(db.savingTable.userId.equals(userId));
+
+    return query.watch().map((rows) => rows
+        .map((row) => SavingWithMoneyStorage(
+            saving: row.readTable(db.savingTable),
+            moneyStorage: row.readTable(db.moneyStorageTable)))
+        .toList());
   }
 }
