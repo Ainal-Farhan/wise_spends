@@ -11,6 +11,7 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/impl/mone
 import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/impl/saving_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/i_transaction_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/impl/transaction_service.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/money_storage_vo.dart';
 
@@ -201,5 +202,27 @@ class SavingManager implements ISavingManager {
     );
 
     return await _moneyStorageService.add(moneyStorageTableCompanion);
+  }
+
+  @override
+  Future<SvngMoneyStorage> getMoneyStorageById(String moneyStorageId) async {
+    return await _moneyStorageService
+        .watchMoneyStorageById(moneyStorageId)
+        .first;
+  }
+
+  @override
+  Future<void> updateMoneyStorage({
+    required EditMoneyStorageFormVO editMoneyStorageFormVO,
+  }) async {
+    MoneyStorageTableCompanion updatedMoneyStorage = MoneyStorageTableCompanion(
+      id: Value(editMoneyStorageFormVO.id ?? ''),
+      shortName: Value(editMoneyStorageFormVO.shortName ?? ''),
+      longName: Value(editMoneyStorageFormVO.longName ?? ''),
+      type: Value(editMoneyStorageFormVO.type ?? ''),
+      dateUpdated: Value(DateTime.now()),
+    );
+
+    await _moneyStorageService.updatePart(updatedMoneyStorage);
   }
 }

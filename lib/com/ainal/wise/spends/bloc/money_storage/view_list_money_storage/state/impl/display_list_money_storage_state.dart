@@ -4,6 +4,7 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_m
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/com/ainal/wise/spends/router/app_router.dart';
+import 'package:wise_spends/com/ainal/wise/spends/router/screen_argument.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/money_storage_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
@@ -36,7 +37,13 @@ class DisplayListMoneyStorageState extends ViewListMoneyStorageState {
               Text('RM${moneyStorageVOList[index].amount.toStringAsFixed(2)}'),
             ],
           ),
-          onTap: () async => {},
+          onTap: () => Navigator.pushReplacementNamed(
+            context,
+            AppRouter.editMoneyStoragePageRoute,
+            arguments: ScreenArgument({
+              'moneyStorageId': moneyStorageVOList[index].moneyStorage.id,
+            }),
+          ),
           onLongPressed: () async {
             showDeleteDialog(
               context: context,

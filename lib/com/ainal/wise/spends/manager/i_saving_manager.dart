@@ -3,6 +3,7 @@ import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/saving_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/money_storage_vo.dart';
 
@@ -33,9 +34,15 @@ abstract class ISavingManager extends IManager {
     required double transactionAmount,
   });
 
+  Future<void> updateMoneyStorage({
+    required EditMoneyStorageFormVO editMoneyStorageFormVO,
+  });
+
   Future<void> updateSaving({required EditSavingFormVO editSavingFormVO});
 
   Future<SvngSaving> getSavingById(String savingId);
+
+  Future<SvngMoneyStorage> getMoneyStorageById(String moneyStorageId);
 
   Future<List<SvngMoneyStorage>> getCurrentUserMoneyStorageList();
 

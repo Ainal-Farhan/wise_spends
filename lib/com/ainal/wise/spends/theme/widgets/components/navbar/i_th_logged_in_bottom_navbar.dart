@@ -12,6 +12,7 @@ abstract class IThLoggedInBottomNavbar extends IThWidget {
     AppRouter.savingsPageRoute: 1,
     AppRouter.viewListMoneyStoragePageRoute: 2,
     AppRouter.addMoneyStoragePageRoute: 2,
+    AppRouter.editMoneyStoragePageRoute: 2,
   };
 
   factory IThLoggedInBottomNavbar({

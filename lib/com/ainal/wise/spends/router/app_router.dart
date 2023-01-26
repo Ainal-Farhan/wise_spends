@@ -3,6 +3,7 @@ import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings
 import 'package:wise_spends/com/ainal/wise/spends/bloc/home_logged_in/home_logged_in_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/login_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/add_money_storage/add_money_storage_page.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/edit_money_storage/edit_money_storage_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/savings_page.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/transaction/transaction_page.dart';
@@ -18,6 +19,7 @@ abstract class AppRouter {
   static const String viewListMoneyStoragePageRoute =
       "/viewListMoneyStoragePageRoute";
   static const String addMoneyStoragePageRoute = '/addMoneyStoragePageRoute';
+  static const String editMoneyStoragePageRoute = '/editMoneyStoragePageRoute';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     ScreenArgument screenArgument =
@@ -41,6 +43,12 @@ abstract class AppRouter {
             builder: (_) => const ViewListMoneyStoragePage());
       case addMoneyStoragePageRoute:
         return MaterialPageRoute(builder: (_) => const AddMoneyStoragePage());
+      case editMoneyStoragePageRoute:
+        return MaterialPageRoute(
+            builder: (_) => EditMoneyStoragePage(
+                  selectedMoneyStorageId:
+                      screenArgument.arguments['moneyStorageId'] ?? '',
+                ));
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
