@@ -129,7 +129,7 @@ class SavingManager implements ISavingManager {
 
     for (SvngMoneyStorage moneyStorage in await streamMoneyStorageList.first) {
       moneyStorageDropDownValueModelList.add(DropDownValueModel(
-        name: moneyStorage.longName,
+        name: '${moneyStorage.shortName} - ${moneyStorage.longName}',
         value: moneyStorage.id,
       ));
     }
