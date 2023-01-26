@@ -1,9 +1,11 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/save_new_saving_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/buttons/i_th_save_button.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_number_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_radio_form_fields.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_select_one_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_text_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_vertical_spacing_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms/saving/i_th_add_saving_form.dart';
@@ -14,10 +16,12 @@ import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/add_saving_form
 class ThAddSavingFormDefault extends StatefulWidget
     implements IThAddSavingForm {
   final Function eventLoader;
+  final List<DropDownValueModel> moneyStorageList;
 
   const ThAddSavingFormDefault({
     Key? key,
     required this.eventLoader,
+    this.moneyStorageList = const [],
   }) : super(key: key);
 
   @override
@@ -40,6 +44,8 @@ class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
   final TextEditingController _currentAmountcontroller =
       TextEditingController();
   final TextEditingController _goalAmountController = TextEditingController();
+  final SingleValueDropDownController _moneyStorageController =
+      SingleValueDropDownController();
 
   bool _isHasGoal = false;
 
@@ -61,6 +67,12 @@ class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
         _addSavingFormVO.isHasGoal = _isHasGoal;
         _addSavingFormVO.goalAmount =
             _isHasGoal ? double.parse(_goalAmountController.text) : 0;
+
+        if (_moneyStorageController.dropDownValue != null) {
+          _addSavingFormVO.moneyStorageId =
+              _moneyStorageController.dropDownValue!.value ?? '';
+        }
+
         widget.eventLoader(
           savingsEvent: SaveNewSavingEvent(
             addSavingFormVO: _addSavingFormVO,
@@ -75,6 +87,10 @@ class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
       IThInputTextFormFields(
         label: 'Saving Name',
         controller: _savingNamecontroller,
+      ),
+      IThInputSelectOneFormFields(
+        dropDownValues: widget.moneyStorageList,
+        controller: _moneyStorageController,
       ),
       IThInputNumberFormFields(
         label: 'Initial Amount',

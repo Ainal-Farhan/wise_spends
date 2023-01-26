@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings_bloc.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings_page.dart';
+import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/state/edit_savings_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/home_logged_in/index.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/home_logged_in/state/home_logged_in_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/login/index.dart';
@@ -27,33 +30,31 @@ Future<void> main() async {
         BlocProvider<HomeLoggedInBloc>(
           create: (context) => HomeLoggedInBloc(),
           child: BlocBuilder<HomeLoggedInBloc, HomeLoggedInState>(
-            builder: (context, state) {
-              return const HomeLoggedInPage();
-            },
+            builder: (context, state) => const HomeLoggedInPage(),
           ),
         ),
         BlocProvider<LoginBloc>(
           create: (context) => LoginBloc(const UnLoginState()),
           child: BlocBuilder<LoginBloc, LoginState>(
-            builder: (context, state) {
-              return const LoginPage();
-            },
+            builder: (context, state) => const LoginPage(),
           ),
         ),
         BlocProvider<SavingsBloc>(
           create: (context) => SavingsBloc(),
           child: BlocBuilder<SavingsBloc, SavingsState>(
-            builder: (context, state) {
-              return const SavingsPage();
-            },
+            builder: (context, state) => const SavingsPage(),
+          ),
+        ),
+        BlocProvider<EditSavingsBloc>(
+          create: (context) => EditSavingsBloc(),
+          child: BlocBuilder<EditSavingsBloc, EditSavingsState>(
+            builder: (context, state) => const EditSavingsPage(savingId: ''),
           ),
         ),
         BlocProvider<TransactionBloc>(
           create: (context) => TransactionBloc(),
           child: BlocBuilder<TransactionBloc, TransactionState>(
-            builder: (context, state) {
-              return const TransactionPage();
-            },
+            builder: (context, state) => const TransactionPage(),
           ),
         ),
       ],

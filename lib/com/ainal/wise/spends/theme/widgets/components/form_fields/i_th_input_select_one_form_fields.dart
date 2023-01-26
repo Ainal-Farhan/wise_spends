@@ -17,22 +17,25 @@ abstract class IThInputSelectOneFormFields extends IThWidget {
     bool clearOption = false,
     bool searchAutofocus = false,
     bool searchShowCursor = false,
+    SingleValueDropDownController? controller,
   }) {
     textFieldFocusNode = textFieldFocusNode ?? FocusNode();
     searchFocusNode = searchFocusNode ?? FocusNode();
     onChanged = onChanged ?? (dynamic) => {};
+    controller = controller ?? SingleValueDropDownController();
 
     if (dropDownValues.isEmpty) {
       dropDownValues.add(
         const DropDownValueModel(
           name: 'No Values',
-          value: -1,
+          value: null,
         ),
       );
     }
 
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThInputSelectOneFormFieldsDefault(
+        controller: controller,
         textFieldFocusNode: textFieldFocusNode,
         searchFocusNode: searchFocusNode,
         dropDownValues: dropDownValues,
@@ -46,6 +49,7 @@ abstract class IThInputSelectOneFormFields extends IThWidget {
     }
 
     return ThInputSelectOneFormFieldsDefault(
+      controller: controller,
       textFieldFocusNode: textFieldFocusNode,
       searchFocusNode: searchFocusNode,
       dropDownValues: dropDownValues,

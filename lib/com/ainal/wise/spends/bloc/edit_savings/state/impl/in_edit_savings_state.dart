@@ -1,3 +1,4 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/state/edit_savings_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
@@ -6,7 +7,13 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms
 
 /// Initialized
 class InEditSavingsState extends EditSavingsState {
-  const InEditSavingsState(int version, this.saving) : super(version: version);
+  final List<DropDownValueModel> moneyStorageList;
+
+  const InEditSavingsState(
+    int version,
+    this.saving,
+    this.moneyStorageList,
+  ) : super(version: version);
 
   final SvngSaving saving;
 
@@ -15,12 +22,12 @@ class InEditSavingsState extends EditSavingsState {
 
   @override
   InEditSavingsState getStateCopy() {
-    return InEditSavingsState(version, saving);
+    return InEditSavingsState(version, saving, [...moneyStorageList]);
   }
 
   @override
   InEditSavingsState getNewVersion() {
-    return InEditSavingsState(version + 1, saving);
+    return InEditSavingsState(version + 1, saving, [...moneyStorageList]);
   }
 
   @override
@@ -40,7 +47,10 @@ class InEditSavingsState extends EditSavingsState {
         Center(
           child: SizedBox(
             height: screenHeight * .7,
-            child: IThEditSavingForm(saving: saving),
+            child: IThEditSavingForm(
+              saving: saving,
+              moneyStorageList: moneyStorageList,
+            ),
           ),
         ),
         Padding(

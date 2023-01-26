@@ -2739,9 +2739,25 @@ class $MoneyStorageTableTable extends MoneyStorageTable
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
       'type', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, iconUrl, longName, shortName, type];
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES user_table (id)'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        dateCreated,
+        dateUpdated,
+        iconUrl,
+        longName,
+        shortName,
+        type,
+        userId
+      ];
   @override
   String get aliasedName => _alias ?? 'money_storage_table';
   @override
@@ -2790,6 +2806,10 @@ class $MoneyStorageTableTable extends MoneyStorageTable
     } else if (isInserting) {
       context.missing(_typeMeta);
     }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    }
     return context;
   }
 
@@ -2813,6 +2833,8 @@ class $MoneyStorageTableTable extends MoneyStorageTable
           .read(DriftSqlType.string, data['${effectivePrefix}short_name'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id']),
     );
   }
 
@@ -2831,6 +2853,7 @@ class SvngMoneyStorage extends DataClass
   final String longName;
   final String shortName;
   final String type;
+  final String? userId;
   const SvngMoneyStorage(
       {required this.id,
       required this.dateCreated,
@@ -2838,7 +2861,8 @@ class SvngMoneyStorage extends DataClass
       required this.iconUrl,
       required this.longName,
       required this.shortName,
-      required this.type});
+      required this.type,
+      this.userId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2849,6 +2873,9 @@ class SvngMoneyStorage extends DataClass
     map['long_name'] = Variable<String>(longName);
     map['short_name'] = Variable<String>(shortName);
     map['type'] = Variable<String>(type);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
     return map;
   }
 
@@ -2861,6 +2888,8 @@ class SvngMoneyStorage extends DataClass
       longName: Value(longName),
       shortName: Value(shortName),
       type: Value(type),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
     );
   }
 
@@ -2875,6 +2904,7 @@ class SvngMoneyStorage extends DataClass
       longName: serializer.fromJson<String>(json['longName']),
       shortName: serializer.fromJson<String>(json['shortName']),
       type: serializer.fromJson<String>(json['type']),
+      userId: serializer.fromJson<String?>(json['userId']),
     );
   }
   @override
@@ -2888,6 +2918,7 @@ class SvngMoneyStorage extends DataClass
       'longName': serializer.toJson<String>(longName),
       'shortName': serializer.toJson<String>(shortName),
       'type': serializer.toJson<String>(type),
+      'userId': serializer.toJson<String?>(userId),
     };
   }
 
@@ -2898,7 +2929,8 @@ class SvngMoneyStorage extends DataClass
           String? iconUrl,
           String? longName,
           String? shortName,
-          String? type}) =>
+          String? type,
+          Value<String?> userId = const Value.absent()}) =>
       SvngMoneyStorage(
         id: id ?? this.id,
         dateCreated: dateCreated ?? this.dateCreated,
@@ -2907,6 +2939,7 @@ class SvngMoneyStorage extends DataClass
         longName: longName ?? this.longName,
         shortName: shortName ?? this.shortName,
         type: type ?? this.type,
+        userId: userId.present ? userId.value : this.userId,
       );
   @override
   String toString() {
@@ -2917,14 +2950,15 @@ class SvngMoneyStorage extends DataClass
           ..write('iconUrl: $iconUrl, ')
           ..write('longName: $longName, ')
           ..write('shortName: $shortName, ')
-          ..write('type: $type')
+          ..write('type: $type, ')
+          ..write('userId: $userId')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(
-      id, dateCreated, dateUpdated, iconUrl, longName, shortName, type);
+      id, dateCreated, dateUpdated, iconUrl, longName, shortName, type, userId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2935,7 +2969,8 @@ class SvngMoneyStorage extends DataClass
           other.iconUrl == this.iconUrl &&
           other.longName == this.longName &&
           other.shortName == this.shortName &&
-          other.type == this.type);
+          other.type == this.type &&
+          other.userId == this.userId);
 }
 
 class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
@@ -2946,6 +2981,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   final Value<String> longName;
   final Value<String> shortName;
   final Value<String> type;
+  final Value<String?> userId;
   const MoneyStorageTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -2954,6 +2990,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     this.longName = const Value.absent(),
     this.shortName = const Value.absent(),
     this.type = const Value.absent(),
+    this.userId = const Value.absent(),
   });
   MoneyStorageTableCompanion.insert({
     this.id = const Value.absent(),
@@ -2963,6 +3000,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     required String longName,
     required String shortName,
     required String type,
+    this.userId = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         longName = Value(longName),
         shortName = Value(shortName),
@@ -2975,6 +3013,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     Expression<String>? longName,
     Expression<String>? shortName,
     Expression<String>? type,
+    Expression<String>? userId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2984,6 +3023,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       if (longName != null) 'long_name': longName,
       if (shortName != null) 'short_name': shortName,
       if (type != null) 'type': type,
+      if (userId != null) 'user_id': userId,
     });
   }
 
@@ -2994,7 +3034,8 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       Value<String>? iconUrl,
       Value<String>? longName,
       Value<String>? shortName,
-      Value<String>? type}) {
+      Value<String>? type,
+      Value<String?>? userId}) {
     return MoneyStorageTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -3003,6 +3044,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       longName: longName ?? this.longName,
       shortName: shortName ?? this.shortName,
       type: type ?? this.type,
+      userId: userId ?? this.userId,
     );
   }
 
@@ -3030,6 +3072,9 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     if (type.present) {
       map['type'] = Variable<String>(type.value);
     }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
     return map;
   }
 
@@ -3042,7 +3087,8 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
           ..write('iconUrl: $iconUrl, ')
           ..write('longName: $longName, ')
           ..write('shortName: $shortName, ')
-          ..write('type: $type')
+          ..write('type: $type, ')
+          ..write('userId: $userId')
           ..write(')'))
         .toString();
   }

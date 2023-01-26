@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/com/ainal/wise/spends/constant/form/form_constant.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_number_form_fields.dart';
 
 class ThInputNumberFormFieldsDefault extends StatelessWidget
@@ -9,6 +10,7 @@ class ThInputNumberFormFieldsDefault extends StatelessWidget
   final bool isNegative;
   final bool isAcceptZero;
   final bool isPositive;
+  final FormFieldMode mode;
 
   const ThInputNumberFormFieldsDefault({
     Key? key,
@@ -18,6 +20,7 @@ class ThInputNumberFormFieldsDefault extends StatelessWidget
     required this.isNegative,
     required this.isAcceptZero,
     required this.isPositive,
+    required this.mode,
   }) : super(key: key);
 
   @override

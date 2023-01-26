@@ -1,3 +1,4 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/event/impl/update_edit_savings_event.dart';
@@ -6,6 +7,7 @@ import 'package:wise_spends/com/ainal/wise/spends/resource/ui/snack_bar/message.
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/buttons/i_th_save_button.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_number_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_radio_form_fields.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_select_one_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_input_text_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_vertical_spacing_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms/saving/i_th_edit_saving_form.dart';
@@ -16,6 +18,7 @@ import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_for
 class ThEditSavingFormDefault extends StatefulWidget
     implements IThEditSavingForm {
   final SvngSaving saving;
+  final List<DropDownValueModel> moneyStorageList;
 
   late EditSavingFormVO _editSavingFormVO;
 
@@ -25,10 +28,13 @@ class ThEditSavingFormDefault extends StatefulWidget
       TextEditingController();
   final TextEditingController _goalAmountController = TextEditingController();
   bool _isHasGoal = false;
+  final SingleValueDropDownController _moneyStorageController =
+      SingleValueDropDownController();
 
   ThEditSavingFormDefault({
     Key? key,
     required this.saving,
+    required this.moneyStorageList,
   }) : super(key: key) {
     _editSavingFormVO = EditSavingFormVO(
       savingId: saving.id,
@@ -36,6 +42,7 @@ class ThEditSavingFormDefault extends StatefulWidget
       currentAmount: saving.currentAmount,
       isHasGoal: saving.isHasGoal,
       goalAmount: saving.goal,
+      moneyStorageId: saving.moneyStorageId ?? '',
     );
 
     _savingNamecontroller.value = TextEditingValue(
@@ -47,6 +54,13 @@ class ThEditSavingFormDefault extends StatefulWidget
     _goalAmountController.value = TextEditingValue(
       text: _editSavingFormVO.goalAmount.toStringAsFixed(2),
     );
+
+    for (DropDownValueModel moneyStorage in moneyStorageList) {
+      if (moneyStorage.value == _editSavingFormVO.moneyStorageId) {
+        _moneyStorageController.dropDownValue = moneyStorage;
+        break;
+      }
+    }
 
     _isHasGoal = _editSavingFormVO.isHasGoal;
   }
@@ -84,6 +98,10 @@ class _ThEditSavingFormDefaultState extends State<ThEditSavingFormDefault> {
         widget._editSavingFormVO.goalAmount = widget._isHasGoal
             ? double.parse(widget._goalAmountController.text)
             : 0;
+        if (widget._moneyStorageController.dropDownValue != null) {
+          widget._editSavingFormVO.moneyStorageId =
+              widget._moneyStorageController.dropDownValue!.value ?? '';
+        }
         EditSavingsBloc().add(UpdateEditSavingsEvent(widget._editSavingFormVO));
       } else {
         showSnackBarMessage(context, 'Please fill every field');
@@ -94,6 +112,10 @@ class _ThEditSavingFormDefaultState extends State<ThEditSavingFormDefault> {
       IThInputTextFormFields(
         label: 'Saving Name',
         controller: widget._savingNamecontroller,
+      ),
+      IThInputSelectOneFormFields(
+        dropDownValues: widget.moneyStorageList,
+        controller: widget._moneyStorageController,
       ),
       IThInputNumberFormFields(
         label: 'Current Amount (RM)',

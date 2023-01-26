@@ -1,3 +1,4 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/edit_savings_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/event/edit_savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/edit_savings/state/edit_savings_state.dart';
@@ -18,6 +19,8 @@ class LoadEditSavingsEvent extends EditSavingsEvent {
       {EditSavingsState? currentState, EditSavingsBloc? bloc}) async* {
     yield const UnEditSavingsState(version: 0);
     SvngSaving saving = await savingsManager.getSavingById(savingId);
-    yield InEditSavingsState(0, saving);
+    List<DropDownValueModel> moneyStorageDropDownValueModelList =
+        await savingsManager.getCurrentUserMoneyStorageDropDownValueModelList();
+    yield InEditSavingsState(0, saving, moneyStorageDropDownValueModelList);
   }
 }

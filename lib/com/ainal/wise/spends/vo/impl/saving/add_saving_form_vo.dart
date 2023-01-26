@@ -5,12 +5,14 @@ class AddSavingFormVO with IVO {
   double? currentAmount;
   double? goalAmount;
   bool? isHasGoal;
+  String? moneyStorageId;
 
   AddSavingFormVO({
     this.savingName,
     this.currentAmount,
     this.goalAmount,
     this.isHasGoal,
+    this.moneyStorageId,
   });
 
   AddSavingFormVO.fromJson(Map<String, dynamic> json) {
@@ -18,6 +20,7 @@ class AddSavingFormVO with IVO {
     currentAmount = json['currentAmount'];
     goalAmount = json['goalAmount'];
     isHasGoal = json['isHasGoal'];
+    moneyStorageId = json['moneyStorageId'];
   }
 
   @override
@@ -27,6 +30,7 @@ class AddSavingFormVO with IVO {
     data['currentAmount'] = currentAmount;
     data['goalAmount'] = goalAmount;
     data['isHasGoal'] = isHasGoal;
+    data['moneyStorageId'] = moneyStorageId;
     return data;
   }
 }

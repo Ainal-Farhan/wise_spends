@@ -1,10 +1,13 @@
 import 'package:drift/drift.dart';
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:wise_spends/com/ainal/wise/spends/constant/saving/saving_constant.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/app_database.dart';
 import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_with_transactions.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_startup_manager.dart';
+import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/i_money_storage_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/i_saving_service.dart';
+import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/impl/money_storage_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/impl/saving_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/i_transaction_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/impl/transaction_service.dart';
@@ -13,6 +16,7 @@ import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_for
 class SavingManager implements ISavingManager {
   final ISavingService _savingService = SavingService();
   final ITransactionService _transactionService = TransactionService();
+  final IMoneyStorageService _moneyStorageService = MoneyStorageService();
   final IStartupManager _startupManager = IStartupManager();
 
   @override
@@ -29,6 +33,7 @@ class SavingManager implements ISavingManager {
     required double initialAmount,
     required bool isHasGoal,
     required double goalAmount,
+    required String moneyStorageId,
   }) async {
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
       dateUpdated: DateTime.now(),
@@ -37,6 +42,7 @@ class SavingManager implements ISavingManager {
       currentAmount: Value(initialAmount),
       isHasGoal: Value(isHasGoal),
       goal: Value(goalAmount),
+      moneyStorageId: Value(moneyStorageId),
     );
 
     return await _savingService.add(savingTableCompanion);
@@ -93,8 +99,9 @@ class SavingManager implements ISavingManager {
   }
 
   @override
-  Future<void> updateSaving(
-      {required EditSavingFormVO editSavingFormVO}) async {
+  Future<void> updateSaving({
+    required EditSavingFormVO editSavingFormVO,
+  }) async {
     SavingTableCompanion updatedSaving = SavingTableCompanion(
       id: Value(editSavingFormVO.savingId),
       name: Value(editSavingFormVO.savingName),
@@ -103,9 +110,28 @@ class SavingManager implements ISavingManager {
       goal: Value(
         editSavingFormVO.isHasGoal ? editSavingFormVO.goalAmount : .0,
       ),
+      moneyStorageId: Value(editSavingFormVO.moneyStorageId),
       dateUpdated: Value(DateTime.now()),
     );
 
     await _savingService.updatePart(updatedSaving);
+  }
+
+  @override
+  Future<List<DropDownValueModel>>
+      getCurrentUserMoneyStorageDropDownValueModelList() async {
+    String currentUser = _startupManager.currentUser.id;
+    List<DropDownValueModel> moneyStorageDropDownValueModelList = [];
+    Stream<List<SvngMoneyStorage>> streamMoneyStorageList =
+        _moneyStorageService.watchMoneyStorageListByUserId(currentUser);
+
+    for (SvngMoneyStorage moneyStorage in await streamMoneyStorageList.first) {
+      moneyStorageDropDownValueModelList.add(DropDownValueModel(
+        name: moneyStorage.longName,
+        value: moneyStorage.id,
+      ));
+    }
+
+    return moneyStorageDropDownValueModelList;
   }
 }

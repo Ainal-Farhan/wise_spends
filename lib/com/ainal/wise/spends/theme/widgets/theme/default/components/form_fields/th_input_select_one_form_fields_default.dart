@@ -13,6 +13,7 @@ class ThInputSelectOneFormFieldsDefault extends StatefulWidget
   final bool enableSearch;
   final bool searchShowCursor;
   final TextInputType searchKeyboardType;
+  final SingleValueDropDownController controller;
 
   const ThInputSelectOneFormFieldsDefault({
     Key? key,
@@ -25,6 +26,7 @@ class ThInputSelectOneFormFieldsDefault extends StatefulWidget
     required this.clearOption,
     required this.searchAutofocus,
     required this.searchShowCursor,
+    required this.controller,
   }) : super(key: key);
 
   @override
@@ -44,6 +46,7 @@ class _ThInputSelectOneFormFieldsDefaultState
   Widget build(BuildContext context) {
     return Expanded(
       child: DropDownTextField(
+        controller: widget.controller,
         clearOption: widget.clearOption,
         textFieldFocusNode: widget.textFieldFocusNode,
         searchFocusNode: widget.searchFocusNode,

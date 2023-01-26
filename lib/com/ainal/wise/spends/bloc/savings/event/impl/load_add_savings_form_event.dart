@@ -1,3 +1,4 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/impl/in_load_add_saving_form_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/impl/loading_savings_state.dart';
@@ -9,6 +10,10 @@ class LoadAddSavingsFormEvent extends SavingsEvent {
   Stream<SavingsState> applyAsync(
       {SavingsState? currentState, SavingsBloc? bloc}) async* {
     yield const LoadingSavingsState(0);
-    yield const InLoadAddSavingFormState(version: 0);
+
+    List<DropDownValueModel> moneyStorages =
+        await savingsManager.getCurrentUserMoneyStorageDropDownValueModelList();
+
+    yield InLoadAddSavingFormState(version: 0, moneyStorageList: moneyStorages);
   }
 }

@@ -1,11 +1,15 @@
+import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/event/impl/load_list_savings_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/savings/state/savings_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms/saving/i_th_add_saving_form.dart';
 
 class InLoadAddSavingFormState extends SavingsState {
+  final List<DropDownValueModel> moneyStorageList;
+
   const InLoadAddSavingFormState({
     required int version,
+    required this.moneyStorageList,
   }) : super(version);
 
   @override
@@ -24,6 +28,7 @@ class InLoadAddSavingFormState extends SavingsState {
             height: screenHeight * .7,
             child: IThAddSavingForm(
               eventLoader: load,
+              moneyStorageList: moneyStorageList,
             ),
           ),
         ),
@@ -65,11 +70,17 @@ class InLoadAddSavingFormState extends SavingsState {
 
   @override
   SavingsState getNewVersion() {
-    return InLoadAddSavingFormState(version: version + 1);
+    return InLoadAddSavingFormState(
+      version: version + 1,
+      moneyStorageList: [...moneyStorageList],
+    );
   }
 
   @override
   SavingsState getStateCopy() {
-    return InLoadAddSavingFormState(version: version);
+    return InLoadAddSavingFormState(
+      version: version,
+      moneyStorageList: [...moneyStorageList],
+    );
   }
 }

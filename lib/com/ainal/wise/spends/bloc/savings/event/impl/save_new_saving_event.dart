@@ -22,6 +22,7 @@ class SaveNewSavingEvent extends SavingsEvent {
         initialAmount: _addSavingFormVO.currentAmount!,
         isHasGoal: _addSavingFormVO.isHasGoal!,
         goalAmount: _addSavingFormVO.goalAmount!,
+        moneyStorageId: _addSavingFormVO.moneyStorageId ?? '',
       );
     } catch (_) {}
 
