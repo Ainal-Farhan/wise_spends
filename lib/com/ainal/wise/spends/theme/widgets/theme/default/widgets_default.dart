@@ -13,6 +13,7 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/co
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_output_number_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_output_text_form_fields_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/form_fields/th_vertical_spacing_form_fields_default.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/forms/money_storage/th_add_money_storage_form_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/forms/saving/th_add_saving_form_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/forms/saving/th_edit_saving_form_default.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/theme/default/components/list_tiles/th_list_tiles_one_default.dart';
@@ -37,6 +38,7 @@ class WidgetsDefault extends IWidgetTheme {
           //forms
           ThAddSavingFormDefault,
           ThEditSavingFormDefault,
+          ThAddMoneyStorageFormDefault,
 
           //form_fields
           ThVerticalSpacingFormFieldsDefault,

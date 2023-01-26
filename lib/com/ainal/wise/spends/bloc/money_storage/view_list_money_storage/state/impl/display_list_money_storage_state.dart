@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/events/impl/in_load_view_list_money_storage_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/events/impl/on_delete_view_list_money_storage_event.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/state/view_list_money_storage_state.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_bloc.dart';
 import 'package:wise_spends/com/ainal/wise/spends/resource/ui/alert_dialog/delete_dialog.dart';
+import 'package:wise_spends/com/ainal/wise/spends/router/app_router.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
-import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/money_storage_vo.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/money_storage_vo.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 
 class DisplayListMoneyStorageState extends ViewListMoneyStorageState {
@@ -79,8 +79,10 @@ class DisplayListMoneyStorageState extends ViewListMoneyStorageState {
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(400.0),
-                  onTap: () => ViewListMoneyStorageBloc()
-                      .add(InLoadViewListMoneyStorageEvent()),
+                  onTap: () => Navigator.pushReplacementNamed(
+                    context,
+                    AppRouter.addMoneyStoragePageRoute,
+                  ),
                   child: const Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Icon(

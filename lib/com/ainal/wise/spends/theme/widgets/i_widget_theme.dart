@@ -13,6 +13,7 @@ import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_output_number_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_output_text_form_fields.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/form_fields/i_th_vertical_spacing_form_fields.dart';
+import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms/money_storage/i_th_add_money_storage_form.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms/saving/i_th_add_saving_form.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/forms/saving/i_th_edit_saving_form.dart';
 import 'package:wise_spends/com/ainal/wise/spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
@@ -37,6 +38,7 @@ abstract class IWidgetTheme {
     //forms
     IThAddSavingForm,
     IThEditSavingForm,
+    IThAddMoneyStorageForm,
 
     //form_fields
     IThVerticalSpacingFormFields,

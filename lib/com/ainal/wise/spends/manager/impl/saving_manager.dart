@@ -12,7 +12,7 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/impl/savi
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/i_transaction_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/impl/transaction_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
-import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/money_storage_vo.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/money_storage/money_storage_vo.dart';
 
 class SavingManager implements ISavingManager {
   final ISavingService _savingService = SavingService();
@@ -29,7 +29,7 @@ class SavingManager implements ISavingManager {
   }
 
   @override
-  Future<void> addNewSaving({
+  Future<SvngSaving> addNewSaving({
     required String name,
     required double initialAmount,
     required bool isHasGoal,
@@ -182,5 +182,24 @@ class SavingManager implements ISavingManager {
     }
 
     return moneyStorageVOList;
+  }
+
+  @override
+  Future<SvngMoneyStorage> addNewMoneyStorage({
+    required String shortName,
+    required String longName,
+    required String type,
+  }) async {
+    MoneyStorageTableCompanion moneyStorageTableCompanion =
+        MoneyStorageTableCompanion.insert(
+      dateUpdated: DateTime.now(),
+      longName: longName,
+      shortName: shortName,
+      type: type,
+      dateCreated: Value(DateTime.now()),
+      userId: Value(_startupManager.currentUser.id),
+    );
+
+    return await _moneyStorageService.add(moneyStorageTableCompanion);
   }
 }
