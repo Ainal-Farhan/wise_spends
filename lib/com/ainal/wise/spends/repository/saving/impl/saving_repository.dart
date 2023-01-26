@@ -23,4 +23,11 @@ class SavingRepository extends ISavingRepository {
     await (db.update(db.savingTable)..where((tbl) => tbl.id.equals(savingId)))
         .write(savingTableCompanion);
   }
+
+  @override
+  Stream<List<SvngSaving>> watchBasedOnMoneyStorageId(String moneyStorageId) {
+    return (db.select(db.savingTable)
+          ..where((tbl) => tbl.moneyStorageId.equals(moneyStorageId)))
+        .watch();
+  }
 }

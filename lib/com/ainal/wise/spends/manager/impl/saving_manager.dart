@@ -12,6 +12,7 @@ import 'package:wise_spends/com/ainal/wise/spends/service/local/saving/impl/savi
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/i_transaction_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/service/local/transaction/impl/transaction_service.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/money_storage_vo.dart';
 
 class SavingManager implements ISavingManager {
   final ISavingService _savingService = SavingService();
@@ -133,5 +134,53 @@ class SavingManager implements ISavingManager {
     }
 
     return moneyStorageDropDownValueModelList;
+  }
+
+  @override
+  Future<List<SvngMoneyStorage>> getCurrentUserMoneyStorageList() async {
+    String currentUserId = _startupManager.currentUser.id;
+
+    return await _moneyStorageService
+        .watchMoneyStorageListByUserId(currentUserId)
+        .first;
+  }
+
+  @override
+  Future<bool> deleteSelectedMoneyStorage(String id) async {
+    try {
+      // get money storage
+      SvngMoneyStorage moneyStorage =
+          await _moneyStorageService.watchMoneyStorageById(id).first;
+
+      // delete saving
+      await _moneyStorageService.delete(moneyStorage);
+
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<List<MoneyStorageVO>> getCurrentUserMoneyStorageVOList() async {
+    List<MoneyStorageVO> moneyStorageVOList = [];
+    for (SvngMoneyStorage moneyStorage in (await _moneyStorageService
+        .watchMoneyStorageListByUserId(_startupManager.currentUser.id)
+        .first)) {
+      double amount = (await _savingService
+              .watchAllSavingBasedOnMoneyStorageId(moneyStorage.id)
+              .first)
+          .fold(
+              0,
+              (previousValue, SvngSaving saving) =>
+                  previousValue + saving.currentAmount);
+
+      moneyStorageVOList.add(MoneyStorageVO(
+        moneyStorage: moneyStorage,
+        amount: amount,
+      ));
+    }
+
+    return moneyStorageVOList;
   }
 }

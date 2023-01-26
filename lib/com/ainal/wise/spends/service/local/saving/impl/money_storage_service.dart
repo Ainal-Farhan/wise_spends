@@ -23,4 +23,9 @@ class MoneyStorageService extends IMoneyStorageService {
   Stream<List<SvngMoneyStorage>> watchMoneyStorageListByUserId(String userId) {
     return _moneyStorageRepository.watchBasedOnUserId(userId);
   }
+
+  @override
+  Stream<SvngMoneyStorage> watchMoneyStorageById(String moneyStorageId) {
+    return _moneyStorageRepository.watchBasedOnMoneyStorageId(moneyStorageId);
+  }
 }

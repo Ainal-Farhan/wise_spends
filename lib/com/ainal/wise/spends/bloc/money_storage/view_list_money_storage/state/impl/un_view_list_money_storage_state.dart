@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:wise_spends/com/ainal/wise/spends/bloc/money_storage/view_list_money_storage/state/view_list_money_storage_state.dart';
 
 class UnViewListMoneyStorageState extends ViewListMoneyStorageState {
@@ -7,8 +7,8 @@ class UnViewListMoneyStorageState extends ViewListMoneyStorageState {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(),
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 

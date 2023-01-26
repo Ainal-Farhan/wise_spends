@@ -4,6 +4,7 @@ import 'package:wise_spends/com/ainal/wise/spends/db/domain/composite/saving_wit
 import 'package:wise_spends/com/ainal/wise/spends/manager/i_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/manager/impl/saving_manager.dart';
 import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/edit_saving_form_vo.dart';
+import 'package:wise_spends/com/ainal/wise/spends/vo/impl/saving/money_storage_vo.dart';
 
 abstract class ISavingManager extends IManager {
   factory ISavingManager() {
@@ -30,7 +31,13 @@ abstract class ISavingManager extends IManager {
 
   Future<SvngSaving> getSavingById(String savingId);
 
+  Future<List<SvngMoneyStorage>> getCurrentUserMoneyStorageList();
+
+  Future<List<MoneyStorageVO>> getCurrentUserMoneyStorageVOList();
+
   Future<bool> deleteSelectedSaving(String id);
+
+  Future<bool> deleteSelectedMoneyStorage(String id);
 
   Future<List<DropDownValueModel>>
       getCurrentUserMoneyStorageDropDownValueModelList();

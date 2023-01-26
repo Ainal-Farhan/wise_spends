@@ -20,4 +20,11 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
           ..where((tbl) => tbl.userId.equals(userId)))
         .watch();
   }
+
+  @override
+  Stream<SvngMoneyStorage> watchBasedOnMoneyStorageId(String moneyStorageId) {
+    return (db.select(db.moneyStorageTable)
+          ..where((tbl) => tbl.id.equals(moneyStorageId)))
+        .watchSingle();
+  }
 }

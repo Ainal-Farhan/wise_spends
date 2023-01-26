@@ -10,7 +10,7 @@ abstract class IThLoggedInBottomNavbar extends IThWidget {
   static const Map<String, int> indexBasedOnPageRoute = {
     AppRouter.homeLoggedInPageRoute: 0,
     AppRouter.savingsPageRoute: 1,
-    AppRouter.transactionPageRoute: 2,
+    AppRouter.viewListMoneyStoragePageRoute: 2,
   };
 
   factory IThLoggedInBottomNavbar({

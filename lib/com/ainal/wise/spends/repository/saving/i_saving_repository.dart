@@ -9,6 +9,9 @@ abstract class ISavingRepository extends ICrudRepository<$SavingTableTable,
 
   Stream<List<SvngSaving>> watchBasedOnUserId(final String userId);
 
+  Stream<List<SvngSaving>> watchBasedOnMoneyStorageId(
+      final String moneyStorageId);
+
   Future<void> updatePart(
       final SavingTableCompanion savingTableCompanion, final String savingId);
 }

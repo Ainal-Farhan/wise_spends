@@ -9,6 +9,9 @@ abstract class ISavingService extends ILocalService {
   Stream<List<SavingWithTransactions>> watchAllSavingWithTransactions(
       final String userId);
 
+  Stream<List<SvngSaving>> watchAllSavingBasedOnMoneyStorageId(
+      final String moneyStorageId);
+
   Stream<SvngSaving> watchSavingById(final String savingId);
 
   Future<void> updatePart(final SavingTableCompanion savingTableCompanion);

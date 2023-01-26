@@ -100,7 +100,7 @@ class _ThLoggedInBottomNavbarDefaultState
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.attach_money),
-                    label: 'Transaction',
+                    label: 'Money Storage',
                   ),
                 ],
                 currentIndex: IThLoggedInBottomNavbar

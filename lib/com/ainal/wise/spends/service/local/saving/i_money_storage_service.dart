@@ -8,6 +8,8 @@ abstract class IMoneyStorageService extends ILocalService {
   Stream<List<SvngMoneyStorage>> watchMoneyStorageListByUserId(
       final String userId);
 
+  Stream<SvngMoneyStorage> watchMoneyStorageById(final String moneyStorageId);
+
   Future<void> updatePart(
       final MoneyStorageTableCompanion moneyStorageTableCompanion);
 }

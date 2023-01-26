@@ -7,6 +7,9 @@ abstract class IMoneyStorageRepository extends ICrudRepository<
 
   Stream<List<SvngMoneyStorage>> watchBasedOnUserId(final String userId);
 
+  Stream<SvngMoneyStorage> watchBasedOnMoneyStorageId(
+      final String moneyStorageId);
+
   Future<void> updatePart({
     required final MoneyStorageTableCompanion moneyStorageTableCompanion,
     required final String moneyStorageId,

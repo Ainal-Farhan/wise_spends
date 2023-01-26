@@ -42,4 +42,10 @@ class SavingService extends ISavingService {
     await _savingRepository.updatePart(
         savingTableCompanion, savingTableCompanion.id.value);
   }
+
+  @override
+  Stream<List<SvngSaving>> watchAllSavingBasedOnMoneyStorageId(
+      String moneyStorageId) {
+    return _savingRepository.watchBasedOnMoneyStorageId(moneyStorageId);
+  }
 }
