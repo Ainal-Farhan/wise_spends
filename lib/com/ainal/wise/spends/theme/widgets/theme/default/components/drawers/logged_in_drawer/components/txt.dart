@@ -90,7 +90,7 @@ class _TxtState extends State<Txt> {
         overflow: widget.useoverflow ? TextOverflow.ellipsis : null,
         textAlign: widget.textAlign,
         maxLines: widget.maxLines,
-        textScaleFactor: 1,
+        textScaler: const TextScaler.linear(1),
         style: TextStyle(
           decoration: widget.underline
               ? TextDecoration.underline

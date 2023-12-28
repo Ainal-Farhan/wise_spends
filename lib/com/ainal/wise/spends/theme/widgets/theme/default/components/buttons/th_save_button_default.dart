@@ -19,10 +19,10 @@ class ThSaveButtonDefault extends StatelessWidget implements IThSaveButton {
           color: Colors.orange,
           borderRadius: BorderRadius.circular(20),
         ),
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
+          children: [
             Text(
               'Save',
               style: TextStyle(

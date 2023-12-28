@@ -38,9 +38,10 @@ class $UserTableTable extends UserTable
   @override
   List<GeneratedColumn> get $columns => [id, dateCreated, dateUpdated, name];
   @override
-  String get aliasedName => _alias ?? 'user_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'user_table';
+  String get actualTableName => $name;
+  static const String $name = 'user_table';
   @override
   VerificationContext validateIntegrity(Insertable<CmmnUser> instance,
       {bool isInserting = false}) {
@@ -188,17 +189,20 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
   final Value<String> name;
+  final Value<int> rowid;
   const UserTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
     this.name = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   UserTableCompanion.insert({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
     required String name,
+    this.rowid = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         name = Value(name);
   static Insertable<CmmnUser> custom({
@@ -206,12 +210,14 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
     Expression<String>? name,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
       if (name != null) 'name': name,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -219,12 +225,14 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
       {Value<String>? id,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
-      Value<String>? name}) {
+      Value<String>? name,
+      Value<int>? rowid}) {
     return UserTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
       name: name ?? this.name,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -243,6 +251,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -252,7 +263,8 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
           ..write('id: $id, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -299,9 +311,10 @@ class $GroupReferenceTableTable extends GroupReferenceTable
   List<GeneratedColumn> get $columns =>
       [id, dateCreated, dateUpdated, label, value];
   @override
-  String get aliasedName => _alias ?? 'group_reference_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'group_reference_table';
+  String get actualTableName => $name;
+  static const String $name = 'group_reference_table';
   @override
   VerificationContext validateIntegrity(
       Insertable<MstrdtGroupReference> instance,
@@ -467,12 +480,14 @@ class GroupReferenceTableCompanion
   final Value<DateTime> dateUpdated;
   final Value<String> label;
   final Value<String> value;
+  final Value<int> rowid;
   const GroupReferenceTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
     this.label = const Value.absent(),
     this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   GroupReferenceTableCompanion.insert({
     this.id = const Value.absent(),
@@ -480,6 +495,7 @@ class GroupReferenceTableCompanion
     required DateTime dateUpdated,
     required String label,
     required String value,
+    this.rowid = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         label = Value(label),
         value = Value(value);
@@ -489,6 +505,7 @@ class GroupReferenceTableCompanion
     Expression<DateTime>? dateUpdated,
     Expression<String>? label,
     Expression<String>? value,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -496,6 +513,7 @@ class GroupReferenceTableCompanion
       if (dateUpdated != null) 'date_updated': dateUpdated,
       if (label != null) 'label': label,
       if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -504,13 +522,15 @@ class GroupReferenceTableCompanion
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
       Value<String>? label,
-      Value<String>? value}) {
+      Value<String>? value,
+      Value<int>? rowid}) {
     return GroupReferenceTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
       label: label ?? this.label,
       value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -532,6 +552,9 @@ class GroupReferenceTableCompanion
     if (value.present) {
       map['value'] = Variable<String>(value.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -542,7 +565,8 @@ class GroupReferenceTableCompanion
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
           ..write('label: $label, ')
-          ..write('value: $value')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -590,16 +614,13 @@ class $ReferenceTableTable extends ReferenceTable
   static const VerificationMeta _isActiveMeta =
       const VerificationMeta('isActive');
   @override
-  late final GeneratedColumn<bool> isActive =
-      GeneratedColumn<bool>('is_active', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_active" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _belongToMeta =
       const VerificationMeta('belongTo');
   @override
@@ -622,9 +643,10 @@ class $ReferenceTableTable extends ReferenceTable
   List<GeneratedColumn> get $columns =>
       [id, dateCreated, dateUpdated, label, value, isActive, belongTo, groupId];
   @override
-  String get aliasedName => _alias ?? 'reference_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'reference_table';
+  String get actualTableName => $name;
+  static const String $name = 'reference_table';
   @override
   VerificationContext validateIntegrity(Insertable<MstrdtReference> instance,
       {bool isInserting = false}) {
@@ -843,6 +865,7 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
   final Value<bool> isActive;
   final Value<String> belongTo;
   final Value<String> groupId;
+  final Value<int> rowid;
   const ReferenceTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -852,6 +875,7 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
     this.isActive = const Value.absent(),
     this.belongTo = const Value.absent(),
     this.groupId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   ReferenceTableCompanion.insert({
     this.id = const Value.absent(),
@@ -862,6 +886,7 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
     this.isActive = const Value.absent(),
     required String belongTo,
     required String groupId,
+    this.rowid = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         label = Value(label),
         value = Value(value),
@@ -876,6 +901,7 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
     Expression<bool>? isActive,
     Expression<String>? belongTo,
     Expression<String>? groupId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -886,6 +912,7 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
       if (isActive != null) 'is_active': isActive,
       if (belongTo != null) 'belong_to': belongTo,
       if (groupId != null) 'group_id': groupId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -897,7 +924,8 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
       Value<String>? value,
       Value<bool>? isActive,
       Value<String>? belongTo,
-      Value<String>? groupId}) {
+      Value<String>? groupId,
+      Value<int>? rowid}) {
     return ReferenceTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -907,6 +935,7 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
       isActive: isActive ?? this.isActive,
       belongTo: belongTo ?? this.belongTo,
       groupId: groupId ?? this.groupId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -937,6 +966,9 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
     if (groupId.present) {
       map['group_id'] = Variable<String>(groupId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -950,7 +982,8 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
           ..write('value: $value, ')
           ..write('isActive: $isActive, ')
           ..write('belongTo: $belongTo, ')
-          ..write('groupId: $groupId')
+          ..write('groupId: $groupId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -1017,16 +1050,13 @@ class $ReferenceDataTableTable extends ReferenceDataTable
   static const VerificationMeta _isHasNextMeta =
       const VerificationMeta('isHasNext');
   @override
-  late final GeneratedColumn<bool> isHasNext =
-      GeneratedColumn<bool>('is_has_next', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_has_next" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isHasNext = GeneratedColumn<bool>(
+      'is_has_next', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_has_next" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _nextReferenceDataIdMeta =
       const VerificationMeta('nextReferenceDataId');
   @override
@@ -1050,9 +1080,10 @@ class $ReferenceDataTableTable extends ReferenceDataTable
         nextReferenceDataId
       ];
   @override
-  String get aliasedName => _alias ?? 'reference_data_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'reference_data_table';
+  String get actualTableName => $name;
+  static const String $name = 'reference_data_table';
   @override
   VerificationContext validateIntegrity(
       Insertable<MstrdtReferenceData> instance,
@@ -1338,6 +1369,7 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
   final Value<String?> referenceId;
   final Value<bool> isHasNext;
   final Value<String?> nextReferenceDataId;
+  final Value<int> rowid;
   const ReferenceDataTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -1349,6 +1381,7 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
     this.referenceId = const Value.absent(),
     this.isHasNext = const Value.absent(),
     this.nextReferenceDataId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   ReferenceDataTableCompanion.insert({
     this.id = const Value.absent(),
@@ -1361,6 +1394,7 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
     this.referenceId = const Value.absent(),
     this.isHasNext = const Value.absent(),
     this.nextReferenceDataId = const Value.absent(),
+    this.rowid = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         label = Value(label),
         groupLabel = Value(groupLabel),
@@ -1377,6 +1411,7 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
     Expression<String>? referenceId,
     Expression<bool>? isHasNext,
     Expression<String>? nextReferenceDataId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1390,6 +1425,7 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
       if (isHasNext != null) 'is_has_next': isHasNext,
       if (nextReferenceDataId != null)
         'next_reference_data_id': nextReferenceDataId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -1403,7 +1439,8 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
       Value<String>? groupValue,
       Value<String?>? referenceId,
       Value<bool>? isHasNext,
-      Value<String?>? nextReferenceDataId}) {
+      Value<String?>? nextReferenceDataId,
+      Value<int>? rowid}) {
     return ReferenceDataTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -1415,6 +1452,7 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
       referenceId: referenceId ?? this.referenceId,
       isHasNext: isHasNext ?? this.isHasNext,
       nextReferenceDataId: nextReferenceDataId ?? this.nextReferenceDataId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -1452,6 +1490,9 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
       map['next_reference_data_id'] =
           Variable<String>(nextReferenceDataId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -1467,7 +1508,8 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
           ..write('groupValue: $groupValue, ')
           ..write('referenceId: $referenceId, ')
           ..write('isHasNext: $isHasNext, ')
-          ..write('nextReferenceDataId: $nextReferenceDataId')
+          ..write('nextReferenceDataId: $nextReferenceDataId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -1537,9 +1579,10 @@ class $ExpenseTableTable extends ExpenseTable
         referenceDataId
       ];
   @override
-  String get aliasedName => _alias ?? 'expense_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'expense_table';
+  String get actualTableName => $name;
+  static const String $name = 'expense_table';
   @override
   VerificationContext validateIntegrity(Insertable<ExpenseTableData> instance,
       {bool isInserting = false}) {
@@ -1750,6 +1793,7 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
   final Value<String?> description;
   final Value<DateTime> expenseDate;
   final Value<String> referenceDataId;
+  final Value<int> rowid;
   const ExpenseTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -1758,6 +1802,7 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
     this.description = const Value.absent(),
     this.expenseDate = const Value.absent(),
     this.referenceDataId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   ExpenseTableCompanion.insert({
     this.id = const Value.absent(),
@@ -1767,6 +1812,7 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
     this.description = const Value.absent(),
     required DateTime expenseDate,
     required String referenceDataId,
+    this.rowid = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         amount = Value(amount),
         expenseDate = Value(expenseDate),
@@ -1779,6 +1825,7 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
     Expression<String>? description,
     Expression<DateTime>? expenseDate,
     Expression<String>? referenceDataId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1788,6 +1835,7 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
       if (description != null) 'description': description,
       if (expenseDate != null) 'expense_date': expenseDate,
       if (referenceDataId != null) 'reference_data_id': referenceDataId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -1798,7 +1846,8 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
       Value<double>? amount,
       Value<String?>? description,
       Value<DateTime>? expenseDate,
-      Value<String>? referenceDataId}) {
+      Value<String>? referenceDataId,
+      Value<int>? rowid}) {
     return ExpenseTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -1807,6 +1856,7 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
       description: description ?? this.description,
       expenseDate: expenseDate ?? this.expenseDate,
       referenceDataId: referenceDataId ?? this.referenceDataId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -1834,6 +1884,9 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
     if (referenceDataId.present) {
       map['reference_data_id'] = Variable<String>(referenceDataId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -1846,7 +1899,8 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
           ..write('amount: $amount, ')
           ..write('description: $description, ')
           ..write('expenseDate: $expenseDate, ')
-          ..write('referenceDataId: $referenceDataId')
+          ..write('referenceDataId: $referenceDataId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -1906,9 +1960,10 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
   List<GeneratedColumn> get $columns =>
       [id, dateCreated, dateUpdated, suggestedAmount, description, referenceId];
   @override
-  String get aliasedName => _alias ?? 'expense_reference_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'expense_reference_table';
+  String get actualTableName => $name;
+  static const String $name = 'expense_reference_table';
   @override
   VerificationContext validateIntegrity(
       Insertable<MstrdtExpenseReference> instance,
@@ -2100,6 +2155,7 @@ class ExpenseReferenceTableCompanion
   final Value<double> suggestedAmount;
   final Value<String?> description;
   final Value<String> referenceId;
+  final Value<int> rowid;
   const ExpenseReferenceTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -2107,6 +2163,7 @@ class ExpenseReferenceTableCompanion
     this.suggestedAmount = const Value.absent(),
     this.description = const Value.absent(),
     this.referenceId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   ExpenseReferenceTableCompanion.insert({
     this.id = const Value.absent(),
@@ -2115,6 +2172,7 @@ class ExpenseReferenceTableCompanion
     this.suggestedAmount = const Value.absent(),
     this.description = const Value.absent(),
     required String referenceId,
+    this.rowid = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         referenceId = Value(referenceId);
   static Insertable<MstrdtExpenseReference> custom({
@@ -2124,6 +2182,7 @@ class ExpenseReferenceTableCompanion
     Expression<double>? suggestedAmount,
     Expression<String>? description,
     Expression<String>? referenceId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2132,6 +2191,7 @@ class ExpenseReferenceTableCompanion
       if (suggestedAmount != null) 'suggested_amount': suggestedAmount,
       if (description != null) 'description': description,
       if (referenceId != null) 'reference_id': referenceId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -2141,7 +2201,8 @@ class ExpenseReferenceTableCompanion
       Value<DateTime>? dateUpdated,
       Value<double>? suggestedAmount,
       Value<String?>? description,
-      Value<String>? referenceId}) {
+      Value<String>? referenceId,
+      Value<int>? rowid}) {
     return ExpenseReferenceTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -2149,6 +2210,7 @@ class ExpenseReferenceTableCompanion
       suggestedAmount: suggestedAmount ?? this.suggestedAmount,
       description: description ?? this.description,
       referenceId: referenceId ?? this.referenceId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -2173,6 +2235,9 @@ class ExpenseReferenceTableCompanion
     if (referenceId.present) {
       map['reference_id'] = Variable<String>(referenceId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -2184,7 +2249,8 @@ class ExpenseReferenceTableCompanion
           ..write('dateUpdated: $dateUpdated, ')
           ..write('suggestedAmount: $suggestedAmount, ')
           ..write('description: $description, ')
-          ..write('referenceId: $referenceId')
+          ..write('referenceId: $referenceId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2210,16 +2276,13 @@ class $SavingReminderTableTable extends SavingReminderTable
   static const VerificationMeta _isActiveMeta =
       const VerificationMeta('isActive');
   @override
-  late final GeneratedColumn<bool> isActive =
-      GeneratedColumn<bool>('is_active', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_active" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _activeStartDateMeta =
       const VerificationMeta('activeStartDate');
   @override
@@ -2278,9 +2341,10 @@ class $SavingReminderTableTable extends SavingReminderTable
         recurringType
       ];
   @override
-  String get aliasedName => _alias ?? 'saving_reminder_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'saving_reminder_table';
+  String get actualTableName => $name;
+  static const String $name = 'saving_reminder_table';
   @override
   VerificationContext validateIntegrity(
       Insertable<NtfctnSavingReminder> instance,
@@ -2548,6 +2612,7 @@ class SavingReminderTableCompanion
   final Value<DateTime> dateUpdated;
   final Value<double> amount;
   final Value<String> recurringType;
+  final Value<int> rowid;
   const SavingReminderTableCompanion({
     this.title = const Value.absent(),
     this.description = const Value.absent(),
@@ -2559,6 +2624,7 @@ class SavingReminderTableCompanion
     this.dateUpdated = const Value.absent(),
     this.amount = const Value.absent(),
     this.recurringType = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   SavingReminderTableCompanion.insert({
     required String title,
@@ -2571,6 +2637,7 @@ class SavingReminderTableCompanion
     required DateTime dateUpdated,
     required double amount,
     required String recurringType,
+    this.rowid = const Value.absent(),
   })  : title = Value(title),
         description = Value(description),
         activeStartDate = Value(activeStartDate),
@@ -2589,6 +2656,7 @@ class SavingReminderTableCompanion
     Expression<DateTime>? dateUpdated,
     Expression<double>? amount,
     Expression<String>? recurringType,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (title != null) 'title': title,
@@ -2601,6 +2669,7 @@ class SavingReminderTableCompanion
       if (dateUpdated != null) 'date_updated': dateUpdated,
       if (amount != null) 'amount': amount,
       if (recurringType != null) 'recurring_type': recurringType,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -2614,7 +2683,8 @@ class SavingReminderTableCompanion
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
       Value<double>? amount,
-      Value<String>? recurringType}) {
+      Value<String>? recurringType,
+      Value<int>? rowid}) {
     return SavingReminderTableCompanion(
       title: title ?? this.title,
       description: description ?? this.description,
@@ -2626,6 +2696,7 @@ class SavingReminderTableCompanion
       dateUpdated: dateUpdated ?? this.dateUpdated,
       amount: amount ?? this.amount,
       recurringType: recurringType ?? this.recurringType,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -2662,6 +2733,9 @@ class SavingReminderTableCompanion
     if (recurringType.present) {
       map['recurring_type'] = Variable<String>(recurringType.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -2677,7 +2751,8 @@ class SavingReminderTableCompanion
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
           ..write('amount: $amount, ')
-          ..write('recurringType: $recurringType')
+          ..write('recurringType: $recurringType, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2759,9 +2834,10 @@ class $MoneyStorageTableTable extends MoneyStorageTable
         userId
       ];
   @override
-  String get aliasedName => _alias ?? 'money_storage_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'money_storage_table';
+  String get actualTableName => $name;
+  static const String $name = 'money_storage_table';
   @override
   VerificationContext validateIntegrity(Insertable<SvngMoneyStorage> instance,
       {bool isInserting = false}) {
@@ -2982,6 +3058,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   final Value<String> shortName;
   final Value<String> type;
   final Value<String?> userId;
+  final Value<int> rowid;
   const MoneyStorageTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -2991,6 +3068,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     this.shortName = const Value.absent(),
     this.type = const Value.absent(),
     this.userId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   MoneyStorageTableCompanion.insert({
     this.id = const Value.absent(),
@@ -3001,6 +3079,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     required String shortName,
     required String type,
     this.userId = const Value.absent(),
+    this.rowid = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         longName = Value(longName),
         shortName = Value(shortName),
@@ -3014,6 +3093,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     Expression<String>? shortName,
     Expression<String>? type,
     Expression<String>? userId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -3024,6 +3104,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       if (shortName != null) 'short_name': shortName,
       if (type != null) 'type': type,
       if (userId != null) 'user_id': userId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -3035,7 +3116,8 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       Value<String>? longName,
       Value<String>? shortName,
       Value<String>? type,
-      Value<String?>? userId}) {
+      Value<String?>? userId,
+      Value<int>? rowid}) {
     return MoneyStorageTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -3045,6 +3127,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       shortName: shortName ?? this.shortName,
       type: type ?? this.type,
       userId: userId ?? this.userId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -3075,6 +3158,9 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -3088,7 +3174,8 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
           ..write('longName: $longName, ')
           ..write('shortName: $shortName, ')
           ..write('type: $type, ')
-          ..write('userId: $userId')
+          ..write('userId: $userId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -3129,29 +3216,23 @@ class $SavingTableTable extends SavingTable
   static const VerificationMeta _isPublicMeta =
       const VerificationMeta('isPublic');
   @override
-  late final GeneratedColumn<bool> isPublic =
-      GeneratedColumn<bool>('is_public', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_public" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isPublic = GeneratedColumn<bool>(
+      'is_public', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_public" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _isHasGoalMeta =
       const VerificationMeta('isHasGoal');
   @override
-  late final GeneratedColumn<bool> isHasGoal =
-      GeneratedColumn<bool>('is_has_goal', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_has_goal" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isHasGoal = GeneratedColumn<bool>(
+      'is_has_goal', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_has_goal" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _goalMeta = const VerificationMeta('goal');
   @override
   late final GeneratedColumn<double> goal = GeneratedColumn<double>(
@@ -3162,16 +3243,13 @@ class $SavingTableTable extends SavingTable
   static const VerificationMeta _isHasStartDateMeta =
       const VerificationMeta('isHasStartDate');
   @override
-  late final GeneratedColumn<bool> isHasStartDate =
-      GeneratedColumn<bool>('is_has_start_date', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_has_start_date" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isHasStartDate = GeneratedColumn<bool>(
+      'is_has_start_date', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_has_start_date" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _startDateMeta =
       const VerificationMeta('startDate');
   @override
@@ -3181,16 +3259,13 @@ class $SavingTableTable extends SavingTable
   static const VerificationMeta _isHasEndDateMeta =
       const VerificationMeta('isHasEndDate');
   @override
-  late final GeneratedColumn<bool> isHasEndDate =
-      GeneratedColumn<bool>('is_has_end_date', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_has_end_date" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isHasEndDate = GeneratedColumn<bool>(
+      'is_has_end_date', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_has_end_date" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _endDateMeta =
       const VerificationMeta('endDate');
   @override
@@ -3200,42 +3275,33 @@ class $SavingTableTable extends SavingTable
   static const VerificationMeta _isSaveDailyMeta =
       const VerificationMeta('isSaveDaily');
   @override
-  late final GeneratedColumn<bool> isSaveDaily =
-      GeneratedColumn<bool>('is_save_daily', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_save_daily" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isSaveDaily = GeneratedColumn<bool>(
+      'is_save_daily', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_save_daily" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _isSaveWeeklyMeta =
       const VerificationMeta('isSaveWeekly');
   @override
-  late final GeneratedColumn<bool> isSaveWeekly =
-      GeneratedColumn<bool>('is_save_weekly', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_save_weekly" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isSaveWeekly = GeneratedColumn<bool>(
+      'is_save_weekly', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_save_weekly" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _isSaveMonthlyMeta =
       const VerificationMeta('isSaveMonthly');
   @override
-  late final GeneratedColumn<bool> isSaveMonthly =
-      GeneratedColumn<bool>('is_save_monthly', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_save_monthly" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isSaveMonthly = GeneratedColumn<bool>(
+      'is_save_monthly', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_save_monthly" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _currentAmountMeta =
       const VerificationMeta('currentAmount');
   @override
@@ -3282,9 +3348,10 @@ class $SavingTableTable extends SavingTable
         moneyStorageId
       ];
   @override
-  String get aliasedName => _alias ?? 'saving_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'saving_table';
+  String get actualTableName => $name;
+  static const String $name = 'saving_table';
   @override
   VerificationContext validateIntegrity(Insertable<SvngSaving> instance,
       {bool isInserting = false}) {
@@ -3702,6 +3769,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<double> currentAmount;
   final Value<String?> userId;
   final Value<String?> moneyStorageId;
+  final Value<int> rowid;
   const SavingTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -3720,6 +3788,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.currentAmount = const Value.absent(),
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   SavingTableCompanion.insert({
     this.id = const Value.absent(),
@@ -3739,6 +3808,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.currentAmount = const Value.absent(),
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
+    this.rowid = const Value.absent(),
   }) : dateUpdated = Value(dateUpdated);
   static Insertable<SvngSaving> custom({
     Expression<String>? id,
@@ -3758,6 +3828,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     Expression<double>? currentAmount,
     Expression<String>? userId,
     Expression<String>? moneyStorageId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -3777,6 +3848,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       if (currentAmount != null) 'current_amount': currentAmount,
       if (userId != null) 'user_id': userId,
       if (moneyStorageId != null) 'money_storage_id': moneyStorageId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -3797,7 +3869,8 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       Value<bool>? isSaveMonthly,
       Value<double>? currentAmount,
       Value<String?>? userId,
-      Value<String?>? moneyStorageId}) {
+      Value<String?>? moneyStorageId,
+      Value<int>? rowid}) {
     return SavingTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -3816,6 +3889,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       currentAmount: currentAmount ?? this.currentAmount,
       userId: userId ?? this.userId,
       moneyStorageId: moneyStorageId ?? this.moneyStorageId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -3873,6 +3947,9 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     if (moneyStorageId.present) {
       map['money_storage_id'] = Variable<String>(moneyStorageId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -3895,7 +3972,8 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
           ..write('isSaveMonthly: $isSaveMonthly, ')
           ..write('currentAmount: $currentAmount, ')
           ..write('userId: $userId, ')
-          ..write('moneyStorageId: $moneyStorageId')
+          ..write('moneyStorageId: $moneyStorageId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -3945,9 +4023,9 @@ class $TransactionTableTable extends TransactionTable
   @override
   late final GeneratedColumn<double> amount = GeneratedColumn<double>(
       'amount', aliasedName, false,
-      check: () => amount.isBiggerThan(const Constant(0)),
       type: DriftSqlType.double,
-      requiredDuringInsert: true);
+      requiredDuringInsert: true,
+      $customConstraints: 'CHECK (amount > 0) NOT NULL');
   static const VerificationMeta _savingIdMeta =
       const VerificationMeta('savingId');
   @override
@@ -3960,16 +4038,13 @@ class $TransactionTableTable extends TransactionTable
   static const VerificationMeta _isExpenseMeta =
       const VerificationMeta('isExpense');
   @override
-  late final GeneratedColumn<bool> isExpense =
-      GeneratedColumn<bool>('is_expense', aliasedName, false,
-          type: DriftSqlType.bool,
-          requiredDuringInsert: false,
-          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
-            SqlDialect.sqlite: 'CHECK ("is_expense" IN (0, 1))',
-            SqlDialect.mysql: '',
-            SqlDialect.postgres: '',
-          }),
-          defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isExpense = GeneratedColumn<bool>(
+      'is_expense', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_expense" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _expenseIdMeta =
       const VerificationMeta('expenseId');
   @override
@@ -3992,9 +4067,10 @@ class $TransactionTableTable extends TransactionTable
         expenseId
       ];
   @override
-  String get aliasedName => _alias ?? 'transaction_table';
+  String get aliasedName => _alias ?? actualTableName;
   @override
-  String get actualTableName => 'transaction_table';
+  String get actualTableName => $name;
+  static const String $name = 'transaction_table';
   @override
   VerificationContext validateIntegrity(Insertable<TrnsctnTransaction> instance,
       {bool isInserting = false}) {
@@ -4235,6 +4311,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   final Value<String> savingId;
   final Value<bool> isExpense;
   final Value<String?> expenseId;
+  final Value<int> rowid;
   const TransactionTableCompanion({
     this.id = const Value.absent(),
     this.dateCreated = const Value.absent(),
@@ -4245,6 +4322,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.savingId = const Value.absent(),
     this.isExpense = const Value.absent(),
     this.expenseId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   TransactionTableCompanion.insert({
     this.id = const Value.absent(),
@@ -4256,6 +4334,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     required String savingId,
     this.isExpense = const Value.absent(),
     this.expenseId = const Value.absent(),
+    this.rowid = const Value.absent(),
   })  : dateUpdated = Value(dateUpdated),
         type = Value(type),
         amount = Value(amount),
@@ -4270,6 +4349,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     Expression<String>? savingId,
     Expression<bool>? isExpense,
     Expression<String>? expenseId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -4281,6 +4361,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       if (savingId != null) 'saving_id': savingId,
       if (isExpense != null) 'is_expense': isExpense,
       if (expenseId != null) 'expense_id': expenseId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
@@ -4293,7 +4374,8 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       Value<double>? amount,
       Value<String>? savingId,
       Value<bool>? isExpense,
-      Value<String?>? expenseId}) {
+      Value<String?>? expenseId,
+      Value<int>? rowid}) {
     return TransactionTableCompanion(
       id: id ?? this.id,
       dateCreated: dateCreated ?? this.dateCreated,
@@ -4304,6 +4386,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       savingId: savingId ?? this.savingId,
       isExpense: isExpense ?? this.isExpense,
       expenseId: expenseId ?? this.expenseId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -4337,6 +4420,9 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     if (expenseId.present) {
       map['expense_id'] = Variable<String>(expenseId.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -4351,7 +4437,8 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
           ..write('amount: $amount, ')
           ..write('savingId: $savingId, ')
           ..write('isExpense: $isExpense, ')
-          ..write('expenseId: $expenseId')
+          ..write('expenseId: $expenseId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }

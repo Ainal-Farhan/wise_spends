@@ -76,7 +76,7 @@ class Widgets {
   }
 
   static Color subtitleColor(BuildContext context) {
-    return Theme.of(context).textTheme.caption!.color!;
+    return Theme.of(context).textTheme.bodySmall!.color!;
   }
 
   static const Duration duration = Duration(milliseconds: 350);

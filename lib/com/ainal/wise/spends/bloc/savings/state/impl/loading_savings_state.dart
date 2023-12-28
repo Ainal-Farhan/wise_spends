@@ -6,10 +6,10 @@ class LoadingSavingsState extends SavingsState {
 
   @override
   Widget build(BuildContext context, Function load) {
-    return Center(
+    return const Center(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const <Widget>[
+      children: <Widget>[
         CircularProgressIndicator(),
         Text('Loading...'),
       ],
