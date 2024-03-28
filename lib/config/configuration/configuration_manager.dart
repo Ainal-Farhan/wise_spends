@@ -7,7 +7,7 @@ import 'package:wise_spends/constant/app/config_constant.dart';
 import 'package:wise_spends/utils/app_path.dart';
 import 'package:wise_spends/utils/file_util.dart';
 
-class ConfigurationManager with IConfigurationManager {
+class ConfigurationManager extends IConfigurationManager {
   late File _configFile;
   late ConfigurationModel _configurationModel;
 

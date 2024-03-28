@@ -46,7 +46,7 @@ class SuccessProcessViewListMoneyStorageState extends StatefulWidget
 
   @override
   Widget build(BuildContext context) {
-    throw UnimplementedError();
+    return Container();
   }
 }
 

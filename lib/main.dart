@@ -12,16 +12,26 @@ import 'package:wise_spends/bloc/savings/state/savings_state.dart';
 import 'package:wise_spends/bloc/transaction/state/transaction_state.dart';
 import 'package:wise_spends/bloc/transaction/transaction_bloc.dart';
 import 'package:wise_spends/bloc/transaction/transaction_page.dart';
-import 'package:wise_spends/manager/i_startup_manager.dart';
+import 'package:wise_spends/locator/i_manager_locator.dart';
+import 'package:wise_spends/locator/i_repository_locator.dart';
+import 'package:wise_spends/locator/i_service_locator.dart';
+import 'package:wise_spends/locator/impl/manager_locator.dart';
+import 'package:wise_spends/locator/impl/repository_locator.dart';
+import 'package:wise_spends/locator/impl/service_locator.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/i_theme_manager.dart';
+import 'package:wise_spends/util/singleton_util.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  _registerSingleton();
+
   // Do any requests before start the app
   await () async {
-    await IStartupManager().onRunApp("Ainal");
+    await SingletonUtil.getSingleton<IManagerLocator>()
+        .getStartupManager()
+        .onRunApp("Ainal");
   }();
 
   runApp(
@@ -82,4 +92,14 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
         primaryColor: IThemeManager().colorTheme.backgroundBlue,
       );
+}
+
+void _registerSingleton() {
+  SingletonUtil.registerSingleton<IRepositoryLocator>(RepositoryLocator());
+  SingletonUtil.registerSingleton<IManagerLocator>(ManagerLocator());
+  SingletonUtil.registerSingleton<IServiceLocator>(ServiceLocator());
+
+  SingletonUtil.getSingleton<IRepositoryLocator>().registerLocator();
+  SingletonUtil.getSingleton<IServiceLocator>().registerLocator();
+  SingletonUtil.getSingleton<IManagerLocator>().registerLocator();
 }

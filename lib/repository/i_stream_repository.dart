@@ -1,14 +1,18 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/db/app_database.dart';
+import 'package:wise_spends/db/domain/base/base_entity_table.dart';
 
-abstract class IStreamRepository<A extends TableInfo<A, C>,
-    B extends UpdateCompanion<C>, C extends Insertable<C>> {
+abstract class IStreamRepository<
+    A extends BaseEntityTable,
+    B extends TableInfo<A, D>,
+    C extends UpdateCompanion<D>,
+    D extends Insertable<D>> {
   final AppDatabase db;
-  final A table;
+  final B table;
 
   const IStreamRepository(this.db, this.table);
 
-  Stream<List<C>> watch() {
+  Stream<List<D>> watch() {
     return db.select(table).watch();
   }
 }

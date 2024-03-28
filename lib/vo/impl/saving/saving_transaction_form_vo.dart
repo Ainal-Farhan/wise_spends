@@ -17,9 +17,11 @@ class SavingTransactionFormVO with IVO {
     required this.maxTransactionOut,
   });
 
-  SavingTransactionFormVO.fromTableData(SvngSaving svg) {
+  SavingTransactionFormVO.fromTableData(SvngSaving? svg) {
     saving = svg;
-    maxTransactionOut = svg.currentAmount;
+    if (svg != null) {
+      maxTransactionOut = svg.currentAmount;
+    }
     transactionAmount = .0;
     typeOfTransaction = '';
   }

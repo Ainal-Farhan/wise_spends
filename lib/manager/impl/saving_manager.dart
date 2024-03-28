@@ -2,25 +2,30 @@ import 'package:drift/drift.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:wise_spends/constant/saving/saving_constant.dart';
 import 'package:wise_spends/db/app_database.dart';
-import 'package:wise_spends/db/domain/composite/saving_with_transactions.dart';
+import 'package:wise_spends/db/composite/saving_with_transactions.dart';
+import 'package:wise_spends/locator/i_manager_locator.dart';
+import 'package:wise_spends/locator/i_repository_locator.dart';
+import 'package:wise_spends/locator/i_service_locator.dart';
 import 'package:wise_spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/service/local/saving/i_money_storage_service.dart';
 import 'package:wise_spends/service/local/saving/i_saving_service.dart';
-import 'package:wise_spends/service/local/saving/impl/money_storage_service.dart';
-import 'package:wise_spends/service/local/saving/impl/saving_service.dart';
 import 'package:wise_spends/service/local/transaction/i_transaction_service.dart';
-import 'package:wise_spends/service/local/transaction/impl/transaction_service.dart';
+import 'package:wise_spends/util/singleton_util.dart';
 import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 import 'package:wise_spends/vo/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 
 class SavingManager implements ISavingManager {
-  final ISavingService _savingService = SavingService();
-  final ITransactionService _transactionService = TransactionService();
-  final IMoneyStorageService _moneyStorageService = MoneyStorageService();
-  final IStartupManager _startupManager = IStartupManager();
+  final ISavingService _savingService =
+      SingletonUtil.getSingleton<IServiceLocator>().getSavingService();
+  final ITransactionService _transactionService =
+      SingletonUtil.getSingleton<IServiceLocator>().getTransactionService();
+  final IMoneyStorageService _moneyStorageService =
+      SingletonUtil.getSingleton<IServiceLocator>().getMoneyStorageService();
+  final IStartupManager _startupManager =
+      SingletonUtil.getSingleton<IManagerLocator>().getStartupManager();
 
   @override
   Future<List<SavingWithTransactions>> loadSavingWithTransactionsAsync() async {
@@ -39,6 +44,8 @@ class SavingManager implements ISavingManager {
     required String moneyStorageId,
   }) async {
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
+      createdBy: _startupManager.currentUser.name,
+      lastModifiedBy: _startupManager.currentUser.name,
       dateUpdated: DateTime.now(),
       name: Value(name),
       userId: Value(_startupManager.currentUser.id),
@@ -55,13 +62,15 @@ class SavingManager implements ISavingManager {
   Future<bool> deleteSelectedSaving(String id) async {
     try {
       // get saving
-      SvngSaving saving = await _savingService.watchSavingById(id).first;
+      SvngSaving? saving = await _savingService.watchSavingById(id).first;
 
-      // delete all transactions based on savingId
-      await _transactionService.deleteAllBasedOnSavingId(saving.id);
+      if (saving != null) {
+        // delete all transactions based on savingId
+        await _transactionService.deleteAllBasedOnSavingId(saving.id);
 
-      // delete saving
-      await _savingService.delete(saving);
+        // delete saving
+        await _savingService.delete(saving);
+      }
 
       return true;
     } catch (_) {
@@ -70,7 +79,7 @@ class SavingManager implements ISavingManager {
   }
 
   @override
-  Future<SvngSaving> getSavingById(String savingId) async {
+  Future<SvngSaving?> getSavingById(String savingId) async {
     return await _savingService.watchSavingById(savingId).first;
   }
 
@@ -80,25 +89,29 @@ class SavingManager implements ISavingManager {
     required String transactionType,
     required double transactionAmount,
   }) async {
-    SvngSaving currentSaving =
+    SvngSaving? currentSaving =
         await _savingService.watchSavingById(savingId).first;
 
-    double currentAmount = currentSaving.currentAmount;
+    if (currentSaving != null) {
+      double currentAmount = currentSaving.currentAmount;
 
-    switch (transactionType) {
-      case SavingConstant.savingTransactionIn:
-        currentAmount += transactionAmount;
-        break;
-      case SavingConstant.savingTransactionOut:
-        currentAmount -= transactionAmount;
+      switch (transactionType) {
+        case SavingConstant.savingTransactionIn:
+          currentAmount += transactionAmount;
+          break;
+        case SavingConstant.savingTransactionOut:
+          currentAmount -= transactionAmount;
+      }
+      SavingTableCompanion updatedSaving = SavingTableCompanion.insert(
+        createdBy: _startupManager.currentUser.name,
+        lastModifiedBy: _startupManager.currentUser.name,
+        id: Value(savingId),
+        dateUpdated: DateTime.now(),
+        currentAmount: Value(currentAmount),
+      );
+
+      await _savingService.updatePart(updatedSaving);
     }
-    SavingTableCompanion updatedSaving = SavingTableCompanion.insert(
-      id: Value(savingId),
-      dateUpdated: DateTime.now(),
-      currentAmount: Value(currentAmount),
-    );
-
-    await _savingService.updatePart(updatedSaving);
   }
 
   @override
@@ -151,11 +164,15 @@ class SavingManager implements ISavingManager {
   Future<bool> deleteSelectedMoneyStorage(String id) async {
     try {
       // get money storage
-      SvngMoneyStorage moneyStorage =
-          await _moneyStorageService.watchMoneyStorageById(id).first;
+      SvngMoneyStorage? moneyStorage =
+          await SingletonUtil.getSingleton<IRepositoryLocator>()
+              .getMoneyStorageRepository()
+              .findById(id: id);
 
-      // delete saving
-      await _moneyStorageService.delete(moneyStorage);
+      if (moneyStorage != null) {
+        // delete saving
+        await _moneyStorageService.delete(moneyStorage);
+      }
 
       return true;
     } catch (_) {
@@ -194,6 +211,8 @@ class SavingManager implements ISavingManager {
   }) async {
     MoneyStorageTableCompanion moneyStorageTableCompanion =
         MoneyStorageTableCompanion.insert(
+      createdBy: _startupManager.currentUser.name,
+      lastModifiedBy: _startupManager.currentUser.name,
       dateUpdated: DateTime.now(),
       longName: longName,
       shortName: shortName,
@@ -203,13 +222,6 @@ class SavingManager implements ISavingManager {
     );
 
     return await _moneyStorageService.add(moneyStorageTableCompanion);
-  }
-
-  @override
-  Future<SvngMoneyStorage> getMoneyStorageById(String moneyStorageId) async {
-    return await _moneyStorageService
-        .watchMoneyStorageById(moneyStorageId)
-        .first;
   }
 
   @override

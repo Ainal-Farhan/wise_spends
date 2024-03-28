@@ -16,6 +16,12 @@ class $UserTableTable extends UserTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -30,13 +36,20 @@ class $UserTableTable extends UserTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, dateCreated, dateUpdated, name];
+  List<GeneratedColumn> get $columns =>
+      [id, createdBy, dateCreated, dateUpdated, lastModifiedBy, name];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -49,6 +62,12 @@ class $UserTableTable extends UserTable
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -63,6 +82,14 @@ class $UserTableTable extends UserTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -85,10 +112,14 @@ class $UserTableTable extends UserTable
     return CmmnUser(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
     );
@@ -102,20 +133,26 @@ class $UserTableTable extends UserTable
 
 class CmmnUser extends DataClass implements Insertable<CmmnUser> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final String name;
   const CmmnUser(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       required this.name});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['name'] = Variable<String>(name);
     return map;
   }
@@ -123,8 +160,10 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
   UserTableCompanion toCompanion(bool nullToAbsent) {
     return UserTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       name: Value(name),
     );
   }
@@ -134,8 +173,10 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CmmnUser(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       name: serializer.fromJson<String>(json['name']),
     );
   }
@@ -144,78 +185,101 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'name': serializer.toJson<String>(name),
     };
   }
 
   CmmnUser copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           String? name}) =>
       CmmnUser(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         name: name ?? this.name,
       );
   @override
   String toString() {
     return (StringBuffer('CmmnUser(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('name: $name')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, dateCreated, dateUpdated, name);
+  int get hashCode => Object.hash(
+      id, createdBy, dateCreated, dateUpdated, lastModifiedBy, name);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is CmmnUser &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.name == this.name);
 }
 
 class UserTableCompanion extends UpdateCompanion<CmmnUser> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<String> name;
   final Value<int> rowid;
   const UserTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.name = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UserTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     required String name,
     this.rowid = const Value.absent(),
-  })  : dateUpdated = Value(dateUpdated),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
         name = Value(name);
   static Insertable<CmmnUser> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<String>? name,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (name != null) 'name': name,
       if (rowid != null) 'rowid': rowid,
     });
@@ -223,14 +287,18 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
 
   UserTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<String>? name,
       Value<int>? rowid}) {
     return UserTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       name: name ?? this.name,
       rowid: rowid ?? this.rowid,
     );
@@ -242,11 +310,17 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -261,8 +335,10 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
   String toString() {
     return (StringBuffer('UserTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('name: $name, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -283,6 +359,12 @@ class $GroupReferenceTableTable extends GroupReferenceTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -297,6 +379,12 @@ class $GroupReferenceTableTable extends GroupReferenceTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
@@ -309,7 +397,7 @@ class $GroupReferenceTableTable extends GroupReferenceTable
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, label, value];
+      [id, createdBy, dateCreated, dateUpdated, lastModifiedBy, label, value];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -324,6 +412,12 @@ class $GroupReferenceTableTable extends GroupReferenceTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
     if (data.containsKey('date_created')) {
       context.handle(
           _dateCreatedMeta,
@@ -337,6 +431,14 @@ class $GroupReferenceTableTable extends GroupReferenceTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('label')) {
       context.handle(
@@ -361,10 +463,14 @@ class $GroupReferenceTableTable extends GroupReferenceTable
     return MstrdtGroupReference(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       label: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}label'])!,
       value: attachedDatabase.typeMapping
@@ -381,22 +487,28 @@ class $GroupReferenceTableTable extends GroupReferenceTable
 class MstrdtGroupReference extends DataClass
     implements Insertable<MstrdtGroupReference> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final String label;
   final String value;
   const MstrdtGroupReference(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       required this.label,
       required this.value});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['label'] = Variable<String>(label);
     map['value'] = Variable<String>(value);
     return map;
@@ -405,8 +517,10 @@ class MstrdtGroupReference extends DataClass
   GroupReferenceTableCompanion toCompanion(bool nullToAbsent) {
     return GroupReferenceTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       label: Value(label),
       value: Value(value),
     );
@@ -417,8 +531,10 @@ class MstrdtGroupReference extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return MstrdtGroupReference(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       label: serializer.fromJson<String>(json['label']),
       value: serializer.fromJson<String>(json['value']),
     );
@@ -428,8 +544,10 @@ class MstrdtGroupReference extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'label': serializer.toJson<String>(label),
       'value': serializer.toJson<String>(value),
     };
@@ -437,14 +555,18 @@ class MstrdtGroupReference extends DataClass
 
   MstrdtGroupReference copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           String? label,
           String? value}) =>
       MstrdtGroupReference(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         label: label ?? this.label,
         value: value ?? this.value,
       );
@@ -452,8 +574,10 @@ class MstrdtGroupReference extends DataClass
   String toString() {
     return (StringBuffer('MstrdtGroupReference(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('label: $label, ')
           ..write('value: $value')
           ..write(')'))
@@ -461,14 +585,17 @@ class MstrdtGroupReference extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, dateCreated, dateUpdated, label, value);
+  int get hashCode => Object.hash(
+      id, createdBy, dateCreated, dateUpdated, lastModifiedBy, label, value);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is MstrdtGroupReference &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.label == this.label &&
           other.value == this.value);
 }
@@ -476,41 +603,53 @@ class MstrdtGroupReference extends DataClass
 class GroupReferenceTableCompanion
     extends UpdateCompanion<MstrdtGroupReference> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<String> label;
   final Value<String> value;
   final Value<int> rowid;
   const GroupReferenceTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.label = const Value.absent(),
     this.value = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   GroupReferenceTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     required String label,
     required String value,
     this.rowid = const Value.absent(),
-  })  : dateUpdated = Value(dateUpdated),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
         label = Value(label),
         value = Value(value);
   static Insertable<MstrdtGroupReference> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<String>? label,
     Expression<String>? value,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (label != null) 'label': label,
       if (value != null) 'value': value,
       if (rowid != null) 'rowid': rowid,
@@ -519,15 +658,19 @@ class GroupReferenceTableCompanion
 
   GroupReferenceTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<String>? label,
       Value<String>? value,
       Value<int>? rowid}) {
     return GroupReferenceTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       label: label ?? this.label,
       value: value ?? this.value,
       rowid: rowid ?? this.rowid,
@@ -540,11 +683,17 @@ class GroupReferenceTableCompanion
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
@@ -562,8 +711,10 @@ class GroupReferenceTableCompanion
   String toString() {
     return (StringBuffer('GroupReferenceTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('label: $label, ')
           ..write('value: $value, ')
           ..write('rowid: $rowid')
@@ -585,6 +736,12 @@ class $ReferenceTableTable extends ReferenceTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -599,6 +756,12 @@ class $ReferenceTableTable extends ReferenceTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
@@ -640,8 +803,18 @@ class $ReferenceTableTable extends ReferenceTable
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES group_reference_table (id)'));
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, label, value, isActive, belongTo, groupId];
+  List<GeneratedColumn> get $columns => [
+        id,
+        createdBy,
+        dateCreated,
+        dateUpdated,
+        lastModifiedBy,
+        label,
+        value,
+        isActive,
+        belongTo,
+        groupId
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -654,6 +827,12 @@ class $ReferenceTableTable extends ReferenceTable
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
     }
     if (data.containsKey('date_created')) {
       context.handle(
@@ -668,6 +847,14 @@ class $ReferenceTableTable extends ReferenceTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('label')) {
       context.handle(
@@ -708,10 +895,14 @@ class $ReferenceTableTable extends ReferenceTable
     return MstrdtReference(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       label: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}label'])!,
       value: attachedDatabase.typeMapping
@@ -733,8 +924,10 @@ class $ReferenceTableTable extends ReferenceTable
 
 class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final String label;
   final String value;
   final bool isActive;
@@ -742,8 +935,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
   final String groupId;
   const MstrdtReference(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       required this.label,
       required this.value,
       required this.isActive,
@@ -753,8 +948,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['label'] = Variable<String>(label);
     map['value'] = Variable<String>(value);
     map['is_active'] = Variable<bool>(isActive);
@@ -766,8 +963,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
   ReferenceTableCompanion toCompanion(bool nullToAbsent) {
     return ReferenceTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       label: Value(label),
       value: Value(value),
       isActive: Value(isActive),
@@ -781,8 +980,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return MstrdtReference(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       label: serializer.fromJson<String>(json['label']),
       value: serializer.fromJson<String>(json['value']),
       isActive: serializer.fromJson<bool>(json['isActive']),
@@ -795,8 +996,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'label': serializer.toJson<String>(label),
       'value': serializer.toJson<String>(value),
       'isActive': serializer.toJson<bool>(isActive),
@@ -807,8 +1010,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
 
   MstrdtReference copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           String? label,
           String? value,
           bool? isActive,
@@ -816,8 +1021,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
           String? groupId}) =>
       MstrdtReference(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         label: label ?? this.label,
         value: value ?? this.value,
         isActive: isActive ?? this.isActive,
@@ -828,8 +1035,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
   String toString() {
     return (StringBuffer('MstrdtReference(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('label: $label, ')
           ..write('value: $value, ')
           ..write('isActive: $isActive, ')
@@ -840,15 +1049,17 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, dateCreated, dateUpdated, label, value, isActive, belongTo, groupId);
+  int get hashCode => Object.hash(id, createdBy, dateCreated, dateUpdated,
+      lastModifiedBy, label, value, isActive, belongTo, groupId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is MstrdtReference &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.label == this.label &&
           other.value == this.value &&
           other.isActive == this.isActive &&
@@ -858,8 +1069,10 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
 
 class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<String> label;
   final Value<String> value;
   final Value<bool> isActive;
@@ -868,8 +1081,10 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
   final Value<int> rowid;
   const ReferenceTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.label = const Value.absent(),
     this.value = const Value.absent(),
     this.isActive = const Value.absent(),
@@ -879,23 +1094,29 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
   });
   ReferenceTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     required String label,
     required String value,
     this.isActive = const Value.absent(),
     required String belongTo,
     required String groupId,
     this.rowid = const Value.absent(),
-  })  : dateUpdated = Value(dateUpdated),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
         label = Value(label),
         value = Value(value),
         belongTo = Value(belongTo),
         groupId = Value(groupId);
   static Insertable<MstrdtReference> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<String>? label,
     Expression<String>? value,
     Expression<bool>? isActive,
@@ -905,8 +1126,10 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (label != null) 'label': label,
       if (value != null) 'value': value,
       if (isActive != null) 'is_active': isActive,
@@ -918,8 +1141,10 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
 
   ReferenceTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<String>? label,
       Value<String>? value,
       Value<bool>? isActive,
@@ -928,8 +1153,10 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
       Value<int>? rowid}) {
     return ReferenceTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       label: label ?? this.label,
       value: value ?? this.value,
       isActive: isActive ?? this.isActive,
@@ -945,11 +1172,17 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
@@ -976,8 +1209,10 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
   String toString() {
     return (StringBuffer('ReferenceTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('label: $label, ')
           ..write('value: $value, ')
           ..write('isActive: $isActive, ')
@@ -1002,6 +1237,12 @@ class $ReferenceDataTableTable extends ReferenceDataTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -1016,6 +1257,12 @@ class $ReferenceDataTableTable extends ReferenceDataTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _labelMeta = const VerificationMeta('label');
   @override
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
@@ -1069,8 +1316,10 @@ class $ReferenceDataTableTable extends ReferenceDataTable
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        createdBy,
         dateCreated,
         dateUpdated,
+        lastModifiedBy,
         label,
         groupLabel,
         value,
@@ -1093,6 +1342,12 @@ class $ReferenceDataTableTable extends ReferenceDataTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
     if (data.containsKey('date_created')) {
       context.handle(
           _dateCreatedMeta,
@@ -1106,6 +1361,14 @@ class $ReferenceDataTableTable extends ReferenceDataTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('label')) {
       context.handle(
@@ -1164,10 +1427,14 @@ class $ReferenceDataTableTable extends ReferenceDataTable
     return MstrdtReferenceData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       label: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}label'])!,
       groupLabel: attachedDatabase.typeMapping
@@ -1195,8 +1462,10 @@ class $ReferenceDataTableTable extends ReferenceDataTable
 class MstrdtReferenceData extends DataClass
     implements Insertable<MstrdtReferenceData> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final String label;
   final String groupLabel;
   final String value;
@@ -1206,8 +1475,10 @@ class MstrdtReferenceData extends DataClass
   final String? nextReferenceDataId;
   const MstrdtReferenceData(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       required this.label,
       required this.groupLabel,
       required this.value,
@@ -1219,8 +1490,10 @@ class MstrdtReferenceData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['label'] = Variable<String>(label);
     map['group_label'] = Variable<String>(groupLabel);
     map['value'] = Variable<String>(value);
@@ -1238,8 +1511,10 @@ class MstrdtReferenceData extends DataClass
   ReferenceDataTableCompanion toCompanion(bool nullToAbsent) {
     return ReferenceDataTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       label: Value(label),
       groupLabel: Value(groupLabel),
       value: Value(value),
@@ -1259,8 +1534,10 @@ class MstrdtReferenceData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return MstrdtReferenceData(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       label: serializer.fromJson<String>(json['label']),
       groupLabel: serializer.fromJson<String>(json['groupLabel']),
       value: serializer.fromJson<String>(json['value']),
@@ -1276,8 +1553,10 @@ class MstrdtReferenceData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'label': serializer.toJson<String>(label),
       'groupLabel': serializer.toJson<String>(groupLabel),
       'value': serializer.toJson<String>(value),
@@ -1290,8 +1569,10 @@ class MstrdtReferenceData extends DataClass
 
   MstrdtReferenceData copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           String? label,
           String? groupLabel,
           String? value,
@@ -1301,8 +1582,10 @@ class MstrdtReferenceData extends DataClass
           Value<String?> nextReferenceDataId = const Value.absent()}) =>
       MstrdtReferenceData(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         label: label ?? this.label,
         groupLabel: groupLabel ?? this.groupLabel,
         value: value ?? this.value,
@@ -1317,8 +1600,10 @@ class MstrdtReferenceData extends DataClass
   String toString() {
     return (StringBuffer('MstrdtReferenceData(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('label: $label, ')
           ..write('groupLabel: $groupLabel, ')
           ..write('value: $value, ')
@@ -1333,8 +1618,10 @@ class MstrdtReferenceData extends DataClass
   @override
   int get hashCode => Object.hash(
       id,
+      createdBy,
       dateCreated,
       dateUpdated,
+      lastModifiedBy,
       label,
       groupLabel,
       value,
@@ -1347,8 +1634,10 @@ class MstrdtReferenceData extends DataClass
       identical(this, other) ||
       (other is MstrdtReferenceData &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.label == this.label &&
           other.groupLabel == this.groupLabel &&
           other.value == this.value &&
@@ -1360,8 +1649,10 @@ class MstrdtReferenceData extends DataClass
 
 class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<String> label;
   final Value<String> groupLabel;
   final Value<String> value;
@@ -1372,8 +1663,10 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
   final Value<int> rowid;
   const ReferenceDataTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.label = const Value.absent(),
     this.groupLabel = const Value.absent(),
     this.value = const Value.absent(),
@@ -1385,8 +1678,10 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
   });
   ReferenceDataTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     required String label,
     required String groupLabel,
     required String value,
@@ -1395,15 +1690,19 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
     this.isHasNext = const Value.absent(),
     this.nextReferenceDataId = const Value.absent(),
     this.rowid = const Value.absent(),
-  })  : dateUpdated = Value(dateUpdated),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
         label = Value(label),
         groupLabel = Value(groupLabel),
         value = Value(value),
         groupValue = Value(groupValue);
   static Insertable<MstrdtReferenceData> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<String>? label,
     Expression<String>? groupLabel,
     Expression<String>? value,
@@ -1415,8 +1714,10 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (label != null) 'label': label,
       if (groupLabel != null) 'group_label': groupLabel,
       if (value != null) 'value': value,
@@ -1431,8 +1732,10 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
 
   ReferenceDataTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<String>? label,
       Value<String>? groupLabel,
       Value<String>? value,
@@ -1443,8 +1746,10 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
       Value<int>? rowid}) {
     return ReferenceDataTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       label: label ?? this.label,
       groupLabel: groupLabel ?? this.groupLabel,
       value: value ?? this.value,
@@ -1462,11 +1767,17 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (label.present) {
       map['label'] = Variable<String>(label.value);
@@ -1500,8 +1811,10 @@ class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
   String toString() {
     return (StringBuffer('ReferenceDataTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('label: $label, ')
           ..write('groupLabel: $groupLabel, ')
           ..write('value: $value, ')
@@ -1528,6 +1841,12 @@ class $ExpenseTableTable extends ExpenseTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -1542,6 +1861,12 @@ class $ExpenseTableTable extends ExpenseTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<double> amount = GeneratedColumn<double>(
@@ -1571,8 +1896,10 @@ class $ExpenseTableTable extends ExpenseTable
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        createdBy,
         dateCreated,
         dateUpdated,
+        lastModifiedBy,
         amount,
         description,
         expenseDate,
@@ -1591,6 +1918,12 @@ class $ExpenseTableTable extends ExpenseTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
     if (data.containsKey('date_created')) {
       context.handle(
           _dateCreatedMeta,
@@ -1604,6 +1937,14 @@ class $ExpenseTableTable extends ExpenseTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('amount')) {
       context.handle(_amountMeta,
@@ -1644,10 +1985,14 @@ class $ExpenseTableTable extends ExpenseTable
     return ExpenseTableData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       amount: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
       description: attachedDatabase.typeMapping
@@ -1668,16 +2013,20 @@ class $ExpenseTableTable extends ExpenseTable
 class ExpenseTableData extends DataClass
     implements Insertable<ExpenseTableData> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final double amount;
   final String? description;
   final DateTime expenseDate;
   final String referenceDataId;
   const ExpenseTableData(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       required this.amount,
       this.description,
       required this.expenseDate,
@@ -1686,8 +2035,10 @@ class ExpenseTableData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['amount'] = Variable<double>(amount);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -1700,8 +2051,10 @@ class ExpenseTableData extends DataClass
   ExpenseTableCompanion toCompanion(bool nullToAbsent) {
     return ExpenseTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       amount: Value(amount),
       description: description == null && nullToAbsent
           ? const Value.absent()
@@ -1716,8 +2069,10 @@ class ExpenseTableData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ExpenseTableData(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       amount: serializer.fromJson<double>(json['amount']),
       description: serializer.fromJson<String?>(json['description']),
       expenseDate: serializer.fromJson<DateTime>(json['expenseDate']),
@@ -1729,8 +2084,10 @@ class ExpenseTableData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'amount': serializer.toJson<double>(amount),
       'description': serializer.toJson<String?>(description),
       'expenseDate': serializer.toJson<DateTime>(expenseDate),
@@ -1740,16 +2097,20 @@ class ExpenseTableData extends DataClass
 
   ExpenseTableData copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           double? amount,
           Value<String?> description = const Value.absent(),
           DateTime? expenseDate,
           String? referenceDataId}) =>
       ExpenseTableData(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         amount: amount ?? this.amount,
         description: description.present ? description.value : this.description,
         expenseDate: expenseDate ?? this.expenseDate,
@@ -1759,8 +2120,10 @@ class ExpenseTableData extends DataClass
   String toString() {
     return (StringBuffer('ExpenseTableData(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('amount: $amount, ')
           ..write('description: $description, ')
           ..write('expenseDate: $expenseDate, ')
@@ -1770,15 +2133,17 @@ class ExpenseTableData extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, dateCreated, dateUpdated, amount,
-      description, expenseDate, referenceDataId);
+  int get hashCode => Object.hash(id, createdBy, dateCreated, dateUpdated,
+      lastModifiedBy, amount, description, expenseDate, referenceDataId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ExpenseTableData &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.amount == this.amount &&
           other.description == this.description &&
           other.expenseDate == this.expenseDate &&
@@ -1787,8 +2152,10 @@ class ExpenseTableData extends DataClass
 
 class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<double> amount;
   final Value<String?> description;
   final Value<DateTime> expenseDate;
@@ -1796,8 +2163,10 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
   final Value<int> rowid;
   const ExpenseTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.amount = const Value.absent(),
     this.description = const Value.absent(),
     this.expenseDate = const Value.absent(),
@@ -1806,21 +2175,27 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
   });
   ExpenseTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     required double amount,
     this.description = const Value.absent(),
     required DateTime expenseDate,
     required String referenceDataId,
     this.rowid = const Value.absent(),
-  })  : dateUpdated = Value(dateUpdated),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
         amount = Value(amount),
         expenseDate = Value(expenseDate),
         referenceDataId = Value(referenceDataId);
   static Insertable<ExpenseTableData> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<double>? amount,
     Expression<String>? description,
     Expression<DateTime>? expenseDate,
@@ -1829,8 +2204,10 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (amount != null) 'amount': amount,
       if (description != null) 'description': description,
       if (expenseDate != null) 'expense_date': expenseDate,
@@ -1841,8 +2218,10 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
 
   ExpenseTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<double>? amount,
       Value<String?>? description,
       Value<DateTime>? expenseDate,
@@ -1850,8 +2229,10 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
       Value<int>? rowid}) {
     return ExpenseTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       amount: amount ?? this.amount,
       description: description ?? this.description,
       expenseDate: expenseDate ?? this.expenseDate,
@@ -1866,11 +2247,17 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (amount.present) {
       map['amount'] = Variable<double>(amount.value);
@@ -1894,8 +2281,10 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpenseTableData> {
   String toString() {
     return (StringBuffer('ExpenseTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('amount: $amount, ')
           ..write('description: $description, ')
           ..write('expenseDate: $expenseDate, ')
@@ -1919,6 +2308,12 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -1933,6 +2328,12 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _suggestedAmountMeta =
       const VerificationMeta('suggestedAmount');
   @override
@@ -1957,8 +2358,16 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'REFERENCES reference_table (id)'));
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, dateCreated, dateUpdated, suggestedAmount, description, referenceId];
+  List<GeneratedColumn> get $columns => [
+        id,
+        createdBy,
+        dateCreated,
+        dateUpdated,
+        lastModifiedBy,
+        suggestedAmount,
+        description,
+        referenceId
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1973,6 +2382,12 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
     if (data.containsKey('date_created')) {
       context.handle(
           _dateCreatedMeta,
@@ -1986,6 +2401,14 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('suggested_amount')) {
       context.handle(
@@ -2018,10 +2441,14 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
     return MstrdtExpenseReference(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       suggestedAmount: attachedDatabase.typeMapping.read(
           DriftSqlType.double, data['${effectivePrefix}suggested_amount'])!,
       description: attachedDatabase.typeMapping
@@ -2040,15 +2467,19 @@ class $ExpenseReferenceTableTable extends ExpenseReferenceTable
 class MstrdtExpenseReference extends DataClass
     implements Insertable<MstrdtExpenseReference> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final double suggestedAmount;
   final String? description;
   final String referenceId;
   const MstrdtExpenseReference(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       required this.suggestedAmount,
       this.description,
       required this.referenceId});
@@ -2056,8 +2487,10 @@ class MstrdtExpenseReference extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['suggested_amount'] = Variable<double>(suggestedAmount);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -2069,8 +2502,10 @@ class MstrdtExpenseReference extends DataClass
   ExpenseReferenceTableCompanion toCompanion(bool nullToAbsent) {
     return ExpenseReferenceTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       suggestedAmount: Value(suggestedAmount),
       description: description == null && nullToAbsent
           ? const Value.absent()
@@ -2084,8 +2519,10 @@ class MstrdtExpenseReference extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return MstrdtExpenseReference(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       suggestedAmount: serializer.fromJson<double>(json['suggestedAmount']),
       description: serializer.fromJson<String?>(json['description']),
       referenceId: serializer.fromJson<String>(json['referenceId']),
@@ -2096,8 +2533,10 @@ class MstrdtExpenseReference extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'suggestedAmount': serializer.toJson<double>(suggestedAmount),
       'description': serializer.toJson<String?>(description),
       'referenceId': serializer.toJson<String>(referenceId),
@@ -2106,15 +2545,19 @@ class MstrdtExpenseReference extends DataClass
 
   MstrdtExpenseReference copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           double? suggestedAmount,
           Value<String?> description = const Value.absent(),
           String? referenceId}) =>
       MstrdtExpenseReference(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         suggestedAmount: suggestedAmount ?? this.suggestedAmount,
         description: description.present ? description.value : this.description,
         referenceId: referenceId ?? this.referenceId,
@@ -2123,8 +2566,10 @@ class MstrdtExpenseReference extends DataClass
   String toString() {
     return (StringBuffer('MstrdtExpenseReference(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('suggestedAmount: $suggestedAmount, ')
           ..write('description: $description, ')
           ..write('referenceId: $referenceId')
@@ -2133,15 +2578,17 @@ class MstrdtExpenseReference extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, dateCreated, dateUpdated, suggestedAmount, description, referenceId);
+  int get hashCode => Object.hash(id, createdBy, dateCreated, dateUpdated,
+      lastModifiedBy, suggestedAmount, description, referenceId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is MstrdtExpenseReference &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.suggestedAmount == this.suggestedAmount &&
           other.description == this.description &&
           other.referenceId == this.referenceId);
@@ -2150,16 +2597,20 @@ class MstrdtExpenseReference extends DataClass
 class ExpenseReferenceTableCompanion
     extends UpdateCompanion<MstrdtExpenseReference> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<double> suggestedAmount;
   final Value<String?> description;
   final Value<String> referenceId;
   final Value<int> rowid;
   const ExpenseReferenceTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.suggestedAmount = const Value.absent(),
     this.description = const Value.absent(),
     this.referenceId = const Value.absent(),
@@ -2167,18 +2618,24 @@ class ExpenseReferenceTableCompanion
   });
   ExpenseReferenceTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     this.suggestedAmount = const Value.absent(),
     this.description = const Value.absent(),
     required String referenceId,
     this.rowid = const Value.absent(),
-  })  : dateUpdated = Value(dateUpdated),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
         referenceId = Value(referenceId);
   static Insertable<MstrdtExpenseReference> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<double>? suggestedAmount,
     Expression<String>? description,
     Expression<String>? referenceId,
@@ -2186,8 +2643,10 @@ class ExpenseReferenceTableCompanion
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (suggestedAmount != null) 'suggested_amount': suggestedAmount,
       if (description != null) 'description': description,
       if (referenceId != null) 'reference_id': referenceId,
@@ -2197,16 +2656,20 @@ class ExpenseReferenceTableCompanion
 
   ExpenseReferenceTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<double>? suggestedAmount,
       Value<String?>? description,
       Value<String>? referenceId,
       Value<int>? rowid}) {
     return ExpenseReferenceTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       suggestedAmount: suggestedAmount ?? this.suggestedAmount,
       description: description ?? this.description,
       referenceId: referenceId ?? this.referenceId,
@@ -2220,11 +2683,17 @@ class ExpenseReferenceTableCompanion
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (suggestedAmount.present) {
       map['suggested_amount'] = Variable<double>(suggestedAmount.value);
@@ -2245,513 +2714,13 @@ class ExpenseReferenceTableCompanion
   String toString() {
     return (StringBuffer('ExpenseReferenceTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('suggestedAmount: $suggestedAmount, ')
           ..write('description: $description, ')
           ..write('referenceId: $referenceId, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $SavingReminderTableTable extends SavingReminderTable
-    with TableInfo<$SavingReminderTableTable, NtfctnSavingReminder> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $SavingReminderTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _isActiveMeta =
-      const VerificationMeta('isActive');
-  @override
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-      'is_active', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
-      defaultValue: const Constant(false));
-  static const VerificationMeta _activeStartDateMeta =
-      const VerificationMeta('activeStartDate');
-  @override
-  late final GeneratedColumn<DateTime> activeStartDate =
-      GeneratedColumn<DateTime>('active_start_date', aliasedName, false,
-          type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _notificationTypeMeta =
-      const VerificationMeta('notificationType');
-  @override
-  late final GeneratedColumn<String> notificationType = GeneratedColumn<String>(
-      'notification_type', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      clientDefault: () => UuidGenerator().v4());
-  static const VerificationMeta _dateCreatedMeta =
-      const VerificationMeta('dateCreated');
-  @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-      'date_created', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _dateUpdatedMeta =
-      const VerificationMeta('dateUpdated');
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-      'date_updated', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
-  @override
-  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
-      'amount', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
-  static const VerificationMeta _recurringTypeMeta =
-      const VerificationMeta('recurringType');
-  @override
-  late final GeneratedColumn<String> recurringType = GeneratedColumn<String>(
-      'recurring_type', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [
-        title,
-        description,
-        isActive,
-        activeStartDate,
-        notificationType,
-        id,
-        dateCreated,
-        dateUpdated,
-        amount,
-        recurringType
-      ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'saving_reminder_table';
-  @override
-  VerificationContext validateIntegrity(
-      Insertable<NtfctnSavingReminder> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    } else if (isInserting) {
-      context.missing(_titleMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
-    }
-    if (data.containsKey('is_active')) {
-      context.handle(_isActiveMeta,
-          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
-    }
-    if (data.containsKey('active_start_date')) {
-      context.handle(
-          _activeStartDateMeta,
-          activeStartDate.isAcceptableOrUnknown(
-              data['active_start_date']!, _activeStartDateMeta));
-    } else if (isInserting) {
-      context.missing(_activeStartDateMeta);
-    }
-    if (data.containsKey('notification_type')) {
-      context.handle(
-          _notificationTypeMeta,
-          notificationType.isAcceptableOrUnknown(
-              data['notification_type']!, _notificationTypeMeta));
-    } else if (isInserting) {
-      context.missing(_notificationTypeMeta);
-    }
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-          _dateCreatedMeta,
-          dateCreated.isAcceptableOrUnknown(
-              data['date_created']!, _dateCreatedMeta));
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-          _dateUpdatedMeta,
-          dateUpdated.isAcceptableOrUnknown(
-              data['date_updated']!, _dateUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('amount')) {
-      context.handle(_amountMeta,
-          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
-    } else if (isInserting) {
-      context.missing(_amountMeta);
-    }
-    if (data.containsKey('recurring_type')) {
-      context.handle(
-          _recurringTypeMeta,
-          recurringType.isAcceptableOrUnknown(
-              data['recurring_type']!, _recurringTypeMeta));
-    } else if (isInserting) {
-      context.missing(_recurringTypeMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  NtfctnSavingReminder map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return NtfctnSavingReminder(
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      isActive: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
-      activeStartDate: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}active_start_date'])!,
-      notificationType: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}notification_type'])!,
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      dateCreated: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
-      dateUpdated: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
-      amount: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
-      recurringType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}recurring_type'])!,
-    );
-  }
-
-  @override
-  $SavingReminderTableTable createAlias(String alias) {
-    return $SavingReminderTableTable(attachedDatabase, alias);
-  }
-}
-
-class NtfctnSavingReminder extends DataClass
-    implements Insertable<NtfctnSavingReminder> {
-  final String title;
-  final String description;
-  final bool isActive;
-  final DateTime activeStartDate;
-  final String notificationType;
-  final String id;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final double amount;
-  final String recurringType;
-  const NtfctnSavingReminder(
-      {required this.title,
-      required this.description,
-      required this.isActive,
-      required this.activeStartDate,
-      required this.notificationType,
-      required this.id,
-      required this.dateCreated,
-      required this.dateUpdated,
-      required this.amount,
-      required this.recurringType});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['title'] = Variable<String>(title);
-    map['description'] = Variable<String>(description);
-    map['is_active'] = Variable<bool>(isActive);
-    map['active_start_date'] = Variable<DateTime>(activeStartDate);
-    map['notification_type'] = Variable<String>(notificationType);
-    map['id'] = Variable<String>(id);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['amount'] = Variable<double>(amount);
-    map['recurring_type'] = Variable<String>(recurringType);
-    return map;
-  }
-
-  SavingReminderTableCompanion toCompanion(bool nullToAbsent) {
-    return SavingReminderTableCompanion(
-      title: Value(title),
-      description: Value(description),
-      isActive: Value(isActive),
-      activeStartDate: Value(activeStartDate),
-      notificationType: Value(notificationType),
-      id: Value(id),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      amount: Value(amount),
-      recurringType: Value(recurringType),
-    );
-  }
-
-  factory NtfctnSavingReminder.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return NtfctnSavingReminder(
-      title: serializer.fromJson<String>(json['title']),
-      description: serializer.fromJson<String>(json['description']),
-      isActive: serializer.fromJson<bool>(json['isActive']),
-      activeStartDate: serializer.fromJson<DateTime>(json['activeStartDate']),
-      notificationType: serializer.fromJson<String>(json['notificationType']),
-      id: serializer.fromJson<String>(json['id']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      amount: serializer.fromJson<double>(json['amount']),
-      recurringType: serializer.fromJson<String>(json['recurringType']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'title': serializer.toJson<String>(title),
-      'description': serializer.toJson<String>(description),
-      'isActive': serializer.toJson<bool>(isActive),
-      'activeStartDate': serializer.toJson<DateTime>(activeStartDate),
-      'notificationType': serializer.toJson<String>(notificationType),
-      'id': serializer.toJson<String>(id),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'amount': serializer.toJson<double>(amount),
-      'recurringType': serializer.toJson<String>(recurringType),
-    };
-  }
-
-  NtfctnSavingReminder copyWith(
-          {String? title,
-          String? description,
-          bool? isActive,
-          DateTime? activeStartDate,
-          String? notificationType,
-          String? id,
-          DateTime? dateCreated,
-          DateTime? dateUpdated,
-          double? amount,
-          String? recurringType}) =>
-      NtfctnSavingReminder(
-        title: title ?? this.title,
-        description: description ?? this.description,
-        isActive: isActive ?? this.isActive,
-        activeStartDate: activeStartDate ?? this.activeStartDate,
-        notificationType: notificationType ?? this.notificationType,
-        id: id ?? this.id,
-        dateCreated: dateCreated ?? this.dateCreated,
-        dateUpdated: dateUpdated ?? this.dateUpdated,
-        amount: amount ?? this.amount,
-        recurringType: recurringType ?? this.recurringType,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('NtfctnSavingReminder(')
-          ..write('title: $title, ')
-          ..write('description: $description, ')
-          ..write('isActive: $isActive, ')
-          ..write('activeStartDate: $activeStartDate, ')
-          ..write('notificationType: $notificationType, ')
-          ..write('id: $id, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('amount: $amount, ')
-          ..write('recurringType: $recurringType')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(title, description, isActive, activeStartDate,
-      notificationType, id, dateCreated, dateUpdated, amount, recurringType);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is NtfctnSavingReminder &&
-          other.title == this.title &&
-          other.description == this.description &&
-          other.isActive == this.isActive &&
-          other.activeStartDate == this.activeStartDate &&
-          other.notificationType == this.notificationType &&
-          other.id == this.id &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.amount == this.amount &&
-          other.recurringType == this.recurringType);
-}
-
-class SavingReminderTableCompanion
-    extends UpdateCompanion<NtfctnSavingReminder> {
-  final Value<String> title;
-  final Value<String> description;
-  final Value<bool> isActive;
-  final Value<DateTime> activeStartDate;
-  final Value<String> notificationType;
-  final Value<String> id;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<double> amount;
-  final Value<String> recurringType;
-  final Value<int> rowid;
-  const SavingReminderTableCompanion({
-    this.title = const Value.absent(),
-    this.description = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.activeStartDate = const Value.absent(),
-    this.notificationType = const Value.absent(),
-    this.id = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.amount = const Value.absent(),
-    this.recurringType = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  SavingReminderTableCompanion.insert({
-    required String title,
-    required String description,
-    this.isActive = const Value.absent(),
-    required DateTime activeStartDate,
-    required String notificationType,
-    this.id = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    required DateTime dateUpdated,
-    required double amount,
-    required String recurringType,
-    this.rowid = const Value.absent(),
-  })  : title = Value(title),
-        description = Value(description),
-        activeStartDate = Value(activeStartDate),
-        notificationType = Value(notificationType),
-        dateUpdated = Value(dateUpdated),
-        amount = Value(amount),
-        recurringType = Value(recurringType);
-  static Insertable<NtfctnSavingReminder> custom({
-    Expression<String>? title,
-    Expression<String>? description,
-    Expression<bool>? isActive,
-    Expression<DateTime>? activeStartDate,
-    Expression<String>? notificationType,
-    Expression<String>? id,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<double>? amount,
-    Expression<String>? recurringType,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (title != null) 'title': title,
-      if (description != null) 'description': description,
-      if (isActive != null) 'is_active': isActive,
-      if (activeStartDate != null) 'active_start_date': activeStartDate,
-      if (notificationType != null) 'notification_type': notificationType,
-      if (id != null) 'id': id,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (amount != null) 'amount': amount,
-      if (recurringType != null) 'recurring_type': recurringType,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  SavingReminderTableCompanion copyWith(
-      {Value<String>? title,
-      Value<String>? description,
-      Value<bool>? isActive,
-      Value<DateTime>? activeStartDate,
-      Value<String>? notificationType,
-      Value<String>? id,
-      Value<DateTime>? dateCreated,
-      Value<DateTime>? dateUpdated,
-      Value<double>? amount,
-      Value<String>? recurringType,
-      Value<int>? rowid}) {
-    return SavingReminderTableCompanion(
-      title: title ?? this.title,
-      description: description ?? this.description,
-      isActive: isActive ?? this.isActive,
-      activeStartDate: activeStartDate ?? this.activeStartDate,
-      notificationType: notificationType ?? this.notificationType,
-      id: id ?? this.id,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      amount: amount ?? this.amount,
-      recurringType: recurringType ?? this.recurringType,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (isActive.present) {
-      map['is_active'] = Variable<bool>(isActive.value);
-    }
-    if (activeStartDate.present) {
-      map['active_start_date'] = Variable<DateTime>(activeStartDate.value);
-    }
-    if (notificationType.present) {
-      map['notification_type'] = Variable<String>(notificationType.value);
-    }
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (amount.present) {
-      map['amount'] = Variable<double>(amount.value);
-    }
-    if (recurringType.present) {
-      map['recurring_type'] = Variable<String>(recurringType.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SavingReminderTableCompanion(')
-          ..write('title: $title, ')
-          ..write('description: $description, ')
-          ..write('isActive: $isActive, ')
-          ..write('activeStartDate: $activeStartDate, ')
-          ..write('notificationType: $notificationType, ')
-          ..write('id: $id, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('amount: $amount, ')
-          ..write('recurringType: $recurringType, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2771,6 +2740,12 @@ class $MoneyStorageTableTable extends MoneyStorageTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -2785,6 +2760,12 @@ class $MoneyStorageTableTable extends MoneyStorageTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _iconUrlMeta =
       const VerificationMeta('iconUrl');
   @override
@@ -2825,8 +2806,10 @@ class $MoneyStorageTableTable extends MoneyStorageTable
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        createdBy,
         dateCreated,
         dateUpdated,
+        lastModifiedBy,
         iconUrl,
         longName,
         shortName,
@@ -2846,6 +2829,12 @@ class $MoneyStorageTableTable extends MoneyStorageTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
     if (data.containsKey('date_created')) {
       context.handle(
           _dateCreatedMeta,
@@ -2859,6 +2848,14 @@ class $MoneyStorageTableTable extends MoneyStorageTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('icon_url')) {
       context.handle(_iconUrlMeta,
@@ -2897,10 +2894,14 @@ class $MoneyStorageTableTable extends MoneyStorageTable
     return SvngMoneyStorage(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       iconUrl: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}icon_url'])!,
       longName: attachedDatabase.typeMapping
@@ -2923,8 +2924,10 @@ class $MoneyStorageTableTable extends MoneyStorageTable
 class SvngMoneyStorage extends DataClass
     implements Insertable<SvngMoneyStorage> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final String iconUrl;
   final String longName;
   final String shortName;
@@ -2932,8 +2935,10 @@ class SvngMoneyStorage extends DataClass
   final String? userId;
   const SvngMoneyStorage(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       required this.iconUrl,
       required this.longName,
       required this.shortName,
@@ -2943,8 +2948,10 @@ class SvngMoneyStorage extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['icon_url'] = Variable<String>(iconUrl);
     map['long_name'] = Variable<String>(longName);
     map['short_name'] = Variable<String>(shortName);
@@ -2958,8 +2965,10 @@ class SvngMoneyStorage extends DataClass
   MoneyStorageTableCompanion toCompanion(bool nullToAbsent) {
     return MoneyStorageTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       iconUrl: Value(iconUrl),
       longName: Value(longName),
       shortName: Value(shortName),
@@ -2974,8 +2983,10 @@ class SvngMoneyStorage extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return SvngMoneyStorage(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       iconUrl: serializer.fromJson<String>(json['iconUrl']),
       longName: serializer.fromJson<String>(json['longName']),
       shortName: serializer.fromJson<String>(json['shortName']),
@@ -2988,8 +2999,10 @@ class SvngMoneyStorage extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'iconUrl': serializer.toJson<String>(iconUrl),
       'longName': serializer.toJson<String>(longName),
       'shortName': serializer.toJson<String>(shortName),
@@ -3000,8 +3013,10 @@ class SvngMoneyStorage extends DataClass
 
   SvngMoneyStorage copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           String? iconUrl,
           String? longName,
           String? shortName,
@@ -3009,8 +3024,10 @@ class SvngMoneyStorage extends DataClass
           Value<String?> userId = const Value.absent()}) =>
       SvngMoneyStorage(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         iconUrl: iconUrl ?? this.iconUrl,
         longName: longName ?? this.longName,
         shortName: shortName ?? this.shortName,
@@ -3021,8 +3038,10 @@ class SvngMoneyStorage extends DataClass
   String toString() {
     return (StringBuffer('SvngMoneyStorage(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('iconUrl: $iconUrl, ')
           ..write('longName: $longName, ')
           ..write('shortName: $shortName, ')
@@ -3033,15 +3052,17 @@ class SvngMoneyStorage extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, dateCreated, dateUpdated, iconUrl, longName, shortName, type, userId);
+  int get hashCode => Object.hash(id, createdBy, dateCreated, dateUpdated,
+      lastModifiedBy, iconUrl, longName, shortName, type, userId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is SvngMoneyStorage &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.iconUrl == this.iconUrl &&
           other.longName == this.longName &&
           other.shortName == this.shortName &&
@@ -3051,8 +3072,10 @@ class SvngMoneyStorage extends DataClass
 
 class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<String> iconUrl;
   final Value<String> longName;
   final Value<String> shortName;
@@ -3061,8 +3084,10 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   final Value<int> rowid;
   const MoneyStorageTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.iconUrl = const Value.absent(),
     this.longName = const Value.absent(),
     this.shortName = const Value.absent(),
@@ -3072,22 +3097,28 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   });
   MoneyStorageTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     this.iconUrl = const Value.absent(),
     required String longName,
     required String shortName,
     required String type,
     this.userId = const Value.absent(),
     this.rowid = const Value.absent(),
-  })  : dateUpdated = Value(dateUpdated),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
         longName = Value(longName),
         shortName = Value(shortName),
         type = Value(type);
   static Insertable<SvngMoneyStorage> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<String>? iconUrl,
     Expression<String>? longName,
     Expression<String>? shortName,
@@ -3097,8 +3128,10 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (iconUrl != null) 'icon_url': iconUrl,
       if (longName != null) 'long_name': longName,
       if (shortName != null) 'short_name': shortName,
@@ -3110,8 +3143,10 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
 
   MoneyStorageTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<String>? iconUrl,
       Value<String>? longName,
       Value<String>? shortName,
@@ -3120,8 +3155,10 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       Value<int>? rowid}) {
     return MoneyStorageTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       iconUrl: iconUrl ?? this.iconUrl,
       longName: longName ?? this.longName,
       shortName: shortName ?? this.shortName,
@@ -3137,11 +3174,17 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (iconUrl.present) {
       map['icon_url'] = Variable<String>(iconUrl.value);
@@ -3168,8 +3211,10 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   String toString() {
     return (StringBuffer('MoneyStorageTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('iconUrl: $iconUrl, ')
           ..write('longName: $longName, ')
           ..write('shortName: $shortName, ')
@@ -3194,6 +3239,12 @@ class $SavingTableTable extends SavingTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -3208,6 +3259,12 @@ class $SavingTableTable extends SavingTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -3330,8 +3387,10 @@ class $SavingTableTable extends SavingTable
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        createdBy,
         dateCreated,
         dateUpdated,
+        lastModifiedBy,
         name,
         isPublic,
         isHasGoal,
@@ -3360,6 +3419,12 @@ class $SavingTableTable extends SavingTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
     if (data.containsKey('date_created')) {
       context.handle(
           _dateCreatedMeta,
@@ -3373,6 +3438,14 @@ class $SavingTableTable extends SavingTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -3461,10 +3534,14 @@ class $SavingTableTable extends SavingTable
     return SvngSaving(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name']),
       isPublic: attachedDatabase.typeMapping
@@ -3504,8 +3581,10 @@ class $SavingTableTable extends SavingTable
 
 class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final String? name;
   final bool isPublic;
   final bool isHasGoal;
@@ -3522,8 +3601,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   final String? moneyStorageId;
   const SvngSaving(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       this.name,
       required this.isPublic,
       required this.isHasGoal,
@@ -3542,8 +3623,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     if (!nullToAbsent || name != null) {
       map['name'] = Variable<String>(name);
     }
@@ -3574,8 +3657,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   SavingTableCompanion toCompanion(bool nullToAbsent) {
     return SavingTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       isPublic: Value(isPublic),
       isHasGoal: Value(isHasGoal),
@@ -3605,8 +3690,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return SvngSaving(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       name: serializer.fromJson<String?>(json['name']),
       isPublic: serializer.fromJson<bool>(json['isPublic']),
       isHasGoal: serializer.fromJson<bool>(json['isHasGoal']),
@@ -3628,8 +3715,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'name': serializer.toJson<String?>(name),
       'isPublic': serializer.toJson<bool>(isPublic),
       'isHasGoal': serializer.toJson<bool>(isHasGoal),
@@ -3649,8 +3738,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
 
   SvngSaving copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           Value<String?> name = const Value.absent(),
           bool? isPublic,
           bool? isHasGoal,
@@ -3667,8 +3758,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
           Value<String?> moneyStorageId = const Value.absent()}) =>
       SvngSaving(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         name: name.present ? name.value : this.name,
         isPublic: isPublic ?? this.isPublic,
         isHasGoal: isHasGoal ?? this.isHasGoal,
@@ -3689,8 +3782,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   String toString() {
     return (StringBuffer('SvngSaving(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('name: $name, ')
           ..write('isPublic: $isPublic, ')
           ..write('isHasGoal: $isHasGoal, ')
@@ -3712,8 +3807,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   @override
   int get hashCode => Object.hash(
       id,
+      createdBy,
       dateCreated,
       dateUpdated,
+      lastModifiedBy,
       name,
       isPublic,
       isHasGoal,
@@ -3733,8 +3830,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       identical(this, other) ||
       (other is SvngSaving &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.name == this.name &&
           other.isPublic == this.isPublic &&
           other.isHasGoal == this.isHasGoal &&
@@ -3753,8 +3852,10 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
 
 class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<String?> name;
   final Value<bool> isPublic;
   final Value<bool> isHasGoal;
@@ -3772,8 +3873,10 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<int> rowid;
   const SavingTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.name = const Value.absent(),
     this.isPublic = const Value.absent(),
     this.isHasGoal = const Value.absent(),
@@ -3792,8 +3895,10 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   });
   SavingTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     this.name = const Value.absent(),
     this.isPublic = const Value.absent(),
     this.isHasGoal = const Value.absent(),
@@ -3809,11 +3914,15 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : dateUpdated = Value(dateUpdated);
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy);
   static Insertable<SvngSaving> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<String>? name,
     Expression<bool>? isPublic,
     Expression<bool>? isHasGoal,
@@ -3832,8 +3941,10 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (name != null) 'name': name,
       if (isPublic != null) 'is_public': isPublic,
       if (isHasGoal != null) 'is_has_goal': isHasGoal,
@@ -3854,8 +3965,10 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
 
   SavingTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<String?>? name,
       Value<bool>? isPublic,
       Value<bool>? isHasGoal,
@@ -3873,8 +3986,10 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       Value<int>? rowid}) {
     return SavingTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       name: name ?? this.name,
       isPublic: isPublic ?? this.isPublic,
       isHasGoal: isHasGoal ?? this.isHasGoal,
@@ -3899,11 +4014,17 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -3957,8 +4078,10 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   String toString() {
     return (StringBuffer('SavingTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('name: $name, ')
           ..write('isPublic: $isPublic, ')
           ..write('isHasGoal: $isHasGoal, ')
@@ -3992,6 +4115,12 @@ class $TransactionTableTable extends TransactionTable
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _dateCreatedMeta =
       const VerificationMeta('dateCreated');
   @override
@@ -4006,6 +4135,12 @@ class $TransactionTableTable extends TransactionTable
   late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
       'date_updated', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
@@ -4057,8 +4192,10 @@ class $TransactionTableTable extends TransactionTable
   @override
   List<GeneratedColumn> get $columns => [
         id,
+        createdBy,
         dateCreated,
         dateUpdated,
+        lastModifiedBy,
         type,
         description,
         amount,
@@ -4079,6 +4216,12 @@ class $TransactionTableTable extends TransactionTable
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
     if (data.containsKey('date_created')) {
       context.handle(
           _dateCreatedMeta,
@@ -4092,6 +4235,14 @@ class $TransactionTableTable extends TransactionTable
               data['date_updated']!, _dateUpdatedMeta));
     } else if (isInserting) {
       context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
     }
     if (data.containsKey('type')) {
       context.handle(
@@ -4136,10 +4287,14 @@ class $TransactionTableTable extends TransactionTable
     return TrnsctnTransaction(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
       dateCreated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
       dateUpdated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
       description: attachedDatabase.typeMapping
@@ -4164,8 +4319,10 @@ class $TransactionTableTable extends TransactionTable
 class TrnsctnTransaction extends DataClass
     implements Insertable<TrnsctnTransaction> {
   final String id;
+  final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
+  final String lastModifiedBy;
   final String type;
   final String description;
   final double amount;
@@ -4174,8 +4331,10 @@ class TrnsctnTransaction extends DataClass
   final String? expenseId;
   const TrnsctnTransaction(
       {required this.id,
+      required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
+      required this.lastModifiedBy,
       required this.type,
       required this.description,
       required this.amount,
@@ -4186,8 +4345,10 @@ class TrnsctnTransaction extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['type'] = Variable<String>(type);
     map['description'] = Variable<String>(description);
     map['amount'] = Variable<double>(amount);
@@ -4202,8 +4363,10 @@ class TrnsctnTransaction extends DataClass
   TransactionTableCompanion toCompanion(bool nullToAbsent) {
     return TransactionTableCompanion(
       id: Value(id),
+      createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
       type: Value(type),
       description: Value(description),
       amount: Value(amount),
@@ -4220,8 +4383,10 @@ class TrnsctnTransaction extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return TrnsctnTransaction(
       id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       type: serializer.fromJson<String>(json['type']),
       description: serializer.fromJson<String>(json['description']),
       amount: serializer.fromJson<double>(json['amount']),
@@ -4235,8 +4400,10 @@ class TrnsctnTransaction extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'type': serializer.toJson<String>(type),
       'description': serializer.toJson<String>(description),
       'amount': serializer.toJson<double>(amount),
@@ -4248,8 +4415,10 @@ class TrnsctnTransaction extends DataClass
 
   TrnsctnTransaction copyWith(
           {String? id,
+          String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
+          String? lastModifiedBy,
           String? type,
           String? description,
           double? amount,
@@ -4258,8 +4427,10 @@ class TrnsctnTransaction extends DataClass
           Value<String?> expenseId = const Value.absent()}) =>
       TrnsctnTransaction(
         id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         type: type ?? this.type,
         description: description ?? this.description,
         amount: amount ?? this.amount,
@@ -4271,8 +4442,10 @@ class TrnsctnTransaction extends DataClass
   String toString() {
     return (StringBuffer('TrnsctnTransaction(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('type: $type, ')
           ..write('description: $description, ')
           ..write('amount: $amount, ')
@@ -4284,15 +4457,27 @@ class TrnsctnTransaction extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, dateCreated, dateUpdated, type,
-      description, amount, savingId, isExpense, expenseId);
+  int get hashCode => Object.hash(
+      id,
+      createdBy,
+      dateCreated,
+      dateUpdated,
+      lastModifiedBy,
+      type,
+      description,
+      amount,
+      savingId,
+      isExpense,
+      expenseId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is TrnsctnTransaction &&
           other.id == this.id &&
+          other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
           other.type == this.type &&
           other.description == this.description &&
           other.amount == this.amount &&
@@ -4303,8 +4488,10 @@ class TrnsctnTransaction extends DataClass
 
 class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   final Value<String> id;
+  final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
   final Value<String> type;
   final Value<String> description;
   final Value<double> amount;
@@ -4314,8 +4501,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   final Value<int> rowid;
   const TransactionTableCompanion({
     this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
     this.type = const Value.absent(),
     this.description = const Value.absent(),
     this.amount = const Value.absent(),
@@ -4326,8 +4515,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   });
   TransactionTableCompanion.insert({
     this.id = const Value.absent(),
+    required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
+    required String lastModifiedBy,
     required String type,
     this.description = const Value.absent(),
     required double amount,
@@ -4335,14 +4526,18 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.isExpense = const Value.absent(),
     this.expenseId = const Value.absent(),
     this.rowid = const Value.absent(),
-  })  : dateUpdated = Value(dateUpdated),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
         type = Value(type),
         amount = Value(amount),
         savingId = Value(savingId);
   static Insertable<TrnsctnTransaction> custom({
     Expression<String>? id,
+    Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
     Expression<String>? type,
     Expression<String>? description,
     Expression<double>? amount,
@@ -4353,8 +4548,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (type != null) 'type': type,
       if (description != null) 'description': description,
       if (amount != null) 'amount': amount,
@@ -4367,8 +4564,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
 
   TransactionTableCompanion copyWith(
       {Value<String>? id,
+      Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
       Value<String>? type,
       Value<String>? description,
       Value<double>? amount,
@@ -4378,8 +4577,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       Value<int>? rowid}) {
     return TransactionTableCompanion(
       id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       type: type ?? this.type,
       description: description ?? this.description,
       amount: amount ?? this.amount,
@@ -4396,11 +4597,17 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
     if (dateCreated.present) {
       map['date_created'] = Variable<DateTime>(dateCreated.value);
     }
     if (dateUpdated.present) {
       map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
@@ -4430,8 +4637,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   String toString() {
     return (StringBuffer('TransactionTableCompanion(')
           ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('type: $type, ')
           ..write('description: $description, ')
           ..write('amount: $amount, ')
@@ -4455,8 +4664,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ExpenseTableTable expenseTable = $ExpenseTableTable(this);
   late final $ExpenseReferenceTableTable expenseReferenceTable =
       $ExpenseReferenceTableTable(this);
-  late final $SavingReminderTableTable savingReminderTable =
-      $SavingReminderTableTable(this);
   late final $MoneyStorageTableTable moneyStorageTable =
       $MoneyStorageTableTable(this);
   late final $SavingTableTable savingTable = $SavingTableTable(this);
@@ -4473,7 +4680,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         referenceDataTable,
         expenseTable,
         expenseReferenceTable,
-        savingReminderTable,
         moneyStorageTable,
         savingTable,
         transactionTable

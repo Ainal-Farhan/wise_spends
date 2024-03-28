@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/db/app_database.dart';
-import 'package:wise_spends/db/domain/composite/saving_with_money_storage.dart';
+import 'package:wise_spends/db/composite/saving_with_money_storage.dart';
 import 'package:wise_spends/repository/saving/i_saving_repository.dart';
 
 class SavingRepository extends ISavingRepository {
@@ -11,19 +11,6 @@ class SavingRepository extends ISavingRepository {
     return (db.select(db.savingTable)
           ..where((tbl) => tbl.userId.equals(userId)))
         .watch();
-  }
-
-  @override
-  Stream<SvngSaving> watchBasedOnSavingId(String savingId) {
-    return (db.select(db.savingTable)..where((tbl) => tbl.id.equals(savingId)))
-        .watchSingle();
-  }
-
-  @override
-  Future<void> updatePart(
-      SavingTableCompanion savingTableCompanion, final String savingId) async {
-    await (db.update(db.savingTable)..where((tbl) => tbl.id.equals(savingId)))
-        .write(savingTableCompanion);
   }
 
   @override

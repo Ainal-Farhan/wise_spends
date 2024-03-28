@@ -15,7 +15,7 @@ class LoadSavingTransactionEvent extends SavingsEvent {
     yield const LoadingSavingsState(0);
     yield InSavingTransactionFormState(
       version: 0,
-      saving: await savingsManager.getSavingById(savingId),
+      saving: (await savingsManager.getSavingById(savingId))!,
     );
   }
 }

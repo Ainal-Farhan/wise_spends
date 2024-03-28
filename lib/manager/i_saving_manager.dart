@@ -1,6 +1,6 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:wise_spends/db/app_database.dart';
-import 'package:wise_spends/db/domain/composite/saving_with_transactions.dart';
+import 'package:wise_spends/db/composite/saving_with_transactions.dart';
 import 'package:wise_spends/manager/i_manager.dart';
 import 'package:wise_spends/manager/impl/saving_manager.dart';
 import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
@@ -43,9 +43,7 @@ abstract class ISavingManager extends IManager {
 
   Future<void> updateSaving({required EditSavingFormVO editSavingFormVO});
 
-  Future<SvngSaving> getSavingById(String savingId);
-
-  Future<SvngMoneyStorage> getMoneyStorageById(String moneyStorageId);
+  Future<SvngSaving?> getSavingById(String savingId);
 
   Future<List<SvngMoneyStorage>> getCurrentUserMoneyStorageList();
 

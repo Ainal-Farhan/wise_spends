@@ -1,5 +1,5 @@
-import 'package:wise_spends/config/configuration/configuration_manager.dart';
 import 'package:wise_spends/config/configuration/i_configuration_manager.dart';
+import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/theme/colors/i_color_theme.dart';
 import 'package:wise_spends/theme/colors/theme/default/color_default.dart';
 import 'package:wise_spends/theme/i_theme_manager.dart';
@@ -8,6 +8,7 @@ import 'package:wise_spends/theme/theme_list/i_theme.dart';
 import 'package:wise_spends/theme/widgets/theme/default/widgets_default.dart';
 import 'package:wise_spends/theme/widgets/i_widget_theme.dart';
 import 'package:wise_spends/constant/app/config_constant.dart';
+import 'package:wise_spends/util/singleton_util.dart';
 
 class ThemeManager implements IThemeManager {
   ThemeManager._internal();
@@ -16,7 +17,8 @@ class ThemeManager implements IThemeManager {
     return _themeManager;
   }
 
-  final IConfigurationManager _configurationManager = ConfigurationManager();
+  final IConfigurationManager _configurationManager =
+      SingletonUtil.getSingleton<IManagerLocator>().getConfigurationManager();
   late ITheme _currentTheme;
   late IWidgetTheme _widgetTheme;
   late IColorTheme _colorTheme;

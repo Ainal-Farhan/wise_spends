@@ -4,19 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/money_storage/edit_money_storage/state/edit_money_storage_state.dart';
 import 'package:wise_spends/router/app_router.dart';
 
-class SuccessEditMoneyStorageState extends StatefulWidget
-    implements EditMoneyStorageState {
-  @override
-  final int version;
-
+class SuccessEditMoneyStorageState extends EditMoneyStorageState {
   const SuccessEditMoneyStorageState({
-    Key? key,
-    required this.version,
-  }) : super(key: key);
-
-  @override
-  State<SuccessEditMoneyStorageState> createState() =>
-      _SuccessEditMoneyStorageStateState();
+    required int version,
+  }) : super(version: version);
 
   @override
   List<Object> get props => [];
@@ -34,25 +25,13 @@ class SuccessEditMoneyStorageState extends StatefulWidget
 
   @override
   Widget build(BuildContext context) {
-    throw UnimplementedError();
-  }
-}
-
-class _SuccessEditMoneyStorageStateState
-    extends State<SuccessEditMoneyStorageState> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(const Duration(milliseconds: 500), () {
+    Timer(const Duration(milliseconds: 1000), () {
       Navigator.pushReplacementNamed(
         context,
         AppRouter.viewListMoneyStoragePageRoute,
       );
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Column(

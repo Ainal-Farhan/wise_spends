@@ -18,9 +18,12 @@ class LoadEditSavingsEvent extends EditSavingsEvent {
   Stream<EditSavingsState> applyAsync(
       {EditSavingsState? currentState, EditSavingsBloc? bloc}) async* {
     yield const UnEditSavingsState(version: 0);
-    SvngSaving saving = await savingsManager.getSavingById(savingId);
-    List<DropDownValueModel> moneyStorageDropDownValueModelList =
-        await savingsManager.getCurrentUserMoneyStorageDropDownValueModelList();
-    yield InEditSavingsState(0, saving, moneyStorageDropDownValueModelList);
+    SvngSaving? saving = await savingsManager.getSavingById(savingId);
+    if (saving != null) {
+      List<DropDownValueModel> moneyStorageDropDownValueModelList =
+          await savingsManager
+              .getCurrentUserMoneyStorageDropDownValueModelList();
+      yield InEditSavingsState(0, saving, moneyStorageDropDownValueModelList);
+    }
   }
 }

@@ -6,7 +6,6 @@ import 'package:wise_spends/db/db_connection.dart';
 import 'package:wise_spends/db/domain/common/index.dart';
 import 'package:wise_spends/db/domain/expense/index.dart';
 import 'package:wise_spends/db/domain/masterdata/index.dart';
-import 'package:wise_spends/db/domain/notification/index.dart';
 import 'package:wise_spends/db/domain/saving/index.dart';
 import 'package:wise_spends/db/domain/transaction/index.dart';
 import 'package:wise_spends/utils/app_path.dart';
@@ -20,7 +19,6 @@ part 'app_database.g.dart';
   ...Common.tableList,
   ...Expense.tableList,
   ...MasterData.tableList,
-  ...Notification.tableList,
   ...Saving.tableList,
   ...Transaction.tableList,
 ])
