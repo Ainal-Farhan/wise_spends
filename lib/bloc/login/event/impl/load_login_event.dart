@@ -13,10 +13,10 @@ class LoadLoginEvent extends LoginEvent {
       yield const UnLoginState();
       await Future.delayed(const Duration(seconds: 1));
       yield const InLoginState('Hello world');
-    } catch (_, stackTrace) {
-      developer.log('$_',
-          name: 'LoadLoginEvent', error: _, stackTrace: stackTrace);
-      yield ErrorLoginState(_.toString());
+    } catch (ex, stackTrace) {
+      developer.log('$ex',
+          name: 'LoadLoginEvent', error: ex, stackTrace: stackTrace);
+      yield ErrorLoginState(ex.toString());
     }
   }
 }

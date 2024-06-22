@@ -10,12 +10,12 @@ class ErrorLoginEvent extends LoginEvent {
       {LoginState? currentState, LoginBloc? bloc}) async* {
     try {
       yield const ErrorLoginState(LoginEventConstant.errorLoginEvent);
-    } catch (_, stackTrace) {
-      developer.log('$_',
+    } catch (ex, stackTrace) {
+      developer.log('$ex',
           name: LoginEventConstant.errorLoginEvent,
-          error: _,
+          error: ex,
           stackTrace: stackTrace);
-      yield ErrorLoginState(_.toString());
+      yield ErrorLoginState(ex.toString());
     }
   }
 }

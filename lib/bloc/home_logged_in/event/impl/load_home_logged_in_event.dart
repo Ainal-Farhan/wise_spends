@@ -23,10 +23,10 @@ class LoadHomeLoggedInEvent extends HomeLoggedInEvent {
       await Future.delayed(const Duration(seconds: 1));
       homeLoggedInManager.test(isError);
       yield const InHomeLoggedInState(0, 'Hello world');
-    } catch (_, stackTrace) {
-      developer.log('$_',
-          name: 'LoadHomeLoggedInEvent', error: _, stackTrace: stackTrace);
-      yield ErrorHomeLoggedInState(0, _.toString());
+    } catch (ex, stackTrace) {
+      developer.log('$ex',
+          name: 'LoadHomeLoggedInEvent', error: ex, stackTrace: stackTrace);
+      yield ErrorHomeLoggedInState(0, ex.toString());
     }
   }
 }

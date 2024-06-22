@@ -22,10 +22,10 @@ class LoadTransactionEvent extends TransactionEvent {
       await Future.delayed(const Duration(seconds: 1));
       transactionManager.test(isError);
       yield const InTransactionState(0, 'Hello world');
-    } catch (_, stackTrace) {
-      developer.log('$_',
-          name: 'LoadTransactionEvent', error: _, stackTrace: stackTrace);
-      yield ErrorTransactionState(0, _.toString());
+    } catch (ex, stackTrace) {
+      developer.log('$ex',
+          name: 'LoadTransactionEvent', error: ex, stackTrace: stackTrace);
+      yield ErrorTransactionState(0, ex.toString());
     }
   }
 }
