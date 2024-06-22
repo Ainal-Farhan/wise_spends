@@ -19,6 +19,7 @@ class SavingTable extends BaseEntityTable {
   BoolColumn get isSaveWeekly => boolean().withDefault(const Constant(false))();
   BoolColumn get isSaveMonthly =>
       boolean().withDefault(const Constant(false))();
+  TextColumn get type => text()();
   RealColumn get currentAmount => real().withDefault(const Constant(.0))();
   TextColumn get userId => text().nullable().references(UserTable, #id)();
   TextColumn get moneyStorageId =>
@@ -37,6 +38,7 @@ class SavingTable extends BaseEntityTable {
       'isHasGoal': isHasGoal.toString(),
       'goal': goal.toString(),
       'isHasStartDate': isHasStartDate.toString(),
+      'type': type.toString(),
       'startDate': startDate.toString(),
       'isHasEndDate': isHasEndDate.toString(),
       'endDate': endDate.toString(),

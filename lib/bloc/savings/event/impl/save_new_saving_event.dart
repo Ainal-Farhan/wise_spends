@@ -23,6 +23,7 @@ class SaveNewSavingEvent extends SavingsEvent {
         isHasGoal: _addSavingFormVO.isHasGoal!,
         goalAmount: _addSavingFormVO.goalAmount!,
         moneyStorageId: _addSavingFormVO.moneyStorageId ?? '',
+        savingTableType: _addSavingFormVO.savingTableType!
       );
     } catch (_) {}
 

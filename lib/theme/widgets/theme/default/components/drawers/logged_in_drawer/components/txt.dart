@@ -22,7 +22,7 @@ class Txt extends StatefulWidget {
   final bool strikeThrough;
 
   const Txt({
-    Key? key,
+    super.key,
     this.style,
     this.fontWeight,
     this.maxLines,
@@ -41,7 +41,7 @@ class Txt extends StatefulWidget {
     this.toRupees = false,
     this.toTimeAgo = false,
     this.strikeThrough = false,
-  }) : super(key: key);
+  });
 
   @override
   State<Txt> createState() => _TxtState();

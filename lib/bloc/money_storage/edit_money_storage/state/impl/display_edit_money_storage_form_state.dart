@@ -8,9 +8,9 @@ class DisplayEditMoneyStorageFormState extends EditMoneyStorageState {
   final EditMoneyStorageFormVO editMoneyStorageFormVO;
 
   const DisplayEditMoneyStorageFormState({
-    required int version,
+    required super.version,
     required this.editMoneyStorageFormVO,
-  }) : super(version: version);
+  });
 
   @override
   Widget build(BuildContext context) {

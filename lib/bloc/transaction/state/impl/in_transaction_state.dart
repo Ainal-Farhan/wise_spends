@@ -3,7 +3,7 @@ import 'package:wise_spends/bloc/transaction/state/transaction_state.dart';
 
 /// Initialized
 class InTransactionState extends TransactionState {
-  const InTransactionState(int version, this.hello) : super(version);
+  const InTransactionState(super.version, this.hello);
 
   final String hello;
 

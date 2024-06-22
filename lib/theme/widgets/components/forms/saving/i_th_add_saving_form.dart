@@ -10,18 +10,21 @@ abstract class IThAddSavingForm extends IThWidget {
     Key? key,
     required Function eventLoader,
     required List<DropDownValueModel> moneyStorageList,
+    required List<DropDownValueModel> savingTypeList,
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThAddSavingFormDefault(
         key: key,
         eventLoader: eventLoader,
         moneyStorageList: moneyStorageList,
+        savingTypeList: savingTypeList,
       );
     }
     return ThAddSavingFormDefault(
       key: key,
       eventLoader: eventLoader,
       moneyStorageList: moneyStorageList,
+      savingTypeList: savingTypeList,
     );
   }
 }

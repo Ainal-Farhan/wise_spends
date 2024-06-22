@@ -8,11 +8,11 @@ class ThInputTextFormFieldsDefault extends StatelessWidget
   final bool isRequired;
 
   const ThInputTextFormFieldsDefault({
-    Key? key,
+    super.key,
     required this.controller,
     required this.label,
     this.isRequired = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

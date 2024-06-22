@@ -2,6 +2,7 @@ import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/edit_savings/edit_savings_bloc.dart';
 import 'package:wise_spends/bloc/edit_savings/event/impl/update_edit_savings_event.dart';
+import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';
@@ -19,6 +20,7 @@ class ThEditSavingFormDefault extends StatefulWidget
     implements IThEditSavingForm {
   final SvngSaving saving;
   final List<DropDownValueModel> moneyStorageList;
+  final List<DropDownValueModel> savingTypeList;
 
   late EditSavingFormVO _editSavingFormVO;
 
@@ -30,12 +32,15 @@ class ThEditSavingFormDefault extends StatefulWidget
   bool _isHasGoal = false;
   final SingleValueDropDownController _moneyStorageController =
       SingleValueDropDownController();
+  final SingleValueDropDownController _savingTypeController =
+      SingleValueDropDownController();
 
   ThEditSavingFormDefault({
-    Key? key,
+    super.key,
     required this.saving,
     required this.moneyStorageList,
-  }) : super(key: key) {
+    required this.savingTypeList,
+  }) {
     _editSavingFormVO = EditSavingFormVO(
       savingId: saving.id,
       savingName: saving.name ?? '',
@@ -43,6 +48,7 @@ class ThEditSavingFormDefault extends StatefulWidget
       isHasGoal: saving.isHasGoal,
       goalAmount: saving.goal,
       moneyStorageId: saving.moneyStorageId ?? '',
+      savingTableType: SavingTableType.findByValue(saving.type),
     );
 
     _savingNamecontroller.value = TextEditingValue(
@@ -59,6 +65,12 @@ class ThEditSavingFormDefault extends StatefulWidget
       if (moneyStorage.value == _editSavingFormVO.moneyStorageId) {
         _moneyStorageController.dropDownValue = moneyStorage;
         break;
+      }
+    }
+
+    for (DropDownValueModel savingType in savingTypeList) {
+      if (savingType.value == _editSavingFormVO.savingTableType) {
+        _savingTypeController.dropDownValue = savingType;
       }
     }
 
@@ -116,6 +128,14 @@ class _ThEditSavingFormDefaultState extends State<ThEditSavingFormDefault> {
       IThInputSelectOneFormFields(
         dropDownValues: widget.moneyStorageList,
         controller: widget._moneyStorageController,
+        withLabel: true,
+        label: 'Storage',
+      ),
+      IThInputSelectOneFormFields(
+        dropDownValues: widget.savingTypeList,
+        controller: widget._savingTypeController,
+        withLabel: true,
+        label: 'Type',
       ),
       IThInputNumberFormFields(
         label: 'Current Amount (RM)',

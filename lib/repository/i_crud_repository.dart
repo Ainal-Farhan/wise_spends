@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/repository/i_stream_repository.dart';
 
@@ -8,7 +7,7 @@ abstract class ICrudRepository<
     B extends TableInfo<A, D>,
     C extends UpdateCompanion<D>,
     D extends Insertable<D>> extends IStreamRepository<A, B, C, D> {
-  const ICrudRepository(AppDatabase db, B table) : super(db, table);
+  const ICrudRepository(super.db, super.table);
 
   Future<D> save(final item) async {
     return await db.into(table).insertReturning(item);

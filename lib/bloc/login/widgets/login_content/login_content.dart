@@ -13,7 +13,7 @@ enum Screens {
 }
 
 class LoginContent extends StatefulWidget {
-  const LoginContent({Key? key}) : super(key: key);
+  const LoginContent({super.key});
 
   @override
   State<LoginContent> createState() => _LoginContentState();

@@ -7,11 +7,10 @@ class ThErrorWidgetDefault extends StatelessWidget implements IThErrorWidget {
   static VoidCallback _defaultOnPressed() => () {};
 
   const ThErrorWidgetDefault({
-    Key? key,
+    super.key,
     required this.errorMessage,
     VoidCallback? onPressed,
-  })  : onPressed = onPressed ?? _defaultOnPressed,
-        super(key: key);
+  })  : onPressed = onPressed ?? _defaultOnPressed;
 
   @override
   Widget build(BuildContext context) {

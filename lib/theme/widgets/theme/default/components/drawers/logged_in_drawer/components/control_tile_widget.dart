@@ -5,10 +5,9 @@ class ControlTileWidget extends StatelessWidget {
   final VoidCallback _expandOrShrinkDrawer;
 
   const ControlTileWidget({
-    Key? key,
+    super.key,
     required VoidCallback expandOrShrinkDrawer,
-  })  : _expandOrShrinkDrawer = expandOrShrinkDrawer,
-        super(key: key);
+  })  : _expandOrShrinkDrawer = expandOrShrinkDrawer;
 
   @override
   Widget build(BuildContext context) {

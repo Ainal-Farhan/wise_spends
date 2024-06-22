@@ -3,7 +3,7 @@ import 'package:wise_spends/bloc/home_logged_in/state/home_logged_in_state.dart'
 import 'package:wise_spends/theme/widgets/components/errors/i_th_error_widget.dart';
 
 class ErrorHomeLoggedInState extends HomeLoggedInState {
-  const ErrorHomeLoggedInState(int version, this.errorMessage) : super(version);
+  const ErrorHomeLoggedInState(super.version, this.errorMessage);
 
   final String errorMessage;
 

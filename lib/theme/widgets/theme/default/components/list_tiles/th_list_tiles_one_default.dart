@@ -7,10 +7,10 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
   final String emptyListMessage;
 
   const ThListTilesOneDefault({
-    Key? key,
+    super.key,
     required this.items,
     required this.emptyListMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

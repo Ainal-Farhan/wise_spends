@@ -5,8 +5,8 @@ class AccountButtonWidget extends StatelessWidget {
 
   const AccountButtonWidget({
     this.usePadding = false,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

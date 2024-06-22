@@ -24,10 +24,9 @@ class SavingTransactionFormWidget extends StatelessWidget {
 
   String _typeOfTransaction = '';
 
-  SavingTransactionFormWidget({Key? key, required SvngSaving? saving})
+  SavingTransactionFormWidget({super.key, required SvngSaving? saving})
       : _savingTransactionFormVO =
-            SavingTransactionFormVO.fromTableData(saving),
-        super(key: key);
+            SavingTransactionFormVO.fromTableData(saving);
 
   void setSelectedTypeOfTransaction(String value) {
     _typeOfTransaction = value;

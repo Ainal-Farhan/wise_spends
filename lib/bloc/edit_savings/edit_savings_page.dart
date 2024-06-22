@@ -9,9 +9,9 @@ class EditSavingsPage extends StatefulWidget {
   final String savingId;
 
   const EditSavingsPage({
-    Key? key,
+    super.key,
     required this.savingId,
-  }) : super(key: key);
+  });
 
   @override
   State<EditSavingsPage> createState() => _EditSavingsPageState();

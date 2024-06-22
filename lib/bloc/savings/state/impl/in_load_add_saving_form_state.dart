@@ -2,6 +2,7 @@ import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/savings/event/impl/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/savings/state/savings_state.dart';
+import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/theme/widgets/components/forms/saving/i_th_add_saving_form.dart';
 
 class InLoadAddSavingFormState extends SavingsState {
@@ -29,6 +30,7 @@ class InLoadAddSavingFormState extends SavingsState {
             child: IThAddSavingForm(
               eventLoader: load,
               moneyStorageList: moneyStorageList,
+              savingTypeList: SavingTableType.retrieveAllAsDropDownValueModel(),
             ),
           ),
         ),

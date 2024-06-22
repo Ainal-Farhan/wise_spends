@@ -8,9 +8,8 @@ import 'package:wise_spends/bloc/savings/state/savings_state.dart';
 class SavingsScreen extends StatefulWidget {
   const SavingsScreen({
     required SavingsBloc savingsBloc,
-    Key? key,
-  })  : _savingsBloc = savingsBloc,
-        super(key: key);
+    super.key,
+  })  : _savingsBloc = savingsBloc;
 
   final SavingsBloc _savingsBloc;
 

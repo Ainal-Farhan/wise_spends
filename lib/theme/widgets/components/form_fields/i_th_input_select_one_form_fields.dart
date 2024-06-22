@@ -18,6 +18,8 @@ abstract class IThInputSelectOneFormFields extends IThWidget {
     bool searchAutofocus = false,
     bool searchShowCursor = false,
     SingleValueDropDownController? controller,
+    bool withLabel = false,
+    String label = '',
   }) {
     textFieldFocusNode = textFieldFocusNode ?? FocusNode();
     searchFocusNode = searchFocusNode ?? FocusNode();
@@ -45,6 +47,8 @@ abstract class IThInputSelectOneFormFields extends IThWidget {
         clearOption: clearOption,
         searchAutofocus: searchAutofocus,
         searchShowCursor: searchShowCursor,
+        withLabel: withLabel,
+        label: label,
       );
     }
 
@@ -59,6 +63,8 @@ abstract class IThInputSelectOneFormFields extends IThWidget {
       clearOption: clearOption,
       searchAutofocus: searchAutofocus,
       searchShowCursor: searchShowCursor,
+      withLabel: withLabel,
+      label: label,
     );
   }
 }

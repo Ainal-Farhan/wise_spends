@@ -1,3 +1,4 @@
+import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/vo/i_vo.dart';
 
 class EditSavingFormVO implements IVO {
@@ -7,6 +8,8 @@ class EditSavingFormVO implements IVO {
   late double goalAmount;
   late bool isHasGoal;
   late String moneyStorageId;
+  SavingTableType? savingTableType;
+
 
   EditSavingFormVO({
     required this.savingId,
@@ -15,6 +18,7 @@ class EditSavingFormVO implements IVO {
     required this.goalAmount,
     required this.isHasGoal,
     required this.moneyStorageId,
+    required this.savingTableType,
   });
 
   EditSavingFormVO.fromJson(Map<String, dynamic> json) {
@@ -24,6 +28,11 @@ class EditSavingFormVO implements IVO {
     goalAmount = json['goalAmount'];
     isHasGoal = json['isHasGoal'];
     moneyStorageId = json['moneyStorageId'];
+    String? savingTableTypeValue = json['savingTableType'];
+
+    if (savingTableTypeValue != null) {
+      savingTableType = SavingTableType.findByValue(savingTableTypeValue);
+    }
   }
 
   @override
@@ -35,6 +44,9 @@ class EditSavingFormVO implements IVO {
     data['goalAmount'] = goalAmount;
     data['isHasGoal'] = isHasGoal;
     data['moneyStorageId'] = moneyStorageId;
+    if (savingTableType != null) {
+      data['savingTableType'] = savingTableType!.value;
+    }
     return data;
   }
 }

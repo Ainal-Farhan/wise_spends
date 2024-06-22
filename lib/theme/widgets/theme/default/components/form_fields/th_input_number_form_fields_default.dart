@@ -13,7 +13,7 @@ class ThInputNumberFormFieldsDefault extends StatelessWidget
   final FormFieldMode mode;
 
   const ThInputNumberFormFieldsDefault({
-    Key? key,
+    super.key,
     required this.label,
     required this.controller,
     required this.isRequired,
@@ -21,7 +21,7 @@ class ThInputNumberFormFieldsDefault extends StatelessWidget
     required this.isAcceptZero,
     required this.isPositive,
     required this.mode,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

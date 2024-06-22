@@ -7,9 +7,8 @@ import 'package:wise_spends/bloc/transaction/event/impl/load_transaction_event.d
 class TransactionScreen extends StatefulWidget {
   const TransactionScreen({
     required TransactionBloc transactionBloc,
-    Key? key,
-  })  : _transactionBloc = transactionBloc,
-        super(key: key);
+    super.key,
+  })  : _transactionBloc = transactionBloc;
 
   final TransactionBloc _transactionBloc;
 

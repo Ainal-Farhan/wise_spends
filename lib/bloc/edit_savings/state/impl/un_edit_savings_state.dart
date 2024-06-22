@@ -3,10 +3,7 @@ import 'package:wise_spends/bloc/edit_savings/state/edit_savings_state.dart';
 
 /// UnInitialized
 class UnEditSavingsState extends EditSavingsState {
-  const UnEditSavingsState({required int version})
-      : super(
-          version: version,
-        );
+  const UnEditSavingsState({required super.version});
 
   @override
   String toString() => 'UnEditSavingsState';

@@ -12,7 +12,7 @@ import 'package:wise_spends/theme/widgets/components/drawer/i_th_logged_in_drawe
 
 class ThLoggedInDrawerDefault extends StatefulWidget
     implements IThLoggedInDrawer {
-  const ThLoggedInDrawerDefault({Key? key}) : super(key: key);
+  const ThLoggedInDrawerDefault({super.key});
 
   @override
   State<ThLoggedInDrawerDefault> createState() =>

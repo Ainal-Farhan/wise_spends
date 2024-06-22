@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BottomWidget extends StatelessWidget {
   final double screenWidth;
 
-  const BottomWidget({Key? key, required this.screenWidth}) : super(key: key);
+  const BottomWidget({super.key, required this.screenWidth});
 
   @override
   Widget build(BuildContext context) {

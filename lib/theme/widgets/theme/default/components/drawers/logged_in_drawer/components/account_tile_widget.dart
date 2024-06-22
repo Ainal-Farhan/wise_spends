@@ -10,8 +10,8 @@ class AccountTileWidget extends StatelessWidget {
   const AccountTileWidget({
     required this.name,
     required this.position,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

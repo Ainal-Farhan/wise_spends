@@ -1,4 +1,5 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/db/composite/saving_with_transactions.dart';
 import 'package:wise_spends/manager/i_manager.dart';
@@ -17,13 +18,13 @@ abstract class ISavingManager extends IManager {
 
   Future<List<ListSavingVO>> loadListSavingVOList();
 
-  Future<SvngSaving> addNewSaving({
-    required String name,
-    required double initialAmount,
-    required bool isHasGoal,
-    required double goalAmount,
-    required String moneyStorageId,
-  });
+  Future<SvngSaving> addNewSaving(
+      {required String name,
+      required double initialAmount,
+      required bool isHasGoal,
+      required double goalAmount,
+      required String moneyStorageId,
+      required SavingTableType savingTableType});
 
   Future<SvngMoneyStorage> addNewMoneyStorage({
     required String shortName,

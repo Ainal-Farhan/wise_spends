@@ -4,7 +4,7 @@ import 'dart:math' as math;
 class TopWidget extends StatelessWidget {
   final double screenWidth;
 
-  const TopWidget({Key? key, required this.screenWidth}) : super(key: key);
+  const TopWidget({super.key, required this.screenWidth});
 
   @override
   Widget build(BuildContext context) {

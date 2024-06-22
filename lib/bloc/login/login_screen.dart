@@ -13,9 +13,8 @@ import 'package:wise_spends/constant/login/login_state_constant.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
     required LoginBloc loginBloc,
-    Key? key,
-  })  : _loginBloc = loginBloc,
-        super(key: key);
+    super.key,
+  })  : _loginBloc = loginBloc;
 
   final LoginBloc _loginBloc;
 

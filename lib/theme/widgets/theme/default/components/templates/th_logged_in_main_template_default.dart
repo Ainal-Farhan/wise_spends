@@ -22,12 +22,12 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
       SingletonUtil.getSingleton<IManagerLocator>().getStartupManager();
 
   ThLoggedInMainTemplateDefault({
-    Key? key,
+    super.key,
     required this.screen,
     required this.pageRoute,
     required this.bloc,
     this.floatingActionButtons = const <FloatingActionButton>[],
-  }) : super(key: key);
+  });
 
   @override
   State<ThLoggedInMainTemplateDefault> createState() =>

@@ -9,7 +9,7 @@ class ThLoggedInAppbarDefault extends StatelessWidget
   final VoidCallback onPressed;
 
   const ThLoggedInAppbarDefault({
-    Key? key,
+    super.key,
     required this.loggedInUserName,
     required this.colorAnimationController,
     required this.onPressed,
@@ -18,7 +18,7 @@ class ThLoggedInAppbarDefault extends StatelessWidget
     required this.iconTween,
     required this.drawerTween,
     required this.workOutTween,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

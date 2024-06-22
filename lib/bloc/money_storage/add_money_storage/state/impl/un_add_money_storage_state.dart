@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/state/add_money_storage_state.dart';
 
 class UnAddMoneyStorageState extends AddMoneyStorageState {
-  const UnAddMoneyStorageState({required int version})
-      : super(version: version);
+  const UnAddMoneyStorageState({required super.version});
 
   @override
   Widget build(BuildContext context) {

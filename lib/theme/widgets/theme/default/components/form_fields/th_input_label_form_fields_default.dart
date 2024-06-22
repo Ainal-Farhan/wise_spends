@@ -5,8 +5,7 @@ class ThInputLabelFormFieldsDefault extends StatelessWidget
     implements IThInputLabelFormFields {
   final String text;
 
-  const ThInputLabelFormFieldsDefault({Key? key, required this.text})
-      : super(key: key);
+  const ThInputLabelFormFieldsDefault({super.key, required this.text});
 
   @override
   Widget build(BuildContext context) {

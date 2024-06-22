@@ -3,7 +3,7 @@ import 'package:wise_spends/bloc/transaction/state/transaction_state.dart';
 
 /// UnInitialized
 class UnTransactionState extends TransactionState {
-  const UnTransactionState(int version) : super(version);
+  const UnTransactionState(super.version);
 
   @override
   String toString() => 'UnTransactionState';

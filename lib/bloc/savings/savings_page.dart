@@ -6,7 +6,7 @@ import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_ma
 class SavingsPage extends StatefulWidget {
   static const String routeName = AppRouter.savingsPageRoute;
 
-  const SavingsPage({Key? key}) : super(key: key);
+  const SavingsPage({super.key});
 
   @override
   State<SavingsPage> createState() => _SavingsPageState();

@@ -4,7 +4,7 @@ import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button.da
 
 /// Initialized
 class InHomeLoggedInState extends HomeLoggedInState {
-  const InHomeLoggedInState(int version, this.hello) : super(version);
+  const InHomeLoggedInState(super.version, this.hello);
 
   final String hello;
 

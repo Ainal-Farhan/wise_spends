@@ -9,9 +9,9 @@ class CenterWidget extends StatelessWidget {
   final Size size;
 
   const CenterWidget({
-    Key? key,
+    super.key,
     required this.size,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

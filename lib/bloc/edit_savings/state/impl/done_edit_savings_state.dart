@@ -6,12 +6,10 @@ class DoneEditSavingsState extends EditSavingsState {
   final String message;
 
   const DoneEditSavingsState({
-    int version = 0,
+    super.version = 0,
     required this.nextScreenRoute,
     required this.message,
-  }) : super(
-          version: version,
-        );
+  });
 
   @override
   Widget build(BuildContext context) {

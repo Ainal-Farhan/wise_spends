@@ -14,9 +14,11 @@ class ThInputSelectOneFormFieldsDefault extends StatefulWidget
   final bool searchShowCursor;
   final TextInputType searchKeyboardType;
   final SingleValueDropDownController controller;
+  final bool withLabel;
+  final String label;
 
   const ThInputSelectOneFormFieldsDefault({
-    Key? key,
+    super.key,
     required this.textFieldFocusNode,
     required this.searchFocusNode,
     required this.dropDownValues,
@@ -27,7 +29,9 @@ class ThInputSelectOneFormFieldsDefault extends StatefulWidget
     required this.searchAutofocus,
     required this.searchShowCursor,
     required this.controller,
-  }) : super(key: key);
+    required this.withLabel,
+    required this.label,
+  });
 
   @override
   State<ThInputSelectOneFormFieldsDefault> createState() =>
@@ -44,20 +48,30 @@ class _ThInputSelectOneFormFieldsDefaultState
     extends State<ThInputSelectOneFormFieldsDefault> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: DropDownTextField(
-        controller: widget.controller,
-        clearOption: widget.clearOption,
-        textFieldFocusNode: widget.textFieldFocusNode,
-        searchFocusNode: widget.searchFocusNode,
-        searchAutofocus: widget.searchAutofocus,
-        dropDownItemCount: widget.dropDownValues.length,
-        searchShowCursor: widget.searchShowCursor,
-        enableSearch: widget.enableSearch,
-        searchKeyboardType: widget.searchKeyboardType,
-        dropDownList: widget.dropDownValues,
-        onChanged: widget.onChanged,
-      ),
+    DropDownTextField dropDownWidget = DropDownTextField(
+      controller: widget.controller,
+      clearOption: widget.clearOption,
+      textFieldFocusNode: widget.textFieldFocusNode,
+      searchFocusNode: widget.searchFocusNode,
+      searchAutofocus: widget.searchAutofocus,
+      dropDownItemCount: widget.dropDownValues.length,
+      searchShowCursor: widget.searchShowCursor,
+      enableSearch: widget.enableSearch,
+      searchKeyboardType: widget.searchKeyboardType,
+      dropDownList: widget.dropDownValues,
+      onChanged: widget.onChanged,
     );
+
+    return widget.withLabel
+        ? Expanded(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                Text('${widget.label}: '),
+                Expanded(
+                  child: dropDownWidget,
+                ),
+              ]))
+        : Expanded(child: dropDownWidget);
   }
 }

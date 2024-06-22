@@ -1,6 +1,7 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/savings/event/impl/save_new_saving_event.dart';
+import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';
 import 'package:wise_spends/theme/widgets/components/form_fields/i_th_input_number_form_fields.dart';
@@ -17,12 +18,14 @@ class ThAddSavingFormDefault extends StatefulWidget
     implements IThAddSavingForm {
   final Function eventLoader;
   final List<DropDownValueModel> moneyStorageList;
+  final List<DropDownValueModel> savingTypeList;
 
   const ThAddSavingFormDefault({
-    Key? key,
+    super.key,
     required this.eventLoader,
     this.moneyStorageList = const [],
-  }) : super(key: key);
+    this.savingTypeList = const [],
+  });
 
   @override
   List<Object?> get props => [];
@@ -45,6 +48,8 @@ class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
       TextEditingController();
   final TextEditingController _goalAmountController = TextEditingController();
   final SingleValueDropDownController _moneyStorageController =
+      SingleValueDropDownController();
+  final SingleValueDropDownController _savingTypeController =
       SingleValueDropDownController();
 
   bool _isHasGoal = false;
@@ -73,6 +78,12 @@ class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
               _moneyStorageController.dropDownValue!.value ?? '';
         }
 
+        if (_savingTypeController.dropDownValue != null) {
+          _addSavingFormVO.savingTableType =
+              _savingTypeController.dropDownValue!.value ??
+                  SavingTableType.saving;
+        }
+
         widget.eventLoader(
           savingsEvent: SaveNewSavingEvent(
             addSavingFormVO: _addSavingFormVO,
@@ -91,6 +102,14 @@ class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
       IThInputSelectOneFormFields(
         dropDownValues: widget.moneyStorageList,
         controller: _moneyStorageController,
+        withLabel: true,
+        label: 'Storage',
+      ),
+      IThInputSelectOneFormFields(
+        dropDownValues: widget.savingTypeList,
+        controller: _savingTypeController,
+        withLabel: true,
+        label: 'Type',
       ),
       IThInputNumberFormFields(
         label: 'Initial Amount',

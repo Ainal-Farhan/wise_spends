@@ -7,7 +7,7 @@ import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_ma
 class ViewListMoneyStoragePage extends StatefulWidget {
   static const String routeName = AppRouter.viewListMoneyStoragePageRoute;
 
-  const ViewListMoneyStoragePage({Key? key}) : super(key: key);
+  const ViewListMoneyStoragePage({super.key});
 
   @override
   State<ViewListMoneyStoragePage> createState() =>

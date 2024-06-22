@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/constant/saving/saving_constant.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/db/composite/saving_with_transactions.dart';
@@ -42,6 +43,7 @@ class SavingManager implements ISavingManager {
     required bool isHasGoal,
     required double goalAmount,
     required String moneyStorageId,
+    required SavingTableType savingTableType,
   }) async {
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
       createdBy: _startupManager.currentUser.name,
@@ -53,6 +55,7 @@ class SavingManager implements ISavingManager {
       isHasGoal: Value(isHasGoal),
       goal: Value(goalAmount),
       moneyStorageId: Value(moneyStorageId),
+      type: savingTableType.value
     );
 
     return await _savingService.add(savingTableCompanion);
@@ -108,6 +111,7 @@ class SavingManager implements ISavingManager {
         id: Value(savingId),
         dateUpdated: DateTime.now(),
         currentAmount: Value(currentAmount),
+        type: currentSaving.type
       );
 
       await _savingService.updatePart(updatedSaving);

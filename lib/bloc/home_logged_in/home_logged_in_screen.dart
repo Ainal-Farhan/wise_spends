@@ -7,9 +7,8 @@ import 'package:wise_spends/bloc/home_logged_in/state/home_logged_in_state.dart'
 class HomeLoggedInScreen extends StatefulWidget {
   const HomeLoggedInScreen({
     required HomeLoggedInBloc homeLoggedInBloc,
-    Key? key,
-  })  : _homeLoggedInBloc = homeLoggedInBloc,
-        super(key: key);
+    super.key,
+  })  : _homeLoggedInBloc = homeLoggedInBloc;
 
   final HomeLoggedInBloc _homeLoggedInBloc;
 

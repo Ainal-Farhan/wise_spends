@@ -6,9 +6,9 @@ class ThOutputTextFormFieldsDefault extends StatelessWidget
   final String title;
 
   const ThOutputTextFormFieldsDefault({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

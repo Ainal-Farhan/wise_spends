@@ -3,7 +3,7 @@ import 'package:wise_spends/bloc/home_logged_in/state/home_logged_in_state.dart'
 
 /// UnInitialized
 class UnHomeLoggedInState extends HomeLoggedInState {
-  const UnHomeLoggedInState(int version) : super(version);
+  const UnHomeLoggedInState(super.version);
 
   @override
   String toString() => 'UnHomeLoggedInState';

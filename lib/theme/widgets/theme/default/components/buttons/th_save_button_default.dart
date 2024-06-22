@@ -5,9 +5,9 @@ class ThSaveButtonDefault extends StatelessWidget implements IThSaveButton {
   final VoidCallback onTap;
 
   const ThSaveButtonDefault({
-    Key? key,
+    super.key,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

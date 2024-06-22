@@ -5,8 +5,7 @@ import 'package:wise_spends/bloc/savings/state/savings_state.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 
 class InLoadListSavingsState extends SavingsState {
-  const InLoadListSavingsState(int version, this._listSavingVOList)
-      : super(version);
+  const InLoadListSavingsState(super.version, this._listSavingVOList);
 
   final List<ListSavingVO> _listSavingVOList;
 

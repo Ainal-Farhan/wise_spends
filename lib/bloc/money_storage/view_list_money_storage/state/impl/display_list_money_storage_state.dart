@@ -13,9 +13,9 @@ class DisplayListMoneyStorageState extends ViewListMoneyStorageState {
   final List<MoneyStorageVO> moneyStorageVOList;
 
   const DisplayListMoneyStorageState({
-    required int version,
+    required super.version,
     required this.moneyStorageVOList,
-  }) : super(version: version);
+  });
 
   @override
   Widget build(BuildContext context) {

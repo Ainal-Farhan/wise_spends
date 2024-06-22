@@ -8,9 +8,8 @@ class EditMoneyStorageScreen extends StatefulWidget {
   const EditMoneyStorageScreen({
     required EditMoneyStorageBloc editMoneyStorageBloc,
     required this.selectedMoneyStorageId,
-    Key? key,
-  })  : _editMoneyStorageBloc = editMoneyStorageBloc,
-        super(key: key);
+    super.key,
+  })  : _editMoneyStorageBloc = editMoneyStorageBloc;
 
   final String selectedMoneyStorageId;
   final EditMoneyStorageBloc _editMoneyStorageBloc;

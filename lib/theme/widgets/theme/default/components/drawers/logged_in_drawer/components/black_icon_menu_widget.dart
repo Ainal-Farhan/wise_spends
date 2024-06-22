@@ -10,13 +10,12 @@ class BlackIconMenuWidget extends StatelessWidget {
   final Function setSelectedItem;
 
   const BlackIconMenuWidget(
-      {Key? key,
+      {super.key,
       required List<MenuWidget> menuWidgets,
       required VoidCallback expandOrShrinkDrawer,
       required this.setSelectedItem})
       : _expandOrShrinkDrawer = expandOrShrinkDrawer,
-        _menuWidgets = menuWidgets,
-        super(key: key);
+        _menuWidgets = menuWidgets;
 
   @override
   Widget build(BuildContext context) {

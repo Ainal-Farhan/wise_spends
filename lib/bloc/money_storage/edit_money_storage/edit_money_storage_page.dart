@@ -9,9 +9,9 @@ class EditMoneyStoragePage extends StatefulWidget {
   final String selectedMoneyStorageId;
 
   const EditMoneyStoragePage({
-    Key? key,
+    super.key,
     required this.selectedMoneyStorageId,
-  }) : super(key: key);
+  });
 
   @override
   State<EditMoneyStoragePage> createState() => _EditMoneyStoragePageState();

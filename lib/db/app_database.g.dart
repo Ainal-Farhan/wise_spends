@@ -3359,6 +3359,11 @@ class $SavingTableTable extends SavingTable
       defaultConstraints: GeneratedColumn.constraintIsAlways(
           'CHECK ("is_save_monthly" IN (0, 1))'),
       defaultValue: const Constant(false));
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _currentAmountMeta =
       const VerificationMeta('currentAmount');
   @override
@@ -3402,6 +3407,7 @@ class $SavingTableTable extends SavingTable
         isSaveDaily,
         isSaveWeekly,
         isSaveMonthly,
+        type,
         currentAmount,
         userId,
         moneyStorageId
@@ -3503,6 +3509,12 @@ class $SavingTableTable extends SavingTable
           isSaveMonthly.isAcceptableOrUnknown(
               data['is_save_monthly']!, _isSaveMonthlyMeta));
     }
+    if (data.containsKey('type')) {
+      context.handle(
+          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
     if (data.containsKey('current_amount')) {
       context.handle(
           _currentAmountMeta,
@@ -3564,6 +3576,8 @@ class $SavingTableTable extends SavingTable
           .read(DriftSqlType.bool, data['${effectivePrefix}is_save_weekly'])!,
       isSaveMonthly: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_save_monthly'])!,
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
       currentAmount: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}current_amount'])!,
       userId: attachedDatabase.typeMapping
@@ -3596,6 +3610,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   final bool isSaveDaily;
   final bool isSaveWeekly;
   final bool isSaveMonthly;
+  final String type;
   final double currentAmount;
   final String? userId;
   final String? moneyStorageId;
@@ -3616,6 +3631,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       required this.isSaveDaily,
       required this.isSaveWeekly,
       required this.isSaveMonthly,
+      required this.type,
       required this.currentAmount,
       this.userId,
       this.moneyStorageId});
@@ -3644,6 +3660,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     map['is_save_daily'] = Variable<bool>(isSaveDaily);
     map['is_save_weekly'] = Variable<bool>(isSaveWeekly);
     map['is_save_monthly'] = Variable<bool>(isSaveMonthly);
+    map['type'] = Variable<String>(type);
     map['current_amount'] = Variable<double>(currentAmount);
     if (!nullToAbsent || userId != null) {
       map['user_id'] = Variable<String>(userId);
@@ -3676,6 +3693,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       isSaveDaily: Value(isSaveDaily),
       isSaveWeekly: Value(isSaveWeekly),
       isSaveMonthly: Value(isSaveMonthly),
+      type: Value(type),
       currentAmount: Value(currentAmount),
       userId:
           userId == null && nullToAbsent ? const Value.absent() : Value(userId),
@@ -3705,6 +3723,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       isSaveDaily: serializer.fromJson<bool>(json['isSaveDaily']),
       isSaveWeekly: serializer.fromJson<bool>(json['isSaveWeekly']),
       isSaveMonthly: serializer.fromJson<bool>(json['isSaveMonthly']),
+      type: serializer.fromJson<String>(json['type']),
       currentAmount: serializer.fromJson<double>(json['currentAmount']),
       userId: serializer.fromJson<String?>(json['userId']),
       moneyStorageId: serializer.fromJson<String?>(json['moneyStorageId']),
@@ -3730,6 +3749,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       'isSaveDaily': serializer.toJson<bool>(isSaveDaily),
       'isSaveWeekly': serializer.toJson<bool>(isSaveWeekly),
       'isSaveMonthly': serializer.toJson<bool>(isSaveMonthly),
+      'type': serializer.toJson<String>(type),
       'currentAmount': serializer.toJson<double>(currentAmount),
       'userId': serializer.toJson<String?>(userId),
       'moneyStorageId': serializer.toJson<String?>(moneyStorageId),
@@ -3753,6 +3773,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
           bool? isSaveDaily,
           bool? isSaveWeekly,
           bool? isSaveMonthly,
+          String? type,
           double? currentAmount,
           Value<String?> userId = const Value.absent(),
           Value<String?> moneyStorageId = const Value.absent()}) =>
@@ -3773,6 +3794,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
         isSaveDaily: isSaveDaily ?? this.isSaveDaily,
         isSaveWeekly: isSaveWeekly ?? this.isSaveWeekly,
         isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
+        type: type ?? this.type,
         currentAmount: currentAmount ?? this.currentAmount,
         userId: userId.present ? userId.value : this.userId,
         moneyStorageId:
@@ -3797,6 +3819,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
           ..write('isSaveDaily: $isSaveDaily, ')
           ..write('isSaveWeekly: $isSaveWeekly, ')
           ..write('isSaveMonthly: $isSaveMonthly, ')
+          ..write('type: $type, ')
           ..write('currentAmount: $currentAmount, ')
           ..write('userId: $userId, ')
           ..write('moneyStorageId: $moneyStorageId')
@@ -3822,6 +3845,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       isSaveDaily,
       isSaveWeekly,
       isSaveMonthly,
+      type,
       currentAmount,
       userId,
       moneyStorageId);
@@ -3845,6 +3869,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
           other.isSaveDaily == this.isSaveDaily &&
           other.isSaveWeekly == this.isSaveWeekly &&
           other.isSaveMonthly == this.isSaveMonthly &&
+          other.type == this.type &&
           other.currentAmount == this.currentAmount &&
           other.userId == this.userId &&
           other.moneyStorageId == this.moneyStorageId);
@@ -3867,6 +3892,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<bool> isSaveDaily;
   final Value<bool> isSaveWeekly;
   final Value<bool> isSaveMonthly;
+  final Value<String> type;
   final Value<double> currentAmount;
   final Value<String?> userId;
   final Value<String?> moneyStorageId;
@@ -3888,6 +3914,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.isSaveDaily = const Value.absent(),
     this.isSaveWeekly = const Value.absent(),
     this.isSaveMonthly = const Value.absent(),
+    this.type = const Value.absent(),
     this.currentAmount = const Value.absent(),
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
@@ -3910,13 +3937,15 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.isSaveDaily = const Value.absent(),
     this.isSaveWeekly = const Value.absent(),
     this.isSaveMonthly = const Value.absent(),
+    required String type,
     this.currentAmount = const Value.absent(),
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : createdBy = Value(createdBy),
         dateUpdated = Value(dateUpdated),
-        lastModifiedBy = Value(lastModifiedBy);
+        lastModifiedBy = Value(lastModifiedBy),
+        type = Value(type);
   static Insertable<SvngSaving> custom({
     Expression<String>? id,
     Expression<String>? createdBy,
@@ -3934,6 +3963,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     Expression<bool>? isSaveDaily,
     Expression<bool>? isSaveWeekly,
     Expression<bool>? isSaveMonthly,
+    Expression<String>? type,
     Expression<double>? currentAmount,
     Expression<String>? userId,
     Expression<String>? moneyStorageId,
@@ -3956,6 +3986,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       if (isSaveDaily != null) 'is_save_daily': isSaveDaily,
       if (isSaveWeekly != null) 'is_save_weekly': isSaveWeekly,
       if (isSaveMonthly != null) 'is_save_monthly': isSaveMonthly,
+      if (type != null) 'type': type,
       if (currentAmount != null) 'current_amount': currentAmount,
       if (userId != null) 'user_id': userId,
       if (moneyStorageId != null) 'money_storage_id': moneyStorageId,
@@ -3980,6 +4011,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       Value<bool>? isSaveDaily,
       Value<bool>? isSaveWeekly,
       Value<bool>? isSaveMonthly,
+      Value<String>? type,
       Value<double>? currentAmount,
       Value<String?>? userId,
       Value<String?>? moneyStorageId,
@@ -4001,6 +4033,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       isSaveDaily: isSaveDaily ?? this.isSaveDaily,
       isSaveWeekly: isSaveWeekly ?? this.isSaveWeekly,
       isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
+      type: type ?? this.type,
       currentAmount: currentAmount ?? this.currentAmount,
       userId: userId ?? this.userId,
       moneyStorageId: moneyStorageId ?? this.moneyStorageId,
@@ -4059,6 +4092,9 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     if (isSaveMonthly.present) {
       map['is_save_monthly'] = Variable<bool>(isSaveMonthly.value);
     }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
     if (currentAmount.present) {
       map['current_amount'] = Variable<double>(currentAmount.value);
     }
@@ -4093,6 +4129,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
           ..write('isSaveDaily: $isSaveDaily, ')
           ..write('isSaveWeekly: $isSaveWeekly, ')
           ..write('isSaveMonthly: $isSaveMonthly, ')
+          ..write('type: $type, ')
           ..write('currentAmount: $currentAmount, ')
           ..write('userId: $userId, ')
           ..write('moneyStorageId: $moneyStorageId, ')
@@ -4655,6 +4692,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
 
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
+  _$AppDatabaseManager get managers => _$AppDatabaseManager(this);
   late final $UserTableTable userTable = $UserTableTable(this);
   late final $GroupReferenceTableTable groupReferenceTable =
       $GroupReferenceTableTable(this);
@@ -4684,4 +4722,2412 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         savingTable,
         transactionTable
       ];
+}
+
+typedef $$UserTableTableInsertCompanionBuilder = UserTableCompanion Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  required String name,
+  Value<int> rowid,
+});
+typedef $$UserTableTableUpdateCompanionBuilder = UserTableCompanion Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<String> name,
+  Value<int> rowid,
+});
+
+class $$UserTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $UserTableTable,
+    CmmnUser,
+    $$UserTableTableFilterComposer,
+    $$UserTableTableOrderingComposer,
+    $$UserTableTableProcessedTableManager,
+    $$UserTableTableInsertCompanionBuilder,
+    $$UserTableTableUpdateCompanionBuilder> {
+  $$UserTableTableTableManager(_$AppDatabase db, $UserTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$UserTableTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$UserTableTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$UserTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              UserTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            name: name,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            required String name,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              UserTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            name: name,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$UserTableTableProcessedTableManager extends ProcessedTableManager<
+    _$AppDatabase,
+    $UserTableTable,
+    CmmnUser,
+    $$UserTableTableFilterComposer,
+    $$UserTableTableOrderingComposer,
+    $$UserTableTableProcessedTableManager,
+    $$UserTableTableInsertCompanionBuilder,
+    $$UserTableTableUpdateCompanionBuilder> {
+  $$UserTableTableProcessedTableManager(super.$state);
+}
+
+class $$UserTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ComposableFilter moneyStorageTableRefs(
+      ComposableFilter Function($$MoneyStorageTableTableFilterComposer f) f) {
+    final $$MoneyStorageTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $state.db.moneyStorageTable,
+            getReferencedColumn: (t) => (t as $MoneyStorageTableTable).userId,
+            builder: (joinBuilder, parentComposers) =>
+                $$MoneyStorageTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.moneyStorageTable,
+                    joinBuilder,
+                    parentComposers)));
+    return f(composer);
+  }
+
+  ComposableFilter savingTableRefs(
+      ComposableFilter Function($$SavingTableTableFilterComposer f) f) {
+    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.savingTable,
+        getReferencedColumn: (t) => (t as $SavingTableTable).userId,
+        builder: (joinBuilder, parentComposers) =>
+            $$SavingTableTableFilterComposer(ComposerState($state.db,
+                $state.db.savingTable, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$UserTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+}
+
+typedef $$GroupReferenceTableTableInsertCompanionBuilder
+    = GroupReferenceTableCompanion Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  required String label,
+  required String value,
+  Value<int> rowid,
+});
+typedef $$GroupReferenceTableTableUpdateCompanionBuilder
+    = GroupReferenceTableCompanion Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<String> label,
+  Value<String> value,
+  Value<int> rowid,
+});
+
+class $$GroupReferenceTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $GroupReferenceTableTable,
+    MstrdtGroupReference,
+    $$GroupReferenceTableTableFilterComposer,
+    $$GroupReferenceTableTableOrderingComposer,
+    $$GroupReferenceTableTableProcessedTableManager,
+    $$GroupReferenceTableTableInsertCompanionBuilder,
+    $$GroupReferenceTableTableUpdateCompanionBuilder> {
+  $$GroupReferenceTableTableTableManager(
+      _$AppDatabase db, $GroupReferenceTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer: $$GroupReferenceTableTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$GroupReferenceTableTableOrderingComposer(
+              ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$GroupReferenceTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<String> label = const Value.absent(),
+            Value<String> value = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              GroupReferenceTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            label: label,
+            value: value,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            required String label,
+            required String value,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              GroupReferenceTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            label: label,
+            value: value,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$GroupReferenceTableTableProcessedTableManager
+    extends ProcessedTableManager<
+        _$AppDatabase,
+        $GroupReferenceTableTable,
+        MstrdtGroupReference,
+        $$GroupReferenceTableTableFilterComposer,
+        $$GroupReferenceTableTableOrderingComposer,
+        $$GroupReferenceTableTableProcessedTableManager,
+        $$GroupReferenceTableTableInsertCompanionBuilder,
+        $$GroupReferenceTableTableUpdateCompanionBuilder> {
+  $$GroupReferenceTableTableProcessedTableManager(super.$state);
+}
+
+class $$GroupReferenceTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $GroupReferenceTableTable> {
+  $$GroupReferenceTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get label => $state.composableBuilder(
+      column: $state.table.label,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get value => $state.composableBuilder(
+      column: $state.table.value,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ComposableFilter referenceTableRefs(
+      ComposableFilter Function($$ReferenceTableTableFilterComposer f) f) {
+    final $$ReferenceTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.referenceTable,
+        getReferencedColumn: (t) => (t as $ReferenceTableTable).groupId,
+        builder: (joinBuilder, parentComposers) =>
+            $$ReferenceTableTableFilterComposer(ComposerState($state.db,
+                $state.db.referenceTable, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$GroupReferenceTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $GroupReferenceTableTable> {
+  $$GroupReferenceTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get label => $state.composableBuilder(
+      column: $state.table.label,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get value => $state.composableBuilder(
+      column: $state.table.value,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+}
+
+typedef $$ReferenceTableTableInsertCompanionBuilder = ReferenceTableCompanion
+    Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  required String label,
+  required String value,
+  Value<bool> isActive,
+  required String belongTo,
+  required String groupId,
+  Value<int> rowid,
+});
+typedef $$ReferenceTableTableUpdateCompanionBuilder = ReferenceTableCompanion
+    Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<String> label,
+  Value<String> value,
+  Value<bool> isActive,
+  Value<String> belongTo,
+  Value<String> groupId,
+  Value<int> rowid,
+});
+
+class $$ReferenceTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ReferenceTableTable,
+    MstrdtReference,
+    $$ReferenceTableTableFilterComposer,
+    $$ReferenceTableTableOrderingComposer,
+    $$ReferenceTableTableProcessedTableManager,
+    $$ReferenceTableTableInsertCompanionBuilder,
+    $$ReferenceTableTableUpdateCompanionBuilder> {
+  $$ReferenceTableTableTableManager(
+      _$AppDatabase db, $ReferenceTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$ReferenceTableTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$ReferenceTableTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$ReferenceTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<String> label = const Value.absent(),
+            Value<String> value = const Value.absent(),
+            Value<bool> isActive = const Value.absent(),
+            Value<String> belongTo = const Value.absent(),
+            Value<String> groupId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReferenceTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            label: label,
+            value: value,
+            isActive: isActive,
+            belongTo: belongTo,
+            groupId: groupId,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            required String label,
+            required String value,
+            Value<bool> isActive = const Value.absent(),
+            required String belongTo,
+            required String groupId,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReferenceTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            label: label,
+            value: value,
+            isActive: isActive,
+            belongTo: belongTo,
+            groupId: groupId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$ReferenceTableTableProcessedTableManager extends ProcessedTableManager<
+    _$AppDatabase,
+    $ReferenceTableTable,
+    MstrdtReference,
+    $$ReferenceTableTableFilterComposer,
+    $$ReferenceTableTableOrderingComposer,
+    $$ReferenceTableTableProcessedTableManager,
+    $$ReferenceTableTableInsertCompanionBuilder,
+    $$ReferenceTableTableUpdateCompanionBuilder> {
+  $$ReferenceTableTableProcessedTableManager(super.$state);
+}
+
+class $$ReferenceTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $ReferenceTableTable> {
+  $$ReferenceTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get label => $state.composableBuilder(
+      column: $state.table.label,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get value => $state.composableBuilder(
+      column: $state.table.value,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isActive => $state.composableBuilder(
+      column: $state.table.isActive,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  $$ReferenceTableTableFilterComposer get belongTo {
+    final $$ReferenceTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.belongTo,
+        referencedTable: $state.db.referenceTable,
+        getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$ReferenceTableTableFilterComposer(ComposerState($state.db,
+                $state.db.referenceTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$GroupReferenceTableTableFilterComposer get groupId {
+    final $$GroupReferenceTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.groupId,
+            referencedTable: $state.db.groupReferenceTable,
+            getReferencedColumn: (t) => (t as $GroupReferenceTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$GroupReferenceTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.groupReferenceTable,
+                    joinBuilder,
+                    parentComposers)));
+    return composer;
+  }
+
+  ComposableFilter referenceDataTableRefs(
+      ComposableFilter Function($$ReferenceDataTableTableFilterComposer f) f) {
+    final $$ReferenceDataTableTableFilterComposer composer = $state
+        .composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $state.db.referenceDataTable,
+            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).referenceId,
+            builder: (joinBuilder, parentComposers) =>
+                $$ReferenceDataTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.referenceDataTable,
+                    joinBuilder,
+                    parentComposers)));
+    return f(composer);
+  }
+
+  ComposableFilter expenseReferenceTableRefs(
+      ComposableFilter Function($$ExpenseReferenceTableTableFilterComposer f)
+          f) {
+    final $$ExpenseReferenceTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $state.db.expenseReferenceTable,
+            getReferencedColumn: (t) => (t as $ExpenseReferenceTableTable).referenceId,
+            builder: (joinBuilder, parentComposers) =>
+                $$ExpenseReferenceTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.expenseReferenceTable,
+                    joinBuilder,
+                    parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$ReferenceTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $ReferenceTableTable> {
+  $$ReferenceTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get label => $state.composableBuilder(
+      column: $state.table.label,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get value => $state.composableBuilder(
+      column: $state.table.value,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isActive => $state.composableBuilder(
+      column: $state.table.isActive,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  $$ReferenceTableTableOrderingComposer get belongTo {
+    final $$ReferenceTableTableOrderingComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.belongTo,
+            referencedTable: $state.db.referenceTable,
+            getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$ReferenceTableTableOrderingComposer(ComposerState($state.db,
+                    $state.db.referenceTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$GroupReferenceTableTableOrderingComposer get groupId {
+    final $$GroupReferenceTableTableOrderingComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.groupId,
+            referencedTable: $state.db.groupReferenceTable,
+            getReferencedColumn: (t) => (t as $GroupReferenceTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$GroupReferenceTableTableOrderingComposer(ComposerState(
+                    $state.db,
+                    $state.db.groupReferenceTable,
+                    joinBuilder,
+                    parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$ReferenceDataTableTableInsertCompanionBuilder
+    = ReferenceDataTableCompanion Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  required String label,
+  required String groupLabel,
+  required String value,
+  required String groupValue,
+  Value<String?> referenceId,
+  Value<bool> isHasNext,
+  Value<String?> nextReferenceDataId,
+  Value<int> rowid,
+});
+typedef $$ReferenceDataTableTableUpdateCompanionBuilder
+    = ReferenceDataTableCompanion Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<String> label,
+  Value<String> groupLabel,
+  Value<String> value,
+  Value<String> groupValue,
+  Value<String?> referenceId,
+  Value<bool> isHasNext,
+  Value<String?> nextReferenceDataId,
+  Value<int> rowid,
+});
+
+class $$ReferenceDataTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ReferenceDataTableTable,
+    MstrdtReferenceData,
+    $$ReferenceDataTableTableFilterComposer,
+    $$ReferenceDataTableTableOrderingComposer,
+    $$ReferenceDataTableTableProcessedTableManager,
+    $$ReferenceDataTableTableInsertCompanionBuilder,
+    $$ReferenceDataTableTableUpdateCompanionBuilder> {
+  $$ReferenceDataTableTableTableManager(
+      _$AppDatabase db, $ReferenceDataTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$ReferenceDataTableTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$ReferenceDataTableTableOrderingComposer(
+              ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$ReferenceDataTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<String> label = const Value.absent(),
+            Value<String> groupLabel = const Value.absent(),
+            Value<String> value = const Value.absent(),
+            Value<String> groupValue = const Value.absent(),
+            Value<String?> referenceId = const Value.absent(),
+            Value<bool> isHasNext = const Value.absent(),
+            Value<String?> nextReferenceDataId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReferenceDataTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            label: label,
+            groupLabel: groupLabel,
+            value: value,
+            groupValue: groupValue,
+            referenceId: referenceId,
+            isHasNext: isHasNext,
+            nextReferenceDataId: nextReferenceDataId,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            required String label,
+            required String groupLabel,
+            required String value,
+            required String groupValue,
+            Value<String?> referenceId = const Value.absent(),
+            Value<bool> isHasNext = const Value.absent(),
+            Value<String?> nextReferenceDataId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ReferenceDataTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            label: label,
+            groupLabel: groupLabel,
+            value: value,
+            groupValue: groupValue,
+            referenceId: referenceId,
+            isHasNext: isHasNext,
+            nextReferenceDataId: nextReferenceDataId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$ReferenceDataTableTableProcessedTableManager
+    extends ProcessedTableManager<
+        _$AppDatabase,
+        $ReferenceDataTableTable,
+        MstrdtReferenceData,
+        $$ReferenceDataTableTableFilterComposer,
+        $$ReferenceDataTableTableOrderingComposer,
+        $$ReferenceDataTableTableProcessedTableManager,
+        $$ReferenceDataTableTableInsertCompanionBuilder,
+        $$ReferenceDataTableTableUpdateCompanionBuilder> {
+  $$ReferenceDataTableTableProcessedTableManager(super.$state);
+}
+
+class $$ReferenceDataTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $ReferenceDataTableTable> {
+  $$ReferenceDataTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get label => $state.composableBuilder(
+      column: $state.table.label,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get groupLabel => $state.composableBuilder(
+      column: $state.table.groupLabel,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get value => $state.composableBuilder(
+      column: $state.table.value,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get groupValue => $state.composableBuilder(
+      column: $state.table.groupValue,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isHasNext => $state.composableBuilder(
+      column: $state.table.isHasNext,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  $$ReferenceTableTableFilterComposer get referenceId {
+    final $$ReferenceTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceId,
+        referencedTable: $state.db.referenceTable,
+        getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$ReferenceTableTableFilterComposer(ComposerState($state.db,
+                $state.db.referenceTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$ReferenceDataTableTableFilterComposer get nextReferenceDataId {
+    final $$ReferenceDataTableTableFilterComposer composer = $state
+        .composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.nextReferenceDataId,
+            referencedTable: $state.db.referenceDataTable,
+            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$ReferenceDataTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.referenceDataTable,
+                    joinBuilder,
+                    parentComposers)));
+    return composer;
+  }
+
+  ComposableFilter expenseTableRefs(
+      ComposableFilter Function($$ExpenseTableTableFilterComposer f) f) {
+    final $$ExpenseTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.expenseTable,
+        getReferencedColumn: (t) => (t as $ExpenseTableTable).referenceDataId,
+        builder: (joinBuilder, parentComposers) =>
+            $$ExpenseTableTableFilterComposer(ComposerState($state.db,
+                $state.db.expenseTable, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$ReferenceDataTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $ReferenceDataTableTable> {
+  $$ReferenceDataTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get label => $state.composableBuilder(
+      column: $state.table.label,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get groupLabel => $state.composableBuilder(
+      column: $state.table.groupLabel,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get value => $state.composableBuilder(
+      column: $state.table.value,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get groupValue => $state.composableBuilder(
+      column: $state.table.groupValue,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isHasNext => $state.composableBuilder(
+      column: $state.table.isHasNext,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  $$ReferenceTableTableOrderingComposer get referenceId {
+    final $$ReferenceTableTableOrderingComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.referenceId,
+            referencedTable: $state.db.referenceTable,
+            getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$ReferenceTableTableOrderingComposer(ComposerState($state.db,
+                    $state.db.referenceTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$ReferenceDataTableTableOrderingComposer get nextReferenceDataId {
+    final $$ReferenceDataTableTableOrderingComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.nextReferenceDataId,
+            referencedTable: $state.db.referenceDataTable,
+            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$ReferenceDataTableTableOrderingComposer(ComposerState(
+                    $state.db,
+                    $state.db.referenceDataTable,
+                    joinBuilder,
+                    parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$ExpenseTableTableInsertCompanionBuilder = ExpenseTableCompanion
+    Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  required double amount,
+  Value<String?> description,
+  required DateTime expenseDate,
+  required String referenceDataId,
+  Value<int> rowid,
+});
+typedef $$ExpenseTableTableUpdateCompanionBuilder = ExpenseTableCompanion
+    Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<double> amount,
+  Value<String?> description,
+  Value<DateTime> expenseDate,
+  Value<String> referenceDataId,
+  Value<int> rowid,
+});
+
+class $$ExpenseTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ExpenseTableTable,
+    ExpenseTableData,
+    $$ExpenseTableTableFilterComposer,
+    $$ExpenseTableTableOrderingComposer,
+    $$ExpenseTableTableProcessedTableManager,
+    $$ExpenseTableTableInsertCompanionBuilder,
+    $$ExpenseTableTableUpdateCompanionBuilder> {
+  $$ExpenseTableTableTableManager(_$AppDatabase db, $ExpenseTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$ExpenseTableTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$ExpenseTableTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$ExpenseTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<double> amount = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<DateTime> expenseDate = const Value.absent(),
+            Value<String> referenceDataId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ExpenseTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            amount: amount,
+            description: description,
+            expenseDate: expenseDate,
+            referenceDataId: referenceDataId,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            required double amount,
+            Value<String?> description = const Value.absent(),
+            required DateTime expenseDate,
+            required String referenceDataId,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ExpenseTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            amount: amount,
+            description: description,
+            expenseDate: expenseDate,
+            referenceDataId: referenceDataId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$ExpenseTableTableProcessedTableManager extends ProcessedTableManager<
+    _$AppDatabase,
+    $ExpenseTableTable,
+    ExpenseTableData,
+    $$ExpenseTableTableFilterComposer,
+    $$ExpenseTableTableOrderingComposer,
+    $$ExpenseTableTableProcessedTableManager,
+    $$ExpenseTableTableInsertCompanionBuilder,
+    $$ExpenseTableTableUpdateCompanionBuilder> {
+  $$ExpenseTableTableProcessedTableManager(super.$state);
+}
+
+class $$ExpenseTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $ExpenseTableTable> {
+  $$ExpenseTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get amount => $state.composableBuilder(
+      column: $state.table.amount,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<double>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get expenseDate => $state.composableBuilder(
+      column: $state.table.expenseDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  $$ReferenceDataTableTableFilterComposer get referenceDataId {
+    final $$ReferenceDataTableTableFilterComposer composer = $state
+        .composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.referenceDataId,
+            referencedTable: $state.db.referenceDataTable,
+            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$ReferenceDataTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.referenceDataTable,
+                    joinBuilder,
+                    parentComposers)));
+    return composer;
+  }
+
+  ComposableFilter transactionTableRefs(
+      ComposableFilter Function($$TransactionTableTableFilterComposer f) f) {
+    final $$TransactionTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $state.db.transactionTable,
+            getReferencedColumn: (t) => (t as $TransactionTableTable).expenseId,
+            builder: (joinBuilder, parentComposers) =>
+                $$TransactionTableTableFilterComposer(ComposerState($state.db,
+                    $state.db.transactionTable, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$ExpenseTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $ExpenseTableTable> {
+  $$ExpenseTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get amount => $state.composableBuilder(
+      column: $state.table.amount,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<double>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get expenseDate => $state.composableBuilder(
+      column: $state.table.expenseDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  $$ReferenceDataTableTableOrderingComposer get referenceDataId {
+    final $$ReferenceDataTableTableOrderingComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.referenceDataId,
+            referencedTable: $state.db.referenceDataTable,
+            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$ReferenceDataTableTableOrderingComposer(ComposerState(
+                    $state.db,
+                    $state.db.referenceDataTable,
+                    joinBuilder,
+                    parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$ExpenseReferenceTableTableInsertCompanionBuilder
+    = ExpenseReferenceTableCompanion Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  Value<double> suggestedAmount,
+  Value<String?> description,
+  required String referenceId,
+  Value<int> rowid,
+});
+typedef $$ExpenseReferenceTableTableUpdateCompanionBuilder
+    = ExpenseReferenceTableCompanion Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<double> suggestedAmount,
+  Value<String?> description,
+  Value<String> referenceId,
+  Value<int> rowid,
+});
+
+class $$ExpenseReferenceTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $ExpenseReferenceTableTable,
+    MstrdtExpenseReference,
+    $$ExpenseReferenceTableTableFilterComposer,
+    $$ExpenseReferenceTableTableOrderingComposer,
+    $$ExpenseReferenceTableTableProcessedTableManager,
+    $$ExpenseReferenceTableTableInsertCompanionBuilder,
+    $$ExpenseReferenceTableTableUpdateCompanionBuilder> {
+  $$ExpenseReferenceTableTableTableManager(
+      _$AppDatabase db, $ExpenseReferenceTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer: $$ExpenseReferenceTableTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$ExpenseReferenceTableTableOrderingComposer(
+              ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$ExpenseReferenceTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<double> suggestedAmount = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String> referenceId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ExpenseReferenceTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            suggestedAmount: suggestedAmount,
+            description: description,
+            referenceId: referenceId,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            Value<double> suggestedAmount = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            required String referenceId,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              ExpenseReferenceTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            suggestedAmount: suggestedAmount,
+            description: description,
+            referenceId: referenceId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$ExpenseReferenceTableTableProcessedTableManager
+    extends ProcessedTableManager<
+        _$AppDatabase,
+        $ExpenseReferenceTableTable,
+        MstrdtExpenseReference,
+        $$ExpenseReferenceTableTableFilterComposer,
+        $$ExpenseReferenceTableTableOrderingComposer,
+        $$ExpenseReferenceTableTableProcessedTableManager,
+        $$ExpenseReferenceTableTableInsertCompanionBuilder,
+        $$ExpenseReferenceTableTableUpdateCompanionBuilder> {
+  $$ExpenseReferenceTableTableProcessedTableManager(super.$state);
+}
+
+class $$ExpenseReferenceTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $ExpenseReferenceTableTable> {
+  $$ExpenseReferenceTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get suggestedAmount => $state.composableBuilder(
+      column: $state.table.suggestedAmount,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<double>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  $$ReferenceTableTableFilterComposer get referenceId {
+    final $$ReferenceTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceId,
+        referencedTable: $state.db.referenceTable,
+        getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$ReferenceTableTableFilterComposer(ComposerState($state.db,
+                $state.db.referenceTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$ExpenseReferenceTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $ExpenseReferenceTableTable> {
+  $$ExpenseReferenceTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get suggestedAmount => $state.composableBuilder(
+      column: $state.table.suggestedAmount,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<double>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  $$ReferenceTableTableOrderingComposer get referenceId {
+    final $$ReferenceTableTableOrderingComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.referenceId,
+            referencedTable: $state.db.referenceTable,
+            getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$ReferenceTableTableOrderingComposer(ComposerState($state.db,
+                    $state.db.referenceTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$MoneyStorageTableTableInsertCompanionBuilder
+    = MoneyStorageTableCompanion Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  Value<String> iconUrl,
+  required String longName,
+  required String shortName,
+  required String type,
+  Value<String?> userId,
+  Value<int> rowid,
+});
+typedef $$MoneyStorageTableTableUpdateCompanionBuilder
+    = MoneyStorageTableCompanion Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<String> iconUrl,
+  Value<String> longName,
+  Value<String> shortName,
+  Value<String> type,
+  Value<String?> userId,
+  Value<int> rowid,
+});
+
+class $$MoneyStorageTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $MoneyStorageTableTable,
+    SvngMoneyStorage,
+    $$MoneyStorageTableTableFilterComposer,
+    $$MoneyStorageTableTableOrderingComposer,
+    $$MoneyStorageTableTableProcessedTableManager,
+    $$MoneyStorageTableTableInsertCompanionBuilder,
+    $$MoneyStorageTableTableUpdateCompanionBuilder> {
+  $$MoneyStorageTableTableTableManager(
+      _$AppDatabase db, $MoneyStorageTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$MoneyStorageTableTableFilterComposer(ComposerState(db, table)),
+          orderingComposer: $$MoneyStorageTableTableOrderingComposer(
+              ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$MoneyStorageTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<String> iconUrl = const Value.absent(),
+            Value<String> longName = const Value.absent(),
+            Value<String> shortName = const Value.absent(),
+            Value<String> type = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MoneyStorageTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            iconUrl: iconUrl,
+            longName: longName,
+            shortName: shortName,
+            type: type,
+            userId: userId,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            Value<String> iconUrl = const Value.absent(),
+            required String longName,
+            required String shortName,
+            required String type,
+            Value<String?> userId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              MoneyStorageTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            iconUrl: iconUrl,
+            longName: longName,
+            shortName: shortName,
+            type: type,
+            userId: userId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$MoneyStorageTableTableProcessedTableManager
+    extends ProcessedTableManager<
+        _$AppDatabase,
+        $MoneyStorageTableTable,
+        SvngMoneyStorage,
+        $$MoneyStorageTableTableFilterComposer,
+        $$MoneyStorageTableTableOrderingComposer,
+        $$MoneyStorageTableTableProcessedTableManager,
+        $$MoneyStorageTableTableInsertCompanionBuilder,
+        $$MoneyStorageTableTableUpdateCompanionBuilder> {
+  $$MoneyStorageTableTableProcessedTableManager(super.$state);
+}
+
+class $$MoneyStorageTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $MoneyStorageTableTable> {
+  $$MoneyStorageTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get iconUrl => $state.composableBuilder(
+      column: $state.table.iconUrl,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get longName => $state.composableBuilder(
+      column: $state.table.longName,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get shortName => $state.composableBuilder(
+      column: $state.table.shortName,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  $$UserTableTableFilterComposer get userId {
+    final $$UserTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $state.db.userTable,
+        getReferencedColumn: (t) => (t as $UserTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$UserTableTableFilterComposer(ComposerState(
+                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  ComposableFilter savingTableRefs(
+      ComposableFilter Function($$SavingTableTableFilterComposer f) f) {
+    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.savingTable,
+        getReferencedColumn: (t) => (t as $SavingTableTable).moneyStorageId,
+        builder: (joinBuilder, parentComposers) =>
+            $$SavingTableTableFilterComposer(ComposerState($state.db,
+                $state.db.savingTable, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$MoneyStorageTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $MoneyStorageTableTable> {
+  $$MoneyStorageTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get iconUrl => $state.composableBuilder(
+      column: $state.table.iconUrl,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get longName => $state.composableBuilder(
+      column: $state.table.longName,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get shortName => $state.composableBuilder(
+      column: $state.table.shortName,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  $$UserTableTableOrderingComposer get userId {
+    final $$UserTableTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $state.db.userTable,
+        getReferencedColumn: (t) => (t as $UserTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$UserTableTableOrderingComposer(ComposerState(
+                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$SavingTableTableInsertCompanionBuilder = SavingTableCompanion
+    Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  Value<String?> name,
+  Value<bool> isPublic,
+  Value<bool> isHasGoal,
+  Value<double> goal,
+  Value<bool> isHasStartDate,
+  Value<DateTime?> startDate,
+  Value<bool> isHasEndDate,
+  Value<DateTime?> endDate,
+  Value<bool> isSaveDaily,
+  Value<bool> isSaveWeekly,
+  Value<bool> isSaveMonthly,
+  required String type,
+  Value<double> currentAmount,
+  Value<String?> userId,
+  Value<String?> moneyStorageId,
+  Value<int> rowid,
+});
+typedef $$SavingTableTableUpdateCompanionBuilder = SavingTableCompanion
+    Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<String?> name,
+  Value<bool> isPublic,
+  Value<bool> isHasGoal,
+  Value<double> goal,
+  Value<bool> isHasStartDate,
+  Value<DateTime?> startDate,
+  Value<bool> isHasEndDate,
+  Value<DateTime?> endDate,
+  Value<bool> isSaveDaily,
+  Value<bool> isSaveWeekly,
+  Value<bool> isSaveMonthly,
+  Value<String> type,
+  Value<double> currentAmount,
+  Value<String?> userId,
+  Value<String?> moneyStorageId,
+  Value<int> rowid,
+});
+
+class $$SavingTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $SavingTableTable,
+    SvngSaving,
+    $$SavingTableTableFilterComposer,
+    $$SavingTableTableOrderingComposer,
+    $$SavingTableTableProcessedTableManager,
+    $$SavingTableTableInsertCompanionBuilder,
+    $$SavingTableTableUpdateCompanionBuilder> {
+  $$SavingTableTableTableManager(_$AppDatabase db, $SavingTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$SavingTableTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$SavingTableTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$SavingTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<String?> name = const Value.absent(),
+            Value<bool> isPublic = const Value.absent(),
+            Value<bool> isHasGoal = const Value.absent(),
+            Value<double> goal = const Value.absent(),
+            Value<bool> isHasStartDate = const Value.absent(),
+            Value<DateTime?> startDate = const Value.absent(),
+            Value<bool> isHasEndDate = const Value.absent(),
+            Value<DateTime?> endDate = const Value.absent(),
+            Value<bool> isSaveDaily = const Value.absent(),
+            Value<bool> isSaveWeekly = const Value.absent(),
+            Value<bool> isSaveMonthly = const Value.absent(),
+            Value<String> type = const Value.absent(),
+            Value<double> currentAmount = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<String?> moneyStorageId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SavingTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            name: name,
+            isPublic: isPublic,
+            isHasGoal: isHasGoal,
+            goal: goal,
+            isHasStartDate: isHasStartDate,
+            startDate: startDate,
+            isHasEndDate: isHasEndDate,
+            endDate: endDate,
+            isSaveDaily: isSaveDaily,
+            isSaveWeekly: isSaveWeekly,
+            isSaveMonthly: isSaveMonthly,
+            type: type,
+            currentAmount: currentAmount,
+            userId: userId,
+            moneyStorageId: moneyStorageId,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            Value<String?> name = const Value.absent(),
+            Value<bool> isPublic = const Value.absent(),
+            Value<bool> isHasGoal = const Value.absent(),
+            Value<double> goal = const Value.absent(),
+            Value<bool> isHasStartDate = const Value.absent(),
+            Value<DateTime?> startDate = const Value.absent(),
+            Value<bool> isHasEndDate = const Value.absent(),
+            Value<DateTime?> endDate = const Value.absent(),
+            Value<bool> isSaveDaily = const Value.absent(),
+            Value<bool> isSaveWeekly = const Value.absent(),
+            Value<bool> isSaveMonthly = const Value.absent(),
+            required String type,
+            Value<double> currentAmount = const Value.absent(),
+            Value<String?> userId = const Value.absent(),
+            Value<String?> moneyStorageId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SavingTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            name: name,
+            isPublic: isPublic,
+            isHasGoal: isHasGoal,
+            goal: goal,
+            isHasStartDate: isHasStartDate,
+            startDate: startDate,
+            isHasEndDate: isHasEndDate,
+            endDate: endDate,
+            isSaveDaily: isSaveDaily,
+            isSaveWeekly: isSaveWeekly,
+            isSaveMonthly: isSaveMonthly,
+            type: type,
+            currentAmount: currentAmount,
+            userId: userId,
+            moneyStorageId: moneyStorageId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$SavingTableTableProcessedTableManager extends ProcessedTableManager<
+    _$AppDatabase,
+    $SavingTableTable,
+    SvngSaving,
+    $$SavingTableTableFilterComposer,
+    $$SavingTableTableOrderingComposer,
+    $$SavingTableTableProcessedTableManager,
+    $$SavingTableTableInsertCompanionBuilder,
+    $$SavingTableTableUpdateCompanionBuilder> {
+  $$SavingTableTableProcessedTableManager(super.$state);
+}
+
+class $$SavingTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $SavingTableTable> {
+  $$SavingTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isPublic => $state.composableBuilder(
+      column: $state.table.isPublic,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isHasGoal => $state.composableBuilder(
+      column: $state.table.isHasGoal,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get goal => $state.composableBuilder(
+      column: $state.table.goal,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<double>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isHasStartDate => $state.composableBuilder(
+      column: $state.table.isHasStartDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get startDate => $state.composableBuilder(
+      column: $state.table.startDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isHasEndDate => $state.composableBuilder(
+      column: $state.table.isHasEndDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get endDate => $state.composableBuilder(
+      column: $state.table.endDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isSaveDaily => $state.composableBuilder(
+      column: $state.table.isSaveDaily,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isSaveWeekly => $state.composableBuilder(
+      column: $state.table.isSaveWeekly,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isSaveMonthly => $state.composableBuilder(
+      column: $state.table.isSaveMonthly,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get currentAmount => $state.composableBuilder(
+      column: $state.table.currentAmount,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<double>, joinBuilders: joinBuilders));
+
+  $$UserTableTableFilterComposer get userId {
+    final $$UserTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $state.db.userTable,
+        getReferencedColumn: (t) => (t as $UserTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$UserTableTableFilterComposer(ComposerState(
+                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$MoneyStorageTableTableFilterComposer get moneyStorageId {
+    final $$MoneyStorageTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.moneyStorageId,
+            referencedTable: $state.db.moneyStorageTable,
+            getReferencedColumn: (t) => (t as $MoneyStorageTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$MoneyStorageTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.moneyStorageTable,
+                    joinBuilder,
+                    parentComposers)));
+    return composer;
+  }
+
+  ComposableFilter transactionTableRefs(
+      ComposableFilter Function($$TransactionTableTableFilterComposer f) f) {
+    final $$TransactionTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $state.db.transactionTable,
+            getReferencedColumn: (t) => (t as $TransactionTableTable).savingId,
+            builder: (joinBuilder, parentComposers) =>
+                $$TransactionTableTableFilterComposer(ComposerState($state.db,
+                    $state.db.transactionTable, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$SavingTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $SavingTableTable> {
+  $$SavingTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isPublic => $state.composableBuilder(
+      column: $state.table.isPublic,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isHasGoal => $state.composableBuilder(
+      column: $state.table.isHasGoal,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get goal => $state.composableBuilder(
+      column: $state.table.goal,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<double>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isHasStartDate => $state.composableBuilder(
+      column: $state.table.isHasStartDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get startDate => $state.composableBuilder(
+      column: $state.table.startDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isHasEndDate => $state.composableBuilder(
+      column: $state.table.isHasEndDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get endDate => $state.composableBuilder(
+      column: $state.table.endDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isSaveDaily => $state.composableBuilder(
+      column: $state.table.isSaveDaily,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isSaveWeekly => $state.composableBuilder(
+      column: $state.table.isSaveWeekly,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isSaveMonthly => $state.composableBuilder(
+      column: $state.table.isSaveMonthly,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get currentAmount => $state.composableBuilder(
+      column: $state.table.currentAmount,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<double>, joinBuilders: joinBuilders));
+
+  $$UserTableTableOrderingComposer get userId {
+    final $$UserTableTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $state.db.userTable,
+        getReferencedColumn: (t) => (t as $UserTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$UserTableTableOrderingComposer(ComposerState(
+                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$MoneyStorageTableTableOrderingComposer get moneyStorageId {
+    final $$MoneyStorageTableTableOrderingComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.moneyStorageId,
+            referencedTable: $state.db.moneyStorageTable,
+            getReferencedColumn: (t) => (t as $MoneyStorageTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$MoneyStorageTableTableOrderingComposer(ComposerState(
+                    $state.db,
+                    $state.db.moneyStorageTable,
+                    joinBuilder,
+                    parentComposers)));
+    return composer;
+  }
+}
+
+typedef $$TransactionTableTableInsertCompanionBuilder
+    = TransactionTableCompanion Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  required String type,
+  Value<String> description,
+  required double amount,
+  required String savingId,
+  Value<bool> isExpense,
+  Value<String?> expenseId,
+  Value<int> rowid,
+});
+typedef $$TransactionTableTableUpdateCompanionBuilder
+    = TransactionTableCompanion Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<String> type,
+  Value<String> description,
+  Value<double> amount,
+  Value<String> savingId,
+  Value<bool> isExpense,
+  Value<String?> expenseId,
+  Value<int> rowid,
+});
+
+class $$TransactionTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $TransactionTableTable,
+    TrnsctnTransaction,
+    $$TransactionTableTableFilterComposer,
+    $$TransactionTableTableOrderingComposer,
+    $$TransactionTableTableProcessedTableManager,
+    $$TransactionTableTableInsertCompanionBuilder,
+    $$TransactionTableTableUpdateCompanionBuilder> {
+  $$TransactionTableTableTableManager(
+      _$AppDatabase db, $TransactionTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$TransactionTableTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$TransactionTableTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$TransactionTableTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<String> type = const Value.absent(),
+            Value<String> description = const Value.absent(),
+            Value<double> amount = const Value.absent(),
+            Value<String> savingId = const Value.absent(),
+            Value<bool> isExpense = const Value.absent(),
+            Value<String?> expenseId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TransactionTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            type: type,
+            description: description,
+            amount: amount,
+            savingId: savingId,
+            isExpense: isExpense,
+            expenseId: expenseId,
+            rowid: rowid,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            required String type,
+            Value<String> description = const Value.absent(),
+            required double amount,
+            required String savingId,
+            Value<bool> isExpense = const Value.absent(),
+            Value<String?> expenseId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TransactionTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            type: type,
+            description: description,
+            amount: amount,
+            savingId: savingId,
+            isExpense: isExpense,
+            expenseId: expenseId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$TransactionTableTableProcessedTableManager
+    extends ProcessedTableManager<
+        _$AppDatabase,
+        $TransactionTableTable,
+        TrnsctnTransaction,
+        $$TransactionTableTableFilterComposer,
+        $$TransactionTableTableOrderingComposer,
+        $$TransactionTableTableProcessedTableManager,
+        $$TransactionTableTableInsertCompanionBuilder,
+        $$TransactionTableTableUpdateCompanionBuilder> {
+  $$TransactionTableTableProcessedTableManager(super.$state);
+}
+
+class $$TransactionTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $TransactionTableTable> {
+  $$TransactionTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnFilters<double> get amount => $state.composableBuilder(
+      column: $state.table.amount,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<double>, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isExpense => $state.composableBuilder(
+      column: $state.table.isExpense,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  $$SavingTableTableFilterComposer get savingId {
+    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.savingId,
+        referencedTable: $state.db.savingTable,
+        getReferencedColumn: (t) => (t as $SavingTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$SavingTableTableFilterComposer(ComposerState($state.db,
+                $state.db.savingTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$ExpenseTableTableFilterComposer get expenseId {
+    final $$ExpenseTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $state.db.expenseTable,
+        getReferencedColumn: (t) => (t as $ExpenseTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$ExpenseTableTableFilterComposer(ComposerState($state.db,
+                $state.db.expenseTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$TransactionTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $TransactionTableTable> {
+  $$TransactionTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<DateTime>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get type => $state.composableBuilder(
+      column: $state.table.type,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<String>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<double> get amount => $state.composableBuilder(
+      column: $state.table.amount,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<double>, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isExpense => $state.composableBuilder(
+      column: $state.table.isExpense,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column as Expression<bool>, joinBuilders: joinBuilders));
+
+  $$SavingTableTableOrderingComposer get savingId {
+    final $$SavingTableTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.savingId,
+        referencedTable: $state.db.savingTable,
+        getReferencedColumn: (t) => (t as $SavingTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$SavingTableTableOrderingComposer(ComposerState($state.db,
+                $state.db.savingTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$ExpenseTableTableOrderingComposer get expenseId {
+    final $$ExpenseTableTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $state.db.expenseTable,
+        getReferencedColumn: (t) => (t as $ExpenseTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$ExpenseTableTableOrderingComposer(ComposerState($state.db,
+                $state.db.expenseTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class _$AppDatabaseManager {
+  final _$AppDatabase _db;
+  _$AppDatabaseManager(this._db);
+  $$UserTableTableTableManager get userTable =>
+      $$UserTableTableTableManager(_db, _db.userTable);
+  $$GroupReferenceTableTableTableManager get groupReferenceTable =>
+      $$GroupReferenceTableTableTableManager(_db, _db.groupReferenceTable);
+  $$ReferenceTableTableTableManager get referenceTable =>
+      $$ReferenceTableTableTableManager(_db, _db.referenceTable);
+  $$ReferenceDataTableTableTableManager get referenceDataTable =>
+      $$ReferenceDataTableTableTableManager(_db, _db.referenceDataTable);
+  $$ExpenseTableTableTableManager get expenseTable =>
+      $$ExpenseTableTableTableManager(_db, _db.expenseTable);
+  $$ExpenseReferenceTableTableTableManager get expenseReferenceTable =>
+      $$ExpenseReferenceTableTableTableManager(_db, _db.expenseReferenceTable);
+  $$MoneyStorageTableTableTableManager get moneyStorageTable =>
+      $$MoneyStorageTableTableTableManager(_db, _db.moneyStorageTable);
+  $$SavingTableTableTableManager get savingTable =>
+      $$SavingTableTableTableManager(_db, _db.savingTable);
+  $$TransactionTableTableTableManager get transactionTable =>
+      $$TransactionTableTableTableManager(_db, _db.transactionTable);
 }

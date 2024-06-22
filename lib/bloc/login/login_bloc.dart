@@ -5,7 +5,7 @@ import 'package:wise_spends/bloc/login/index.dart';
 import 'package:wise_spends/bloc/login/state/impl/error_login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc(LoginState initialState) : super(initialState) {
+  LoginBloc(super.initialState) {
     on<LoginEvent>((event, emit) {
       return emit.forEach<LoginState>(
         event.applyAsync(currentState: state, bloc: this),

@@ -12,13 +12,13 @@ class ThInputRadioFormFieldsDefault extends StatefulWidget
   final String label;
 
   ThInputRadioFormFieldsDefault({
-    Key? key,
+    super.key,
     required this.setValueFunc,
     required this.optionsList,
     required this.isInline,
     required this.label,
     required this.value,
-  }) : super(key: key);
+  });
 
   @override
   State<ThInputRadioFormFieldsDefault> createState() =>

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/savings/state/savings_state.dart';
 
 class LoadingSavingsState extends SavingsState {
-  const LoadingSavingsState(final int version) : super(version);
+  const LoadingSavingsState(super.version);
 
   @override
   Widget build(BuildContext context, Function load) {

@@ -6,8 +6,8 @@ import 'package:wise_spends/router/app_router.dart';
 
 class SuccessAddMoneyStorageState extends AddMoneyStorageState {
   const SuccessAddMoneyStorageState({
-    required int version,
-  }) : super(version: version);
+    required super.version,
+  });
 
   @override
   List<Object> get props => [];

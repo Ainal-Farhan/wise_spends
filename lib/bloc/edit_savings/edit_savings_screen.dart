@@ -10,9 +10,8 @@ class EditSavingsScreen extends StatefulWidget {
   const EditSavingsScreen({
     required EditSavingsBloc editSavingsBloc,
     required this.savingId,
-    Key? key,
-  })  : _editSavingsBloc = editSavingsBloc,
-        super(key: key);
+    super.key,
+  })  : _editSavingsBloc = editSavingsBloc;
 
   final EditSavingsBloc _editSavingsBloc;
 

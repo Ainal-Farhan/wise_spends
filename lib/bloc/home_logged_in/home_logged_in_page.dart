@@ -4,7 +4,7 @@ import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
 
 class HomeLoggedInPage extends StatefulWidget {
-  const HomeLoggedInPage({Key? key}) : super(key: key);
+  const HomeLoggedInPage({super.key});
 
   static const String routeName = AppRouter.homeLoggedInPageRoute;
 

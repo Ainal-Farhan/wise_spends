@@ -12,11 +12,11 @@ class SuccessProcessViewListMoneyStorageState extends StatefulWidget
   final String nextPageRoute;
 
   const SuccessProcessViewListMoneyStorageState({
-    Key? key,
+    super.key,
     required this.version,
     required this.message,
     required this.nextPageRoute,
-  }) : super(key: key);
+  });
 
   @override
   State<SuccessProcessViewListMoneyStorageState> createState() =>

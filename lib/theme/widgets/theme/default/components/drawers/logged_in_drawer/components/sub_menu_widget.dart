@@ -11,8 +11,8 @@ class SubMenuWidget extends StatelessWidget {
     required this.title,
     this.isTitle = false,
     this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

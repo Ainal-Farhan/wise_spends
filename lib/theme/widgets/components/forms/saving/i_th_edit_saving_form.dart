@@ -7,22 +7,24 @@ import 'package:wise_spends/theme/widgets/i_widget_theme.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/forms/saving/th_edit_saving_form_default.dart';
 
 abstract class IThEditSavingForm extends IThWidget {
-  factory IThEditSavingForm({
-    Key? key,
-    required SvngSaving saving,
-    required List<DropDownValueModel> moneyStorageList,
-  }) {
+  factory IThEditSavingForm(
+      {Key? key,
+      required SvngSaving saving,
+      required List<DropDownValueModel> moneyStorageList,
+      required List<DropDownValueModel> savingTypeList}) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThEditSavingFormDefault(
         key: key,
         saving: saving,
         moneyStorageList: moneyStorageList,
+        savingTypeList: savingTypeList,
       );
     }
     return ThEditSavingFormDefault(
       key: key,
       saving: saving,
       moneyStorageList: moneyStorageList,
+      savingTypeList: savingTypeList,
     );
   }
 }

@@ -12,14 +12,13 @@ class BlackIconTileWidget extends StatelessWidget {
   final int selectedIndex;
 
   const BlackIconTileWidget({
-    Key? key,
+    super.key,
     required List<MenuWidget> menuWidgets,
     required VoidCallback expandOrShrinkDrawer,
     required this.setSelectedItem,
     required this.selectedIndex,
   })  : _expandOrShrinkDrawer = expandOrShrinkDrawer,
-        _menuWidgets = menuWidgets,
-        super(key: key);
+        _menuWidgets = menuWidgets;
 
   @override
   Widget build(BuildContext context) {

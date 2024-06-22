@@ -6,9 +6,9 @@ class ThHorizontalSpacingFormFieldsDefault extends StatelessWidget
   final double width;
 
   const ThHorizontalSpacingFormFieldsDefault({
-    Key? key,
+    super.key,
     required this.width,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

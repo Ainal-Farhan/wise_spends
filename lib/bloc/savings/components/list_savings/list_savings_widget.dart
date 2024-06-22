@@ -13,9 +13,8 @@ import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 class ListSavingsWidget extends StatelessWidget {
   final List<ListSavingVO> _listSavingVOList;
 
-  const ListSavingsWidget({key, required List<ListSavingVO> listSavingVOList})
-      : _listSavingVOList = listSavingVOList,
-        super(key: key);
+  const ListSavingsWidget({super.key, required List<ListSavingVO> listSavingVOList})
+      : _listSavingVOList = listSavingVOList;
 
   @override
   Widget build(BuildContext context) {

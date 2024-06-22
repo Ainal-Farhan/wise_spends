@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/transaction/state/transaction_state.dart';
 
 class ErrorTransactionState extends TransactionState {
-  const ErrorTransactionState(int version, this.errorMessage) : super(version);
+  const ErrorTransactionState(super.version, this.errorMessage);
 
   final String errorMessage;
 

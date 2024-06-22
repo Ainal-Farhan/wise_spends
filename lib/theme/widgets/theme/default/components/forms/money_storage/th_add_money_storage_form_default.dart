@@ -14,7 +14,7 @@ import 'package:wise_spends/vo/impl/money_storage/add_money_storage_form_vo.dart
 
 class ThAddMoneyStorageFormDefault extends StatefulWidget
     implements IThAddMoneyStorageForm {
-  const ThAddMoneyStorageFormDefault({Key? key}) : super(key: key);
+  const ThAddMoneyStorageFormDefault({super.key});
 
   @override
   State<ThAddMoneyStorageFormDefault> createState() =>

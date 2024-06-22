@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/savings/state/savings_state.dart';
 
 class ErrorSavingsState extends SavingsState {
-  const ErrorSavingsState(int version, this.errorMessage) : super(version);
+  const ErrorSavingsState(super.version, this.errorMessage);
 
   final String errorMessage;
 

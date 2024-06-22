@@ -8,10 +8,10 @@ class ThLoggedInBottomNavbarDefault extends StatefulWidget
   final BottomNavBarNotifier model;
 
   const ThLoggedInBottomNavbarDefault({
-    Key? key,
+    super.key,
     required this.model,
     required this.pageRoute,
-  }) : super(key: key);
+  });
 
   @override
   State<ThLoggedInBottomNavbarDefault> createState() =>

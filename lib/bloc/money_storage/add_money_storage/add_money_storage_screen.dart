@@ -7,9 +7,8 @@ import 'package:wise_spends/bloc/money_storage/add_money_storage/state/add_money
 class AddMoneyStorageScreen extends StatefulWidget {
   const AddMoneyStorageScreen({
     required AddMoneyStorageBloc addMoneyStorageBloc,
-    Key? key,
-  })  : _addMoneyStorageBloc = addMoneyStorageBloc,
-        super(key: key);
+    super.key,
+  })  : _addMoneyStorageBloc = addMoneyStorageBloc;
 
   final AddMoneyStorageBloc _addMoneyStorageBloc;
 

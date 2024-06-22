@@ -15,9 +15,9 @@ import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dar
 class ThEditMoneyStorageFormDefault extends StatefulWidget
     implements IThEditMoneyStorageForm {
   ThEditMoneyStorageFormDefault({
-    Key? key,
+    super.key,
     required this.editMoneyStorageFormVO,
-  }) : super(key: key) {
+  }) {
     {
       _shortNameController.text = editMoneyStorageFormVO.shortName ?? '';
       _longNameController.text = editMoneyStorageFormVO.longName ?? '';

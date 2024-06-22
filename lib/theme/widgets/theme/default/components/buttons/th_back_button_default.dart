@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button.dart';
 
 class ThBackButtonDefault extends StatelessWidget implements IThBackButton {
-  const ThBackButtonDefault({Key? key}) : super(key: key);
+  const ThBackButtonDefault({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -4,7 +4,7 @@ import 'package:wise_spends/bloc/login/state/impl/un_login_state.dart';
 import 'package:wise_spends/router/app_router.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({key}) : super(key: key);
+  const LoginPage({super.key});
 
   static const String routeName = AppRouter.loginPageRoute;
 

@@ -6,10 +6,10 @@ class MenuListWidget extends StatelessWidget {
   final List<SubMenuWidget> submenus;
   final bool isValidSubMenu;
   const MenuListWidget({
-    Key? key,
+    super.key,
     required this.submenus,
     required this.isValidSubMenu,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

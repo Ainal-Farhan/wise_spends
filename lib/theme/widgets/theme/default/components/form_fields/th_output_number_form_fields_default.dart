@@ -9,12 +9,12 @@ class ThOutputNumberFormFieldsDefault extends StatelessWidget
   final String postfix;
 
   const ThOutputNumberFormFieldsDefault({
-    Key? key,
+    super.key,
     required this.value,
     required this.decimalPoint,
     required this.prefix,
     required this.postfix,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

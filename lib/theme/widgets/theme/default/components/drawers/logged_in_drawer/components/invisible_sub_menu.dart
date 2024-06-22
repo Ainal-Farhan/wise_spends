@@ -8,11 +8,11 @@ class InvisibleSubMenuWidget extends StatelessWidget {
   final bool isExpanded;
   final int selectedIndex;
   const InvisibleSubMenuWidget({
-    Key? key,
+    super.key,
     required this.menuWidgets,
     required this.selectedIndex,
     required this.isExpanded,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

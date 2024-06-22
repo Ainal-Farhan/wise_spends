@@ -7,9 +7,8 @@ import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list
 class ViewListMoneyStorageScreen extends StatefulWidget {
   const ViewListMoneyStorageScreen({
     required ViewListMoneyStorageBloc viewListMoneyStorageBloc,
-    Key? key,
-  })  : _viewListMoneyStorageBloc = viewListMoneyStorageBloc,
-        super(key: key);
+    super.key,
+  })  : _viewListMoneyStorageBloc = viewListMoneyStorageBloc;
 
   final ViewListMoneyStorageBloc _viewListMoneyStorageBloc;
 

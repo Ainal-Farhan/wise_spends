@@ -4,8 +4,7 @@ import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/components/forms/money_storage/i_th_add_money_storage_form.dart';
 
 class DisplayAddMoneyStorageFormState extends AddMoneyStorageState {
-  const DisplayAddMoneyStorageFormState({required int version})
-      : super(version: version);
+  const DisplayAddMoneyStorageFormState({required super.version});
 
   @override
   Widget build(BuildContext context) {

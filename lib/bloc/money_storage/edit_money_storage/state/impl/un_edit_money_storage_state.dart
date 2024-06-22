@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/money_storage/edit_money_storage/state/edit_money_storage_state.dart';
 
 class UnEditMoneyStorageState extends EditMoneyStorageState {
-  const UnEditMoneyStorageState({required int version})
-      : super(version: version);
+  const UnEditMoneyStorageState({required super.version});
 
   @override
   Widget build(BuildContext context) {

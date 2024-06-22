@@ -7,7 +7,7 @@ import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_ma
 class AddMoneyStoragePage extends StatefulWidget {
   static const String routeName = AppRouter.addMoneyStoragePageRoute;
 
-  const AddMoneyStoragePage({Key? key}) : super(key: key);
+  const AddMoneyStoragePage({super.key});
 
   @override
   State<AddMoneyStoragePage> createState() => _AddMoneyStoragePageState();
