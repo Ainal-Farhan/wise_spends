@@ -8,7 +8,7 @@ import 'package:wise_spends/resource/notifiers/bottom_nav_bar_notifier.dart';
 
 abstract class IThLoggedInBottomNavbar extends IThWidget {
   static const Map<String, int> indexBasedOnPageRoute = {
-    AppRouter.homeLoggedInPageRoute: -1,
+    // AppRouter.homeLoggedInPageRoute: -1,
     AppRouter.savingsPageRoute: 0,
     AppRouter.viewListMoneyStoragePageRoute: 1,
     AppRouter.addMoneyStoragePageRoute: 1,
