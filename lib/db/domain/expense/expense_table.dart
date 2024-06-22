@@ -8,4 +8,14 @@ class ExpenseTable extends BaseEntityTable {
   DateTimeColumn get expenseDate => dateTime()();
   TextColumn get referenceDataId =>
       text().references(ReferenceDataTable, #id)();
+  
+  @override
+  Map<String, dynamic> toMapFromSubClass() {
+    return {
+      'amount': amount.toString(),
+      'description': description.toString(),
+      'expenseDate': expenseDate.toString(),
+      'referenceDataId': referenceDataId.toString()
+    };
+  }
 }

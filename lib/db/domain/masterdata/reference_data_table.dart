@@ -14,4 +14,17 @@ class ReferenceDataTable extends BaseEntityTable {
   BoolColumn get isHasNext => boolean().withDefault(const Constant(false))();
   TextColumn get nextReferenceDataId =>
       text().nullable().references(ReferenceDataTable, #id)();
+
+  @override
+  Map<String, dynamic> toMapFromSubClass() {
+    return {
+      'label': label.toString(),
+      'groupLabel': groupLabel.toString(),
+      'value': value.toString(),
+      'groupValue': groupValue.toString(),
+      'referenceId': referenceId.toString(),
+      'isHasNext': isHasNext.toString(),
+      'nextReferenceDataId': nextReferenceDataId.toString()
+    };
+  }
 }

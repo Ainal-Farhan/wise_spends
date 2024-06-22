@@ -10,4 +10,9 @@ class UserTable extends BaseEntityTable {
   List<Set<Column>> get uniqueKeys => [
         {name}
       ];
+
+  @override
+  Map<String, dynamic> toMapFromSubClass() {
+    return {'name':name.toString()};
+  }
 }

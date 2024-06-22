@@ -15,4 +15,16 @@ class TransactionTable extends BaseEntityTable {
   TextColumn get savingId => text().references(SavingTable, #id)();
   BoolColumn get isExpense => boolean().withDefault(const Constant(false))();
   TextColumn get expenseId => text().nullable().references(ExpenseTable, #id)();
+
+  @override
+  Map<String, dynamic> toMapFromSubClass() {
+    return {
+      'type': type.toString(),
+      'description': description.toString(),
+      'amount': amount.toString(),
+      'savingId': savingId.toString(),
+      'isExpense': isExpense.toString(),
+      'expenseId': expenseId.toString()
+    };
+  }
 }

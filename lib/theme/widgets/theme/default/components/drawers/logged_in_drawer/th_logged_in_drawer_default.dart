@@ -37,34 +37,6 @@ class _ThLoggedInDrawerDefaultState extends State<ThLoggedInDrawerDefault> {
 
     menuWidgets.clear();
     menuWidgets.addAll([
-      const MenuWidget(
-        iconData: Icons.grid_view,
-        title: "Dashboard",
-      ),
-      const MenuWidget(
-        iconData: Icons.pie_chart,
-        title: "Analytics",
-      ),
-      const MenuWidget(
-        iconData: Icons.trending_up,
-        title: "Chart",
-      ),
-      const MenuWidget(
-        iconData: Icons.power,
-        title: "Plugins",
-        submenus: <SubMenuWidget>[
-          SubMenuWidget(title: "Ad Blocker"),
-          SubMenuWidget(title: "Dark Mod"),
-        ],
-      ),
-      const MenuWidget(
-        iconData: Icons.explore,
-        title: "Explore",
-      ),
-      const MenuWidget(
-        iconData: Icons.settings,
-        title: "Setting",
-      ),
       MenuWidget(
         iconData: Icons.book_online_outlined,
         title: "Database",

@@ -10,4 +10,15 @@ class MoneyStorageTable extends BaseEntityTable {
   TextColumn get shortName => text().unique()();
   TextColumn get type => text()();
   TextColumn get userId => text().nullable().references(UserTable, #id)();
+
+  @override
+  Map<String, dynamic> toMapFromSubClass() {
+    return {
+      'iconUrl': iconUrl.toString(),
+      'longName': longName.toString(),
+      'shortName': shortName.toString(),
+      'type': type.toString(),
+      'userId': userId.toString()
+    };
+  }
 }

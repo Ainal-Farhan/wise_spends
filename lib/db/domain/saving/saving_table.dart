@@ -28,4 +28,24 @@ class SavingTable extends BaseEntityTable {
   List<Set<Column>> get uniqueKeys => [
         {name}
       ];
+
+  @override
+  Map<String, dynamic> toMapFromSubClass() {
+    return {
+      'name': name.toString(),
+      'isPublic': isPublic.toString(),
+      'isHasGoal': isHasGoal.toString(),
+      'goal': goal.toString(),
+      'isHasStartDate': isHasStartDate.toString(),
+      'startDate': startDate.toString(),
+      'isHasEndDate': isHasEndDate.toString(),
+      'endDate': endDate.toString(),
+      'isSaveDaily': isSaveDaily.toString(),
+      'isSaveWeekly': isSaveWeekly.toString(),
+      'isSaveMonthly': isSaveMonthly.toString(),
+      'currentAmount': currentAmount.toString(),
+      'userId': userId.toString(),
+      'moneyStorageId': moneyStorageId.toString()
+    };
+  }
 }

@@ -8,4 +8,13 @@ class ExpenseReferenceTable extends BaseEntityTable {
   RealColumn get suggestedAmount => real().withDefault(const Constant(.0))();
   TextColumn get description => text().nullable()();
   TextColumn get referenceId => text().references(ReferenceTable, #id)();
+
+  @override
+  Map<String, dynamic> toMapFromSubClass() {
+    return {
+      'suggestedAmount': suggestedAmount.toString(),
+      'description': description.toString(),
+      'referenceId': referenceId.toString()
+    };
+  }
 }

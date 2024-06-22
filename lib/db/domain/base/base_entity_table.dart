@@ -15,4 +15,21 @@ abstract class BaseEntityTable extends Table {
 
   @override
   Set<Column> get primaryKey => {id};
+
+  Map<String, dynamic> toMapFromSubClass();
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = toMapFromSubClass();
+
+    map.addAll(
+    {
+      "id": id.toString(),
+      "createdBy": createdBy.toString(),
+      "dateCreated": dateCreated.toString(),
+      "dateUpdated": dateUpdated.toString(),
+      "lastModifiedBy": lastModifiedBy.toString()
+    });
+
+    return map;
+  }
 }

@@ -10,4 +10,15 @@ class ReferenceTable extends BaseEntityTable {
   BoolColumn get isActive => boolean().withDefault(const Constant(false))();
   TextColumn get belongTo => text().references(ReferenceTable, #id)();
   TextColumn get groupId => text().references(GroupReferenceTable, #id)();
+
+  @override
+  Map<String, dynamic> toMapFromSubClass() {
+    return {
+      'label': label.toString(),
+      'value': value.toString(),
+      'isActive': isActive.toString(),
+      'belongTo': belongTo.toString(),
+      'groupId': groupId.toString()
+    };
+  }
 }
