@@ -35,35 +35,73 @@ class ThLoggedInAppbarDefault extends StatelessWidget
             onPressed: onPressed,
           ),
           backgroundColor: colorTween.value,
-          elevation: 0,
+          elevation: 4,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(16),
+            ),
+          ),
           titleSpacing: 0.0,
           title: Row(
             children: <Widget>[
               Text(
                 "Hello  ",
                 style: TextStyle(
-                    color: homeTween.value,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    letterSpacing: 1),
+                  color: homeTween.value,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  letterSpacing: 1.2,
+                ),
               ),
               Text(
                 loggedInUserName,
                 style: TextStyle(
-                    color: workOutTween.value,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    letterSpacing: 1),
+                  color: workOutTween.value,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  letterSpacing: 1.2,
+                ),
               ),
             ],
           ),
           actions: <Widget>[
-            Icon(
-              Icons.notifications,
-              color: iconTween.value,
+            IconButton(
+              icon: Stack(
+                children: <Widget>[
+                  Icon(
+                    Icons.notifications,
+                    color: iconTween.value,
+                  ),
+                  Positioned(
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
+                      child: const Text(
+                        '0',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              onPressed: () {
+                // Add your onPressed code here!
+              },
             ),
             const Padding(
-              padding: EdgeInsets.all(7),
+              padding: EdgeInsets.all(8),
               child: CircleAvatar(
                 child: Icon(Icons.person),
               ),

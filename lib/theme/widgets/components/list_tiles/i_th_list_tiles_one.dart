@@ -10,12 +10,22 @@ abstract class IThListTilesOne extends IThWidget {
     Key? key,
     required List<ListTilesOneVO> items,
     String emptyListMessage = 'The list is Empty',
+    bool needBorder = false,
+    String label = '',
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThListTilesOneDefault(
-          items: items, emptyListMessage: emptyListMessage);
+        items: items,
+        emptyListMessage: emptyListMessage,
+        label: label,
+        needBorder: needBorder,
+      );
     }
     return ThListTilesOneDefault(
-        items: items, emptyListMessage: emptyListMessage);
+      items: items,
+      emptyListMessage: emptyListMessage,
+      label: label,
+      needBorder: needBorder,
+    );
   }
 }

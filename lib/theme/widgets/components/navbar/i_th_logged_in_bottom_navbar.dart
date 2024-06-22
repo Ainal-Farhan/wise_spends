@@ -8,11 +8,11 @@ import 'package:wise_spends/resource/notifiers/bottom_nav_bar_notifier.dart';
 
 abstract class IThLoggedInBottomNavbar extends IThWidget {
   static const Map<String, int> indexBasedOnPageRoute = {
-    AppRouter.homeLoggedInPageRoute: 0,
-    AppRouter.savingsPageRoute: 1,
-    AppRouter.viewListMoneyStoragePageRoute: 2,
-    AppRouter.addMoneyStoragePageRoute: 2,
-    AppRouter.editMoneyStoragePageRoute: 2,
+    AppRouter.homeLoggedInPageRoute: -1,
+    AppRouter.savingsPageRoute: 0,
+    AppRouter.viewListMoneyStoragePageRoute: 1,
+    AppRouter.addMoneyStoragePageRoute: 1,
+    AppRouter.editMoneyStoragePageRoute: 1,
   };
 
   factory IThLoggedInBottomNavbar({

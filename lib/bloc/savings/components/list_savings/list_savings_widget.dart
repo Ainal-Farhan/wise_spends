@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/savings/event/impl/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/savings/event/impl/load_saving_transaction_event.dart';
 import 'package:wise_spends/bloc/savings/index.dart';
+import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/router/app_router.dart';
@@ -19,12 +20,18 @@ class ListSavingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<ListTilesOneVO> savingsList = [];
+    Map<SavingTableType, List<ListTilesOneVO>> savingListMap = {};
+
+    for (SavingTableType savingTableType in SavingTableType.values) {
+      savingListMap[savingTableType] = [];
+    }
 
     for (int index = 0; index < _listSavingVOList.length; index++) {
       bool isMinus = _listSavingVOList[index].saving.currentAmount < 0;
 
-      savingsList.add(
+      savingListMap[SavingTableType.findByValue(
+              _listSavingVOList[index].saving.type)]!
+          .add(
         ListTilesOneVO(
           index: index,
           title: _listSavingVOList[index].saving.name ?? '',
@@ -70,6 +77,28 @@ class ListSavingsWidget extends StatelessWidget {
       );
     }
 
-    return IThListTilesOne(items: savingsList);
+    List<Widget> listViewWidget = [];
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    listViewWidget.add(SizedBox(
+      height: screenHeight * 0.05,
+    ));
+
+    for (var entry in savingListMap.entries) {
+      listViewWidget.add(IThListTilesOne(
+        items: entry.value,
+        needBorder: true,
+        label: entry.key.label,
+        emptyListMessage: 'No Savings Added',
+      ));
+    }
+
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: listViewWidget,
+      ),
+    );
   }
 }
