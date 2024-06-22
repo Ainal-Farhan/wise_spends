@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/savings/components/list_savings/list_savings_widget.dart';
 import 'package:wise_spends/bloc/savings/event/impl/load_add_savings_form_event.dart';
 import 'package:wise_spends/bloc/savings/state/savings_state.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/i_th_plus_button_round.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 
 class InLoadListSavingsState extends SavingsState {
@@ -35,24 +36,8 @@ class InLoadListSavingsState extends SavingsState {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Ink(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.green, width: 2),
-                  color: Colors.greenAccent,
-                  shape: BoxShape.circle,
-                ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(400.0),
-                  onTap: () => load(savingsEvent: LoadAddSavingsFormEvent()),
-                  child: const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Icon(
-                      Icons.add,
-                      size: 30.0,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+              IThPlusButtonRound(
+                onTap: () => load(savingsEvent: LoadAddSavingsFormEvent()),
               ),
             ],
           ),

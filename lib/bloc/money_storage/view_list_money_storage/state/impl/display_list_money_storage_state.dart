@@ -5,6 +5,7 @@ import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/router/screen_argument.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/i_th_plus_button_round.dart';
 import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
 import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
@@ -74,26 +75,10 @@ class DisplayListMoneyStorageState extends ViewListMoneyStorageState {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Ink(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.green, width: 2),
-                  color: Colors.greenAccent,
-                  shape: BoxShape.circle,
-                ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(400.0),
-                  onTap: () => Navigator.pushReplacementNamed(
-                    context,
-                    AppRouter.addMoneyStoragePageRoute,
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Icon(
-                      Icons.add,
-                      size: 30.0,
-                      color: Colors.black,
-                    ),
-                  ),
+              IThPlusButtonRound(
+                onTap: () => Navigator.pushReplacementNamed(
+                  context,
+                  AppRouter.addMoneyStoragePageRoute,
                 ),
               ),
             ],
