@@ -1,6 +1,8 @@
 import 'package:wise_spends/theme/i_theme_manager.dart';
 import 'package:wise_spends/theme/widgets/components/appbar/i_th_logged_in_appbar.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/i_th_plus_button_round.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';
 import 'package:wise_spends/theme/widgets/components/drawer/i_th_logged_in_drawer.dart';
 import 'package:wise_spends/theme/widgets/components/errors/i_th_error_widget.dart';
@@ -59,6 +61,8 @@ abstract class IWidgetTheme {
     //buttons
     IThBackButton,
     IThSaveButton,
+    IThPlusButtonRound,
+    IThBackButtonRound,
 
     // errors
     IThErrorWidget,

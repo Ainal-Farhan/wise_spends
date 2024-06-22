@@ -13,7 +13,8 @@ import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 class ListSavingsWidget extends StatelessWidget {
   final List<ListSavingVO> _listSavingVOList;
 
-  const ListSavingsWidget({super.key, required List<ListSavingVO> listSavingVOList})
+  const ListSavingsWidget(
+      {super.key, required List<ListSavingVO> listSavingVOList})
       : _listSavingVOList = listSavingVOList;
 
   @override
@@ -21,11 +22,14 @@ class ListSavingsWidget extends StatelessWidget {
     List<ListTilesOneVO> savingsList = [];
 
     for (int index = 0; index < _listSavingVOList.length; index++) {
+      bool isMinus = _listSavingVOList[index].saving.currentAmount < 0;
+
       savingsList.add(
         ListTilesOneVO(
           index: index,
           title: _listSavingVOList[index].saving.name ?? '',
-          icon: const Icon(Icons.money, color: Colors.white),
+          icon:
+              const Icon(Icons.money, color: Color.fromARGB(255, 23, 194, 31)),
           subtitleWidget: Row(
             children: <Widget>[
               Text(
@@ -35,7 +39,9 @@ class ListSavingsWidget extends StatelessWidget {
                 style: const TextStyle(color: Colors.white),
               ),
               Text(
-                  'RM${_listSavingVOList[index].saving.currentAmount.toStringAsFixed(2)}'),
+                '${isMinus ? '- ' : ''}RM ${_listSavingVOList[index].saving.currentAmount.abs().toStringAsFixed(2)}',
+                style: TextStyle(color: isMinus ? Colors.red : Colors.black),
+              ),
             ],
           ),
           trailingWidget: IconButton(

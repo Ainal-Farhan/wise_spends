@@ -1,6 +1,8 @@
 import 'package:wise_spends/theme/widgets/i_widget_theme.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/appbar/th_logged_in_appbar_default.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/buttons/th_back_button_default.dart';
+import 'package:wise_spends/theme/widgets/theme/default/components/buttons/th_back_button_round_default.dart';
+import 'package:wise_spends/theme/widgets/theme/default/components/buttons/th_plus_button_round_default.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/buttons/th_save_button_default.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/th_logged_in_drawer_default.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/errors/th_error_widget_default.dart';
@@ -59,6 +61,8 @@ class WidgetsDefault extends IWidgetTheme {
           // buttons
           ThBackButtonDefault,
           ThSaveButtonDefault,
+          ThPlusButtonRoundDefault,
+          ThBackButtonRoundDefault,
 
           // errors
           ThErrorWidgetDefault,

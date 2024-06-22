@@ -3,6 +3,7 @@ import 'package:wise_spends/bloc/savings/components/saving_transaction/saving_tr
 import 'package:wise_spends/bloc/savings/event/impl/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/savings/state/savings_state.dart';
 import 'package:wise_spends/db/app_database.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
 
 class InSavingTransactionFormState extends SavingsState {
   final SvngSaving saving;
@@ -39,24 +40,8 @@ class InSavingTransactionFormState extends SavingsState {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Ink(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.green, width: 2),
-                      color: Colors.redAccent,
-                      shape: BoxShape.circle,
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(400.0),
-                      onTap: () => load(savingsEvent: LoadListSavingsEvent()),
-                      child: const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Icon(
-                          Icons.arrow_back,
-                          size: 30.0,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+                  IThBackButtonRound(
+                    onTap: () => load(savingsEvent: LoadListSavingsEvent()),
                   ),
                 ],
               ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_plus_button_round.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
 
-class ThPlusButtonRoundDefault extends StatelessWidget
-    implements IThPlusButtonRound {
+class ThBackButtonRoundDefault extends StatelessWidget
+    implements IThBackButtonRound {
   final Function() onTap;
 
-  const ThPlusButtonRoundDefault({
+  const ThBackButtonRoundDefault({
     super.key,
     required this.onTap,
   });
@@ -14,9 +14,9 @@ class ThPlusButtonRoundDefault extends StatelessWidget
   Widget build(BuildContext context) {
     return Ink(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.green, width: 2),
+        border: Border.all(color: Colors.red, width: 2),
         gradient: const LinearGradient(
-          colors: [Colors.greenAccent, Colors.lightGreen],
+          colors: [Colors.redAccent, Color.fromARGB(255, 209, 124, 118)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -36,7 +36,7 @@ class ThPlusButtonRoundDefault extends StatelessWidget
         child: const Padding(
           padding: EdgeInsets.all(10.0),
           child: Icon(
-            Icons.add,
+            Icons.arrow_back,
             size: 30.0,
             color: Colors.black,
           ),

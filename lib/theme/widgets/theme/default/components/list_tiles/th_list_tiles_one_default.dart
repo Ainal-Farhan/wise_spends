@@ -25,21 +25,22 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
                 elevation: 8.0,
                 margin:
                     const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 child: Container(
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(64, 75, 96, .9),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(226, 68, 185, 214),
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                      vertical: 10.0,
-                    ),
+                        horizontal: 20.0, vertical: 10.0),
                     leading: Container(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          right: BorderSide(width: 1.0, color: Colors.white24),
-                        ),
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30.0),
+                        color: Colors.white,
                       ),
                       child: item.icon,
                     ),
@@ -48,9 +49,13 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
+                        fontSize: 18.0,
                       ),
                     ),
-                    subtitle: item.subtitleWidget,
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: item.subtitleWidget,
+                    ),
                     trailing: item.trailingWidget,
                     onTap: () async => await item.onTap(),
                     onLongPress: () async => await item.onLongPressed(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/state/add_money_storage_state.dart';
 import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
 import 'package:wise_spends/theme/widgets/components/forms/money_storage/i_th_add_money_storage_form.dart';
 
 class DisplayAddMoneyStorageFormState extends AddMoneyStorageState {
@@ -31,28 +32,11 @@ class DisplayAddMoneyStorageFormState extends AddMoneyStorageState {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Ink(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.green, width: 2),
-                      color: Colors.redAccent,
-                      shape: BoxShape.circle,
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(400.0),
+                  IThBackButtonRound(
                       onTap: () => Navigator.pushReplacementNamed(
-                        context,
-                        AppRouter.viewListMoneyStoragePageRoute,
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Icon(
-                          Icons.arrow_back,
-                          size: 30.0,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
+                            context,
+                            AppRouter.viewListMoneyStoragePageRoute,
+                          )),
                 ],
               ),
             ],

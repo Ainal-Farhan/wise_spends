@@ -24,19 +24,17 @@ class DisplayListMoneyStorageState extends ViewListMoneyStorageState {
     List<ListTilesOneVO> moneyStorageListTilesOneVOList = [];
 
     for (int index = 0; index < moneyStorageVOList.length; index++) {
+      bool isMinus =  moneyStorageVOList[index].amount < 0;
       moneyStorageListTilesOneVOList.add(
         ListTilesOneVO(
           index: index,
           title:
               '${moneyStorageVOList[index].moneyStorage.shortName} - ${moneyStorageVOList[index].moneyStorage.longName}',
-          icon: const Icon(Icons.money, color: Colors.white),
-          subtitleWidget: Row(
-            children: <Widget>[
-              const Text(
-                "RM",
-              ),
-              Text(moneyStorageVOList[index].amount.toStringAsFixed(2)),
-            ],
+          icon:
+              const Icon(Icons.money, color: Color.fromARGB(255, 23, 194, 31)),
+          subtitleWidget: Text(
+            '${isMinus ? '- ' : ''}RM ${moneyStorageVOList[index].amount.abs().toStringAsFixed(2)}',
+            style: TextStyle(color: isMinus ? Colors.red : Colors.black),
           ),
           onTap: () => Navigator.pushReplacementNamed(
             context,
