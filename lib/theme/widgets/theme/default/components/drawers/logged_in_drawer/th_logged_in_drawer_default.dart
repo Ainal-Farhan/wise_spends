@@ -76,10 +76,13 @@ class _ThLoggedInDrawerDefaultState extends State<ThLoggedInDrawerDefault> {
                   context: context,
                   message: "Backup database?",
                   onConfirm: () async {
-                    showSnackBarMessage(
-                      context,
-                      "Successfully export the db into ${await AppDatabase().exportInto()}",
-                    );
+                    String exportedPath = await AppDatabase().exportInto();
+                    if (mounted) {
+                      showSnackBarMessage(
+                        context,
+                        "Successfully export the db into $exportedPath",
+                      );
+                    }
                   },
                 );
               }),
@@ -90,18 +93,22 @@ class _ThLoggedInDrawerDefaultState extends State<ThLoggedInDrawerDefault> {
                   context: context,
                   message: "Restore database?",
                   onConfirm: () async {
-                    showSnackBarMessage(
-                      context,
-                      "${await (() async {
-                        try {
-                          return await AppDatabase().restore()
-                              ? 'Successfully'
-                              : 'Failed to';
-                        } catch (e) {
-                          return e.toString();
-                        }
-                      })()} restore the db",
-                    );
+                    String message = await (() async {
+                      try {
+                        return await AppDatabase().restore()
+                            ? 'Successfully'
+                            : 'Failed to';
+                      } catch (e) {
+                        return e.toString();
+                      }
+                    })();
+
+                    if (mounted) {
+                      showSnackBarMessage(
+                        context,
+                        "$message restore the db",
+                      );
+                    }
                   },
                 );
               }),
