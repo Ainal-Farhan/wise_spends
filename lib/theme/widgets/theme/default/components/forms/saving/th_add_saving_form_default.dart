@@ -1,6 +1,7 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
-import 'package:wise_spends/bloc/savings/event/impl/save_new_saving_event.dart';
+import 'package:wise_spends/bloc/savings/event/save_new_saving_event.dart';
+import 'package:wise_spends/bloc/savings/savings_bloc.dart';
 import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';
@@ -16,13 +17,11 @@ import 'package:wise_spends/vo/impl/saving/add_saving_form_vo.dart';
 // ignore: must_be_immutable
 class ThAddSavingFormDefault extends StatefulWidget
     implements IThAddSavingForm {
-  final Function eventLoader;
   final List<DropDownValueModel> moneyStorageList;
   final List<DropDownValueModel> savingTypeList;
 
   const ThAddSavingFormDefault({
     super.key,
-    required this.eventLoader,
     this.moneyStorageList = const [],
     this.savingTypeList = const [],
   });
@@ -84,11 +83,9 @@ class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
                   SavingTableType.saving;
         }
 
-        widget.eventLoader(
-          savingsEvent: SaveNewSavingEvent(
-            addSavingFormVO: _addSavingFormVO,
-          ),
-        );
+        SavingsBloc().add(SaveNewSavingEvent(
+          addSavingFormVO: _addSavingFormVO,
+        ));
       } else {
         showSnackBarMessage(context, 'Please fill every field');
       }

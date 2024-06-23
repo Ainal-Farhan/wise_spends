@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/edit_savings/edit_savings_page.dart';
-import 'package:wise_spends/bloc/home_logged_in/home_logged_in_page.dart';
 import 'package:wise_spends/bloc/login/login_page.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/add_money_storage_page.dart';
 import 'package:wise_spends/bloc/money_storage/edit_money_storage/edit_money_storage_page.dart';
 import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_page.dart';
 import 'package:wise_spends/bloc/savings/savings_page.dart';
-import 'package:wise_spends/bloc/transaction/transaction_page.dart';
 import 'package:wise_spends/router/screen_argument.dart';
 
 abstract class AppRouter {
@@ -28,12 +26,8 @@ abstract class AppRouter {
     switch (settings.name) {
       case loginPageRoute:
         return MaterialPageRoute(builder: (_) => const LoginPage());
-      case homeLoggedInPageRoute:
-        return MaterialPageRoute(builder: (_) => const HomeLoggedInPage());
       case savingsPageRoute:
         return MaterialPageRoute(builder: (_) => const SavingsPage());
-      case transactionPageRoute:
-        return MaterialPageRoute(builder: (_) => const TransactionPage());
       case editSavingsPageRoute:
         return MaterialPageRoute(
             builder: (_) => EditSavingsPage(

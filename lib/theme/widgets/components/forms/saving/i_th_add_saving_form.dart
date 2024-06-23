@@ -8,21 +8,18 @@ import 'package:wise_spends/theme/widgets/theme/default/components/forms/saving/
 abstract class IThAddSavingForm extends IThWidget {
   factory IThAddSavingForm({
     Key? key,
-    required Function eventLoader,
     required List<DropDownValueModel> moneyStorageList,
     required List<DropDownValueModel> savingTypeList,
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThAddSavingFormDefault(
         key: key,
-        eventLoader: eventLoader,
         moneyStorageList: moneyStorageList,
         savingTypeList: savingTypeList,
       );
     }
     return ThAddSavingFormDefault(
       key: key,
-      eventLoader: eventLoader,
       moneyStorageList: moneyStorageList,
       savingTypeList: savingTypeList,
     );

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/edit_savings/edit_savings_bloc.dart';
-import 'package:wise_spends/bloc/edit_savings/event/impl/load_edit_savings_event.dart';
-import 'package:wise_spends/bloc/edit_savings/state/edit_savings_state.dart';
+import 'package:wise_spends/bloc/edit_savings/event/load_edit_savings_event.dart';
+import 'package:wise_spends/bloc/i_state.dart';
 
 class EditSavingsScreen extends StatefulWidget {
   final String savingId;
@@ -11,7 +11,7 @@ class EditSavingsScreen extends StatefulWidget {
     required EditSavingsBloc editSavingsBloc,
     required this.savingId,
     super.key,
-  })  : _editSavingsBloc = editSavingsBloc;
+  }) : _editSavingsBloc = editSavingsBloc;
 
   final EditSavingsBloc _editSavingsBloc;
 
@@ -37,11 +37,11 @@ class EditSavingsScreenState extends State<EditSavingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<EditSavingsBloc, EditSavingsState>(
+    return BlocBuilder<EditSavingsBloc, IState<dynamic>>(
         bloc: widget._editSavingsBloc,
         builder: (
           BuildContext context,
-          EditSavingsState currentState,
+          IState<dynamic> currentState,
         ) =>
             currentState.build(context));
   }

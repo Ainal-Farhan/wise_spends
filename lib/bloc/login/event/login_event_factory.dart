@@ -1,5 +1,8 @@
-import 'package:wise_spends/bloc/login/event/impl/error_login_event.dart';
-import 'package:wise_spends/bloc/login/event/index.dart';
+import 'package:wise_spends/bloc/i_event.dart';
+import 'package:wise_spends/bloc/login/event/error_login_event.dart';
+import 'package:wise_spends/bloc/login/event/load_login_event.dart';
+import 'package:wise_spends/bloc/login/event/un_login_event.dart';
+import 'package:wise_spends/bloc/login/login_bloc.dart';
 import 'package:wise_spends/constant/login/login_event_constant.dart';
 
 class LoginEventFactory {
@@ -12,7 +15,7 @@ class LoginEventFactory {
     return _loginEventFactory;
   }
 
-  LoginEvent getLoginEvent(final String loginEventName) {
+  IEvent<LoginBloc> getLoginEvent(final String loginEventName) {
     switch (loginEventName) {
       case LoginEventConstant.loadLoginEvent:
         return LoadLoginEvent();

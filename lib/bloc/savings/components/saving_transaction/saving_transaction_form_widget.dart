@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/bloc/savings/event/impl/save_saving_transaction_event.dart';
+import 'package:wise_spends/bloc/savings/event/save_saving_transaction_event.dart';
 import 'package:wise_spends/bloc/savings/index.dart';
 import 'package:wise_spends/constant/saving/saving_constant.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';

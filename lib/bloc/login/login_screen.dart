@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/login/event/login_event_factory.dart';
 import 'package:wise_spends/bloc/login/index.dart';
+import 'package:wise_spends/bloc/login/state/error_login_state.dart';
 import 'package:wise_spends/bloc/login/state/login_state_factory.dart';
 import 'package:wise_spends/bloc/login/widgets/bottom_widget.dart';
 import 'package:wise_spends/bloc/login/widgets/center_widget/center_widget.dart';
@@ -14,7 +16,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({
     required LoginBloc loginBloc,
     super.key,
-  })  : _loginBloc = loginBloc;
+  }) : _loginBloc = loginBloc;
 
   final LoginBloc _loginBloc;
 
@@ -40,11 +42,11 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
+    return BlocBuilder<LoginBloc, IState<dynamic>>(
         bloc: widget._loginBloc,
         builder: (
           BuildContext context,
-          LoginState currentState,
+          IState<dynamic> currentState,
         ) {
           if (LoginStateFactory()
               .isLoginState(currentState, LoginStateConstant.unLoginState)) {
@@ -58,7 +60,7 @@ class LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(currentState.message),
+                  Text((currentState as ErrorLoginState).message),
                   Padding(
                     padding: const EdgeInsets.only(top: 32.0),
                     child: ElevatedButton(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/money_storage/edit_money_storage/edit_money_storage_bloc.dart';
-import 'package:wise_spends/bloc/money_storage/edit_money_storage/events/impl/in_load_edit_money_storage_event.dart';
-import 'package:wise_spends/bloc/money_storage/edit_money_storage/state/edit_money_storage_state.dart';
+import 'package:wise_spends/bloc/money_storage/edit_money_storage/events/in_load_edit_money_storage_event.dart';
 
 class EditMoneyStorageScreen extends StatefulWidget {
   const EditMoneyStorageScreen({
@@ -33,11 +33,11 @@ class _EditMoneyStorageScreenState extends State<EditMoneyStorageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<EditMoneyStorageBloc, EditMoneyStorageState>(
+    return BlocBuilder<EditMoneyStorageBloc, IState<dynamic>>(
         bloc: widget._editMoneyStorageBloc,
         builder: (
           BuildContext context,
-          EditMoneyStorageState currentState,
+          IState<dynamic> currentState,
         ) {
           try {
             return currentState.build(context);
