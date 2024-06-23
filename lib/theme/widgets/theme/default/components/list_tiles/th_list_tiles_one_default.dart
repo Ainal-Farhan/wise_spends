@@ -7,6 +7,8 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
   final String emptyListMessage;
   final bool needBorder;
   final String label;
+  final double? maxWidth;
+  final double? maxHeight;
 
   const ThListTilesOneDefault({
     super.key,
@@ -14,6 +16,8 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
     required this.emptyListMessage,
     required this.needBorder,
     required this.label,
+    this.maxWidth,
+    this.maxHeight,
   });
 
   @override
@@ -21,7 +25,7 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
     Widget widget = items.isNotEmpty
         ? ListView.builder(
             scrollDirection: Axis.vertical,
-            shrinkWrap: true,
+            shrinkWrap: false,
             itemCount: items.length,
             itemBuilder: (BuildContext context, int index) {
               final ListTilesOneVO item = items[index];
@@ -74,7 +78,7 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
             ),
           );
 
-    return needBorder
+    Widget widgetContent = needBorder
         ? Stack(
             children: [
               Container(
@@ -96,7 +100,15 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
                     ),
                   ],
                 ),
-                child: widget,
+                child:  maxWidth != null && maxHeight != null
+                    ? ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: maxWidth!,
+                          maxHeight: maxHeight!,
+                        ),
+                        child: widget,
+                      )
+                    : widget,
               ),
               Positioned(
                 top: -16,
@@ -120,6 +132,16 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
             ],
           )
         : widget;
+
+    return maxWidth != null && maxHeight != null
+        ? ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: maxWidth!,
+              maxHeight: maxHeight!,
+            ),
+            child: widgetContent,
+          )
+        : widgetContent;
   }
 
   @override

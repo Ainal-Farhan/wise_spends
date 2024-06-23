@@ -12,6 +12,8 @@ abstract class IThListTilesOne extends IThWidget {
     String emptyListMessage = 'The list is Empty',
     bool needBorder = false,
     String label = '',
+    double? maxWidth,
+    double? maxHeight,
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThListTilesOneDefault(
@@ -19,6 +21,8 @@ abstract class IThListTilesOne extends IThWidget {
         emptyListMessage: emptyListMessage,
         label: label,
         needBorder: needBorder,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
       );
     }
     return ThListTilesOneDefault(
@@ -26,6 +30,8 @@ abstract class IThListTilesOne extends IThWidget {
       emptyListMessage: emptyListMessage,
       label: label,
       needBorder: needBorder,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
     );
   }
 }
