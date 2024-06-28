@@ -22,7 +22,7 @@ class ManagerLocator extends IManagerLocator {
         SingletonUtil.getSingleton<IHomeLoggedInManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton(HomeLoggedInManager());
+      SingletonUtil.registerSingleton<IHomeLoggedInManager>(HomeLoggedInManager());
     }
 
     return SingletonUtil.getSingleton<IHomeLoggedInManager>()!;
@@ -33,7 +33,7 @@ class ManagerLocator extends IManagerLocator {
     ILoginManager? manager = SingletonUtil.getSingleton<ILoginManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton(LoginManager());
+      SingletonUtil.registerSingleton<ILoginManager>(LoginManager());
     }
 
     return SingletonUtil.getSingleton<ILoginManager>()!;
@@ -44,7 +44,7 @@ class ManagerLocator extends IManagerLocator {
     ISavingManager? manager = SingletonUtil.getSingleton<ISavingManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton(SavingManager());
+      SingletonUtil.registerSingleton<ISavingManager>(SavingManager());
     }
 
     return SingletonUtil.getSingleton<ISavingManager>()!;
@@ -55,7 +55,7 @@ class ManagerLocator extends IManagerLocator {
     IStartupManager? manager = SingletonUtil.getSingleton<IStartupManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton(StartupManager());
+      SingletonUtil.registerSingleton<IStartupManager>(StartupManager());
     }
 
     return SingletonUtil.getSingleton<IStartupManager>()!;
@@ -67,7 +67,7 @@ class ManagerLocator extends IManagerLocator {
         SingletonUtil.getSingleton<ITransactionManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton(TransactionManager());
+      SingletonUtil.registerSingleton<ITransactionManager>(TransactionManager());
     }
 
     return SingletonUtil.getSingleton<ITransactionManager>()!;
@@ -79,7 +79,7 @@ class ManagerLocator extends IManagerLocator {
         SingletonUtil.getSingleton<IConfigurationManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton(ConfigurationManager());
+      SingletonUtil.registerSingleton<IConfigurationManager>(ConfigurationManager());
     }
 
     return SingletonUtil.getSingleton<IConfigurationManager>()!;
@@ -90,7 +90,7 @@ class ManagerLocator extends IManagerLocator {
     IThemeManager? manager = SingletonUtil.getSingleton<IThemeManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton(ThemeManager());
+      SingletonUtil.registerSingleton<IThemeManager>(ThemeManager());
     }
 
     return SingletonUtil.getSingleton<IThemeManager>()!;

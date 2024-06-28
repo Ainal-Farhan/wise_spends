@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/bloc/edit_savings/edit_savings_bloc.dart';
-import 'package:wise_spends/bloc/edit_savings/edit_savings_page.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/login/index.dart';
-import 'package:wise_spends/bloc/money_storage/add_money_storage/add_money_storage_bloc.dart';
-import 'package:wise_spends/bloc/money_storage/add_money_storage/add_money_storage_page.dart';
-import 'package:wise_spends/bloc/money_storage/edit_money_storage/edit_money_storage_bloc.dart';
-import 'package:wise_spends/bloc/money_storage/edit_money_storage/edit_money_storage_page.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_bloc.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_page.dart';
+import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
+import 'package:wise_spends/bloc/money_storage/view_list_money_storage_page.dart';
 import 'package:wise_spends/bloc/savings/index.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/locator/i_repository_locator.dart';
@@ -47,29 +41,9 @@ Future<void> main() async {
             builder: (context, state) => const SavingsPage(),
           ),
         ),
-        BlocProvider<EditSavingsBloc>(
-          create: (context) => EditSavingsBloc(),
-          child: BlocBuilder<EditSavingsBloc, IState<dynamic>>(
-            builder: (context, state) => const EditSavingsPage(savingId: ''),
-          ),
-        ),
-        BlocProvider<AddMoneyStorageBloc>(
-          create: (context) => AddMoneyStorageBloc(),
-          child: BlocBuilder<AddMoneyStorageBloc, IState<dynamic>>(
-            builder: (context, state) => const AddMoneyStoragePage(),
-          ),
-        ),
-        BlocProvider<EditMoneyStorageBloc>(
-          create: (context) => EditMoneyStorageBloc(),
-          child: BlocBuilder<EditMoneyStorageBloc, IState<dynamic>>(
-            builder: (context, state) => const EditMoneyStoragePage(
-              selectedMoneyStorageId: '',
-            ),
-          ),
-        ),
-        BlocProvider<ViewListMoneyStorageBloc>(
-          create: (context) => ViewListMoneyStorageBloc(),
-          child: BlocBuilder<ViewListMoneyStorageBloc, IState<dynamic>>(
+        BlocProvider<MoneyStorageBloc>(
+          create: (context) => MoneyStorageBloc(),
+          child: BlocBuilder<MoneyStorageBloc, IState<dynamic>>(
             builder: (context, state) => const ViewListMoneyStoragePage(),
           ),
         ),

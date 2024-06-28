@@ -20,7 +20,8 @@ class ServiceLocator extends IServiceLocator {
         SingletonUtil.getSingleton<IGroupReferenceService>();
 
     if (service == null) {
-      SingletonUtil.registerSingleton(GroupReferenceService());
+      SingletonUtil.registerSingleton<IGroupReferenceService>(
+          GroupReferenceService());
     }
 
     return SingletonUtil.getSingleton<IGroupReferenceService>()!;
@@ -32,7 +33,8 @@ class ServiceLocator extends IServiceLocator {
         SingletonUtil.getSingleton<IMoneyStorageService>();
 
     if (service == null) {
-      SingletonUtil.registerSingleton(MoneyStorageService());
+      SingletonUtil.registerSingleton<IMoneyStorageService>(
+          MoneyStorageService());
     }
 
     return SingletonUtil.getSingleton<IMoneyStorageService>()!;
@@ -44,7 +46,7 @@ class ServiceLocator extends IServiceLocator {
         SingletonUtil.getSingleton<IReferenceService>();
 
     if (service == null) {
-      SingletonUtil.registerSingleton(ReferenceService());
+      SingletonUtil.registerSingleton<IReferenceService>(ReferenceService());
     }
 
     return SingletonUtil.getSingleton<IReferenceService>()!;
@@ -55,7 +57,7 @@ class ServiceLocator extends IServiceLocator {
     ISavingService? service = SingletonUtil.getSingleton<ISavingService>();
 
     if (service == null) {
-      SingletonUtil.registerSingleton(SavingService());
+      SingletonUtil.registerSingleton<ISavingService>(SavingService());
     }
 
     return SingletonUtil.getSingleton<ISavingService>()!;
@@ -67,7 +69,8 @@ class ServiceLocator extends IServiceLocator {
         SingletonUtil.getSingleton<ITransactionService>();
 
     if (service == null) {
-      SingletonUtil.registerSingleton(TransactionService());
+      SingletonUtil.registerSingleton<ITransactionService>(
+          TransactionService());
     }
 
     return SingletonUtil.getSingleton<ITransactionService>()!;
@@ -78,7 +81,7 @@ class ServiceLocator extends IServiceLocator {
     IUserService? service = SingletonUtil.getSingleton<IUserService>();
 
     if (service == null) {
-      SingletonUtil.registerSingleton(UserService());
+      SingletonUtil.registerSingleton<IUserService>(UserService());
     }
 
     return SingletonUtil.getSingleton<IUserService>()!;

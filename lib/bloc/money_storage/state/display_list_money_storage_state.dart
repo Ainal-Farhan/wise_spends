@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage/events/on_delete_view_list_money_storage_event.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_bloc.dart';
+import 'package:wise_spends/bloc/money_storage/events/in_load_edit_money_storage_event.dart';
+import 'package:wise_spends/bloc/money_storage/events/in_load_add_money_storage_event.dart';
+import 'package:wise_spends/bloc/money_storage/events/on_delete_view_list_money_storage_event.dart';
+import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
-import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/router/screen_argument.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_plus_button_round.dart';
 import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
@@ -38,18 +38,14 @@ class DisplayListMoneyStorageState
             '${isMinus ? '- ' : ''}RM ${moneyStorageVOList[index].amount.abs().toStringAsFixed(2)}',
             style: TextStyle(color: isMinus ? Colors.red : Colors.black),
           ),
-          onTap: () => Navigator.pushReplacementNamed(
-            context,
-            AppRouter.editMoneyStoragePageRoute,
-            arguments: ScreenArgument({
-              'moneyStorageId': moneyStorageVOList[index].moneyStorage.id,
-            }),
-          ),
+          onTap: () async => BlocProvider.of<MoneyStorageBloc>(context)
+              .add(InLoadEditMoneyStorageEvent(
+                  moneyStorageVOList[index].moneyStorage.id)),
           onLongPressed: () async {
             showDeleteDialog(
               context: context,
               onDelete: () async {
-                BlocProvider.of<ViewListMoneyStorageBloc>(context)
+                BlocProvider.of<MoneyStorageBloc>(context)
                     .add(OnDeleteViewListMoneyStorageEvent(
                   moneyStorageVOList[index].moneyStorage.id,
                 ));
@@ -76,10 +72,8 @@ class DisplayListMoneyStorageState
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IThPlusButtonRound(
-                onTap: () => Navigator.pushReplacementNamed(
-                  context,
-                  AppRouter.addMoneyStoragePageRoute,
-                ),
+                onTap: () => BlocProvider.of<MoneyStorageBloc>(context)
+                    .add(InLoadAddMoneyStorageEvent()),
               ),
             ],
           ),

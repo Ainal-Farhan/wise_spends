@@ -1,14 +1,14 @@
 import 'package:wise_spends/bloc/i_event.dart';
 import 'package:wise_spends/bloc/i_state.dart';
-import 'package:wise_spends/bloc/money_storage/edit_money_storage/edit_money_storage_bloc.dart';
-import 'package:wise_spends/bloc/money_storage/edit_money_storage/state/display_edit_money_storage_form_state.dart';
-import 'package:wise_spends/bloc/money_storage/edit_money_storage/state/un_edit_money_storage_state.dart';
+import 'package:wise_spends/bloc/money_storage/state/display_edit_money_storage_form_state.dart';
+import 'package:wise_spends/bloc/money_storage/state/un_edit_money_storage_state.dart';
+import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/locator/i_repository_locator.dart';
 import 'package:wise_spends/util/singleton_util.dart';
 import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 
-class InLoadEditMoneyStorageEvent extends IEvent<EditMoneyStorageBloc> {
+class InLoadEditMoneyStorageEvent extends IEvent<MoneyStorageBloc> {
   final String selectedMoneyStorageId;
 
   InLoadEditMoneyStorageEvent(this.selectedMoneyStorageId);
@@ -16,7 +16,7 @@ class InLoadEditMoneyStorageEvent extends IEvent<EditMoneyStorageBloc> {
   @override
   Stream<IState<dynamic>> applyAsync({
     IState<dynamic>? currentState,
-    EditMoneyStorageBloc? bloc,
+    MoneyStorageBloc? bloc,
   }) async* {
     yield const UnEditMoneyStorageState(version: 0);
     SvngMoneyStorage? moneyStorage =

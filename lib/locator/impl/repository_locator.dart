@@ -20,7 +20,8 @@ class RepositoryLocator extends IRepositoryLocator {
         SingletonUtil.getSingleton<IGroupReferenceRepository>();
 
     if (repository == null) {
-      SingletonUtil.registerSingleton(GroupReferenceRepository());
+      SingletonUtil.registerSingleton<IGroupReferenceRepository>(
+          GroupReferenceRepository());
     }
 
     return SingletonUtil.getSingleton<IGroupReferenceRepository>()!;
@@ -32,7 +33,8 @@ class RepositoryLocator extends IRepositoryLocator {
         SingletonUtil.getSingleton<IMoneyStorageRepository>();
 
     if (repository == null) {
-      SingletonUtil.registerSingleton(MoneyStorageRepository());
+      SingletonUtil.registerSingleton<IMoneyStorageRepository>(
+          MoneyStorageRepository());
     }
 
     return SingletonUtil.getSingleton<IMoneyStorageRepository>()!;
@@ -44,7 +46,8 @@ class RepositoryLocator extends IRepositoryLocator {
         SingletonUtil.getSingleton<IReferenceRepository>();
 
     if (repository == null) {
-      SingletonUtil.registerSingleton(ReferenceRepository());
+      SingletonUtil.registerSingleton<IReferenceRepository>(
+          ReferenceRepository());
     }
 
     return SingletonUtil.getSingleton<IReferenceRepository>()!;
@@ -56,7 +59,7 @@ class RepositoryLocator extends IRepositoryLocator {
         SingletonUtil.getSingleton<ISavingRepository>();
 
     if (repository == null) {
-      SingletonUtil.registerSingleton(SavingRepository());
+      SingletonUtil.registerSingleton<ISavingRepository>(SavingRepository());
     }
 
     return SingletonUtil.getSingleton<ISavingRepository>()!;
@@ -68,7 +71,8 @@ class RepositoryLocator extends IRepositoryLocator {
         SingletonUtil.getSingleton<ITransactionRepository>();
 
     if (repository == null) {
-      SingletonUtil.registerSingleton(TransactionRepository());
+      SingletonUtil.registerSingleton<ITransactionRepository>(
+          TransactionRepository());
     }
 
     return SingletonUtil.getSingleton<ITransactionRepository>()!;
@@ -79,7 +83,7 @@ class RepositoryLocator extends IRepositoryLocator {
     IUserRepository? repository = SingletonUtil.getSingleton<IUserRepository>();
 
     if (repository == null) {
-      SingletonUtil.registerSingleton(UserRepository());
+      SingletonUtil.registerSingleton<IUserRepository>(UserRepository());
     }
 
     return SingletonUtil.getSingleton<IUserRepository>()!;

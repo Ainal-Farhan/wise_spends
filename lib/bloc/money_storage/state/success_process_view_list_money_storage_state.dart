@@ -1,17 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
+import 'package:wise_spends/bloc/money_storage/events/in_load_view_list_money_storage_event.dart';
+import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
 
 class SuccessProcessViewListMoneyStorageState
     extends IState<SuccessProcessViewListMoneyStorageState> {
   final String message;
-  final String nextPageRoute;
 
   const SuccessProcessViewListMoneyStorageState({
     required super.version,
     required this.message,
-    required this.nextPageRoute,
   });
 
   @override
@@ -25,7 +26,6 @@ class SuccessProcessViewListMoneyStorageState
       SuccessProcessViewListMoneyStorageState(
         version: version + 1,
         message: message,
-        nextPageRoute: nextPageRoute,
       );
 
   @override
@@ -33,16 +33,13 @@ class SuccessProcessViewListMoneyStorageState
       SuccessProcessViewListMoneyStorageState(
         version: version,
         message: message,
-        nextPageRoute: nextPageRoute,
       );
 
   @override
   Widget build(BuildContext context) {
     Timer(const Duration(milliseconds: 500), () {
-      Navigator.pushReplacementNamed(
-        context,
-        nextPageRoute,
-      );
+      BlocProvider.of<MoneyStorageBloc>(context)
+          .add(InLoadViewListMoneyStorageEvent());
     });
 
     final double screenHeight = MediaQuery.of(context).size.height;

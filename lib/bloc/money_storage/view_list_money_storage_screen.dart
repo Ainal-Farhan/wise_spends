@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage/events/in_load_view_list_money_storage_event.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_bloc.dart';
+import 'package:wise_spends/bloc/money_storage/events/in_load_view_list_money_storage_event.dart';
+import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
 
 class ViewListMoneyStorageScreen extends StatefulWidget {
   const ViewListMoneyStorageScreen({
-    required ViewListMoneyStorageBloc viewListMoneyStorageBloc,
+    required MoneyStorageBloc viewListMoneyStorageBloc,
     super.key,
   }) : _viewListMoneyStorageBloc = viewListMoneyStorageBloc;
 
-  final ViewListMoneyStorageBloc _viewListMoneyStorageBloc;
+  final MoneyStorageBloc _viewListMoneyStorageBloc;
 
   @override
   State<ViewListMoneyStorageScreen> createState() =>
@@ -22,7 +22,7 @@ class _ViewListMoneyStorageScreenState
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<ViewListMoneyStorageBloc>(context)
+    BlocProvider.of<MoneyStorageBloc>(context)
         .add(InLoadViewListMoneyStorageEvent());
   }
 
@@ -33,7 +33,7 @@ class _ViewListMoneyStorageScreenState
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ViewListMoneyStorageBloc, IState<dynamic>>(
+    return BlocBuilder<MoneyStorageBloc, IState<dynamic>>(
         bloc: widget._viewListMoneyStorageBloc,
         builder: (
           BuildContext context,

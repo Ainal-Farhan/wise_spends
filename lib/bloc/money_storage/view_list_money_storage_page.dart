@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_bloc.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_screen.dart';
+import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
+import 'package:wise_spends/bloc/money_storage/view_list_money_storage_screen.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
 
@@ -19,7 +19,7 @@ class _ViewListMoneyStoragePageState extends State<ViewListMoneyStoragePage> {
   @override
   Widget build(BuildContext context) {
     final viewListMoneyStorageBloc =
-        BlocProvider.of<ViewListMoneyStorageBloc>(context);
+        BlocProvider.of<MoneyStorageBloc>(context);
     return IThLoggedInMainTemplate(
       pageRoute: ViewListMoneyStoragePage.routeName,
       screen: ViewListMoneyStorageScreen(

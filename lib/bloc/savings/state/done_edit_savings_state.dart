@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
+import 'package:wise_spends/bloc/savings/event/load_list_savings_event.dart';
+import 'package:wise_spends/bloc/savings/savings_bloc.dart';
 
 class DoneEditSavingsState extends IState<DoneEditSavingsState> {
   final String nextScreenRoute;
@@ -21,8 +24,8 @@ class DoneEditSavingsState extends IState<DoneEditSavingsState> {
           Text(message),
           IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () =>
-                Navigator.pushReplacementNamed(context, nextScreenRoute),
+            onPressed: () => BlocProvider.of<SavingsBloc>(context)
+                .add(LoadListSavingsEvent()),
           ),
         ],
       ),

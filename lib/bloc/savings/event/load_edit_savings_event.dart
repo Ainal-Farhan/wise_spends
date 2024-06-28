@@ -1,7 +1,7 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
-import 'package:wise_spends/bloc/edit_savings/edit_savings_bloc.dart';
-import 'package:wise_spends/bloc/edit_savings/state/in_edit_savings_state.dart';
-import 'package:wise_spends/bloc/edit_savings/state/un_edit_savings_state.dart';
+import 'package:wise_spends/bloc/savings/savings_bloc.dart';
+import 'package:wise_spends/bloc/savings/state/in_edit_savings_state.dart';
+import 'package:wise_spends/bloc/savings/state/un_edit_savings_state.dart';
 import 'package:wise_spends/bloc/i_event.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/db/app_database.dart';
@@ -9,7 +9,7 @@ import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/util/singleton_util.dart';
 
-class LoadEditSavingsEvent extends IEvent<EditSavingsBloc> {
+class LoadEditSavingsEvent extends IEvent<SavingsBloc> {
   final String savingId;
   final ISavingManager _savingsManager =
       SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
@@ -21,7 +21,7 @@ class LoadEditSavingsEvent extends IEvent<EditSavingsBloc> {
 
   @override
   Stream<IState<dynamic>> applyAsync(
-      {IState<dynamic>? currentState, EditSavingsBloc? bloc}) async* {
+      {IState<dynamic>? currentState, SavingsBloc? bloc}) async* {
     yield const UnEditSavingsState(version: 0);
     SvngSaving? saving = await _savingsManager.getSavingById(savingId);
     if (saving != null) {
