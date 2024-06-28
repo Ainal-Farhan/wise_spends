@@ -1,5 +1,6 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/add_money_storage_bloc.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/events/in_save_new_add_money_storage_event.dart';
 import 'package:wise_spends/constant/saving/money_storage_constant.dart';
@@ -57,8 +58,9 @@ class _ThAddMoneyStorageFormDefaultState
         _addMoneyStorageFormVO.type = _typeController.dropDownValue!.value ??
             MoneyStorageConstant
                 .moneyStorageTypeDropDownValueModelList.first.value;
-        AddMoneyStorageBloc().add(InSaveAddMoneyStorageEvent(
-            addMoneyStorageFormVO: _addMoneyStorageFormVO));
+        BlocProvider.of<AddMoneyStorageBloc>(context).add(
+            InSaveAddMoneyStorageEvent(
+                addMoneyStorageFormVO: _addMoneyStorageFormVO));
       } else {
         showSnackBarMessage(context, 'Please fill every field');
       }

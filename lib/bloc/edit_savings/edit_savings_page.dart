@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/edit_savings/edit_savings_bloc.dart';
 import 'package:wise_spends/bloc/edit_savings/edit_savings_screen.dart';
 import 'package:wise_spends/router/app_router.dart';
@@ -18,17 +19,16 @@ class EditSavingsPage extends StatefulWidget {
 }
 
 class _EditSavingsPageState extends State<EditSavingsPage> {
-  final _editSavingsBloc = EditSavingsBloc();
-
   @override
   Widget build(BuildContext context) {
+    final editSavingsBloc = BlocProvider.of<EditSavingsBloc>(context);
     return IThLoggedInMainTemplate(
       screen: EditSavingsScreen(
-        editSavingsBloc: _editSavingsBloc,
+        editSavingsBloc: editSavingsBloc,
         savingId: widget.savingId,
       ),
       pageRoute: EditSavingsPage.routeName,
-      bloc: _editSavingsBloc,
+      bloc: editSavingsBloc,
     );
   }
 }

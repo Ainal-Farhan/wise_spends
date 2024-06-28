@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/savings/event/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/savings/event/load_saving_transaction_event.dart';
 import 'package:wise_spends/bloc/savings/index.dart';
@@ -21,6 +22,7 @@ class ListSavingsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final savingsBloc = BlocProvider.of<SavingsBloc>(context);
     Map<SavingTableType, List<ListTilesOneVO>> savingListMap = {};
 
     for (SavingTableType savingTableType in SavingTableType.values) {
@@ -55,8 +57,9 @@ class ListSavingsWidget extends StatelessWidget {
             ],
           ),
           trailingWidget: IconButton(
-            onPressed: () => SavingsBloc().add(LoadSavingTransactionEvent(
-                savingId: _listSavingVOList[index].saving.id)),
+            onPressed: () => BlocProvider.of<SavingsBloc>(context).add(
+                LoadSavingTransactionEvent(
+                    savingId: _listSavingVOList[index].saving.id)),
             icon: const Icon(Icons.attach_money_outlined),
           ),
           onTap: () async => Navigator.pushReplacementNamed(
@@ -73,7 +76,7 @@ class ListSavingsWidget extends StatelessWidget {
                 await SingletonUtil.getSingleton<IManagerLocator>()!
                     .getSavingManager()
                     .deleteSelectedSaving(_listSavingVOList[index].saving.id);
-                SavingsBloc().add(LoadListSavingsEvent());
+                savingsBloc.add(LoadListSavingsEvent());
               },
             );
           },

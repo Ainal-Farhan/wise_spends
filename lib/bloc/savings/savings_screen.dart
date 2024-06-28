@@ -22,7 +22,7 @@ class SavingsScreenState extends State<SavingsScreen> {
   @override
   void initState() {
     super.initState();
-    SavingsBloc().add(LoadListSavingsEvent());
+    BlocProvider.of<SavingsBloc>(context).add(LoadListSavingsEvent());
   }
 
   @override
@@ -33,7 +33,7 @@ class SavingsScreenState extends State<SavingsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SavingsBloc, IState<dynamic>>(
-        bloc: SavingsBloc(),
+        bloc: BlocProvider.of<SavingsBloc>(context),
         builder: (
           BuildContext context,
           IState<dynamic> currentState,

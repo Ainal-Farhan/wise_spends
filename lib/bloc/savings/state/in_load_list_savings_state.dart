@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/savings/components/list_savings/list_savings_widget.dart';
 import 'package:wise_spends/bloc/savings/event/load_add_savings_form_event.dart';
@@ -37,7 +38,8 @@ class InLoadListSavingsState extends IState<InLoadListSavingsState> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IThPlusButtonRound(
-                onTap: () => SavingsBloc().add(LoadAddSavingsFormEvent()),
+                onTap: () => BlocProvider.of<SavingsBloc>(context)
+                    .add(LoadAddSavingsFormEvent()),
               ),
             ],
           ),

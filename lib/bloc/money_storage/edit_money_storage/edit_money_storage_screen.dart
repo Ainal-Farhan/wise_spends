@@ -9,7 +9,7 @@ class EditMoneyStorageScreen extends StatefulWidget {
     required EditMoneyStorageBloc editMoneyStorageBloc,
     required this.selectedMoneyStorageId,
     super.key,
-  })  : _editMoneyStorageBloc = editMoneyStorageBloc;
+  }) : _editMoneyStorageBloc = editMoneyStorageBloc;
 
   final String selectedMoneyStorageId;
   final EditMoneyStorageBloc _editMoneyStorageBloc;
@@ -22,7 +22,7 @@ class _EditMoneyStorageScreenState extends State<EditMoneyStorageScreen> {
   @override
   void initState() {
     super.initState();
-    EditMoneyStorageBloc()
+    widget._editMoneyStorageBloc
         .add(InLoadEditMoneyStorageEvent(widget.selectedMoneyStorageId));
   }
 

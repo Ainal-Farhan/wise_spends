@@ -1,5 +1,6 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/money_storage/edit_money_storage/edit_money_storage_bloc.dart';
 import 'package:wise_spends/bloc/money_storage/edit_money_storage/events/in_update_edit_money_storage_event.dart';
 import 'package:wise_spends/constant/saving/money_storage_constant.dart';
@@ -74,7 +75,8 @@ class _ThEditMoneyStorageFormDefaultState
             widget._typeController.dropDownValue!.value ??
                 MoneyStorageConstant
                     .moneyStorageTypeDropDownValueModelList.first.value;
-        EditMoneyStorageBloc().add(InUpdateEditMoneyStorageEvent(
+        BlocProvider.of<EditMoneyStorageBloc>(context)
+            .add(InUpdateEditMoneyStorageEvent(
           editMoneyStorageFormVO: widget.editMoneyStorageFormVO,
         ));
       } else {

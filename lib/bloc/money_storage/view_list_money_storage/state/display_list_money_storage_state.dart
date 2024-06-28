@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/money_storage/view_list_money_storage/events/on_delete_view_list_money_storage_event.dart';
 import 'package:wise_spends/bloc/money_storage/view_list_money_storage/view_list_money_storage_bloc.dart';
@@ -10,7 +11,8 @@ import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_
 import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
 import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 
-class DisplayListMoneyStorageState extends IState<DisplayListMoneyStorageState> {
+class DisplayListMoneyStorageState
+    extends IState<DisplayListMoneyStorageState> {
   final List<MoneyStorageVO> moneyStorageVOList;
 
   const DisplayListMoneyStorageState({
@@ -24,7 +26,7 @@ class DisplayListMoneyStorageState extends IState<DisplayListMoneyStorageState> 
     List<ListTilesOneVO> moneyStorageListTilesOneVOList = [];
 
     for (int index = 0; index < moneyStorageVOList.length; index++) {
-      bool isMinus =  moneyStorageVOList[index].amount < 0;
+      bool isMinus = moneyStorageVOList[index].amount < 0;
       moneyStorageListTilesOneVOList.add(
         ListTilesOneVO(
           index: index,
@@ -47,7 +49,7 @@ class DisplayListMoneyStorageState extends IState<DisplayListMoneyStorageState> 
             showDeleteDialog(
               context: context,
               onDelete: () async {
-                ViewListMoneyStorageBloc()
+                BlocProvider.of<ViewListMoneyStorageBloc>(context)
                     .add(OnDeleteViewListMoneyStorageEvent(
                   moneyStorageVOList[index].moneyStorage.id,
                 ));

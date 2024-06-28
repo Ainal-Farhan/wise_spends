@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/savings/event/save_saving_transaction_event.dart';
 import 'package:wise_spends/bloc/savings/index.dart';
 import 'package:wise_spends/constant/saving/saving_constant.dart';
@@ -39,7 +40,7 @@ class SavingTransactionFormWidget extends StatelessWidget {
         _savingTransactionFormVO.transactionAmount =
             double.parse(_transactionAmountController.text);
         _savingTransactionFormVO.typeOfTransaction = _typeOfTransaction;
-        SavingsBloc().add(SaveSavingTransactionEvent(
+        BlocProvider.of<SavingsBloc>(context).add(SaveSavingTransactionEvent(
             savingTransactionFormVO: _savingTransactionFormVO));
       } else {
         showSnackBarMessage(context, 'Please fill every field');

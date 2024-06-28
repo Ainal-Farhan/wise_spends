@@ -8,7 +8,7 @@ class AddMoneyStorageScreen extends StatefulWidget {
   const AddMoneyStorageScreen({
     required AddMoneyStorageBloc addMoneyStorageBloc,
     super.key,
-  })  : _addMoneyStorageBloc = addMoneyStorageBloc;
+  }) : _addMoneyStorageBloc = addMoneyStorageBloc;
 
   final AddMoneyStorageBloc _addMoneyStorageBloc;
 
@@ -20,7 +20,7 @@ class _AddMoneyStorageScreenState extends State<AddMoneyStorageScreen> {
   @override
   void initState() {
     super.initState();
-    AddMoneyStorageBloc().add(InLoadAddMoneyStorageEvent());
+    widget._addMoneyStorageBloc.add(InLoadAddMoneyStorageEvent());
   }
 
   @override

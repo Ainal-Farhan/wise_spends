@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/add_money_storage_bloc.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/add_money_storage_screen.dart';
 import 'package:wise_spends/router/app_router.dart';
@@ -14,16 +15,15 @@ class AddMoneyStoragePage extends StatefulWidget {
 }
 
 class _AddMoneyStoragePageState extends State<AddMoneyStoragePage> {
-  final _addMoneyStorageBloc = AddMoneyStorageBloc();
-
   @override
   Widget build(BuildContext context) {
+    final addMoneyStorageBloc = BlocProvider.of<AddMoneyStorageBloc>(context);
     return IThLoggedInMainTemplate(
       pageRoute: AddMoneyStoragePage.routeName,
       screen: AddMoneyStorageScreen(
-        addMoneyStorageBloc: _addMoneyStorageBloc,
+        addMoneyStorageBloc: addMoneyStorageBloc,
       ),
-      bloc: _addMoneyStorageBloc,
+      bloc: addMoneyStorageBloc,
     );
   }
 }

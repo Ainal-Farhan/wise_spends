@@ -8,7 +8,7 @@ class ViewListMoneyStorageScreen extends StatefulWidget {
   const ViewListMoneyStorageScreen({
     required ViewListMoneyStorageBloc viewListMoneyStorageBloc,
     super.key,
-  })  : _viewListMoneyStorageBloc = viewListMoneyStorageBloc;
+  }) : _viewListMoneyStorageBloc = viewListMoneyStorageBloc;
 
   final ViewListMoneyStorageBloc _viewListMoneyStorageBloc;
 
@@ -22,7 +22,8 @@ class _ViewListMoneyStorageScreenState
   @override
   void initState() {
     super.initState();
-    ViewListMoneyStorageBloc().add(InLoadViewListMoneyStorageEvent());
+    BlocProvider.of<ViewListMoneyStorageBloc>(context)
+        .add(InLoadViewListMoneyStorageEvent());
   }
 
   @override
