@@ -16,45 +16,72 @@ import 'package:wise_spends/util/singleton_util.dart';
 class RepositoryLocator extends IRepositoryLocator {
   @override
   IGroupReferenceRepository getGroupReferenceRepository() {
-    return SingletonUtil.getSingleton<IGroupReferenceRepository>();
+    IGroupReferenceRepository? repository =
+        SingletonUtil.getSingleton<IGroupReferenceRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton(GroupReferenceRepository());
+    }
+
+    return SingletonUtil.getSingleton<IGroupReferenceRepository>()!;
   }
 
   @override
   IMoneyStorageRepository getMoneyStorageRepository() {
-    return SingletonUtil.getSingleton<IMoneyStorageRepository>();
+    IMoneyStorageRepository? repository =
+        SingletonUtil.getSingleton<IMoneyStorageRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton(MoneyStorageRepository());
+    }
+
+    return SingletonUtil.getSingleton<IMoneyStorageRepository>()!;
   }
 
   @override
   IReferenceRepository getReferenceRepository() {
-    return SingletonUtil.getSingleton<IReferenceRepository>();
+    IReferenceRepository? repository =
+        SingletonUtil.getSingleton<IReferenceRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton(ReferenceRepository());
+    }
+
+    return SingletonUtil.getSingleton<IReferenceRepository>()!;
   }
 
   @override
   ISavingRepository getSavingRepository() {
-    return SingletonUtil.getSingleton<ISavingRepository>();
+    ISavingRepository? repository =
+        SingletonUtil.getSingleton<ISavingRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton(SavingRepository());
+    }
+
+    return SingletonUtil.getSingleton<ISavingRepository>()!;
   }
 
   @override
   ITransactionRepository getTransactionRepository() {
-    return SingletonUtil.getSingleton<ITransactionRepository>();
+    ITransactionRepository? repository =
+        SingletonUtil.getSingleton<ITransactionRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton(TransactionRepository());
+    }
+
+    return SingletonUtil.getSingleton<ITransactionRepository>()!;
   }
 
   @override
   IUserRepository getUserRepository() {
-    return SingletonUtil.getSingleton<IUserRepository>();
-  }
+    IUserRepository? repository = SingletonUtil.getSingleton<IUserRepository>();
 
-  @override
-  void registerLocator() {
-    SingletonUtil.registerSingleton<IUserRepository>(UserRepository());
-    SingletonUtil.registerSingleton<IGroupReferenceRepository>(
-        GroupReferenceRepository());
-    SingletonUtil.registerSingleton<IReferenceRepository>(
-        ReferenceRepository());
-    SingletonUtil.registerSingleton<IMoneyStorageRepository>(
-        MoneyStorageRepository());
-    SingletonUtil.registerSingleton<ISavingRepository>(SavingRepository());
-    SingletonUtil.registerSingleton<ITransactionRepository>(
-        TransactionRepository());
+    if (repository == null) {
+      SingletonUtil.registerSingleton(UserRepository());
+    }
+
+    return SingletonUtil.getSingleton<IUserRepository>()!;
   }
 }

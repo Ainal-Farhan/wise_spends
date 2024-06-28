@@ -4,7 +4,6 @@ import 'package:wise_spends/bloc/edit_savings/edit_savings_bloc.dart';
 import 'package:wise_spends/bloc/edit_savings/edit_savings_page.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/login/index.dart';
-import 'package:wise_spends/bloc/login/state/un_login_state.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/add_money_storage_bloc.dart';
 import 'package:wise_spends/bloc/money_storage/add_money_storage/add_money_storage_page.dart';
 import 'package:wise_spends/bloc/money_storage/edit_money_storage/edit_money_storage_bloc.dart';
@@ -19,7 +18,6 @@ import 'package:wise_spends/locator/impl/manager_locator.dart';
 import 'package:wise_spends/locator/impl/repository_locator.dart';
 import 'package:wise_spends/locator/impl/service_locator.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/theme/i_theme_manager.dart';
 import 'package:wise_spends/util/singleton_util.dart';
 
 Future<void> main() async {
@@ -30,7 +28,7 @@ Future<void> main() async {
   // Do any requests before start the app
   await () async {
     await SingletonUtil.getSingleton<IManagerLocator>()
-        .getStartupManager()
+        ?.getStartupManager()
         .onRunApp("Ainal");
   }();
 
@@ -38,7 +36,7 @@ Future<void> main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<LoginBloc>(
-          create: (context) => LoginBloc(const UnLoginState(version: 0)),
+          create: (context) => LoginBloc(),
           child: BlocBuilder<LoginBloc, IState<dynamic>>(
             builder: (context, state) => const LoginPage(),
           ),
@@ -98,7 +96,10 @@ class MyApp extends StatelessWidget {
 
   ThemeData get theme => ThemeData.light().copyWith(
         brightness: Brightness.light,
-        primaryColor: IThemeManager().colorTheme.backgroundBlue,
+        primaryColor: SingletonUtil.getSingleton<IManagerLocator>()!
+            .getThemeManager()
+            .colorTheme
+            .backgroundBlue,
       );
 }
 
@@ -106,8 +107,4 @@ void _registerSingleton() {
   SingletonUtil.registerSingleton<IRepositoryLocator>(RepositoryLocator());
   SingletonUtil.registerSingleton<IManagerLocator>(ManagerLocator());
   SingletonUtil.registerSingleton<IServiceLocator>(ServiceLocator());
-
-  SingletonUtil.getSingleton<IRepositoryLocator>().registerLocator();
-  SingletonUtil.getSingleton<IServiceLocator>().registerLocator();
-  SingletonUtil.getSingleton<IManagerLocator>().registerLocator();
 }

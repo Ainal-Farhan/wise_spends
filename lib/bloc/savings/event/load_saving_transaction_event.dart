@@ -10,7 +10,7 @@ import 'package:wise_spends/util/singleton_util.dart';
 class LoadSavingTransactionEvent extends IEvent<SavingsBloc> {
   final String savingId;
   final ISavingManager _savingsManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
   LoadSavingTransactionEvent({required this.savingId});
 

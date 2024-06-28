@@ -12,7 +12,7 @@ import 'package:wise_spends/util/singleton_util.dart';
 class LoadEditSavingsEvent extends IEvent<EditSavingsBloc> {
   final String savingId;
   final ISavingManager _savingsManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
   @override
   String toString() => 'LoadEditSavingsEvent';

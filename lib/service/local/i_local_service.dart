@@ -1,7 +1,7 @@
 import 'package:wise_spends/repository/i_crud_repository.dart';
 import 'package:wise_spends/service/i_service.dart';
 
-abstract class ILocalService implements IService {
+abstract class ILocalService extends IService {
   final ICrudRepository crudRepository;
 
   ILocalService(this.crudRepository);

@@ -10,13 +10,13 @@ import 'package:wise_spends/util/singleton_util.dart';
 
 class SavingService extends ISavingService {
   final ITransactionRepository _transactionRepository =
-      SingletonUtil.getSingleton<IRepositoryLocator>()
+      SingletonUtil.getSingleton<IRepositoryLocator>()!
           .getTransactionRepository();
   final ISavingRepository _savingRepository =
-      SingletonUtil.getSingleton<IRepositoryLocator>().getSavingRepository();
+      SingletonUtil.getSingleton<IRepositoryLocator>()!.getSavingRepository();
 
   SavingService()
-      : super(SingletonUtil.getSingleton<IRepositoryLocator>()
+      : super(SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getSavingRepository());
 
   @override

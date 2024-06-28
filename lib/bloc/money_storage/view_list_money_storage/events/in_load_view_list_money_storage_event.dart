@@ -10,7 +10,7 @@ import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
 
 class InLoadViewListMoneyStorageEvent extends IEvent<ViewListMoneyStorageBloc> {
   final ISavingManager _savingManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
   @override
   Stream<IState<dynamic>> applyAsync({

@@ -10,15 +10,9 @@ import 'package:wise_spends/theme/widgets/i_widget_theme.dart';
 import 'package:wise_spends/constant/app/config_constant.dart';
 import 'package:wise_spends/util/singleton_util.dart';
 
-class ThemeManager implements IThemeManager {
-  ThemeManager._internal();
-  static final ThemeManager _themeManager = ThemeManager._internal();
-  factory ThemeManager() {
-    return _themeManager;
-  }
-
+class ThemeManager extends IThemeManager {
   final IConfigurationManager _configurationManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getConfigurationManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getConfigurationManager();
   late ITheme _currentTheme;
   late IWidgetTheme _widgetTheme;
   late IColorTheme _colorTheme;

@@ -20,7 +20,7 @@ class InLoadEditMoneyStorageEvent extends IEvent<EditMoneyStorageBloc> {
   }) async* {
     yield const UnEditMoneyStorageState(version: 0);
     SvngMoneyStorage? moneyStorage =
-        await SingletonUtil.getSingleton<IRepositoryLocator>()
+        await SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getMoneyStorageRepository()
             .findById(id: selectedMoneyStorageId);
 

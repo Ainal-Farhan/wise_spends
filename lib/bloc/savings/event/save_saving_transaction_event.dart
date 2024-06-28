@@ -11,7 +11,7 @@ import 'package:wise_spends/vo/impl/saving/saving_transaction_form_vo.dart';
 class SaveSavingTransactionEvent extends IEvent<SavingsBloc> {
   final SavingTransactionFormVO savingTransactionFormVO;
   final ISavingManager _savingsManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
   SaveSavingTransactionEvent({
     required this.savingTransactionFormVO,

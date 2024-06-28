@@ -3,11 +3,12 @@ import 'package:wise_spends/bloc/savings/event/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/savings/event/load_saving_transaction_event.dart';
 import 'package:wise_spends/bloc/savings/index.dart';
 import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
-import 'package:wise_spends/manager/i_saving_manager.dart';
+import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/router/screen_argument.dart';
 import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
+import 'package:wise_spends/util/singleton_util.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 
@@ -69,7 +70,8 @@ class ListSavingsWidget extends StatelessWidget {
             showDeleteDialog(
               context: context,
               onDelete: () async {
-                await ISavingManager()
+                await SingletonUtil.getSingleton<IManagerLocator>()!
+                    .getSavingManager()
                     .deleteSelectedSaving(_listSavingVOList[index].saving.id);
                 SavingsBloc().add(LoadListSavingsEvent());
               },

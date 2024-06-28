@@ -13,7 +13,7 @@ class InSaveAddMoneyStorageEvent extends IEvent<AddMoneyStorageBloc> {
   final AddMoneyStorageFormVO addMoneyStorageFormVO;
   
   final ISavingManager _savingManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
   InSaveAddMoneyStorageEvent({
     required this.addMoneyStorageFormVO,

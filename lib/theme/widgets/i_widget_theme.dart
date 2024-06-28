@@ -1,3 +1,4 @@
+import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/theme/i_theme_manager.dart';
 import 'package:wise_spends/theme/widgets/components/appbar/i_th_logged_in_appbar.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button.dart';
@@ -22,9 +23,10 @@ import 'package:wise_spends/theme/widgets/components/forms/saving/i_th_edit_savi
 import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/theme/widgets/components/navbar/i_th_logged_in_bottom_navbar.dart';
 import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
+import 'package:wise_spends/util/singleton_util.dart';
 
 abstract class IWidgetTheme {
-  static final IThemeManager themeManager = IThemeManager();
+  static final IThemeManager themeManager = SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
   static final List<Type> widgetThemeList = List.unmodifiable([
     //templates
     IThLoggedInMainTemplate,

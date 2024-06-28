@@ -4,6 +4,6 @@ import 'package:wise_spends/util/singleton_util.dart';
 
 class GroupReferenceService extends IGroupReferenceService {
   GroupReferenceService()
-      : super(SingletonUtil.getSingleton<IRepositoryLocator>()
+      : super(SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getGroupReferenceRepository());
 }

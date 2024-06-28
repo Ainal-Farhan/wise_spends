@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:wise_spends/manager/i_login_manager.dart';
 
-class LoginManager implements ILoginManager {
+class LoginManager extends ILoginManager {
   @override
   Future<void> loadAsync(String token) async {
     /// write from keystore/keychain

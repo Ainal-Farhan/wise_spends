@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/theme/i_theme_manager.dart';
+import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/account_tile_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/control_tile_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/menu_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/txt.dart';
+import 'package:wise_spends/util/singleton_util.dart';
 
 class BlackIconTileWidget extends StatelessWidget {
   final List<MenuWidget> _menuWidgets;
@@ -24,7 +25,10 @@ class BlackIconTileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 200,
-      color: IThemeManager().colorTheme.complexDrawerBlack,
+      color: SingletonUtil.getSingleton<IManagerLocator>()!
+          .getThemeManager()
+          .colorTheme
+          .complexDrawerBlack,
       child: Column(
         children: [
           ControlTileWidget(expandOrShrinkDrawer: _expandOrShrinkDrawer),

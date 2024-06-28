@@ -7,7 +7,7 @@ abstract class ICrudRepository<
     B extends TableInfo<A, D>,
     C extends UpdateCompanion<D>,
     D extends Insertable<D>> extends IStreamRepository<A, B, C, D> {
-  const ICrudRepository(super.db, super.table);
+  ICrudRepository(super.db, super.table);
 
   Future<D> save(final item) async {
     return await db.into(table).insertReturning(item);

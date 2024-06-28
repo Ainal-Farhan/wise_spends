@@ -18,15 +18,15 @@ import 'package:wise_spends/vo/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 
-class SavingManager implements ISavingManager {
+class SavingManager extends ISavingManager {
   final ISavingService _savingService =
-      SingletonUtil.getSingleton<IServiceLocator>().getSavingService();
+      SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
   final ITransactionService _transactionService =
-      SingletonUtil.getSingleton<IServiceLocator>().getTransactionService();
+      SingletonUtil.getSingleton<IServiceLocator>()!.getTransactionService();
   final IMoneyStorageService _moneyStorageService =
-      SingletonUtil.getSingleton<IServiceLocator>().getMoneyStorageService();
+      SingletonUtil.getSingleton<IServiceLocator>()!.getMoneyStorageService();
   final IStartupManager _startupManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getStartupManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
 
   @override
   Future<List<SavingWithTransactions>> loadSavingWithTransactionsAsync() async {
@@ -169,7 +169,7 @@ class SavingManager implements ISavingManager {
     try {
       // get money storage
       SvngMoneyStorage? moneyStorage =
-          await SingletonUtil.getSingleton<IRepositoryLocator>()
+          await SingletonUtil.getSingleton<IRepositoryLocator>()!
               .getMoneyStorageRepository()
               .findById(id: id);
 

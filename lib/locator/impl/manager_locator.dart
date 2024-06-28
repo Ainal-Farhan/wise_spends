@@ -18,49 +18,81 @@ import 'package:wise_spends/util/singleton_util.dart';
 class ManagerLocator extends IManagerLocator {
   @override
   IHomeLoggedInManager getHomeLoggedInManager() {
-    return SingletonUtil.getSingleton<IHomeLoggedInManager>();
+    IHomeLoggedInManager? manager =
+        SingletonUtil.getSingleton<IHomeLoggedInManager>();
+
+    if (manager == null) {
+      SingletonUtil.registerSingleton(HomeLoggedInManager());
+    }
+
+    return SingletonUtil.getSingleton<IHomeLoggedInManager>()!;
   }
 
   @override
   ILoginManager getLoginManager() {
-    return SingletonUtil.getSingleton<ILoginManager>();
+    ILoginManager? manager = SingletonUtil.getSingleton<ILoginManager>();
+
+    if (manager == null) {
+      SingletonUtil.registerSingleton(LoginManager());
+    }
+
+    return SingletonUtil.getSingleton<ILoginManager>()!;
   }
 
   @override
   ISavingManager getSavingManager() {
-    return SingletonUtil.getSingleton<ISavingManager>();
+    ISavingManager? manager = SingletonUtil.getSingleton<ISavingManager>();
+
+    if (manager == null) {
+      SingletonUtil.registerSingleton(SavingManager());
+    }
+
+    return SingletonUtil.getSingleton<ISavingManager>()!;
   }
 
   @override
   IStartupManager getStartupManager() {
-    return SingletonUtil.getSingleton<IStartupManager>();
+    IStartupManager? manager = SingletonUtil.getSingleton<IStartupManager>();
+
+    if (manager == null) {
+      SingletonUtil.registerSingleton(StartupManager());
+    }
+
+    return SingletonUtil.getSingleton<IStartupManager>()!;
   }
 
   @override
   ITransactionManager getTransactionManager() {
-    return SingletonUtil.getSingleton<ITransactionManager>();
+    ITransactionManager? manager =
+        SingletonUtil.getSingleton<ITransactionManager>();
+
+    if (manager == null) {
+      SingletonUtil.registerSingleton(TransactionManager());
+    }
+
+    return SingletonUtil.getSingleton<ITransactionManager>()!;
   }
 
   @override
   IConfigurationManager getConfigurationManager() {
-    return SingletonUtil.getSingleton<IConfigurationManager>();
+    IConfigurationManager? manager =
+        SingletonUtil.getSingleton<IConfigurationManager>();
+
+    if (manager == null) {
+      SingletonUtil.registerSingleton(ConfigurationManager());
+    }
+
+    return SingletonUtil.getSingleton<IConfigurationManager>()!;
   }
 
   @override
   IThemeManager getThemeManager() {
-    return SingletonUtil.getSingleton<IThemeManager>();
-  }
+    IThemeManager? manager = SingletonUtil.getSingleton<IThemeManager>();
 
-  @override
-  void registerLocator() {
-    SingletonUtil.registerSingleton<IConfigurationManager>(
-        ConfigurationManager());
-    SingletonUtil.registerSingleton<IHomeLoggedInManager>(
-        HomeLoggedInManager());
-    SingletonUtil.registerSingleton<IThemeManager>(ThemeManager());
-    SingletonUtil.registerSingleton<ILoginManager>(LoginManager());
-    SingletonUtil.registerSingleton<IStartupManager>(StartupManager());
-    SingletonUtil.registerSingleton<ISavingManager>(SavingManager());
-    SingletonUtil.registerSingleton<ITransactionManager>(TransactionManager());
+    if (manager == null) {
+      SingletonUtil.registerSingleton(ThemeManager());
+    }
+
+    return SingletonUtil.getSingleton<IThemeManager>()!;
   }
 }

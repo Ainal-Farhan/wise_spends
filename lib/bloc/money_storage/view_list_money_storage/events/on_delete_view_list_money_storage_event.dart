@@ -11,7 +11,7 @@ import 'package:wise_spends/util/singleton_util.dart';
 class OnDeleteViewListMoneyStorageEvent extends IEvent<ViewListMoneyStorageBloc> {
   
   final ISavingManager _savingManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
       
   final String selectedMoneyStorageId;
 

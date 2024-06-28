@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/theme/i_theme_manager.dart';
+import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/sub_menu_widget.dart';
+import 'package:wise_spends/util/singleton_util.dart';
 
 class MenuListWidget extends StatelessWidget {
   final List<SubMenuWidget> submenus;
@@ -19,7 +20,10 @@ class MenuListWidget extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: isValidSubMenu
-            ? IThemeManager().colorTheme.complexDrawerBlueGrey
+            ? SingletonUtil.getSingleton<IManagerLocator>()!
+                .getThemeManager()
+                .colorTheme
+                .complexDrawerBlueGrey
             : Colors.transparent,
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(8),

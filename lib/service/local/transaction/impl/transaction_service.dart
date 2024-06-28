@@ -5,11 +5,11 @@ import 'package:wise_spends/util/singleton_util.dart';
 
 class TransactionService extends ITransactionService {
   TransactionService()
-      : super(SingletonUtil.getSingleton<IRepositoryLocator>()
+      : super(SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getTransactionRepository());
 
   final ITransactionRepository _transactionRepository =
-      SingletonUtil.getSingleton<IRepositoryLocator>()
+      SingletonUtil.getSingleton<IRepositoryLocator>()!
           .getTransactionRepository();
 
   @override

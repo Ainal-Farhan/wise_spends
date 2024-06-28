@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:wise_spends/manager/i_transaction_manager.dart';
 
-class TransactionManager implements ITransactionManager {
+class TransactionManager extends ITransactionManager {
   @override
   Future<void> loadAsync(String token) async {
     /// write from keystore/keychain

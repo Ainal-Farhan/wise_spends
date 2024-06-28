@@ -10,7 +10,7 @@ import 'package:wise_spends/util/singleton_util.dart';
 
 class LoadAddSavingsFormEvent extends IEvent<SavingsBloc> {
   final ISavingManager _savingsManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
   @override
   Stream<IState<dynamic>> applyAsync(

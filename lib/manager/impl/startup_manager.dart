@@ -8,15 +8,15 @@ import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/util/singleton_util.dart';
 
-class StartupManager implements IStartupManager {
+class StartupManager extends IStartupManager {
   static final IConfigurationManager _configurationManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getConfigurationManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getConfigurationManager();
 
   static final IThemeManager _themeManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getThemeManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
 
   final IUserService _userService =
-      SingletonUtil.getSingleton<IServiceLocator>().getUserService();
+      SingletonUtil.getSingleton<IServiceLocator>()!.getUserService();
 
   CmmnUser? _currentUser;
 

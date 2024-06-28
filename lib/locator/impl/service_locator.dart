@@ -16,43 +16,71 @@ import 'package:wise_spends/util/singleton_util.dart';
 class ServiceLocator extends IServiceLocator {
   @override
   IGroupReferenceService getGroupReferenceService() {
-    return SingletonUtil.getSingleton<IGroupReferenceService>();
+    IGroupReferenceService? service =
+        SingletonUtil.getSingleton<IGroupReferenceService>();
+
+    if (service == null) {
+      SingletonUtil.registerSingleton(GroupReferenceService());
+    }
+
+    return SingletonUtil.getSingleton<IGroupReferenceService>()!;
   }
 
   @override
   IMoneyStorageService getMoneyStorageService() {
-    return SingletonUtil.getSingleton<IMoneyStorageService>();
+    IMoneyStorageService? service =
+        SingletonUtil.getSingleton<IMoneyStorageService>();
+
+    if (service == null) {
+      SingletonUtil.registerSingleton(MoneyStorageService());
+    }
+
+    return SingletonUtil.getSingleton<IMoneyStorageService>()!;
   }
 
   @override
   IReferenceService getReferenceService() {
-    return SingletonUtil.getSingleton<IReferenceService>();
+    IReferenceService? service =
+        SingletonUtil.getSingleton<IReferenceService>();
+
+    if (service == null) {
+      SingletonUtil.registerSingleton(ReferenceService());
+    }
+
+    return SingletonUtil.getSingleton<IReferenceService>()!;
   }
 
   @override
   ISavingService getSavingService() {
-    return SingletonUtil.getSingleton<ISavingService>();
+    ISavingService? service = SingletonUtil.getSingleton<ISavingService>();
+
+    if (service == null) {
+      SingletonUtil.registerSingleton(SavingService());
+    }
+
+    return SingletonUtil.getSingleton<ISavingService>()!;
   }
 
   @override
   ITransactionService getTransactionService() {
-    return SingletonUtil.getSingleton<ITransactionService>();
+    ITransactionService? service =
+        SingletonUtil.getSingleton<ITransactionService>();
+
+    if (service == null) {
+      SingletonUtil.registerSingleton(TransactionService());
+    }
+
+    return SingletonUtil.getSingleton<ITransactionService>()!;
   }
 
   @override
   IUserService getUserService() {
-    return SingletonUtil.getSingleton<IUserService>();
-  }
+    IUserService? service = SingletonUtil.getSingleton<IUserService>();
 
-  @override
-  void registerLocator() {
-    SingletonUtil.registerSingleton<IUserService>(UserService());
-    SingletonUtil.registerSingleton<IGroupReferenceService>(
-        GroupReferenceService());
-    SingletonUtil.registerSingleton<IReferenceService>(ReferenceService());
-    SingletonUtil.registerSingleton<IMoneyStorageService>(
-        MoneyStorageService());
-    SingletonUtil.registerSingleton<ISavingService>(SavingService());
-    SingletonUtil.registerSingleton<ITransactionService>(TransactionService());
+    if (service == null) {
+      SingletonUtil.registerSingleton(UserService());
+    }
+
+    return SingletonUtil.getSingleton<IUserService>()!;
   }
 }

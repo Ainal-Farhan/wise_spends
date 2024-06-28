@@ -6,10 +6,10 @@ import 'package:wise_spends/util/singleton_util.dart';
 
 class UserService extends IUserService {
   final IUserRepository _userRepository =
-      SingletonUtil.getSingleton<IRepositoryLocator>().getUserRepository();
+      SingletonUtil.getSingleton<IRepositoryLocator>()!.getUserRepository();
 
   UserService()
-      : super(SingletonUtil.getSingleton<IRepositoryLocator>()
+      : super(SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getUserRepository());
 
   @override

@@ -1,3 +1,4 @@
-abstract class ILocator {
-  void registerLocator();
+import 'package:wise_spends/singleton/i_singleton.dart';
+
+abstract class ILocator extends ISingleton {
 }

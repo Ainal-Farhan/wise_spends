@@ -11,7 +11,7 @@ import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dar
 class InUpdateEditMoneyStorageEvent extends IEvent<EditMoneyStorageBloc> {
   final EditMoneyStorageFormVO editMoneyStorageFormVO;
   final ISavingManager _savingManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
   InUpdateEditMoneyStorageEvent({
     required this.editMoneyStorageFormVO,

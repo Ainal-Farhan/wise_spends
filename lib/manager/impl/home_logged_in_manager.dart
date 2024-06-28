@@ -2,7 +2,7 @@ import 'package:wise_spends/manager/i_home_logged_in_manager.dart';
 
 import 'dart:async';
 
-class HomeLoggedInManager implements IHomeLoggedInManager {
+class HomeLoggedInManager extends IHomeLoggedInManager {
   @override
   Future<void> loadAsync(String token) async {
     /// write from keystore/keychain

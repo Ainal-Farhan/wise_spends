@@ -12,7 +12,7 @@ import 'package:wise_spends/vo/impl/saving/edit_saving_form_vo.dart';
 class UpdateEditSavingsEvent with IEvent<EditSavingsBloc> {
   final EditSavingFormVO _editSavingFormVO;
   final ISavingManager _savingsManager =
-      SingletonUtil.getSingleton<IManagerLocator>().getSavingManager();
+      SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
   UpdateEditSavingsEvent(this._editSavingFormVO);
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/login/index.dart';
-import 'package:wise_spends/bloc/login/state/un_login_state.dart';
 import 'package:wise_spends/router/app_router.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,7 +12,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _loginBloc = LoginBloc(const UnLoginState(version: 0));
+  final _loginBloc = LoginBloc();
 
   @override
   Widget build(BuildContext context) {

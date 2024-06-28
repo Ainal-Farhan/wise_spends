@@ -6,11 +6,11 @@ import 'package:wise_spends/util/singleton_util.dart';
 
 class MoneyStorageService extends IMoneyStorageService {
   final IMoneyStorageRepository _moneyStorageRepository =
-      SingletonUtil.getSingleton<IRepositoryLocator>()
+      SingletonUtil.getSingleton<IRepositoryLocator>()!
           .getMoneyStorageRepository();
 
   MoneyStorageService()
-      : super(SingletonUtil.getSingleton<IRepositoryLocator>()
+      : super(SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getMoneyStorageRepository());
 
   @override

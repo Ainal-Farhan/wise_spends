@@ -3,17 +3,12 @@ import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/db/composite/saving_with_transactions.dart';
 import 'package:wise_spends/manager/i_manager.dart';
-import 'package:wise_spends/manager/impl/saving_manager.dart';
 import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 import 'package:wise_spends/vo/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 
 abstract class ISavingManager extends IManager {
-  factory ISavingManager() {
-    return SavingManager();
-  }
-
   Future<List<SavingWithTransactions>> loadSavingWithTransactionsAsync();
 
   Future<List<ListSavingVO>> loadListSavingVOList();
