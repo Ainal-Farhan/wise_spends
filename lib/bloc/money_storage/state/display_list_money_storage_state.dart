@@ -4,7 +4,7 @@ import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/money_storage/events/in_load_edit_money_storage_event.dart';
 import 'package:wise_spends/bloc/money_storage/events/in_load_add_money_storage_event.dart';
 import 'package:wise_spends/bloc/money_storage/events/on_delete_view_list_money_storage_event.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
+import 'package:wise_spends/bloc/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_plus_button_round.dart';
 import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';

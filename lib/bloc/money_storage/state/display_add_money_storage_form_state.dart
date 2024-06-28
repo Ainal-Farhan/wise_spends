@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/money_storage/events/in_load_view_list_money_storage_event.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
+import 'package:wise_spends/bloc/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
 import 'package:wise_spends/theme/widgets/components/forms/money_storage/i_th_add_money_storage_form.dart';
 

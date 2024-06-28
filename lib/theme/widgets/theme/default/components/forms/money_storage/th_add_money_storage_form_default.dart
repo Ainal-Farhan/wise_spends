@@ -2,7 +2,7 @@ import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/money_storage/events/in_save_new_add_money_storage_event.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage_bloc.dart';
+import 'package:wise_spends/bloc/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/constant/saving/money_storage_constant.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';

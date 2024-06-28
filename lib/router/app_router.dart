@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/login/login_page.dart';
-import 'package:wise_spends/bloc/money_storage/view_list_money_storage_page.dart';
+import 'package:wise_spends/bloc/money_storage/money_storage_page.dart';
 import 'package:wise_spends/bloc/savings/savings_page.dart';
 
 abstract class AppRouter {
@@ -20,7 +20,7 @@ abstract class AppRouter {
         return MaterialPageRoute(builder: (_) => const SavingsPage());
       case viewListMoneyStoragePageRoute:
         return MaterialPageRoute(
-            builder: (_) => const ViewListMoneyStoragePage());
+            builder: (_) => const MoneyStoragePage());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
