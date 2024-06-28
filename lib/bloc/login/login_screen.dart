@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/login/event/login_event_factory.dart';
 import 'package:wise_spends/bloc/login/index.dart';
-import 'package:wise_spends/bloc/login/state/error_login_state.dart';
 import 'package:wise_spends/bloc/login/state/login_state_factory.dart';
 import 'package:wise_spends/bloc/login/widgets/bottom_widget.dart';
 import 'package:wise_spends/bloc/login/widgets/center_widget/center_widget.dart';
@@ -52,24 +51,6 @@ class LoginScreenState extends State<LoginScreen> {
               .isLoginState(currentState, LoginStateConstant.unLoginState)) {
             return const Center(
               child: CircularProgressIndicator(),
-            );
-          }
-          if (LoginStateFactory()
-              .isLoginState(currentState, LoginStateConstant.errorLoginState)) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text((currentState as ErrorLoginState).message),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 32.0),
-                    child: ElevatedButton(
-                      onPressed: _load,
-                      child: const Text('reload'),
-                    ),
-                  ),
-                ],
-              ),
             );
           }
           if (LoginStateFactory()

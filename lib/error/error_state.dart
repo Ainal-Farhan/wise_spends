@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/bloc/edit_savings/edit_savings_bloc.dart';
-import 'package:wise_spends/bloc/edit_savings/event/load_edit_savings_event.dart';
+import 'package:wise_spends/bloc/i_bloc.dart';
+import 'package:wise_spends/bloc/i_event.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 
-class ErrorEditSavingsState extends IState<ErrorEditSavingsState> {
-  const ErrorEditSavingsState({super.version = 0, this.errorMessage = ''});
+class ErrorState<T extends IBloc<T>> extends IState<ErrorState> {
+  const ErrorState(this._bloc, {super.version = 0, this.errorMessage = ''});
 
+  final T _bloc;
   final String errorMessage;
 
   @override
-  String toString() => 'ErrorEditSavingsState';
+  String toString() => 'ErrorState: ${T.runtimeType.toString()}';
 
   @override
-  ErrorEditSavingsState getStateCopy() =>
-      ErrorEditSavingsState(version: version, errorMessage: errorMessage);
+  ErrorState getStateCopy() =>
+      ErrorState<T>(_bloc, version: version, errorMessage: errorMessage);
 
   @override
-  ErrorEditSavingsState getNewVersion() =>
-      ErrorEditSavingsState(version: version + 1, errorMessage: errorMessage);
+  ErrorState getNewVersion() =>
+      ErrorState<T>(_bloc, version: version + 1, errorMessage: errorMessage);
 
   @override
   List<Object> get props => [version, errorMessage];
@@ -35,7 +36,7 @@ class ErrorEditSavingsState extends IState<ErrorEditSavingsState> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
             ),
-            onPressed: () => EditSavingsBloc().add(LoadEditSavingsEvent('')),
+            onPressed: () => _bloc.add(_bloc.initialState as IEvent<T>),
             child: const Text('reload'),
           ),
         ),

@@ -1,5 +1,4 @@
 import 'package:wise_spends/bloc/i_state.dart';
-import 'package:wise_spends/bloc/login/state/error_login_state.dart';
 import 'package:wise_spends/bloc/login/state/in_login_state.dart';
 import 'package:wise_spends/bloc/login/state/un_login_state.dart';
 import 'package:wise_spends/constant/login/login_state_constant.dart';
@@ -21,7 +20,7 @@ class LoginStateFactory {
       case LoginStateConstant.unLoginState:
         return const UnLoginState(version: 0);
       default:
-        return const ErrorLoginState(version: 0, errorMessage: "");
+        return const UnLoginState(version: 0);
     }
   }
 
@@ -31,8 +30,6 @@ class LoginStateFactory {
         return loginState is InLoginState;
       case LoginStateConstant.unLoginState:
         return loginState is UnLoginState;
-      case LoginStateConstant.errorLoginState:
-        return loginState is ErrorLoginState;
       default:
         return false;
     }
