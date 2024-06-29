@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/bloc/login/index.dart';
+import 'package:wise_spends/bloc/login/event/load_login_event.dart';
+import 'package:wise_spends/bloc/login/login_bloc.dart';
+import 'package:wise_spends/bloc/login/login_screen.dart';
 import 'package:wise_spends/router/app_router.dart';
 
 class LoginPage extends StatefulWidget {
@@ -21,7 +23,8 @@ class _LoginPageState extends State<LoginPage> {
         title: const Text('Login'),
       ),
       body: LoginScreen(
-        loginBloc: loginBloc,
+        bloc: loginBloc,
+        initialEvent: LoadLoginEvent(),
       ),
     );
   }

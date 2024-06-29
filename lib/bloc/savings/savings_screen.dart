@@ -1,43 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/bloc/i_state.dart';
-import 'package:wise_spends/bloc/savings/event/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/savings/savings_bloc.dart';
+import 'package:wise_spends/bloc/screen.dart';
 
-class SavingsScreen extends StatefulWidget {
+class SavingsScreen
+    extends StatefulWidgetScreen<SavingsBloc, ScreenState<SavingsBloc>> {
   const SavingsScreen({
-    required SavingsBloc savingsBloc,
+    required super.bloc,
+    required super.initialEvent,
     super.key,
   });
 
   @override
-  SavingsScreenState createState() {
-    return SavingsScreenState();
-  }
-}
-
-class SavingsScreenState extends State<SavingsScreen> {
-  SavingsScreenState();
-
-  @override
-  void initState() {
-    super.initState();
-    BlocProvider.of<SavingsBloc>(context).add(LoadListSavingsEvent());
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SavingsBloc, IState<dynamic>>(
-        bloc: BlocProvider.of<SavingsBloc>(context),
-        builder: (
-          BuildContext context,
-          IState<dynamic> currentState,
-        ) =>
-            currentState.build(context));
-  }
+  ScreenState<SavingsBloc> createState() => ScreenState();
 }

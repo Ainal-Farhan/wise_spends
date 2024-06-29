@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/bloc/savings/index.dart';
+import 'package:wise_spends/bloc/savings/event/load_list_savings_event.dart';
+import 'package:wise_spends/bloc/savings/savings_bloc.dart';
+import 'package:wise_spends/bloc/savings/savings_screen.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
 
@@ -19,7 +21,10 @@ class _SavingsPageState extends State<SavingsPage> {
     final savingsBloc = BlocProvider.of<SavingsBloc>(context);
     return IThLoggedInMainTemplate(
       pageRoute: SavingsPage.routeName,
-      screen: SavingsScreen(savingsBloc: savingsBloc),
+      screen: SavingsScreen(
+        bloc: savingsBloc,
+        initialEvent: LoadListSavingsEvent(),
+      ),
       bloc: savingsBloc,
     );
   }

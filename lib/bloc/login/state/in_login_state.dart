@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/i_state.dart';
+import 'package:wise_spends/bloc/login/widgets/bottom_widget.dart';
+import 'package:wise_spends/bloc/login/widgets/center_widget/center_widget.dart';
+import 'package:wise_spends/bloc/login/widgets/login_content/login_content.dart';
+import 'package:wise_spends/bloc/login/widgets/top_widget.dart';
 
 class InLoginState extends IState<InLoginState> {
   const InLoginState({
@@ -19,8 +23,26 @@ class InLoginState extends IState<InLoginState> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    final screenSize = MediaQuery.of(context).size;
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          Positioned(
+            top: -160,
+            left: -30,
+            child: TopWidget(screenWidth: screenSize.width),
+          ),
+          Positioned(
+            bottom: -180,
+            left: -40,
+            child: BottomWidget(screenWidth: screenSize.width),
+          ),
+          CenterWidget(size: screenSize),
+          const LoginContent(),
+        ],
+      ),
+    );
   }
 
   @override

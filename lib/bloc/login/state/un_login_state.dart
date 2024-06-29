@@ -9,8 +9,9 @@ class UnLoginState extends IState<UnLoginState> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
   }
 
   @override
