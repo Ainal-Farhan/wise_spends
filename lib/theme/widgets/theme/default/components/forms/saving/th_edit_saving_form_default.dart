@@ -1,8 +1,8 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/bloc/savings/event/update_edit_savings_event.dart';
-import 'package:wise_spends/bloc/savings/savings_bloc.dart';
+import 'package:wise_spends/bloc/impl/savings/event/update_edit_savings_event.dart';
+import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
 import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';

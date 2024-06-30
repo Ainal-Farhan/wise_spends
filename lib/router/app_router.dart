@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/bloc/login/login_page.dart';
-import 'package:wise_spends/bloc/money_storage/money_storage_page.dart';
-import 'package:wise_spends/bloc/savings/savings_page.dart';
+import 'package:wise_spends/bloc/impl/login/login_page.dart';
+import 'package:wise_spends/bloc/impl/money_storage/money_storage_page.dart';
+import 'package:wise_spends/bloc/impl/savings/savings_page.dart';
 
 abstract class AppRouter {
   static const String rootRoute = "/";
