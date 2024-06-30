@@ -7,7 +7,7 @@ import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/manager/i_saving_manager.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class LoadEditSavingsEvent extends IEvent<SavingsBloc> {
   final String savingId;

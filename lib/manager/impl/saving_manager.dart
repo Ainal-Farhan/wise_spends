@@ -12,7 +12,7 @@ import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/service/local/saving/i_money_storage_service.dart';
 import 'package:wise_spends/service/local/saving/i_saving_service.dart';
 import 'package:wise_spends/service/local/transaction/i_transaction_service.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 import 'package:wise_spends/vo/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';

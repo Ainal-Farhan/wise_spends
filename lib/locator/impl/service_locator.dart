@@ -11,7 +11,7 @@ import 'package:wise_spends/service/local/saving/impl/money_storage_service.dart
 import 'package:wise_spends/service/local/saving/impl/saving_service.dart';
 import 'package:wise_spends/service/local/transaction/i_transaction_service.dart';
 import 'package:wise_spends/service/local/transaction/impl/transaction_service.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class ServiceLocator extends IServiceLocator {
   @override

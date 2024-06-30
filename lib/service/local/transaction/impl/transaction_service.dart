@@ -1,7 +1,7 @@
 import 'package:wise_spends/locator/i_repository_locator.dart';
 import 'package:wise_spends/repository/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/service/local/transaction/i_transaction_service.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class TransactionService extends ITransactionService {
   TransactionService()

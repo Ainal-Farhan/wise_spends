@@ -13,7 +13,7 @@ import 'package:wise_spends/manager/impl/startup_manager.dart';
 import 'package:wise_spends/manager/impl/transaction_manager.dart';
 import 'package:wise_spends/theme/i_theme_manager.dart';
 import 'package:wise_spends/theme/theme_manager.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class ManagerLocator extends IManagerLocator {
   @override

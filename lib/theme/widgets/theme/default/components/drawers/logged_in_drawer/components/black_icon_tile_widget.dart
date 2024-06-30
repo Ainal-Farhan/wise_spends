@@ -4,7 +4,7 @@ import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logge
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/control_tile_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/menu_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/txt.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class BlackIconTileWidget extends StatelessWidget {
   final List<MenuWidget> _menuWidgets;

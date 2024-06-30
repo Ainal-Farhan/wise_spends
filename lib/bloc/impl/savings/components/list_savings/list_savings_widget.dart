@@ -8,7 +8,7 @@ import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 

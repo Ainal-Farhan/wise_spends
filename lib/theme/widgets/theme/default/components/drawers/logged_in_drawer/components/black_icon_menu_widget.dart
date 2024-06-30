@@ -3,7 +3,7 @@ import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/account_button_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/control_button_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/menu_widget.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class BlackIconMenuWidget extends StatelessWidget {
   final List<MenuWidget> _menuWidgets;

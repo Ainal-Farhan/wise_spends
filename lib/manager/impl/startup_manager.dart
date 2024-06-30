@@ -6,7 +6,7 @@ import 'package:wise_spends/service/local/common/i_user_service.dart';
 import 'package:wise_spends/theme/i_theme_manager.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class StartupManager extends IStartupManager {
   static final IConfigurationManager _configurationManager =

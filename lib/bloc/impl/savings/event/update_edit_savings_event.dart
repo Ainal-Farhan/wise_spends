@@ -6,7 +6,7 @@ import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/saving/edit_saving_form_vo.dart';
 
 class UpdateEditSavingsEvent with IEvent<SavingsBloc> {

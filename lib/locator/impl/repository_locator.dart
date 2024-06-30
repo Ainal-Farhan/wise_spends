@@ -11,7 +11,7 @@ import 'package:wise_spends/repository/saving/impl/money_storage_repository.dart
 import 'package:wise_spends/repository/saving/impl/saving_repository.dart';
 import 'package:wise_spends/repository/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/repository/transaction/impl/transaction_repository.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class RepositoryLocator extends IRepositoryLocator {
   @override

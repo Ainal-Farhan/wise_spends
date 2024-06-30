@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/resource/notifiers/bottom_nav_bar_notifier.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/theme/widgets/components/appbar/i_th_logged_in_appbar.dart';
 import 'package:wise_spends/theme/widgets/components/drawer/i_th_logged_in_drawer.dart';
 import 'package:wise_spends/theme/widgets/components/navbar/i_th_logged_in_bottom_navbar.dart';

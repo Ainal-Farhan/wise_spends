@@ -8,7 +8,7 @@ import 'package:wise_spends/theme/theme_list/i_theme.dart';
 import 'package:wise_spends/theme/widgets/theme/default/widgets_default.dart';
 import 'package:wise_spends/theme/widgets/i_widget_theme.dart';
 import 'package:wise_spends/constant/app/config_constant.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class ThemeManager extends IThemeManager {
   final IConfigurationManager _configurationManager =

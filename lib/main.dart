@@ -11,7 +11,7 @@ import 'package:wise_spends/locator/impl/manager_locator.dart';
 import 'package:wise_spends/locator/impl/repository_locator.dart';
 import 'package:wise_spends/locator/impl/service_locator.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

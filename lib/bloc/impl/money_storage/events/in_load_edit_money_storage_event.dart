@@ -5,7 +5,7 @@ import 'package:wise_spends/bloc/impl/money_storage/state/un_edit_money_storage_
 import 'package:wise_spends/bloc/impl/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/locator/i_repository_locator.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 
 class InLoadEditMoneyStorageEvent extends IEvent<MoneyStorageBloc> {

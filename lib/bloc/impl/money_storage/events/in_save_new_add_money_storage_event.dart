@@ -6,7 +6,7 @@ import 'package:wise_spends/bloc/impl/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/constant/saving/money_storage_constant.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/manager/i_saving_manager.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/money_storage/add_money_storage_form_vo.dart';
 
 class InSaveAddMoneyStorageEvent extends IEvent<MoneyStorageBloc> {

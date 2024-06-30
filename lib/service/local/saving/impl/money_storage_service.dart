@@ -2,7 +2,7 @@ import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/locator/i_repository_locator.dart';
 import 'package:wise_spends/repository/saving/i_money_storage_repository.dart';
 import 'package:wise_spends/service/local/saving/i_money_storage_service.dart';
-import 'package:wise_spends/util/singleton_util.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
 
 class MoneyStorageService extends IMoneyStorageService {
   final IMoneyStorageRepository _moneyStorageRepository =
