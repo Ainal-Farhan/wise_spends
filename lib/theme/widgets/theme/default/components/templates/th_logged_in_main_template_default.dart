@@ -116,7 +116,7 @@ class _ThLoggedInMainTemplateDefaultState
       canPop: false,
       child: Scaffold(
         key: scaffoldKey,
-        drawer: IThLoggedInDrawer(),
+        drawer: IThLoggedInDrawer(user: widget.startupManager.currentUser),
         drawerScrimColor: Colors.transparent,
         backgroundColor: SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager().colorTheme.complexDrawerCanvasColor,
         body: NotificationListener<ScrollNotification>(

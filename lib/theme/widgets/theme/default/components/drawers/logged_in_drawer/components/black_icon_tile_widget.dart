@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/account_tile_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/control_tile_widget.dart';
@@ -11,6 +12,7 @@ class BlackIconTileWidget extends StatelessWidget {
   final VoidCallback _expandOrShrinkDrawer;
   final Function setSelectedItem;
   final int selectedIndex;
+  final CmmnUser currentUser;
 
   const BlackIconTileWidget({
     super.key,
@@ -18,6 +20,7 @@ class BlackIconTileWidget extends StatelessWidget {
     required VoidCallback expandOrShrinkDrawer,
     required this.setSelectedItem,
     required this.selectedIndex,
+    required this.currentUser,
   })  : _expandOrShrinkDrawer = expandOrShrinkDrawer,
         _menuWidgets = menuWidgets;
 
@@ -58,9 +61,9 @@ class BlackIconTileWidget extends StatelessWidget {
               },
             ),
           ),
-          const AccountTileWidget(
-            name: 'ainal',
-            position: 'App Developer',
+          AccountTileWidget(
+            name: currentUser.name,
+            position: '-',
           ),
         ],
       ),

@@ -7,4 +7,6 @@ abstract class IUserRepository extends ICrudRepository<UserTable,
   IUserRepository(AppDatabase db) : super(db, db.userTable);
 
   Future<CmmnUser?> findByName(final String name);
+
+  Future<CmmnUser?> findAnyone();
 }

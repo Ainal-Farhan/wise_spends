@@ -21,4 +21,9 @@ class UserService extends IUserService {
   Future<CmmnUser?> findByName(String name) async {
     return await _userRepository.findByName(name);
   }
+
+  @override
+  Future<CmmnUser?> findOnlyOneInRandom() async {
+    return await _userRepository.findAnyone();
+  }
 }

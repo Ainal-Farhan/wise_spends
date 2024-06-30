@@ -9,4 +9,9 @@ class UserRepository extends IUserRepository {
     return (db.select(db.userTable)..where((tbl) => tbl.name.equals(name)))
         .getSingleOrNull();
   }
+
+  @override
+  Future<CmmnUser?> findAnyone() async {
+    return await (db.select(db.userTable)).getSingleOrNull();
+  }
 }

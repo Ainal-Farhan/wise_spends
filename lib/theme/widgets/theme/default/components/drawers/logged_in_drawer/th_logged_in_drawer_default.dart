@@ -12,7 +12,12 @@ import 'package:wise_spends/theme/widgets/components/drawer/i_th_logged_in_drawe
 
 class ThLoggedInDrawerDefault extends StatefulWidget
     implements IThLoggedInDrawer {
-  const ThLoggedInDrawerDefault({super.key});
+  const ThLoggedInDrawerDefault({
+    super.key,
+    required this.user,
+  });
+
+  final CmmnUser user;
 
   @override
   State<ThLoggedInDrawerDefault> createState() =>
@@ -113,6 +118,7 @@ class _ThLoggedInDrawerDefaultState extends State<ThLoggedInDrawerDefault> {
                   expandOrShrinkDrawer: expandOrShrinkDrawer,
                   setSelectedItem: setSelectedItem,
                   selectedIndex: drawerNotifier.selectedIndex,
+                  currentUser: widget.user,
                 )
               : BlackIconMenuWidget(
                   menuWidgets: menuWidgets,

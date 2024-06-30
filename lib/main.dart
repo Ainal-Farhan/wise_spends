@@ -22,7 +22,7 @@ Future<void> main() async {
   await () async {
     await SingletonUtil.getSingleton<IManagerLocator>()
         ?.getStartupManager()
-        .onRunApp("Ainal");
+        .onRunApp("Guest", true);
   }();
 
   runApp(

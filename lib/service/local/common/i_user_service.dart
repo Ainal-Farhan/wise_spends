@@ -7,4 +7,7 @@ abstract class IUserService extends ILocalService {
   Stream<CmmnUser?> findById(final String id);
 
   Future<CmmnUser?> findByName(final String name);
+
+  /// Expected only one row of user data exist within db
+  Future<CmmnUser?> findOnlyOneInRandom();
 }

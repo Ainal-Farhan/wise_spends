@@ -21,16 +21,20 @@ class StartupManager extends IStartupManager {
   CmmnUser? _currentUser;
 
   @override
-  Future onRunApp(final String name) async {
-    await _initCurrentUser(name);
+  Future onRunApp(final String name, final bool isFindAnyUserIfNotExist) async {
+    await _initCurrentUser(name, isFindAnyUserIfNotExist);
     await _configurationManager.init();
     await _themeManager.init();
   }
 
-  Future _initCurrentUser(final String name) async {
+  Future _initCurrentUser(final String name, final bool isFindAnyUser) async {
     if (_currentUser != null) return;
 
     _currentUser = await _userService.findByName(name);
+
+    if (_currentUser == null && isFindAnyUser) {
+      _currentUser = await _userService.findOnlyOneInRandom();
+    }
 
     if (_currentUser == null) {
       _currentUser = await _addUser(name);
