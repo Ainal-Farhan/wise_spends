@@ -3,4 +3,7 @@ import 'package:wise_spends/repository/masterdata/i_group_reference_repository.d
 
 class GroupReferenceRepository extends IGroupReferenceRepository {
   GroupReferenceRepository() : super(AppDatabase());
+
+  @override
+  String getTypeName() => 'GroupReferenceTable';
 }

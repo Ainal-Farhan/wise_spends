@@ -19,12 +19,21 @@ class StartupManager extends IStartupManager {
       SingletonUtil.getSingleton<IServiceLocator>()!.getUserService();
 
   CmmnUser? _currentUser;
+  bool isFirstInit = true;
 
   @override
-  Future onRunApp(final String name, final bool isFindAnyUserIfNotExist) async {
-    await _initCurrentUser(name, isFindAnyUserIfNotExist);
+  Future onRunApp(bool? isFirstInit) async {
+    isFirstInit ??= this.isFirstInit;
+
+    if (isFirstInit) {
+      _currentUser = null;
+    }
+
+    await _initCurrentUser("Guest", true);
     await _configurationManager.init();
     await _themeManager.init();
+
+    this.isFirstInit = false;
   }
 
   Future _initCurrentUser(final String name, final bool isFindAnyUser) async {

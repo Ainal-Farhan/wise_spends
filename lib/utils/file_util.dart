@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:intl/intl.dart';
@@ -70,5 +71,16 @@ abstract class FileUtil {
       return file;
     }
     return null;
+  }
+
+  static Future<Map<String, dynamic>> decodeFromJsonFile(
+      {required File jsonFile}) async {
+    if (!jsonFile.existsSync()) {
+      throw Exception('${jsonFile.path} does not exist!');
+    }
+
+    String contents = await jsonFile.readAsString();
+
+    return jsonDecode(contents);
   }
 }

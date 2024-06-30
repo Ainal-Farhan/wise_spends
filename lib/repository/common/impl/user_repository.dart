@@ -14,4 +14,7 @@ class UserRepository extends IUserRepository {
   Future<CmmnUser?> findAnyone() async {
     return await (db.select(db.userTable)).getSingleOrNull();
   }
+  
+  @override
+  String getTypeName() => 'UserTable';
 }

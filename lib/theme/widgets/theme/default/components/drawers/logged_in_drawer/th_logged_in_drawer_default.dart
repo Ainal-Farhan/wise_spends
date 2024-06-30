@@ -3,6 +3,7 @@ import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/resource/notifiers/drawer_notifier.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
+import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/black_icon_menu_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/black_icon_tile_widget.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/drawers/logged_in_drawer/components/invisible_sub_menu.dart';
@@ -47,48 +48,99 @@ class _ThLoggedInDrawerDefaultState extends State<ThLoggedInDrawerDefault> {
         title: "Database",
         submenus: <SubMenuWidget>[
           SubMenuWidget(
-              title: 'Backup DB',
-              onTap: () {
-                showConfirmDialog(
-                  context: context,
-                  message: "Backup database?",
-                  onConfirm: () async {
-                    String exportedPath = await AppDatabase().exportInto();
-                    if (mounted) {
-                      showSnackBarMessage(
-                        context,
-                        "Successfully export the db into $exportedPath",
-                      );
-                    }
-                  },
-                );
-              }),
+            title: 'Backup DB (.json)',
+            onTap: () {
+              showConfirmDialog(
+                context: context,
+                message: "Backup database?",
+                onConfirm: () async {
+                  String exportedPath = await AppDatabase().exportInto('.json');
+                  if (mounted) {
+                    showSnackBarMessage(
+                      context,
+                      "Successfully export the db into $exportedPath",
+                    );
+                  }
+                },
+              );
+            },
+          ),
           SubMenuWidget(
-              title: 'Restore DB',
-              onTap: () {
-                showConfirmDialog(
-                  context: context,
-                  message: "Restore database?",
-                  onConfirm: () async {
-                    String message = await (() async {
-                      try {
-                        return await AppDatabase().restore()
-                            ? 'Successfully'
-                            : 'Failed to';
-                      } catch (e) {
-                        return e.toString();
-                      }
-                    })();
-
-                    if (mounted) {
-                      showSnackBarMessage(
-                        context,
-                        "$message restore the db",
-                      );
+            title: 'Restore DB (.json)',
+            onTap: () {
+              showConfirmDialog(
+                context: context,
+                message: "Restore database from json?",
+                onConfirm: () async {
+                  String message = await (() async {
+                    try {
+                      return await AppDatabase().restore('.json')
+                          ? 'Successfully'
+                          : 'Failed to';
+                    } catch (e) {
+                      return e.toString();
                     }
-                  },
-                );
-              }),
+                  })();
+
+                  if (mounted) {
+                    Navigator.pushReplacementNamed(
+                        context, AppRouter.savingsPageRoute);
+
+                    showSnackBarMessage(
+                      context,
+                      "$message restore the db",
+                    );
+                  }
+                },
+              );
+            },
+          ),
+          SubMenuWidget(
+            title: 'Backup DB (.sqlite)',
+            onTap: () {
+              showConfirmDialog(
+                context: context,
+                message: "Backup database?",
+                onConfirm: () async {
+                  String exportedPath =
+                      await AppDatabase().exportInto('.sqlite');
+                  if (mounted) {
+                    showSnackBarMessage(
+                      context,
+                      "Successfully export the db into $exportedPath",
+                    );
+                  }
+                },
+              );
+            },
+          ),
+          SubMenuWidget(
+            title: 'Restore DB (.sqlite)',
+            onTap: () {
+              showConfirmDialog(
+                context: context,
+                message: "Restore database?",
+                onConfirm: () async {
+                  String message = await (() async {
+                    try {
+                      return await AppDatabase().restore('.sqlite')
+                          ? 'Successfully'
+                          : 'Failed to';
+                    } catch (e) {
+                      return e.toString();
+                    }
+                  })();
+
+                  if (mounted) {
+                    showSnackBarMessage(
+                      context,
+                      "$message restore the db",
+                    );
+                  }
+                },
+              );
+            },
+          ),
         ],
       )
     ]);

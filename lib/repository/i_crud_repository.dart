@@ -9,6 +9,20 @@ abstract class ICrudRepository<
     D extends Insertable<D>> extends IStreamRepository<A, B, C, D> {
   ICrudRepository(super.db, super.table);
 
+  /// Abstract method to get the type name of A
+  String getTypeName();
+
+  /// Method to get the table name
+  String tableName() => getTypeName();
+
+  Future saveAll(final List<D> items) async {
+    if (items.isEmpty) {
+      return;
+    }
+
+    await db.batch((batch) => batch.insertAll(table, items));
+  }
+
   Future<D> save(final item) async {
     return await db.into(table).insertReturning(item);
   }
@@ -44,5 +58,9 @@ abstract class ICrudRepository<
 
   Future<void> delete(final D item) async {
     await db.delete(table).delete(item);
+  }
+
+  Future<void> deleteAll() async {
+    await db.delete(table).go();
   }
 }

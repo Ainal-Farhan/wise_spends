@@ -1,6 +1,7 @@
 import 'package:wise_spends/locator/i_repository_locator.dart';
 import 'package:wise_spends/repository/common/i_user.repository.dart';
 import 'package:wise_spends/repository/common/impl/user_repository.dart';
+import 'package:wise_spends/repository/i_crud_repository.dart';
 import 'package:wise_spends/repository/masterdata/i_group_reference_repository.dart';
 import 'package:wise_spends/repository/masterdata/i_reference_repository.dart';
 import 'package:wise_spends/repository/masterdata/impl/group_reference_repository.dart';
@@ -14,6 +15,20 @@ import 'package:wise_spends/repository/transaction/impl/transaction_repository.d
 import 'package:wise_spends/utils/singleton_util.dart';
 
 class RepositoryLocator extends IRepositoryLocator {
+  @override
+  List<ICrudRepository> retrieveAllRepository() {
+    List<ICrudRepository> allRepository = [
+      getUserRepository(),
+      getGroupReferenceRepository(),
+      getReferenceRepository(),
+      getMoneyStorageRepository(),
+      getSavingRepository(),
+      getTransactionRepository(),
+    ];
+
+    return allRepository;
+  }
+
   @override
   IGroupReferenceRepository getGroupReferenceRepository() {
     IGroupReferenceRepository? repository =

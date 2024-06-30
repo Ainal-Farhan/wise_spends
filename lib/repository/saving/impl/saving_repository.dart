@@ -35,4 +35,7 @@ class SavingRepository extends ISavingRepository {
             moneyStorage: row.readTable(db.moneyStorageTable)))
         .toList());
   }
+
+  @override
+  String getTypeName() => 'SavingTable';
 }

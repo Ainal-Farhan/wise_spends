@@ -10,4 +10,7 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
           ..where((tbl) => tbl.userId.equals(userId)))
         .watch();
   }
+
+  @override
+  String getTypeName() => 'MoneyStorageTable';
 }
