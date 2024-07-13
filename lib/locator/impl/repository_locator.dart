@@ -1,6 +1,12 @@
 import 'package:wise_spends/locator/i_repository_locator.dart';
 import 'package:wise_spends/repository/common/i_user.repository.dart';
 import 'package:wise_spends/repository/common/impl/user_repository.dart';
+import 'package:wise_spends/repository/expense/i_commitment_detail_repository.dart';
+import 'package:wise_spends/repository/expense/i_commitment_repository.dart';
+import 'package:wise_spends/repository/expense/i_expense_repository.dart';
+import 'package:wise_spends/repository/expense/impl/commitment_detail_repository.dart';
+import 'package:wise_spends/repository/expense/impl/commitment_repository.dart';
+import 'package:wise_spends/repository/expense/impl/expense_repository.dart';
 import 'package:wise_spends/repository/i_crud_repository.dart';
 import 'package:wise_spends/repository/masterdata/i_group_reference_repository.dart';
 import 'package:wise_spends/repository/masterdata/i_reference_repository.dart';
@@ -24,6 +30,9 @@ class RepositoryLocator extends IRepositoryLocator {
       getMoneyStorageRepository(),
       getSavingRepository(),
       getTransactionRepository(),
+      getExpenseRepository(),
+      getCommitmentRepository(),
+      getCommitmentDetailRepository(),
     ];
 
     return allRepository;
@@ -102,5 +111,43 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<IUserRepository>()!;
+  }
+
+  @override
+  ICommitmentDetailRepository getCommitmentDetailRepository() {
+    ICommitmentDetailRepository? repository =
+        SingletonUtil.getSingleton<ICommitmentDetailRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ICommitmentDetailRepository>(
+          CommitmentDetailRepository());
+    }
+
+    return SingletonUtil.getSingleton<ICommitmentDetailRepository>()!;
+  }
+
+  @override
+  ICommitmentRepository getCommitmentRepository() {
+    ICommitmentRepository? repository =
+        SingletonUtil.getSingleton<ICommitmentRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ICommitmentRepository>(
+          CommitmentRepository());
+    }
+
+    return SingletonUtil.getSingleton<ICommitmentRepository>()!;
+  }
+
+  @override
+  IExpenseRepository getExpenseRepository() {
+    IExpenseRepository? repository =
+        SingletonUtil.getSingleton<IExpenseRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<IExpenseRepository>(ExpenseRepository());
+    }
+
+    return SingletonUtil.getSingleton<IExpenseRepository>()!;
   }
 }

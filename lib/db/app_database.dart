@@ -19,13 +19,15 @@ import 'package:wise_spends/utils/uuid_generator.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [
-  ...Common.tableList,
-  ...Expense.tableList,
-  ...MasterData.tableList,
-  ...Saving.tableList,
-  ...Transaction.tableList,
-])
+@DriftDatabase(
+  tables: [
+    ...Common.tableList,
+    ...MasterData.tableList,
+    ...Saving.tableList,
+    ...Expense.tableList,
+    ...Transaction.tableList,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase._privateConstructor() : super(DbConnection.openConnection());
   static final AppDatabase _appDatabase = AppDatabase._privateConstructor();
@@ -164,9 +166,9 @@ class AppDatabase extends _$AppDatabase {
         }
 
         if (repo.tableName() == 'ExpenseTable') {
-          List<ExpenseTableData> items = [];
+          List<ExpnsExpense> items = [];
           for (final dataInJson in data[repo.tableName()]) {
-            items.add(ExpenseTableData.fromJson(dataInJson));
+            items.add(ExpnsExpense.fromJson(dataInJson));
           }
           await repo.saveAll(items);
           continue;
@@ -203,6 +205,24 @@ class AppDatabase extends _$AppDatabase {
           List<TrnsctnTransaction> items = [];
           for (final dataInJson in data[repo.tableName()]) {
             items.add(TrnsctnTransaction.fromJson(dataInJson));
+          }
+          await repo.saveAll(items);
+          continue;
+        }
+
+        if (repo.tableName() == 'CommitmentTable') {
+          List<ExpnsCommitment> items = [];
+          for (final dataInJson in data[repo.tableName()]) {
+            items.add(ExpnsCommitment.fromJson(dataInJson));
+          }
+          await repo.saveAll(items);
+          continue;
+        }
+
+        if (repo.tableName() == 'CommitmentDetailTable') {
+          List<ExpnsCommitmentDetail> items = [];
+          for (final dataInJson in data[repo.tableName()]) {
+            items.add(ExpnsCommitmentDetail.fromJson(dataInJson));
           }
           await repo.saveAll(items);
           continue;

@@ -1,5 +1,8 @@
 import 'package:wise_spends/locator/i_locator.dart';
 import 'package:wise_spends/repository/common/i_user.repository.dart';
+import 'package:wise_spends/repository/expense/i_commitment_detail_repository.dart';
+import 'package:wise_spends/repository/expense/i_commitment_repository.dart';
+import 'package:wise_spends/repository/expense/i_expense_repository.dart';
 import 'package:wise_spends/repository/i_crud_repository.dart';
 import 'package:wise_spends/repository/masterdata/i_group_reference_repository.dart';
 import 'package:wise_spends/repository/masterdata/i_reference_repository.dart';
@@ -16,4 +19,7 @@ abstract class IRepositoryLocator extends ILocator {
   IMoneyStorageRepository getMoneyStorageRepository();
   ISavingRepository getSavingRepository();
   ITransactionRepository getTransactionRepository();
+  IExpenseRepository getExpenseRepository();
+  ICommitmentRepository getCommitmentRepository();
+  ICommitmentDetailRepository getCommitmentDetailRepository();
 }
