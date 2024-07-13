@@ -9,4 +9,7 @@ abstract class ICommitmentDetailRepository extends ICrudRepository<
     ExpnsCommitmentDetail> {
   ICommitmentDetailRepository(AppDatabase db)
       : super(db, db.commitmentDetailTable);
+
+  Stream<List<ExpnsCommitmentDetail>> watchAllByCommitment(
+      ExpnsCommitment commitment);
 }

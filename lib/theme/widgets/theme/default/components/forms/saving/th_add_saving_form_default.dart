@@ -13,7 +13,7 @@ import 'package:wise_spends/theme/widgets/components/form_fields/i_th_input_text
 import 'package:wise_spends/theme/widgets/components/form_fields/i_th_vertical_spacing_form_fields.dart';
 import 'package:wise_spends/theme/widgets/components/forms/saving/i_th_add_saving_form.dart';
 import 'package:wise_spends/theme/widgets/i_th_widget.dart';
-import 'package:wise_spends/vo/impl/saving/add_saving_form_vo.dart';
+import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
 
 // ignore: must_be_immutable
 class ThAddSavingFormDefault extends StatefulWidget
@@ -38,7 +38,7 @@ class ThAddSavingFormDefault extends StatefulWidget
 }
 
 class _ThAddSavingFormDefaultState extends State<ThAddSavingFormDefault> {
-  final AddSavingFormVO _addSavingFormVO = AddSavingFormVO();
+  final SavingVO _addSavingFormVO = SavingVO();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 

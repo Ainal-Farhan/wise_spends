@@ -19,6 +19,7 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
   final List<FloatingActionButton> floatingActionButtons;
   final IStartupManager startupManager =
       SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+  final bool showBottomNavBar;
 
   ThLoggedInMainTemplateDefault({
     super.key,
@@ -26,7 +27,12 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
     required this.pageRoute,
     required this.bloc,
     this.floatingActionButtons = const <FloatingActionButton>[],
-  });
+    required this.showBottomNavBar,
+  }) {
+    if (!showBottomNavBar) {
+      bottomNavBarNotifier.hideBottomNavBar = false;
+    }
+  }
 
   @override
   State<ThLoggedInMainTemplateDefault> createState() =>
@@ -118,7 +124,10 @@ class _ThLoggedInMainTemplateDefaultState
         key: scaffoldKey,
         drawer: IThLoggedInDrawer(user: widget.startupManager.currentUser),
         drawerScrimColor: Colors.transparent,
-        backgroundColor: SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager().colorTheme.complexDrawerCanvasColor,
+        backgroundColor: SingletonUtil.getSingleton<IManagerLocator>()!
+            .getThemeManager()
+            .colorTheme
+            .complexDrawerCanvasColor,
         body: NotificationListener<ScrollNotification>(
           onNotification: scrollListener,
           child: Stack(
@@ -164,10 +173,12 @@ class _ThLoggedInMainTemplateDefaultState
           direction: Axis.horizontal,
           children: widget.floatingActionButtons,
         ),
-        bottomNavigationBar: IThLoggedInBottomNavbar(
-          pageRoute: widget.pageRoute,
-          model: widget.bottomNavBarNotifier,
-        ),
+        bottomNavigationBar: widget.showBottomNavBar
+            ? IThLoggedInBottomNavbar(
+                pageRoute: widget.pageRoute,
+                model: widget.bottomNavBarNotifier,
+              )
+            : null,
       ),
     );
   }

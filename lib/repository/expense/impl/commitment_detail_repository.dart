@@ -6,4 +6,12 @@ class CommitmentDetailRepository extends ICommitmentDetailRepository {
 
   @override
   String getTypeName() => 'CommitmentDetailTable';
+
+  @override
+  Stream<List<ExpnsCommitmentDetail>> watchAllByCommitment(
+      ExpnsCommitment commitment) {
+    return (db.select(db.commitmentDetailTable)
+          ..where((table) => table.commitmentId.equals(commitment.id)))
+        .watch();
+  }
 }

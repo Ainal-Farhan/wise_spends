@@ -6,4 +6,11 @@ class CommitmentRepository extends ICommitmentRepository {
 
   @override
   String getTypeName() => 'CommitmentTable';
+
+  @override
+  Stream<List<ExpnsCommitment>> watchAllByUser(CmmnUser user) {
+    return (db.select(db.commitmentTable)
+          ..where((table) => table.userId.equals(user.id)))
+        .watch();
+  }
 }

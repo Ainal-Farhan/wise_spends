@@ -6,14 +6,14 @@ import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
-import 'package:wise_spends/vo/impl/saving/add_saving_form_vo.dart';
+import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
 
 class SaveNewSavingEvent extends IEvent<SavingsBloc> {
-  final AddSavingFormVO _addSavingFormVO;
+  final SavingVO _addSavingFormVO;
   final ISavingManager _savingsManager =
       SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
 
-  SaveNewSavingEvent({required AddSavingFormVO addSavingFormVO})
+  SaveNewSavingEvent({required SavingVO addSavingFormVO})
       : _addSavingFormVO = addSavingFormVO;
 
   @override

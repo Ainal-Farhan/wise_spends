@@ -227,6 +227,15 @@ class AppDatabase extends _$AppDatabase {
           await repo.saveAll(items);
           continue;
         }
+
+        if (repo.tableName() == 'CommitmentTaskTable') {
+          List<ExpnsCommitmentTask> items = [];
+          for (final dataInJson in data[repo.tableName()]) {
+            items.add(ExpnsCommitmentTask.fromJson(dataInJson));
+          }
+          await repo.saveAll(items);
+          continue;
+        }
       }
     }
   }

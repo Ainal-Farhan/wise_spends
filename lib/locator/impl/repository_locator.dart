@@ -3,9 +3,11 @@ import 'package:wise_spends/repository/common/i_user.repository.dart';
 import 'package:wise_spends/repository/common/impl/user_repository.dart';
 import 'package:wise_spends/repository/expense/i_commitment_detail_repository.dart';
 import 'package:wise_spends/repository/expense/i_commitment_repository.dart';
+import 'package:wise_spends/repository/expense/i_commitment_task_repository.dart';
 import 'package:wise_spends/repository/expense/i_expense_repository.dart';
 import 'package:wise_spends/repository/expense/impl/commitment_detail_repository.dart';
 import 'package:wise_spends/repository/expense/impl/commitment_repository.dart';
+import 'package:wise_spends/repository/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/repository/expense/impl/expense_repository.dart';
 import 'package:wise_spends/repository/i_crud_repository.dart';
 import 'package:wise_spends/repository/masterdata/i_group_reference_repository.dart';
@@ -33,6 +35,7 @@ class RepositoryLocator extends IRepositoryLocator {
       getExpenseRepository(),
       getCommitmentRepository(),
       getCommitmentDetailRepository(),
+      getCommitmentTaskRepository(),
     ];
 
     return allRepository;
@@ -149,5 +152,18 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<IExpenseRepository>()!;
+  }
+
+  @override
+  ICommitmentTaskRepository getCommitmentTaskRepository() {
+    ICommitmentTaskRepository? repository =
+        SingletonUtil.getSingleton<ICommitmentTaskRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ICommitmentTaskRepository>(
+          CommitmentTaskRepository());
+    }
+
+    return SingletonUtil.getSingleton<ICommitmentTaskRepository>()!;
   }
 }

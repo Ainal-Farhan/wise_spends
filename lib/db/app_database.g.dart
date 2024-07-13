@@ -4319,6 +4319,493 @@ class ExpenseTableCompanion extends UpdateCompanion<ExpnsExpense> {
   }
 }
 
+class $CommitmentTableTable extends CommitmentTable
+    with TableInfo<$CommitmentTableTable, ExpnsCommitment> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CommitmentTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      clientDefault: () => UuidGenerator().v4());
+  static const VerificationMeta _createdByMeta =
+      const VerificationMeta('createdBy');
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+      'created_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _dateCreatedMeta =
+      const VerificationMeta('dateCreated');
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+      'date_created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _dateUpdatedMeta =
+      const VerificationMeta('dateUpdated');
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+      'date_updated', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastModifiedByMeta =
+      const VerificationMeta('lastModifiedBy');
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+      'last_modified_by', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _referredSavingIdMeta =
+      const VerificationMeta('referredSavingId');
+  @override
+  late final GeneratedColumn<String> referredSavingId = GeneratedColumn<String>(
+      'referred_saving_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES saving_table (id)'));
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES user_table (id)'));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        createdBy,
+        dateCreated,
+        dateUpdated,
+        lastModifiedBy,
+        name,
+        description,
+        referredSavingId,
+        userId
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'commitment_table';
+  @override
+  VerificationContext validateIntegrity(Insertable<ExpnsCommitment> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(_createdByMeta,
+          createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta));
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+          _dateCreatedMeta,
+          dateCreated.isAcceptableOrUnknown(
+              data['date_created']!, _dateCreatedMeta));
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+          _dateUpdatedMeta,
+          dateUpdated.isAcceptableOrUnknown(
+              data['date_updated']!, _dateUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+          _lastModifiedByMeta,
+          lastModifiedBy.isAcceptableOrUnknown(
+              data['last_modified_by']!, _lastModifiedByMeta));
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('referred_saving_id')) {
+      context.handle(
+          _referredSavingIdMeta,
+          referredSavingId.isAcceptableOrUnknown(
+              data['referred_saving_id']!, _referredSavingIdMeta));
+    } else if (isInserting) {
+      context.missing(_referredSavingIdMeta);
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(_userIdMeta,
+          userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta));
+    } else if (isInserting) {
+      context.missing(_userIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExpnsCommitment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExpnsCommitment(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      createdBy: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}created_by'])!,
+      dateCreated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_created'])!,
+      dateUpdated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_updated'])!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      referredSavingId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}referred_saving_id'])!,
+      userId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}user_id'])!,
+    );
+  }
+
+  @override
+  $CommitmentTableTable createAlias(String alias) {
+    return $CommitmentTableTable(attachedDatabase, alias);
+  }
+}
+
+class ExpnsCommitment extends DataClass implements Insertable<ExpnsCommitment> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+  final String name;
+  final String? description;
+  final String referredSavingId;
+  final String userId;
+  const ExpnsCommitment(
+      {required this.id,
+      required this.createdBy,
+      required this.dateCreated,
+      required this.dateUpdated,
+      required this.lastModifiedBy,
+      required this.name,
+      this.description,
+      required this.referredSavingId,
+      required this.userId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['referred_saving_id'] = Variable<String>(referredSavingId);
+    map['user_id'] = Variable<String>(userId);
+    return map;
+  }
+
+  CommitmentTableCompanion toCompanion(bool nullToAbsent) {
+    return CommitmentTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      name: Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      referredSavingId: Value(referredSavingId),
+      userId: Value(userId),
+    );
+  }
+
+  factory ExpnsCommitment.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExpnsCommitment(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      referredSavingId: serializer.fromJson<String>(json['referredSavingId']),
+      userId: serializer.fromJson<String>(json['userId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String?>(description),
+      'referredSavingId': serializer.toJson<String>(referredSavingId),
+      'userId': serializer.toJson<String>(userId),
+    };
+  }
+
+  ExpnsCommitment copyWith(
+          {String? id,
+          String? createdBy,
+          DateTime? dateCreated,
+          DateTime? dateUpdated,
+          String? lastModifiedBy,
+          String? name,
+          Value<String?> description = const Value.absent(),
+          String? referredSavingId,
+          String? userId}) =>
+      ExpnsCommitment(
+        id: id ?? this.id,
+        createdBy: createdBy ?? this.createdBy,
+        dateCreated: dateCreated ?? this.dateCreated,
+        dateUpdated: dateUpdated ?? this.dateUpdated,
+        lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+        name: name ?? this.name,
+        description: description.present ? description.value : this.description,
+        referredSavingId: referredSavingId ?? this.referredSavingId,
+        userId: userId ?? this.userId,
+      );
+  ExpnsCommitment copyWithCompanion(CommitmentTableCompanion data) {
+    return ExpnsCommitment(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated:
+          data.dateCreated.present ? data.dateCreated.value : this.dateCreated,
+      dateUpdated:
+          data.dateUpdated.present ? data.dateUpdated.value : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      name: data.name.present ? data.name.value : this.name,
+      description:
+          data.description.present ? data.description.value : this.description,
+      referredSavingId: data.referredSavingId.present
+          ? data.referredSavingId.value
+          : this.referredSavingId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpnsCommitment(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('referredSavingId: $referredSavingId, ')
+          ..write('userId: $userId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, createdBy, dateCreated, dateUpdated,
+      lastModifiedBy, name, description, referredSavingId, userId);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExpnsCommitment &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.referredSavingId == this.referredSavingId &&
+          other.userId == this.userId);
+}
+
+class CommitmentTableCompanion extends UpdateCompanion<ExpnsCommitment> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> name;
+  final Value<String?> description;
+  final Value<String> referredSavingId;
+  final Value<String> userId;
+  final Value<int> rowid;
+  const CommitmentTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.referredSavingId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CommitmentTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String name,
+    this.description = const Value.absent(),
+    required String referredSavingId,
+    required String userId,
+    this.rowid = const Value.absent(),
+  })  : createdBy = Value(createdBy),
+        dateUpdated = Value(dateUpdated),
+        lastModifiedBy = Value(lastModifiedBy),
+        name = Value(name),
+        referredSavingId = Value(referredSavingId),
+        userId = Value(userId);
+  static Insertable<ExpnsCommitment> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<String>? referredSavingId,
+    Expression<String>? userId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (referredSavingId != null) 'referred_saving_id': referredSavingId,
+      if (userId != null) 'user_id': userId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CommitmentTableCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? createdBy,
+      Value<DateTime>? dateCreated,
+      Value<DateTime>? dateUpdated,
+      Value<String>? lastModifiedBy,
+      Value<String>? name,
+      Value<String?>? description,
+      Value<String>? referredSavingId,
+      Value<String>? userId,
+      Value<int>? rowid}) {
+    return CommitmentTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      referredSavingId: referredSavingId ?? this.referredSavingId,
+      userId: userId ?? this.userId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (referredSavingId.present) {
+      map['referred_saving_id'] = Variable<String>(referredSavingId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CommitmentTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('referredSavingId: $referredSavingId, ')
+          ..write('userId: $userId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CommitmentDetailTableTable extends CommitmentDetailTable
     with TableInfo<$CommitmentDetailTableTable, ExpnsCommitmentDetail> {
   @override
@@ -4383,6 +4870,15 @@ class $CommitmentDetailTableTable extends CommitmentDetailTable
       requiredDuringInsert: true,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('REFERENCES saving_table (id)'));
+  static const VerificationMeta _commitmentIdMeta =
+      const VerificationMeta('commitmentId');
+  @override
+  late final GeneratedColumn<String> commitmentId = GeneratedColumn<String>(
+      'commitment_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES commitment_table (id)'));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -4393,7 +4889,8 @@ class $CommitmentDetailTableTable extends CommitmentDetailTable
         amount,
         description,
         type,
-        savingId
+        savingId,
+        commitmentId
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4463,6 +4960,14 @@ class $CommitmentDetailTableTable extends CommitmentDetailTable
     } else if (isInserting) {
       context.missing(_savingIdMeta);
     }
+    if (data.containsKey('commitment_id')) {
+      context.handle(
+          _commitmentIdMeta,
+          commitmentId.isAcceptableOrUnknown(
+              data['commitment_id']!, _commitmentIdMeta));
+    } else if (isInserting) {
+      context.missing(_commitmentIdMeta);
+    }
     return context;
   }
 
@@ -4490,6 +4995,8 @@ class $CommitmentDetailTableTable extends CommitmentDetailTable
           .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
       savingId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}saving_id'])!,
+      commitmentId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}commitment_id'])!,
     );
   }
 
@@ -4510,6 +5017,7 @@ class ExpnsCommitmentDetail extends DataClass
   final String description;
   final String type;
   final String savingId;
+  final String commitmentId;
   const ExpnsCommitmentDetail(
       {required this.id,
       required this.createdBy,
@@ -4519,7 +5027,8 @@ class ExpnsCommitmentDetail extends DataClass
       required this.amount,
       required this.description,
       required this.type,
-      required this.savingId});
+      required this.savingId,
+      required this.commitmentId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -4532,6 +5041,7 @@ class ExpnsCommitmentDetail extends DataClass
     map['description'] = Variable<String>(description);
     map['type'] = Variable<String>(type);
     map['saving_id'] = Variable<String>(savingId);
+    map['commitment_id'] = Variable<String>(commitmentId);
     return map;
   }
 
@@ -4546,6 +5056,7 @@ class ExpnsCommitmentDetail extends DataClass
       description: Value(description),
       type: Value(type),
       savingId: Value(savingId),
+      commitmentId: Value(commitmentId),
     );
   }
 
@@ -4562,6 +5073,7 @@ class ExpnsCommitmentDetail extends DataClass
       description: serializer.fromJson<String>(json['description']),
       type: serializer.fromJson<String>(json['type']),
       savingId: serializer.fromJson<String>(json['savingId']),
+      commitmentId: serializer.fromJson<String>(json['commitmentId']),
     );
   }
   @override
@@ -4577,6 +5089,7 @@ class ExpnsCommitmentDetail extends DataClass
       'description': serializer.toJson<String>(description),
       'type': serializer.toJson<String>(type),
       'savingId': serializer.toJson<String>(savingId),
+      'commitmentId': serializer.toJson<String>(commitmentId),
     };
   }
 
@@ -4589,7 +5102,8 @@ class ExpnsCommitmentDetail extends DataClass
           double? amount,
           String? description,
           String? type,
-          String? savingId}) =>
+          String? savingId,
+          String? commitmentId}) =>
       ExpnsCommitmentDetail(
         id: id ?? this.id,
         createdBy: createdBy ?? this.createdBy,
@@ -4600,6 +5114,7 @@ class ExpnsCommitmentDetail extends DataClass
         description: description ?? this.description,
         type: type ?? this.type,
         savingId: savingId ?? this.savingId,
+        commitmentId: commitmentId ?? this.commitmentId,
       );
   ExpnsCommitmentDetail copyWithCompanion(CommitmentDetailTableCompanion data) {
     return ExpnsCommitmentDetail(
@@ -4617,6 +5132,9 @@ class ExpnsCommitmentDetail extends DataClass
           data.description.present ? data.description.value : this.description,
       type: data.type.present ? data.type.value : this.type,
       savingId: data.savingId.present ? data.savingId.value : this.savingId,
+      commitmentId: data.commitmentId.present
+          ? data.commitmentId.value
+          : this.commitmentId,
     );
   }
 
@@ -4631,14 +5149,15 @@ class ExpnsCommitmentDetail extends DataClass
           ..write('amount: $amount, ')
           ..write('description: $description, ')
           ..write('type: $type, ')
-          ..write('savingId: $savingId')
+          ..write('savingId: $savingId, ')
+          ..write('commitmentId: $commitmentId')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, createdBy, dateCreated, dateUpdated,
-      lastModifiedBy, amount, description, type, savingId);
+      lastModifiedBy, amount, description, type, savingId, commitmentId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4651,7 +5170,8 @@ class ExpnsCommitmentDetail extends DataClass
           other.amount == this.amount &&
           other.description == this.description &&
           other.type == this.type &&
-          other.savingId == this.savingId);
+          other.savingId == this.savingId &&
+          other.commitmentId == this.commitmentId);
 }
 
 class CommitmentDetailTableCompanion
@@ -4665,6 +5185,7 @@ class CommitmentDetailTableCompanion
   final Value<String> description;
   final Value<String> type;
   final Value<String> savingId;
+  final Value<String> commitmentId;
   final Value<int> rowid;
   const CommitmentDetailTableCompanion({
     this.id = const Value.absent(),
@@ -4676,6 +5197,7 @@ class CommitmentDetailTableCompanion
     this.description = const Value.absent(),
     this.type = const Value.absent(),
     this.savingId = const Value.absent(),
+    this.commitmentId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CommitmentDetailTableCompanion.insert({
@@ -4688,6 +5210,7 @@ class CommitmentDetailTableCompanion
     required String description,
     required String type,
     required String savingId,
+    required String commitmentId,
     this.rowid = const Value.absent(),
   })  : createdBy = Value(createdBy),
         dateUpdated = Value(dateUpdated),
@@ -4695,7 +5218,8 @@ class CommitmentDetailTableCompanion
         amount = Value(amount),
         description = Value(description),
         type = Value(type),
-        savingId = Value(savingId);
+        savingId = Value(savingId),
+        commitmentId = Value(commitmentId);
   static Insertable<ExpnsCommitmentDetail> custom({
     Expression<String>? id,
     Expression<String>? createdBy,
@@ -4706,6 +5230,7 @@ class CommitmentDetailTableCompanion
     Expression<String>? description,
     Expression<String>? type,
     Expression<String>? savingId,
+    Expression<String>? commitmentId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -4718,6 +5243,7 @@ class CommitmentDetailTableCompanion
       if (description != null) 'description': description,
       if (type != null) 'type': type,
       if (savingId != null) 'saving_id': savingId,
+      if (commitmentId != null) 'commitment_id': commitmentId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -4732,6 +5258,7 @@ class CommitmentDetailTableCompanion
       Value<String>? description,
       Value<String>? type,
       Value<String>? savingId,
+      Value<String>? commitmentId,
       Value<int>? rowid}) {
     return CommitmentDetailTableCompanion(
       id: id ?? this.id,
@@ -4743,6 +5270,7 @@ class CommitmentDetailTableCompanion
       description: description ?? this.description,
       type: type ?? this.type,
       savingId: savingId ?? this.savingId,
+      commitmentId: commitmentId ?? this.commitmentId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -4777,6 +5305,9 @@ class CommitmentDetailTableCompanion
     if (savingId.present) {
       map['saving_id'] = Variable<String>(savingId.value);
     }
+    if (commitmentId.present) {
+      map['commitment_id'] = Variable<String>(commitmentId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -4795,18 +5326,19 @@ class CommitmentDetailTableCompanion
           ..write('description: $description, ')
           ..write('type: $type, ')
           ..write('savingId: $savingId, ')
+          ..write('commitmentId: $commitmentId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class $CommitmentTableTable extends CommitmentTable
-    with TableInfo<$CommitmentTableTable, ExpnsCommitment> {
+class $CommitmentTaskTableTable extends CommitmentTaskTable
+    with TableInfo<$CommitmentTaskTableTable, ExpnsCommitmentTask> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CommitmentTableTable(this.attachedDatabase, [this._alias]);
+  $CommitmentTaskTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -4845,12 +5377,20 @@ class $CommitmentTableTable extends CommitmentTable
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+      'amount', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _isDoneMeta = const VerificationMeta('isDone');
+  @override
+  late final GeneratedColumn<bool> isDone = GeneratedColumn<bool>(
+      'is_done', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_done" IN (0, 1))'),
+      defaultValue: const Constant(false));
   static const VerificationMeta _referredSavingIdMeta =
       const VerificationMeta('referredSavingId');
   @override
@@ -4868,16 +5408,18 @@ class $CommitmentTableTable extends CommitmentTable
         dateUpdated,
         lastModifiedBy,
         name,
-        description,
+        amount,
+        isDone,
         referredSavingId
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'commitment_table';
+  static const String $name = 'commitment_task_table';
   @override
-  VerificationContext validateIntegrity(Insertable<ExpnsCommitment> instance,
+  VerificationContext validateIntegrity(
+      Insertable<ExpnsCommitmentTask> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -4918,11 +5460,15 @@ class $CommitmentTableTable extends CommitmentTable
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
+    if (data.containsKey('amount')) {
+      context.handle(_amountMeta,
+          amount.isAcceptableOrUnknown(data['amount']!, _amountMeta));
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('is_done')) {
+      context.handle(_isDoneMeta,
+          isDone.isAcceptableOrUnknown(data['is_done']!, _isDoneMeta));
     }
     if (data.containsKey('referred_saving_id')) {
       context.handle(
@@ -4938,9 +5484,9 @@ class $CommitmentTableTable extends CommitmentTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ExpnsCommitment map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ExpnsCommitmentTask map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ExpnsCommitment(
+    return ExpnsCommitmentTask(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       createdBy: attachedDatabase.typeMapping
@@ -4953,36 +5499,41 @@ class $CommitmentTableTable extends CommitmentTable
           DriftSqlType.string, data['${effectivePrefix}last_modified_by'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      amount: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
+      isDone: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_done'])!,
       referredSavingId: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}referred_saving_id'])!,
     );
   }
 
   @override
-  $CommitmentTableTable createAlias(String alias) {
-    return $CommitmentTableTable(attachedDatabase, alias);
+  $CommitmentTaskTableTable createAlias(String alias) {
+    return $CommitmentTaskTableTable(attachedDatabase, alias);
   }
 }
 
-class ExpnsCommitment extends DataClass implements Insertable<ExpnsCommitment> {
+class ExpnsCommitmentTask extends DataClass
+    implements Insertable<ExpnsCommitmentTask> {
   final String id;
   final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
   final String lastModifiedBy;
   final String name;
-  final String? description;
+  final double amount;
+  final bool isDone;
   final String referredSavingId;
-  const ExpnsCommitment(
+  const ExpnsCommitmentTask(
       {required this.id,
       required this.createdBy,
       required this.dateCreated,
       required this.dateUpdated,
       required this.lastModifiedBy,
       required this.name,
-      this.description,
+      required this.amount,
+      required this.isDone,
       required this.referredSavingId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4993,39 +5544,38 @@ class ExpnsCommitment extends DataClass implements Insertable<ExpnsCommitment> {
     map['date_updated'] = Variable<DateTime>(dateUpdated);
     map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['name'] = Variable<String>(name);
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
-    }
+    map['amount'] = Variable<double>(amount);
+    map['is_done'] = Variable<bool>(isDone);
     map['referred_saving_id'] = Variable<String>(referredSavingId);
     return map;
   }
 
-  CommitmentTableCompanion toCompanion(bool nullToAbsent) {
-    return CommitmentTableCompanion(
+  CommitmentTaskTableCompanion toCompanion(bool nullToAbsent) {
+    return CommitmentTaskTableCompanion(
       id: Value(id),
       createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
       lastModifiedBy: Value(lastModifiedBy),
       name: Value(name),
-      description: description == null && nullToAbsent
-          ? const Value.absent()
-          : Value(description),
+      amount: Value(amount),
+      isDone: Value(isDone),
       referredSavingId: Value(referredSavingId),
     );
   }
 
-  factory ExpnsCommitment.fromJson(Map<String, dynamic> json,
+  factory ExpnsCommitmentTask.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ExpnsCommitment(
+    return ExpnsCommitmentTask(
       id: serializer.fromJson<String>(json['id']),
       createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
       lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String?>(json['description']),
+      amount: serializer.fromJson<double>(json['amount']),
+      isDone: serializer.fromJson<bool>(json['isDone']),
       referredSavingId: serializer.fromJson<String>(json['referredSavingId']),
     );
   }
@@ -5039,32 +5589,35 @@ class ExpnsCommitment extends DataClass implements Insertable<ExpnsCommitment> {
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
       'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String?>(description),
+      'amount': serializer.toJson<double>(amount),
+      'isDone': serializer.toJson<bool>(isDone),
       'referredSavingId': serializer.toJson<String>(referredSavingId),
     };
   }
 
-  ExpnsCommitment copyWith(
+  ExpnsCommitmentTask copyWith(
           {String? id,
           String? createdBy,
           DateTime? dateCreated,
           DateTime? dateUpdated,
           String? lastModifiedBy,
           String? name,
-          Value<String?> description = const Value.absent(),
+          double? amount,
+          bool? isDone,
           String? referredSavingId}) =>
-      ExpnsCommitment(
+      ExpnsCommitmentTask(
         id: id ?? this.id,
         createdBy: createdBy ?? this.createdBy,
         dateCreated: dateCreated ?? this.dateCreated,
         dateUpdated: dateUpdated ?? this.dateUpdated,
         lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
         name: name ?? this.name,
-        description: description.present ? description.value : this.description,
+        amount: amount ?? this.amount,
+        isDone: isDone ?? this.isDone,
         referredSavingId: referredSavingId ?? this.referredSavingId,
       );
-  ExpnsCommitment copyWithCompanion(CommitmentTableCompanion data) {
-    return ExpnsCommitment(
+  ExpnsCommitmentTask copyWithCompanion(CommitmentTaskTableCompanion data) {
+    return ExpnsCommitmentTask(
       id: data.id.present ? data.id.value : this.id,
       createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       dateCreated:
@@ -5075,8 +5628,8 @@ class ExpnsCommitment extends DataClass implements Insertable<ExpnsCommitment> {
           ? data.lastModifiedBy.value
           : this.lastModifiedBy,
       name: data.name.present ? data.name.value : this.name,
-      description:
-          data.description.present ? data.description.value : this.description,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      isDone: data.isDone.present ? data.isDone.value : this.isDone,
       referredSavingId: data.referredSavingId.present
           ? data.referredSavingId.value
           : this.referredSavingId,
@@ -5085,14 +5638,15 @@ class ExpnsCommitment extends DataClass implements Insertable<ExpnsCommitment> {
 
   @override
   String toString() {
-    return (StringBuffer('ExpnsCommitment(')
+    return (StringBuffer('ExpnsCommitmentTask(')
           ..write('id: $id, ')
           ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('name: $name, ')
-          ..write('description: $description, ')
+          ..write('amount: $amount, ')
+          ..write('isDone: $isDone, ')
           ..write('referredSavingId: $referredSavingId')
           ..write(')'))
         .toString();
@@ -5100,65 +5654,72 @@ class ExpnsCommitment extends DataClass implements Insertable<ExpnsCommitment> {
 
   @override
   int get hashCode => Object.hash(id, createdBy, dateCreated, dateUpdated,
-      lastModifiedBy, name, description, referredSavingId);
+      lastModifiedBy, name, amount, isDone, referredSavingId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ExpnsCommitment &&
+      (other is ExpnsCommitmentTask &&
           other.id == this.id &&
           other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
           other.lastModifiedBy == this.lastModifiedBy &&
           other.name == this.name &&
-          other.description == this.description &&
+          other.amount == this.amount &&
+          other.isDone == this.isDone &&
           other.referredSavingId == this.referredSavingId);
 }
 
-class CommitmentTableCompanion extends UpdateCompanion<ExpnsCommitment> {
+class CommitmentTaskTableCompanion
+    extends UpdateCompanion<ExpnsCommitmentTask> {
   final Value<String> id;
   final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
   final Value<String> lastModifiedBy;
   final Value<String> name;
-  final Value<String?> description;
+  final Value<double> amount;
+  final Value<bool> isDone;
   final Value<String> referredSavingId;
   final Value<int> rowid;
-  const CommitmentTableCompanion({
+  const CommitmentTaskTableCompanion({
     this.id = const Value.absent(),
     this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
     this.lastModifiedBy = const Value.absent(),
     this.name = const Value.absent(),
-    this.description = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.isDone = const Value.absent(),
     this.referredSavingId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  CommitmentTableCompanion.insert({
+  CommitmentTaskTableCompanion.insert({
     this.id = const Value.absent(),
     required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
     required String lastModifiedBy,
     required String name,
-    this.description = const Value.absent(),
+    required double amount,
+    this.isDone = const Value.absent(),
     required String referredSavingId,
     this.rowid = const Value.absent(),
   })  : createdBy = Value(createdBy),
         dateUpdated = Value(dateUpdated),
         lastModifiedBy = Value(lastModifiedBy),
         name = Value(name),
+        amount = Value(amount),
         referredSavingId = Value(referredSavingId);
-  static Insertable<ExpnsCommitment> custom({
+  static Insertable<ExpnsCommitmentTask> custom({
     Expression<String>? id,
     Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
     Expression<String>? lastModifiedBy,
     Expression<String>? name,
-    Expression<String>? description,
+    Expression<double>? amount,
+    Expression<bool>? isDone,
     Expression<String>? referredSavingId,
     Expression<int>? rowid,
   }) {
@@ -5169,30 +5730,33 @@ class CommitmentTableCompanion extends UpdateCompanion<ExpnsCommitment> {
       if (dateUpdated != null) 'date_updated': dateUpdated,
       if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (name != null) 'name': name,
-      if (description != null) 'description': description,
+      if (amount != null) 'amount': amount,
+      if (isDone != null) 'is_done': isDone,
       if (referredSavingId != null) 'referred_saving_id': referredSavingId,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  CommitmentTableCompanion copyWith(
+  CommitmentTaskTableCompanion copyWith(
       {Value<String>? id,
       Value<String>? createdBy,
       Value<DateTime>? dateCreated,
       Value<DateTime>? dateUpdated,
       Value<String>? lastModifiedBy,
       Value<String>? name,
-      Value<String?>? description,
+      Value<double>? amount,
+      Value<bool>? isDone,
       Value<String>? referredSavingId,
       Value<int>? rowid}) {
-    return CommitmentTableCompanion(
+    return CommitmentTaskTableCompanion(
       id: id ?? this.id,
       createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
       lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       name: name ?? this.name,
-      description: description ?? this.description,
+      amount: amount ?? this.amount,
+      isDone: isDone ?? this.isDone,
       referredSavingId: referredSavingId ?? this.referredSavingId,
       rowid: rowid ?? this.rowid,
     );
@@ -5219,8 +5783,11 @@ class CommitmentTableCompanion extends UpdateCompanion<ExpnsCommitment> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
+    if (amount.present) {
+      map['amount'] = Variable<double>(amount.value);
+    }
+    if (isDone.present) {
+      map['is_done'] = Variable<bool>(isDone.value);
     }
     if (referredSavingId.present) {
       map['referred_saving_id'] = Variable<String>(referredSavingId.value);
@@ -5233,14 +5800,15 @@ class CommitmentTableCompanion extends UpdateCompanion<ExpnsCommitment> {
 
   @override
   String toString() {
-    return (StringBuffer('CommitmentTableCompanion(')
+    return (StringBuffer('CommitmentTaskTableCompanion(')
           ..write('id: $id, ')
           ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('name: $name, ')
-          ..write('description: $description, ')
+          ..write('amount: $amount, ')
+          ..write('isDone: $isDone, ')
           ..write('referredSavingId: $referredSavingId, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -5835,10 +6403,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MoneyStorageTableTable(this);
   late final $SavingTableTable savingTable = $SavingTableTable(this);
   late final $ExpenseTableTable expenseTable = $ExpenseTableTable(this);
-  late final $CommitmentDetailTableTable commitmentDetailTable =
-      $CommitmentDetailTableTable(this);
   late final $CommitmentTableTable commitmentTable =
       $CommitmentTableTable(this);
+  late final $CommitmentDetailTableTable commitmentDetailTable =
+      $CommitmentDetailTableTable(this);
+  late final $CommitmentTaskTableTable commitmentTaskTable =
+      $CommitmentTaskTableTable(this);
   late final $TransactionTableTable transactionTable =
       $TransactionTableTable(this);
   @override
@@ -5854,8 +6424,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         moneyStorageTable,
         savingTable,
         expenseTable,
-        commitmentDetailTable,
         commitmentTable,
+        commitmentDetailTable,
+        commitmentTaskTable,
         transactionTable
       ];
 }
@@ -5940,37 +6511,37 @@ class $$UserTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get name => $state.composableBuilder(
       column: $state.table.name,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ComposableFilter moneyStorageTableRefs(
@@ -6002,6 +6573,20 @@ class $$UserTableTableFilterComposer
                 $state.db.savingTable, joinBuilder, parentComposers)));
     return f(composer);
   }
+
+  ComposableFilter commitmentTableRefs(
+      ComposableFilter Function($$CommitmentTableTableFilterComposer f) f) {
+    final $$CommitmentTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $state.db.commitmentTable,
+            getReferencedColumn: (t) => (t as $CommitmentTableTable).userId,
+            builder: (joinBuilder, parentComposers) =>
+                $$CommitmentTableTableFilterComposer(ComposerState($state.db,
+                    $state.db.commitmentTable, joinBuilder, parentComposers)));
+    return f(composer);
+  }
 }
 
 class $$UserTableTableOrderingComposer
@@ -6010,37 +6595,37 @@ class $$UserTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get name => $state.composableBuilder(
       column: $state.table.name,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 }
 
@@ -6133,43 +6718,43 @@ class $$GroupReferenceTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get label => $state.composableBuilder(
       column: $state.table.label,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get value => $state.composableBuilder(
       column: $state.table.value,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ComposableFilter referenceTableRefs(
@@ -6192,43 +6777,43 @@ class $$GroupReferenceTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get label => $state.composableBuilder(
       column: $state.table.label,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get value => $state.composableBuilder(
       column: $state.table.value,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 }
 
@@ -6339,49 +6924,49 @@ class $$ReferenceTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get label => $state.composableBuilder(
       column: $state.table.label,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get value => $state.composableBuilder(
       column: $state.table.value,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isActive => $state.composableBuilder(
       column: $state.table.isActive,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   $$ReferenceTableTableFilterComposer get belongTo {
@@ -6456,49 +7041,49 @@ class $$ReferenceTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get label => $state.composableBuilder(
       column: $state.table.label,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get value => $state.composableBuilder(
       column: $state.table.value,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isActive => $state.composableBuilder(
       column: $state.table.isActive,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   $$ReferenceTableTableOrderingComposer get belongTo {
@@ -6650,61 +7235,61 @@ class $$ReferenceDataTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get label => $state.composableBuilder(
       column: $state.table.label,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get groupLabel => $state.composableBuilder(
       column: $state.table.groupLabel,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get value => $state.composableBuilder(
       column: $state.table.value,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get groupValue => $state.composableBuilder(
       column: $state.table.groupValue,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isHasNext => $state.composableBuilder(
       column: $state.table.isHasNext,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   $$ReferenceTableTableFilterComposer get referenceId {
@@ -6755,61 +7340,61 @@ class $$ReferenceDataTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get label => $state.composableBuilder(
       column: $state.table.label,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get groupLabel => $state.composableBuilder(
       column: $state.table.groupLabel,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get value => $state.composableBuilder(
       column: $state.table.value,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get groupValue => $state.composableBuilder(
       column: $state.table.groupValue,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isHasNext => $state.composableBuilder(
       column: $state.table.isHasNext,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   $$ReferenceTableTableOrderingComposer get referenceId {
@@ -6937,43 +7522,43 @@ class $$ExpenseReferenceTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<double> get suggestedAmount => $state.composableBuilder(
       column: $state.table.suggestedAmount,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get description => $state.composableBuilder(
       column: $state.table.description,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   $$ReferenceTableTableFilterComposer get referenceId {
@@ -6995,43 +7580,43 @@ class $$ExpenseReferenceTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<double> get suggestedAmount => $state.composableBuilder(
       column: $state.table.suggestedAmount,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get description => $state.composableBuilder(
       column: $state.table.description,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   $$ReferenceTableTableOrderingComposer get referenceId {
@@ -7155,55 +7740,55 @@ class $$MoneyStorageTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get iconUrl => $state.composableBuilder(
       column: $state.table.iconUrl,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get longName => $state.composableBuilder(
       column: $state.table.longName,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get shortName => $state.composableBuilder(
       column: $state.table.shortName,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get type => $state.composableBuilder(
       column: $state.table.type,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   $$UserTableTableFilterComposer get userId {
@@ -7238,55 +7823,55 @@ class $$MoneyStorageTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get iconUrl => $state.composableBuilder(
       column: $state.table.iconUrl,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get longName => $state.composableBuilder(
       column: $state.table.longName,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get shortName => $state.composableBuilder(
       column: $state.table.shortName,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get type => $state.composableBuilder(
       column: $state.table.type,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   $$UserTableTableOrderingComposer get userId {
@@ -7468,109 +8053,109 @@ class $$SavingTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get name => $state.composableBuilder(
       column: $state.table.name,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isPublic => $state.composableBuilder(
       column: $state.table.isPublic,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isHasGoal => $state.composableBuilder(
       column: $state.table.isHasGoal,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<double> get goal => $state.composableBuilder(
       column: $state.table.goal,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isHasStartDate => $state.composableBuilder(
       column: $state.table.isHasStartDate,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get startDate => $state.composableBuilder(
       column: $state.table.startDate,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isHasEndDate => $state.composableBuilder(
       column: $state.table.isHasEndDate,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get endDate => $state.composableBuilder(
       column: $state.table.endDate,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isSaveDaily => $state.composableBuilder(
       column: $state.table.isSaveDaily,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isSaveWeekly => $state.composableBuilder(
       column: $state.table.isSaveWeekly,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isSaveMonthly => $state.composableBuilder(
       column: $state.table.isSaveMonthly,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get type => $state.composableBuilder(
       column: $state.table.type,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<double> get currentAmount => $state.composableBuilder(
       column: $state.table.currentAmount,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   $$UserTableTableFilterComposer get userId {
@@ -7601,6 +8186,21 @@ class $$SavingTableTableFilterComposer
     return composer;
   }
 
+  ComposableFilter commitmentTableRefs(
+      ComposableFilter Function($$CommitmentTableTableFilterComposer f) f) {
+    final $$CommitmentTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $state.db.commitmentTable,
+            getReferencedColumn: (t) =>
+                (t as $CommitmentTableTable).referredSavingId,
+            builder: (joinBuilder, parentComposers) =>
+                $$CommitmentTableTableFilterComposer(ComposerState($state.db,
+                    $state.db.commitmentTable, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+
   ComposableFilter commitmentDetailTableRefs(
       ComposableFilter Function($$CommitmentDetailTableTableFilterComposer f)
           f) {
@@ -7620,18 +8220,21 @@ class $$SavingTableTableFilterComposer
     return f(composer);
   }
 
-  ComposableFilter commitmentTableRefs(
-      ComposableFilter Function($$CommitmentTableTableFilterComposer f) f) {
-    final $$CommitmentTableTableFilterComposer composer =
+  ComposableFilter commitmentTaskTableRefs(
+      ComposableFilter Function($$CommitmentTaskTableTableFilterComposer f) f) {
+    final $$CommitmentTaskTableTableFilterComposer composer =
         $state.composerBuilder(
             composer: this,
             getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.commitmentTable,
+            referencedTable: $state.db.commitmentTaskTable,
             getReferencedColumn: (t) =>
-                (t as $CommitmentTableTable).referredSavingId,
+                (t as $CommitmentTaskTableTable).referredSavingId,
             builder: (joinBuilder, parentComposers) =>
-                $$CommitmentTableTableFilterComposer(ComposerState($state.db,
-                    $state.db.commitmentTable, joinBuilder, parentComposers)));
+                $$CommitmentTaskTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.commitmentTaskTable,
+                    joinBuilder,
+                    parentComposers)));
     return f(composer);
   }
 
@@ -7656,109 +8259,109 @@ class $$SavingTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get name => $state.composableBuilder(
       column: $state.table.name,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isPublic => $state.composableBuilder(
       column: $state.table.isPublic,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isHasGoal => $state.composableBuilder(
       column: $state.table.isHasGoal,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<double> get goal => $state.composableBuilder(
       column: $state.table.goal,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isHasStartDate => $state.composableBuilder(
       column: $state.table.isHasStartDate,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get startDate => $state.composableBuilder(
       column: $state.table.startDate,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isHasEndDate => $state.composableBuilder(
       column: $state.table.isHasEndDate,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get endDate => $state.composableBuilder(
       column: $state.table.endDate,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isSaveDaily => $state.composableBuilder(
       column: $state.table.isSaveDaily,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isSaveWeekly => $state.composableBuilder(
       column: $state.table.isSaveWeekly,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isSaveMonthly => $state.composableBuilder(
       column: $state.table.isSaveMonthly,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get type => $state.composableBuilder(
       column: $state.table.type,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<double> get currentAmount => $state.composableBuilder(
       column: $state.table.currentAmount,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   $$UserTableTableOrderingComposer get userId {
@@ -7890,49 +8493,49 @@ class $$ExpenseTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<double> get amount => $state.composableBuilder(
       column: $state.table.amount,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get description => $state.composableBuilder(
       column: $state.table.description,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get expenseDate => $state.composableBuilder(
       column: $state.table.expenseDate,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   $$ReferenceDataTableTableFilterComposer get referenceDataId {
@@ -7972,49 +8575,49 @@ class $$ExpenseTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<double> get amount => $state.composableBuilder(
       column: $state.table.amount,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get description => $state.composableBuilder(
       column: $state.table.description,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get expenseDate => $state.composableBuilder(
       column: $state.table.expenseDate,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   $$ReferenceDataTableTableOrderingComposer get referenceDataId {
@@ -8034,6 +8637,260 @@ class $$ExpenseTableTableOrderingComposer
   }
 }
 
+typedef $$CommitmentTableTableCreateCompanionBuilder = CommitmentTableCompanion
+    Function({
+  Value<String> id,
+  required String createdBy,
+  Value<DateTime> dateCreated,
+  required DateTime dateUpdated,
+  required String lastModifiedBy,
+  required String name,
+  Value<String?> description,
+  required String referredSavingId,
+  required String userId,
+  Value<int> rowid,
+});
+typedef $$CommitmentTableTableUpdateCompanionBuilder = CommitmentTableCompanion
+    Function({
+  Value<String> id,
+  Value<String> createdBy,
+  Value<DateTime> dateCreated,
+  Value<DateTime> dateUpdated,
+  Value<String> lastModifiedBy,
+  Value<String> name,
+  Value<String?> description,
+  Value<String> referredSavingId,
+  Value<String> userId,
+  Value<int> rowid,
+});
+
+class $$CommitmentTableTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $CommitmentTableTable,
+    ExpnsCommitment,
+    $$CommitmentTableTableFilterComposer,
+    $$CommitmentTableTableOrderingComposer,
+    $$CommitmentTableTableCreateCompanionBuilder,
+    $$CommitmentTableTableUpdateCompanionBuilder> {
+  $$CommitmentTableTableTableManager(
+      _$AppDatabase db, $CommitmentTableTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$CommitmentTableTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$CommitmentTableTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> createdBy = const Value.absent(),
+            Value<DateTime> dateCreated = const Value.absent(),
+            Value<DateTime> dateUpdated = const Value.absent(),
+            Value<String> lastModifiedBy = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String> referredSavingId = const Value.absent(),
+            Value<String> userId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CommitmentTableCompanion(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            name: name,
+            description: description,
+            referredSavingId: referredSavingId,
+            userId: userId,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            required String createdBy,
+            Value<DateTime> dateCreated = const Value.absent(),
+            required DateTime dateUpdated,
+            required String lastModifiedBy,
+            required String name,
+            Value<String?> description = const Value.absent(),
+            required String referredSavingId,
+            required String userId,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              CommitmentTableCompanion.insert(
+            id: id,
+            createdBy: createdBy,
+            dateCreated: dateCreated,
+            dateUpdated: dateUpdated,
+            lastModifiedBy: lastModifiedBy,
+            name: name,
+            description: description,
+            referredSavingId: referredSavingId,
+            userId: userId,
+            rowid: rowid,
+          ),
+        ));
+}
+
+class $$CommitmentTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $CommitmentTableTable> {
+  $$CommitmentTableTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) => ColumnFilters(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) => ColumnFilters(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) => ColumnFilters(
+          (column as Expression<DateTime>),
+          joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) => ColumnFilters(
+          (column as Expression<DateTime>),
+          joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) => ColumnFilters(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) => ColumnFilters(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) => ColumnFilters(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  $$SavingTableTableFilterComposer get referredSavingId {
+    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referredSavingId,
+        referencedTable: $state.db.savingTable,
+        getReferencedColumn: (t) => (t as $SavingTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$SavingTableTableFilterComposer(ComposerState($state.db,
+                $state.db.savingTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$UserTableTableFilterComposer get userId {
+    final $$UserTableTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $state.db.userTable,
+        getReferencedColumn: (t) => (t as $UserTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$UserTableTableFilterComposer(ComposerState(
+                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  ComposableFilter commitmentDetailTableRefs(
+      ComposableFilter Function($$CommitmentDetailTableTableFilterComposer f)
+          f) {
+    final $$CommitmentDetailTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $state.db.commitmentDetailTable,
+            getReferencedColumn: (t) =>
+                (t as $CommitmentDetailTableTable).commitmentId,
+            builder: (joinBuilder, parentComposers) =>
+                $$CommitmentDetailTableTableFilterComposer(ComposerState(
+                    $state.db,
+                    $state.db.commitmentDetailTable,
+                    joinBuilder,
+                    parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$CommitmentTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $CommitmentTableTable> {
+  $$CommitmentTableTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) => ColumnOrderings(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get createdBy => $state.composableBuilder(
+      column: $state.table.createdBy,
+      builder: (column, joinBuilders) => ColumnOrderings(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
+      column: $state.table.dateCreated,
+      builder: (column, joinBuilders) => ColumnOrderings(
+          (column as Expression<DateTime>),
+          joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
+      column: $state.table.dateUpdated,
+      builder: (column, joinBuilders) => ColumnOrderings(
+          (column as Expression<DateTime>),
+          joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
+      column: $state.table.lastModifiedBy,
+      builder: (column, joinBuilders) => ColumnOrderings(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) => ColumnOrderings(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) => ColumnOrderings(
+          (column as Expression<String>),
+          joinBuilders: joinBuilders));
+
+  $$SavingTableTableOrderingComposer get referredSavingId {
+    final $$SavingTableTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referredSavingId,
+        referencedTable: $state.db.savingTable,
+        getReferencedColumn: (t) => (t as $SavingTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$SavingTableTableOrderingComposer(ComposerState($state.db,
+                $state.db.savingTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+
+  $$UserTableTableOrderingComposer get userId {
+    final $$UserTableTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $state.db.userTable,
+        getReferencedColumn: (t) => (t as $UserTableTable).id,
+        builder: (joinBuilder, parentComposers) =>
+            $$UserTableTableOrderingComposer(ComposerState(
+                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
 typedef $$CommitmentDetailTableTableCreateCompanionBuilder
     = CommitmentDetailTableCompanion Function({
   Value<String> id,
@@ -8045,6 +8902,7 @@ typedef $$CommitmentDetailTableTableCreateCompanionBuilder
   required String description,
   required String type,
   required String savingId,
+  required String commitmentId,
   Value<int> rowid,
 });
 typedef $$CommitmentDetailTableTableUpdateCompanionBuilder
@@ -8058,6 +8916,7 @@ typedef $$CommitmentDetailTableTableUpdateCompanionBuilder
   Value<String> description,
   Value<String> type,
   Value<String> savingId,
+  Value<String> commitmentId,
   Value<int> rowid,
 });
 
@@ -8088,6 +8947,7 @@ class $$CommitmentDetailTableTableTableManager extends RootTableManager<
             Value<String> description = const Value.absent(),
             Value<String> type = const Value.absent(),
             Value<String> savingId = const Value.absent(),
+            Value<String> commitmentId = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
               CommitmentDetailTableCompanion(
@@ -8100,6 +8960,7 @@ class $$CommitmentDetailTableTableTableManager extends RootTableManager<
             description: description,
             type: type,
             savingId: savingId,
+            commitmentId: commitmentId,
             rowid: rowid,
           ),
           createCompanionCallback: ({
@@ -8112,6 +8973,7 @@ class $$CommitmentDetailTableTableTableManager extends RootTableManager<
             required String description,
             required String type,
             required String savingId,
+            required String commitmentId,
             Value<int> rowid = const Value.absent(),
           }) =>
               CommitmentDetailTableCompanion.insert(
@@ -8124,6 +8986,7 @@ class $$CommitmentDetailTableTableTableManager extends RootTableManager<
             description: description,
             type: type,
             savingId: savingId,
+            commitmentId: commitmentId,
             rowid: rowid,
           ),
         ));
@@ -8135,49 +8998,49 @@ class $$CommitmentDetailTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<double> get amount => $state.composableBuilder(
       column: $state.table.amount,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get description => $state.composableBuilder(
       column: $state.table.description,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get type => $state.composableBuilder(
       column: $state.table.type,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   $$SavingTableTableFilterComposer get savingId {
@@ -8191,6 +9054,19 @@ class $$CommitmentDetailTableTableFilterComposer
                 $state.db.savingTable, joinBuilder, parentComposers)));
     return composer;
   }
+
+  $$CommitmentTableTableFilterComposer get commitmentId {
+    final $$CommitmentTableTableFilterComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.commitmentId,
+            referencedTable: $state.db.commitmentTable,
+            getReferencedColumn: (t) => (t as $CommitmentTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$CommitmentTableTableFilterComposer(ComposerState($state.db,
+                    $state.db.commitmentTable, joinBuilder, parentComposers)));
+    return composer;
+  }
 }
 
 class $$CommitmentDetailTableTableOrderingComposer
@@ -8199,49 +9075,49 @@ class $$CommitmentDetailTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<double> get amount => $state.composableBuilder(
       column: $state.table.amount,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get description => $state.composableBuilder(
       column: $state.table.description,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get type => $state.composableBuilder(
       column: $state.table.type,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   $$SavingTableTableOrderingComposer get savingId {
@@ -8255,50 +9131,65 @@ class $$CommitmentDetailTableTableOrderingComposer
                 $state.db.savingTable, joinBuilder, parentComposers)));
     return composer;
   }
+
+  $$CommitmentTableTableOrderingComposer get commitmentId {
+    final $$CommitmentTableTableOrderingComposer composer =
+        $state.composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.commitmentId,
+            referencedTable: $state.db.commitmentTable,
+            getReferencedColumn: (t) => (t as $CommitmentTableTable).id,
+            builder: (joinBuilder, parentComposers) =>
+                $$CommitmentTableTableOrderingComposer(ComposerState($state.db,
+                    $state.db.commitmentTable, joinBuilder, parentComposers)));
+    return composer;
+  }
 }
 
-typedef $$CommitmentTableTableCreateCompanionBuilder = CommitmentTableCompanion
-    Function({
+typedef $$CommitmentTaskTableTableCreateCompanionBuilder
+    = CommitmentTaskTableCompanion Function({
   Value<String> id,
   required String createdBy,
   Value<DateTime> dateCreated,
   required DateTime dateUpdated,
   required String lastModifiedBy,
   required String name,
-  Value<String?> description,
+  required double amount,
+  Value<bool> isDone,
   required String referredSavingId,
   Value<int> rowid,
 });
-typedef $$CommitmentTableTableUpdateCompanionBuilder = CommitmentTableCompanion
-    Function({
+typedef $$CommitmentTaskTableTableUpdateCompanionBuilder
+    = CommitmentTaskTableCompanion Function({
   Value<String> id,
   Value<String> createdBy,
   Value<DateTime> dateCreated,
   Value<DateTime> dateUpdated,
   Value<String> lastModifiedBy,
   Value<String> name,
-  Value<String?> description,
+  Value<double> amount,
+  Value<bool> isDone,
   Value<String> referredSavingId,
   Value<int> rowid,
 });
 
-class $$CommitmentTableTableTableManager extends RootTableManager<
+class $$CommitmentTaskTableTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $CommitmentTableTable,
-    ExpnsCommitment,
-    $$CommitmentTableTableFilterComposer,
-    $$CommitmentTableTableOrderingComposer,
-    $$CommitmentTableTableCreateCompanionBuilder,
-    $$CommitmentTableTableUpdateCompanionBuilder> {
-  $$CommitmentTableTableTableManager(
-      _$AppDatabase db, $CommitmentTableTable table)
+    $CommitmentTaskTableTable,
+    ExpnsCommitmentTask,
+    $$CommitmentTaskTableTableFilterComposer,
+    $$CommitmentTaskTableTableOrderingComposer,
+    $$CommitmentTaskTableTableCreateCompanionBuilder,
+    $$CommitmentTaskTableTableUpdateCompanionBuilder> {
+  $$CommitmentTaskTableTableTableManager(
+      _$AppDatabase db, $CommitmentTaskTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$CommitmentTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$CommitmentTableTableOrderingComposer(ComposerState(db, table)),
+          filteringComposer: $$CommitmentTaskTableTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$CommitmentTaskTableTableOrderingComposer(
+              ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -8306,18 +9197,20 @@ class $$CommitmentTableTableTableManager extends RootTableManager<
             Value<DateTime> dateUpdated = const Value.absent(),
             Value<String> lastModifiedBy = const Value.absent(),
             Value<String> name = const Value.absent(),
-            Value<String?> description = const Value.absent(),
+            Value<double> amount = const Value.absent(),
+            Value<bool> isDone = const Value.absent(),
             Value<String> referredSavingId = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              CommitmentTableCompanion(
+              CommitmentTaskTableCompanion(
             id: id,
             createdBy: createdBy,
             dateCreated: dateCreated,
             dateUpdated: dateUpdated,
             lastModifiedBy: lastModifiedBy,
             name: name,
-            description: description,
+            amount: amount,
+            isDone: isDone,
             referredSavingId: referredSavingId,
             rowid: rowid,
           ),
@@ -8328,67 +9221,75 @@ class $$CommitmentTableTableTableManager extends RootTableManager<
             required DateTime dateUpdated,
             required String lastModifiedBy,
             required String name,
-            Value<String?> description = const Value.absent(),
+            required double amount,
+            Value<bool> isDone = const Value.absent(),
             required String referredSavingId,
             Value<int> rowid = const Value.absent(),
           }) =>
-              CommitmentTableCompanion.insert(
+              CommitmentTaskTableCompanion.insert(
             id: id,
             createdBy: createdBy,
             dateCreated: dateCreated,
             dateUpdated: dateUpdated,
             lastModifiedBy: lastModifiedBy,
             name: name,
-            description: description,
+            amount: amount,
+            isDone: isDone,
             referredSavingId: referredSavingId,
             rowid: rowid,
           ),
         ));
 }
 
-class $$CommitmentTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $CommitmentTableTable> {
-  $$CommitmentTableTableFilterComposer(super.$state);
+class $$CommitmentTaskTableTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $CommitmentTaskTableTable> {
+  $$CommitmentTaskTableTableFilterComposer(super.$state);
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get name => $state.composableBuilder(
       column: $state.table.name,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
+  ColumnFilters<double> get amount => $state.composableBuilder(
+      column: $state.table.amount,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<double>),
+          joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isDone => $state.composableBuilder(
+      column: $state.table.isDone,
+      builder: (column, joinBuilders) => ColumnFilters(
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   $$SavingTableTableFilterComposer get referredSavingId {
@@ -8404,49 +9305,55 @@ class $$CommitmentTableTableFilterComposer
   }
 }
 
-class $$CommitmentTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $CommitmentTableTable> {
-  $$CommitmentTableTableOrderingComposer(super.$state);
+class $$CommitmentTaskTableTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $CommitmentTaskTableTable> {
+  $$CommitmentTaskTableTableOrderingComposer(super.$state);
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get name => $state.composableBuilder(
       column: $state.table.name,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
+  ColumnOrderings<double> get amount => $state.composableBuilder(
+      column: $state.table.amount,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<double>),
+          joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isDone => $state.composableBuilder(
+      column: $state.table.isDone,
+      builder: (column, joinBuilders) => ColumnOrderings(
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   $$SavingTableTableOrderingComposer get referredSavingId {
@@ -8575,55 +9482,55 @@ class $$TransactionTableTableFilterComposer
   ColumnFilters<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get type => $state.composableBuilder(
       column: $state.table.type,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<String> get description => $state.composableBuilder(
       column: $state.table.description,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<double> get amount => $state.composableBuilder(
       column: $state.table.amount,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnFilters<bool> get isExpense => $state.composableBuilder(
       column: $state.table.isExpense,
       builder: (column, joinBuilders) => ColumnFilters(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   $$SavingTableTableFilterComposer get savingId {
@@ -8657,55 +9564,55 @@ class $$TransactionTableTableOrderingComposer
   ColumnOrderings<String> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get createdBy => $state.composableBuilder(
       column: $state.table.createdBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
       column: $state.table.dateCreated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
       column: $state.table.dateUpdated,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<DateTime>,
+          (column as Expression<DateTime>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
       column: $state.table.lastModifiedBy,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get type => $state.composableBuilder(
       column: $state.table.type,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<String> get description => $state.composableBuilder(
       column: $state.table.description,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<String>,
+          (column as Expression<String>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<double> get amount => $state.composableBuilder(
       column: $state.table.amount,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<double>,
+          (column as Expression<double>),
           joinBuilders: joinBuilders));
 
   ColumnOrderings<bool> get isExpense => $state.composableBuilder(
       column: $state.table.isExpense,
       builder: (column, joinBuilders) => ColumnOrderings(
-          column as Expression<bool>,
+          (column as Expression<bool>),
           joinBuilders: joinBuilders));
 
   $$SavingTableTableOrderingComposer get savingId {
@@ -8752,10 +9659,12 @@ class $AppDatabaseManager {
       $$SavingTableTableTableManager(_db, _db.savingTable);
   $$ExpenseTableTableTableManager get expenseTable =>
       $$ExpenseTableTableTableManager(_db, _db.expenseTable);
-  $$CommitmentDetailTableTableTableManager get commitmentDetailTable =>
-      $$CommitmentDetailTableTableTableManager(_db, _db.commitmentDetailTable);
   $$CommitmentTableTableTableManager get commitmentTable =>
       $$CommitmentTableTableTableManager(_db, _db.commitmentTable);
+  $$CommitmentDetailTableTableTableManager get commitmentDetailTable =>
+      $$CommitmentDetailTableTableTableManager(_db, _db.commitmentDetailTable);
+  $$CommitmentTaskTableTableTableManager get commitmentTaskTable =>
+      $$CommitmentTaskTableTableTableManager(_db, _db.commitmentTaskTable);
   $$TransactionTableTableTableManager get transactionTable =>
       $$TransactionTableTableTableManager(_db, _db.transactionTable);
 }

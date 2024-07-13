@@ -1,11 +1,13 @@
 import 'package:wise_spends/config/configuration/configuration_manager.dart';
 import 'package:wise_spends/config/configuration/i_configuration_manager.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
+import 'package:wise_spends/manager/i_commitment_manager.dart';
 import 'package:wise_spends/manager/i_home_logged_in_manager.dart';
 import 'package:wise_spends/manager/i_login_manager.dart';
 import 'package:wise_spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/manager/i_transaction_manager.dart';
+import 'package:wise_spends/manager/impl/commitment_manager.dart';
 import 'package:wise_spends/manager/impl/home_logged_in_manager.dart';
 import 'package:wise_spends/manager/impl/login_manager.dart';
 import 'package:wise_spends/manager/impl/saving_manager.dart';
@@ -22,7 +24,8 @@ class ManagerLocator extends IManagerLocator {
         SingletonUtil.getSingleton<IHomeLoggedInManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton<IHomeLoggedInManager>(HomeLoggedInManager());
+      SingletonUtil.registerSingleton<IHomeLoggedInManager>(
+          HomeLoggedInManager());
     }
 
     return SingletonUtil.getSingleton<IHomeLoggedInManager>()!;
@@ -67,7 +70,8 @@ class ManagerLocator extends IManagerLocator {
         SingletonUtil.getSingleton<ITransactionManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton<ITransactionManager>(TransactionManager());
+      SingletonUtil.registerSingleton<ITransactionManager>(
+          TransactionManager());
     }
 
     return SingletonUtil.getSingleton<ITransactionManager>()!;
@@ -79,7 +83,8 @@ class ManagerLocator extends IManagerLocator {
         SingletonUtil.getSingleton<IConfigurationManager>();
 
     if (manager == null) {
-      SingletonUtil.registerSingleton<IConfigurationManager>(ConfigurationManager());
+      SingletonUtil.registerSingleton<IConfigurationManager>(
+          ConfigurationManager());
     }
 
     return SingletonUtil.getSingleton<IConfigurationManager>()!;
@@ -94,5 +99,17 @@ class ManagerLocator extends IManagerLocator {
     }
 
     return SingletonUtil.getSingleton<IThemeManager>()!;
+  }
+
+  @override
+  ICommitmentManager getCommitmentManager() {
+    ICommitmentManager? manager =
+        SingletonUtil.getSingleton<ICommitmentManager>();
+
+    if (manager == null) {
+      SingletonUtil.registerSingleton<ICommitmentManager>(CommitmentManager());
+    }
+
+    return SingletonUtil.getSingleton<ICommitmentManager>()!;
   }
 }

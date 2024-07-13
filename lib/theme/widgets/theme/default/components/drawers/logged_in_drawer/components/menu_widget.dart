@@ -17,9 +17,13 @@ class MenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Icon(
+    Icon icon = Icon(
       iconData,
       color: Colors.white,
     );
+
+    return onPressed != null
+        ? IconButton(onPressed: onPressed, icon: icon)
+        : icon;
   }
 }

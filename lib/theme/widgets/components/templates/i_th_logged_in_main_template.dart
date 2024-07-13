@@ -13,6 +13,7 @@ abstract class IThLoggedInMainTemplate extends IThWidget {
     required Bloc bloc,
     List<FloatingActionButton> floatingActionButtons =
         const <FloatingActionButton>[],
+    bool showBottomNavBar = true,
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThLoggedInMainTemplateDefault(
@@ -20,13 +21,16 @@ abstract class IThLoggedInMainTemplate extends IThWidget {
         screen: screen,
         pageRoute: pageRoute,
         bloc: bloc,
+        showBottomNavBar: showBottomNavBar,
       );
     }
+
     return ThLoggedInMainTemplateDefault(
       key: key,
       screen: screen,
       pageRoute: pageRoute,
       bloc: bloc,
+      showBottomNavBar: showBottomNavBar,
     );
   }
 }
