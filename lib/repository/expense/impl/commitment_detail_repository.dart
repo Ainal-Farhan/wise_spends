@@ -16,8 +16,7 @@ class CommitmentDetailRepository extends ICommitmentDetailRepository {
   }
 
   @override
-  Future<void> deleteAllByCommitmentId(String commitmentId) async {
-    (db.delete(db.commitmentDetailTable)
-      ..where((table) => table.commitmentId.equals(commitmentId)));
+  Future<void> deleteByCommitmentId(String commitmentId) async {
+    db.delete(table).where((tbl) => tbl.commitmentId.equals(commitmentId));
   }
 }

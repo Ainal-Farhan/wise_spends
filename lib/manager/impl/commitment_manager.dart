@@ -4,13 +4,13 @@ import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/locator/i_repository_locator.dart';
 import 'package:wise_spends/locator/i_service_locator.dart';
 import 'package:wise_spends/manager/i_commitment_manager.dart';
-import 'package:wise_spends/vo/impl/commitment/commitment_vo.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/repository/expense/i_commitment_detail_repository.dart';
 import 'package:wise_spends/repository/expense/i_commitment_repository.dart';
 import 'package:wise_spends/service/local/saving/i_saving_service.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
-import 'package:wise_spends/vo/impl/commitment/commitment_details_vo.dart';
+import 'package:wise_spends/vo/impl/commitment/commitment_detail_vo.dart';
+import 'package:wise_spends/vo/impl/commitment/commitment_vo.dart';
 import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
 
 class CommitmentManager extends ICommitmentManager {
@@ -24,44 +24,13 @@ class CommitmentManager extends ICommitmentManager {
     ICommitmentRepository commitmentRepo =
         SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getCommitmentRepository();
-    ICommitmentDetailRepository commitmentDetailRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentDetailRepository();
-    ISavingService savingService =
-        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
 
     List<ExpnsCommitment> commitmentTableDataList =
         await commitmentRepo.watchAllByUser(startupManager.currentUser).first;
 
     for (ExpnsCommitment commitment in commitmentTableDataList) {
-      List<ExpnsCommitmentDetail> detailsList =
-          await commitmentDetailRepo.watchAllByCommitment(commitment).first;
-      Map<ExpnsCommitmentDetail, SvngSaving> commitmentDetailMap = {};
-      for (ExpnsCommitmentDetail commitmentDetail in detailsList) {
-        SvngSaving? saving = await savingService
-            .watchSavingById(commitment.referredSavingId)
-            .first;
-
-        if (saving == null) {
-          continue;
-        }
-
-        commitmentDetailMap[commitmentDetail] = saving;
-      }
-
-      CommitmentVO vo =
-          CommitmentVO.fromExpnsCommitment(commitment, commitmentDetailMap);
-
-      SvngSaving? saving = await savingService
-          .watchSavingById(commitment.referredSavingId)
-          .first;
-
-      if (saving != null) {
-        SavingVO savingVO = SavingVO.fromSvngSaving(saving);
-        vo.referredSavingVO = savingVO;
-      }
-
-      commitmentList.add(vo);
+      commitmentList
+          .add((await retrieveCommitmentVOBasedOnCommitmentId(commitment.id))!);
     }
 
     return commitmentList;
@@ -133,7 +102,7 @@ class CommitmentManager extends ICommitmentManager {
         lastModifiedBy: startupManager.currentUser.name,
         amount: vo.amount ?? .0,
         description: vo.description ?? '-',
-        type: vo.type ?? '-',
+        type: vo.type ?? vo.referredSavingVO!.savingTableType!.value,
         savingId: vo.referredSavingVO!.savingId!,
         commitmentId: commitmentId,
       );
@@ -164,7 +133,63 @@ class CommitmentManager extends ICommitmentManager {
         SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getCommitmentDetailRepository();
 
-    await commitmentDetailRepo.deleteAllByCommitmentId(commitment.id);
+    await commitmentDetailRepo.deleteByCommitmentId(commitment.id);
     await commitmentRepo.delete(commitment);
+  }
+
+  @override
+  Future<void> deleteCommitmentDetailVO(String commitmentDetailId) async {
+    ICommitmentDetailRepository commitmentDetailRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentDetailRepository();
+
+    await commitmentDetailRepo.deleteById(id: commitmentDetailId);
+  }
+
+  @override
+  Future<CommitmentVO?> retrieveCommitmentVOBasedOnCommitmentId(
+      String commitmentId) async {
+    ICommitmentRepository commitmentRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentRepository();
+    ExpnsCommitment? commitment =
+        await commitmentRepo.findById(id: commitmentId);
+
+    if (commitment == null) {
+      return null;
+    }
+
+    ICommitmentDetailRepository commitmentDetailRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentDetailRepository();
+    ISavingService savingService =
+        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
+
+    List<ExpnsCommitmentDetail> detailsList =
+        await commitmentDetailRepo.watchAllByCommitment(commitment).first;
+    Map<ExpnsCommitmentDetail, SvngSaving> commitmentDetailMap = {};
+    for (ExpnsCommitmentDetail commitmentDetail in detailsList) {
+      SvngSaving? saving =
+          await savingService.watchSavingById(commitmentDetail.savingId).first;
+
+      if (saving == null) {
+        continue;
+      }
+
+      commitmentDetailMap[commitmentDetail] = saving;
+    }
+
+    CommitmentVO vo =
+        CommitmentVO.fromExpnsCommitment(commitment, commitmentDetailMap);
+
+    SvngSaving? saving =
+        await savingService.watchSavingById(commitment.referredSavingId).first;
+
+    if (saving != null) {
+      SavingVO savingVO = SavingVO.fromSvngSaving(saving);
+      vo.referredSavingVO = savingVO;
+    }
+
+    return vo;
   }
 }

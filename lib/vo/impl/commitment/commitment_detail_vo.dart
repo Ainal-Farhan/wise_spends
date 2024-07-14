@@ -9,6 +9,8 @@ class CommitmentDetailVO extends IVO {
   String? type;
   SavingVO? referredSavingVO;
 
+  CommitmentDetailVO();
+
   CommitmentDetailVO.fromExpnsCommitmentDetail(
       ExpnsCommitmentDetail commitmentDetail, SvngSaving? saving) {
     commitmentDetailId = commitmentDetail.id;

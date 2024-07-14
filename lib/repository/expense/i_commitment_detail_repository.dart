@@ -13,5 +13,5 @@ abstract class ICommitmentDetailRepository extends ICrudRepository<
   Stream<List<ExpnsCommitmentDetail>> watchAllByCommitment(
       ExpnsCommitment commitment);
 
-  Future<void> deleteAllByCommitmentId(String commitmentId);
+  Future<void> deleteByCommitmentId(String commitmentId);
 }

@@ -5,6 +5,7 @@ import 'package:wise_spends/bloc/impl/commitment/commitment_bloc.dart';
 import 'package:wise_spends/bloc/impl/commitment/event/add_commitment_event.dart';
 import 'package:wise_spends/bloc/impl/commitment/event/delete_commitment_event.dart';
 import 'package:wise_spends/bloc/impl/commitment/event/edit_commitment_event.dart';
+import 'package:wise_spends/bloc/impl/commitment/event/load_list_commitment_detail_event.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
@@ -60,7 +61,8 @@ class InLoadCommitmentListState extends IState<InLoadCommitmentListState> {
               Icons.edit_document,
               color: Color.fromARGB(255, 67, 18, 160),
             ),
-            onPressed: () => {},
+            onPressed: () => BlocProvider.of<CommitmentBloc>(context)
+                .add(LoadListCommitmentDetailEvent(commitmentVOList[index])),
           ),
           onTap: () async => BlocProvider.of<CommitmentBloc>(context)
               .add(EditCommitmentEvent(toBeEdited: commitmentVOList[index])),

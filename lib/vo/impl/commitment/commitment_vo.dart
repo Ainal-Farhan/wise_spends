@@ -1,6 +1,6 @@
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/vo/i_vo.dart';
-import 'package:wise_spends/vo/impl/commitment/commitment_details_vo.dart';
+import 'package:wise_spends/vo/impl/commitment/commitment_detail_vo.dart';
 import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
 
 class CommitmentVO extends IVO {
