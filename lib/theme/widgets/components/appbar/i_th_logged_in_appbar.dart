@@ -15,6 +15,8 @@ abstract class IThLoggedInAppbar extends IThWidget {
     required Animation iconTween,
     required Animation drawerTween,
     required Animation workOutTween,
+    required VoidCallback onPressedTaskIcon,
+    required int totalTask,
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThLoggedInAppbarDefault(
@@ -26,6 +28,8 @@ abstract class IThLoggedInAppbar extends IThWidget {
         iconTween: iconTween,
         drawerTween: drawerTween,
         workOutTween: workOutTween,
+        onPressedTaskIcon: onPressedTaskIcon,
+        totalTask: totalTask,
       );
     }
 
@@ -38,6 +42,8 @@ abstract class IThLoggedInAppbar extends IThWidget {
       iconTween: iconTween,
       drawerTween: drawerTween,
       workOutTween: workOutTween,
+      onPressedTaskIcon: onPressedTaskIcon,
+      totalTask: totalTask,
     );
   }
 }

@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
+import 'package:wise_spends/manager/i_commitment_manager.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/resource/notifiers/bottom_nav_bar_notifier.dart';
+import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/theme/widgets/components/appbar/i_th_logged_in_appbar.dart';
 import 'package:wise_spends/theme/widgets/components/drawer/i_th_logged_in_drawer.dart';
@@ -19,6 +23,8 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
   final List<FloatingActionButton> floatingActionButtons;
   final IStartupManager startupManager =
       SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+  final ICommitmentManager commitmentManager =
+      SingletonUtil.getSingleton<IManagerLocator>()!.getCommitmentManager();
   final bool showBottomNavBar;
 
   ThLoggedInMainTemplateDefault({
@@ -54,6 +60,8 @@ class _ThLoggedInMainTemplateDefaultState
     extends State<ThLoggedInMainTemplateDefault> with TickerProviderStateMixin {
   late AnimationController _colorAnimationController;
 
+  StreamController<int> streamController = StreamController<int>();
+
   late AnimationController _textAnimationController;
   late Animation _colorTween,
       _homeTween,
@@ -82,6 +90,15 @@ class _ThLoggedInMainTemplateDefaultState
     super.initState();
 
     _addScrollListener();
+
+    streamController
+        .addStream(widget.commitmentManager.retrieveTotalCommitmentTask());
+  }
+
+  @override
+  void dispose() {
+    streamController.close();
+    super.dispose();
   }
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
@@ -151,17 +168,24 @@ class _ThLoggedInMainTemplateDefaultState
                         ],
                       ),
                     ),
-                    IThLoggedInAppbar(
-                      drawerTween: _drawerTween,
-                      onPressed: () {
-                        scaffoldKey.currentState!.openDrawer();
-                      },
-                      colorAnimationController: _colorAnimationController,
-                      colorTween: _colorTween,
-                      homeTween: _homeTween,
-                      iconTween: _iconTween,
-                      workOutTween: _workOutTween,
-                      loggedInUserName: widget.startupManager.currentUser.name,
+                    StreamBuilder<int>(
+                      stream: streamController.stream,
+                      builder: (context, snapshot) => IThLoggedInAppbar(
+                        drawerTween: _drawerTween,
+                        onPressed: () {
+                          scaffoldKey.currentState!.openDrawer();
+                        },
+                        colorAnimationController: _colorAnimationController,
+                        colorTween: _colorTween,
+                        homeTween: _homeTween,
+                        iconTween: _iconTween,
+                        workOutTween: _workOutTween,
+                        loggedInUserName:
+                            widget.startupManager.currentUser.name,
+                        onPressedTaskIcon: () => Navigator.pushReplacementNamed(
+                            context, AppRouter.commitmentTaskPageRoute),
+                        totalTask: snapshot.data ?? 0,
+                      ),
                     ),
                   ],
                 ),

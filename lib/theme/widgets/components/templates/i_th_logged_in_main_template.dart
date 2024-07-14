@@ -17,20 +17,18 @@ abstract class IThLoggedInMainTemplate extends IThWidget {
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThLoggedInMainTemplateDefault(
+          key: key,
+          screen: screen,
+          pageRoute: pageRoute,
+          bloc: bloc,
+          showBottomNavBar: showBottomNavBar);
+    }
+
+    return ThLoggedInMainTemplateDefault(
         key: key,
         screen: screen,
         pageRoute: pageRoute,
         bloc: bloc,
-        showBottomNavBar: showBottomNavBar,
-      );
-    }
-
-    return ThLoggedInMainTemplateDefault(
-      key: key,
-      screen: screen,
-      pageRoute: pageRoute,
-      bloc: bloc,
-      showBottomNavBar: showBottomNavBar,
-    );
+        showBottomNavBar: showBottomNavBar);
   }
 }

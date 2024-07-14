@@ -6,6 +6,8 @@ import 'package:wise_spends/bloc/impl/commitment/event/add_commitment_event.dart
 import 'package:wise_spends/bloc/impl/commitment/event/delete_commitment_event.dart';
 import 'package:wise_spends/bloc/impl/commitment/event/edit_commitment_event.dart';
 import 'package:wise_spends/bloc/impl/commitment/event/load_list_commitment_detail_event.dart';
+import 'package:wise_spends/bloc/impl/commitment/event/start_distribute_commitment_event.dart';
+import 'package:wise_spends/resource/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
@@ -56,13 +58,35 @@ class InLoadCommitmentListState extends IState<InLoadCommitmentListState> {
               ),
             ],
           ),
-          trailingWidget: IconButton(
-            icon: const Icon(
-              Icons.edit_document,
-              color: Color.fromARGB(255, 67, 18, 160),
-            ),
-            onPressed: () => BlocProvider.of<CommitmentBloc>(context)
-                .add(LoadListCommitmentDetailEvent(commitmentVOList[index])),
+          trailingWidget: Wrap(
+            direction: Axis.vertical,
+            spacing: 10.0, // Adjust spacing as needed
+            alignment: WrapAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.edit_document,
+                  color: Color.fromARGB(255, 67, 18, 160),
+                ),
+                onPressed: () => BlocProvider.of<CommitmentBloc>(context).add(
+                    LoadListCommitmentDetailEvent(commitmentVOList[index])),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.start_rounded,
+                  color: Color.fromARGB(255, 67, 18, 160),
+                ),
+                onPressed: () => showConfirmDialog(
+                  context: context,
+                  message: "Distribute Commitment?",
+                  onConfirm: () async {
+                    BlocProvider.of<CommitmentBloc>(context).add(
+                        StartDistributeCommitmentEvent(
+                            commitmentVOList[index]));
+                  },
+                ),
+              ),
+            ],
           ),
           onTap: () async => BlocProvider.of<CommitmentBloc>(context)
               .add(EditCommitmentEvent(toBeEdited: commitmentVOList[index])),

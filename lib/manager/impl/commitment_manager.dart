@@ -7,6 +7,7 @@ import 'package:wise_spends/manager/i_commitment_manager.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/repository/expense/i_commitment_detail_repository.dart';
 import 'package:wise_spends/repository/expense/i_commitment_repository.dart';
+import 'package:wise_spends/repository/expense/i_commitment_task_repository.dart';
 import 'package:wise_spends/service/local/saving/i_saving_service.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_detail_vo.dart';
@@ -191,5 +192,77 @@ class CommitmentManager extends ICommitmentManager {
     }
 
     return vo;
+  }
+
+  @override
+  Stream<int> retrieveTotalCommitmentTask() async* {
+    yield 0;
+
+    ICommitmentTaskRepository commitmentTaskRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentTaskRepository();
+
+    yield (await commitmentTaskRepo.watchAll(false).first).length;
+  }
+
+  @override
+  Future<String> startDistributeCommitment(CommitmentVO vo) async {
+    if (vo.commitmentDetailVOList.isEmpty) {
+      return 'No Commitment Details found for this commitment!';
+    }
+
+    if (vo.referredSavingVO == null || vo.referredSavingVO!.savingId == null) {
+      return 'No Saving found from the commitment';
+    }
+
+    ISavingService savingService =
+        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
+
+    SvngSaving? savingToBeExtracted = await savingService
+        .watchSavingById(vo.referredSavingVO!.savingId!)
+        .first;
+
+    if (savingToBeExtracted == null) {
+      return 'No Saving found from the commitment';
+    }
+
+    if (savingToBeExtracted.currentAmount < vo.totalAmount!) {
+      return 'Balance in Saving (${savingToBeExtracted.name}) is not enough!';
+    }
+
+    final IStartupManager startupManager =
+        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+
+    ICommitmentTaskRepository commitmentTaskRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentTaskRepository();
+    List<CommitmentTaskTableCompanion> tasks = [];
+    {
+      CommitmentTaskTableCompanion task = CommitmentTaskTableCompanion.insert(
+        createdBy: startupManager.currentUser.name,
+        dateUpdated: DateTime.now(),
+        lastModifiedBy: startupManager.currentUser.name,
+        name: 'Extract Amount for distributing commitment',
+        amount: -vo.totalAmount!,
+        referredSavingId: savingToBeExtracted.id,
+      );
+      tasks.add(task);
+    }
+
+    for (CommitmentDetailVO detail in vo.commitmentDetailVOList) {
+      CommitmentTaskTableCompanion task = CommitmentTaskTableCompanion.insert(
+        createdBy: startupManager.currentUser.name,
+        dateUpdated: DateTime.now(),
+        lastModifiedBy: startupManager.currentUser.name,
+        name: detail.description!,
+        amount: detail.amount!,
+        referredSavingId: detail.referredSavingVO!.savingId!,
+      );
+      tasks.add(task);
+    }
+
+    await commitmentTaskRepo.saveAllFromTableCompanion(tasks);
+
+    return 'Successfully distribute the commitment';
   }
 }

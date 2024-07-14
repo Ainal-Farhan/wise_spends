@@ -16,4 +16,8 @@ abstract class ICommitmentManager extends IManager {
 
   Future<void> saveCommitmentDetailVO(
       String commitmentId, List<CommitmentDetailVO> commitmentDetailVOList);
+
+  Stream<int> retrieveTotalCommitmentTask();
+
+  Future<String> startDistributeCommitment(CommitmentVO vo);
 }

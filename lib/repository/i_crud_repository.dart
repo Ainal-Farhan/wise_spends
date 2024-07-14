@@ -23,6 +23,14 @@ abstract class ICrudRepository<
     await db.batch((batch) => batch.insertAll(table, items));
   }
 
+  Future saveAllFromTableCompanion(final List<C> items) async {
+    if (items.isEmpty) {
+      return;
+    }
+
+    await db.batch((batch) => batch.insertAll(table, items));
+  }
+
   Future<D> save(final item) async {
     return await db.into(table).insertReturning(item);
   }

@@ -11,6 +11,7 @@ abstract class AppRouter {
   static const String savingsPageRoute = "/savingsPage";
   static const String commitmentPageRoute = "/commitmentPage";
   static const String transactionPageRoute = "/transactionPage";
+  static const String commitmentTaskPageRoute = "/commitmentTaskPage";
   static const String viewListMoneyStoragePageRoute =
       "/viewListMoneyStoragePageRoute";
 

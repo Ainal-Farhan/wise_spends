@@ -7,6 +7,8 @@ class ThLoggedInAppbarDefault extends StatelessWidget
   final AnimationController colorAnimationController;
   final Animation colorTween, homeTween, workOutTween, iconTween, drawerTween;
   final VoidCallback onPressed;
+  final VoidCallback onPressedTaskIcon;
+  final int totalTask;
 
   const ThLoggedInAppbarDefault({
     super.key,
@@ -18,6 +20,8 @@ class ThLoggedInAppbarDefault extends StatelessWidget
     required this.iconTween,
     required this.drawerTween,
     required this.workOutTween,
+    required this.onPressedTaskIcon,
+    required this.totalTask,
   });
 
   @override
@@ -69,7 +73,7 @@ class ThLoggedInAppbarDefault extends StatelessWidget
               icon: Stack(
                 children: <Widget>[
                   Icon(
-                    Icons.notifications,
+                    Icons.task_alt_rounded,
                     color: iconTween.value,
                   ),
                   Positioned(
@@ -84,9 +88,9 @@ class ThLoggedInAppbarDefault extends StatelessWidget
                         minWidth: 12,
                         minHeight: 12,
                       ),
-                      child: const Text(
-                        '0',
-                        style: TextStyle(
+                      child: Text(
+                        '$totalTask',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 8,
                         ),
@@ -96,9 +100,7 @@ class ThLoggedInAppbarDefault extends StatelessWidget
                   )
                 ],
               ),
-              onPressed: () {
-                // Add your onPressed code here!
-              },
+              onPressed: onPressedTaskIcon,
             ),
             const Padding(
               padding: EdgeInsets.all(8),
