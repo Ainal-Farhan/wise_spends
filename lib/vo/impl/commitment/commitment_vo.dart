@@ -1,3 +1,4 @@
+import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/vo/i_vo.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_details_vo.dart';
 import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
@@ -11,6 +12,21 @@ class CommitmentVO extends IVO {
   List<CommitmentDetailVO> commitmentDetailVOList = [];
 
   CommitmentVO();
+
+  CommitmentVO.fromExpnsCommitment(ExpnsCommitment commitment,
+      Map<ExpnsCommitmentDetail, SvngSaving> commitmentDetailMap) {
+    commitmentId = commitment.id;
+    name = commitment.name;
+    description = commitment.description;
+    totalAmount = .0;
+    for (MapEntry<ExpnsCommitmentDetail, SvngSaving> entry
+        in commitmentDetailMap.entries) {
+      totalAmount = totalAmount! + entry.key.amount;
+
+      commitmentDetailVOList.add(
+          CommitmentDetailVO.fromExpnsCommitmentDetail(entry.key, entry.value));
+    }
+  }
 
   CommitmentVO.fromJson(Map<String, dynamic> json) {
     commitmentId = json['commitmentId'];

@@ -36,25 +36,21 @@ class CommitmentManager extends ICommitmentManager {
     for (ExpnsCommitment commitment in commitmentTableDataList) {
       List<ExpnsCommitmentDetail> detailsList =
           await commitmentDetailRepo.watchAllByCommitment(commitment).first;
-      CommitmentVO vo = CommitmentVO();
-      vo.name = commitment.name;
-      vo.description = commitment.description;
-
-      double totalAmount = .0;
+      Map<ExpnsCommitmentDetail, SvngSaving> commitmentDetailMap = {};
       for (ExpnsCommitmentDetail commitmentDetail in detailsList) {
-        totalAmount += commitmentDetail.amount;
-
         SvngSaving? saving = await savingService
             .watchSavingById(commitment.referredSavingId)
             .first;
 
-        CommitmentDetailVO commitmentDetailVO =
-            CommitmentDetailVO.fromExpnsCommitmentDetail(
-                commitmentDetail, saving);
+        if (saving == null) {
+          continue;
+        }
 
-        vo.commitmentDetailVOList.add(commitmentDetailVO);
+        commitmentDetailMap[commitmentDetail] = saving;
       }
-      vo.totalAmount = totalAmount;
+
+      CommitmentVO vo =
+          CommitmentVO.fromExpnsCommitment(commitment, commitmentDetailMap);
 
       SvngSaving? saving = await savingService
           .watchSavingById(commitment.referredSavingId)
@@ -89,6 +85,9 @@ class CommitmentManager extends ICommitmentManager {
       dateUpdated: DateTime.now(),
       lastModifiedBy: startupManager.currentUser.name,
       name: commitmentVO.name!,
+      description: commitmentVO.description != null
+          ? Value(commitmentVO.description!)
+          : const Value.absent(),
       referredSavingId: commitmentVO.referredSavingVO!.savingId!,
       userId: startupManager.currentUser.id,
     );
@@ -146,5 +145,26 @@ class CommitmentManager extends ICommitmentManager {
         commitmentDetailRepo.save(tableCompanion);
       }
     }
+  }
+
+  @override
+  Future<void> deleteCommitmentVO(String commitmentId) async {
+    ICommitmentRepository commitmentRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentRepository();
+
+    ExpnsCommitment? commitment =
+        await commitmentRepo.findById(id: commitmentId);
+
+    if (commitment == null) {
+      return;
+    }
+
+    ICommitmentDetailRepository commitmentDetailRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentDetailRepository();
+
+    await commitmentDetailRepo.deleteAllByCommitmentId(commitment.id);
+    await commitmentRepo.delete(commitment);
   }
 }

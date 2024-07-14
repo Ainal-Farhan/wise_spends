@@ -28,19 +28,39 @@ class InLoadCommitmentListState extends IState<InLoadCommitmentListState> {
       commitmentListTilesOneVOList.add(
         ListTilesOneVO(
           index: index,
-          title: commitmentVOList[index].description ?? '-',
-          icon: const Icon(Icons.task, color: Color.fromARGB(255, 67, 18, 160)),
-          subtitleWidget: Row(
+          title: commitmentVOList[index].name ?? '-',
+          icon: const Icon(
+            Icons.task,
+            color: Color.fromARGB(255, 67, 18, 160),
+          ),
+          subtitleWidget: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Extract from ${commitmentVOList[index].referredSavingVO?.savingName ?? '-'}',
+                commitmentVOList[index].description ?? '-',
+                style: const TextStyle(color: Colors.black),
+              ),
+              Text(
+                'From: ${commitmentVOList[index].referredSavingVO?.savingName ?? '-'}',
                 style: const TextStyle(color: Colors.black),
               ),
               Text(
                 'Total: RM ${(commitmentVOList[index].totalAmount ?? .0).toStringAsFixed(2)}',
                 style: const TextStyle(color: Colors.black),
               ),
+              Text(
+                'Commitment: ${commitmentVOList[index].commitmentDetailVOList.length}',
+                style: const TextStyle(color: Colors.black),
+              ),
             ],
+          ),
+          trailingWidget: IconButton(
+            icon: const Icon(
+              Icons.edit_document,
+              color: Color.fromARGB(255, 67, 18, 160),
+            ),
+            onPressed: () => {},
           ),
           onTap: () async => BlocProvider.of<CommitmentBloc>(context)
               .add(EditCommitmentEvent(toBeEdited: commitmentVOList[index])),

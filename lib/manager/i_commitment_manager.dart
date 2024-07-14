@@ -7,6 +7,8 @@ abstract class ICommitmentManager extends IManager {
 
   Future<void> saveCommitmentVO(CommitmentVO commitmentVO);
 
+  Future<void> deleteCommitmentVO(String commitmentId);
+
   Future<void> saveCommitmentDetailVO(
       String commitmentId, List<CommitmentDetailVO> commitmentDetailVOList);
 }

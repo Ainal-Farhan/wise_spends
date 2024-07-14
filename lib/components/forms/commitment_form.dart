@@ -33,6 +33,7 @@ class _CommitmentFormState extends State<CommitmentForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // fields Controller
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final SingleValueDropDownController _commitmentReferredSavingController =
       SingleValueDropDownController();
@@ -44,13 +45,28 @@ class _CommitmentFormState extends State<CommitmentForm> {
   void initState() {
     if (widget.savingVOList.isNotEmpty) {
       for (ListSavingVO savingVO in widget.savingVOList) {
-        savingDropDownValues.add(
-          DropDownValueModel(
-            name: savingVO.saving.name ?? '-',
-            value: savingVO,
-          ),
+        DropDownValueModel model = DropDownValueModel(
+          name: savingVO.saving.name ?? '-',
+          value: savingVO,
         );
+
+        if (widget.commitmentVO.referredSavingVO != null &&
+            widget.commitmentVO.referredSavingVO!.savingId != null &&
+            savingVO.saving.id ==
+                widget.commitmentVO.referredSavingVO!.savingId!) {
+          _commitmentReferredSavingController.dropDownValue = model;
+        }
+
+        savingDropDownValues.add(model);
       }
+    }
+
+    if (widget.commitmentVO.name != null) {
+      _nameController.text = widget.commitmentVO.name!;
+    }
+
+    if (widget.commitmentVO.description != null) {
+      _descriptionController.text = widget.commitmentVO.description!;
     }
 
     super.initState();
@@ -58,36 +74,12 @@ class _CommitmentFormState extends State<CommitmentForm> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> onSave() async {
-      if (!_formKey.currentState!.validate()) {
-        showSnackBarMessage(context, 'Please fill every field');
-        return;
-      }
-
-      if (_descriptionController.text.isEmpty) {
-        showSnackBarMessage(context, 'Please insert the description');
-        return;
-      }
-
-      if (_commitmentReferredSavingController.dropDownValue == null) {
-        showSnackBarMessage(context, 'Please select the referred saving');
-        return;
-      }
-
-      SavingVO referredSavingVO = SavingVO.fromSvngSaving(
-          (_commitmentReferredSavingController.dropDownValue!.value
-                  as ListSavingVO)
-              .saving);
-
-      widget.commitmentVO.description = _descriptionController.text;
-      widget.commitmentVO.referredSavingVO = referredSavingVO;
-
-      BlocProvider.of<CommitmentBloc>(context)
-          .add(SaveCommitmentEvent(toBeSaved: widget.commitmentVO));
-    }
-
     _formFields.clear();
     _formFields.addAll([
+      IThInputTextFormFields(
+        label: 'Name',
+        controller: _nameController,
+      ),
       IThInputTextFormFields(
         label: 'Description',
         controller: _descriptionController,
@@ -95,6 +87,8 @@ class _CommitmentFormState extends State<CommitmentForm> {
       IThInputSelectOneFormFields(
         dropDownValues: savingDropDownValues,
         controller: _commitmentReferredSavingController,
+        withLabel: true,
+        label: 'From',
       ),
     ]);
 
@@ -110,6 +104,40 @@ class _CommitmentFormState extends State<CommitmentForm> {
         ),
       ),
     );
+  }
+
+  Future<void> onSave() async {
+    if (_formKey.currentState != null && !_formKey.currentState!.validate()) {
+      showSnackBarMessage(context, 'Please fill every field');
+      return;
+    }
+
+    if (_nameController.text.isEmpty) {
+      showSnackBarMessage(context, 'Please insert the name');
+      return;
+    }
+
+    if (_descriptionController.text.isEmpty) {
+      showSnackBarMessage(context, 'Please insert the description');
+      return;
+    }
+
+    if (_commitmentReferredSavingController.dropDownValue == null) {
+      showSnackBarMessage(context, 'Please select the referred saving');
+      return;
+    }
+
+    SavingVO referredSavingVO = SavingVO.fromSvngSaving(
+        (_commitmentReferredSavingController.dropDownValue!.value
+                as ListSavingVO)
+            .saving);
+
+    widget.commitmentVO.name = _nameController.text;
+    widget.commitmentVO.description = _descriptionController.text;
+    widget.commitmentVO.referredSavingVO = referredSavingVO;
+
+    BlocProvider.of<CommitmentBloc>(context)
+        .add(SaveCommitmentEvent(toBeSaved: widget.commitmentVO));
   }
 
   List<Widget> _setFormFields(context) {
