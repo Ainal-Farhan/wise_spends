@@ -294,7 +294,6 @@ class CommitmentManager extends ICommitmentManager {
           moneyStorage = await moneyStorageService
               .watchMoneyStorageById(saving.moneyStorageId!)
               .first;
-          if (moneyStorage != null) {}
         }
         taskVOs.add(CommitmentTaskVO.fromExpnsCommitmentTask(
           task,
