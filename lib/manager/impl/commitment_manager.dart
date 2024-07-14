@@ -1,3 +1,150 @@
+import 'package:drift/drift.dart';
+import 'package:wise_spends/db/app_database.dart';
+import 'package:wise_spends/locator/i_manager_locator.dart';
+import 'package:wise_spends/locator/i_repository_locator.dart';
+import 'package:wise_spends/locator/i_service_locator.dart';
 import 'package:wise_spends/manager/i_commitment_manager.dart';
+import 'package:wise_spends/vo/impl/commitment/commitment_vo.dart';
+import 'package:wise_spends/manager/i_startup_manager.dart';
+import 'package:wise_spends/repository/expense/i_commitment_detail_repository.dart';
+import 'package:wise_spends/repository/expense/i_commitment_repository.dart';
+import 'package:wise_spends/service/local/saving/i_saving_service.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
+import 'package:wise_spends/vo/impl/commitment/commitment_details_vo.dart';
+import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
 
-class CommitmentManager extends ICommitmentManager {}
+class CommitmentManager extends ICommitmentManager {
+  @override
+  Future<List<CommitmentVO>> retrieveListOfCommitmentOfCurrentUser() async {
+    List<CommitmentVO> commitmentList = [];
+
+    IStartupManager startupManager =
+        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+
+    ICommitmentRepository commitmentRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentRepository();
+    ICommitmentDetailRepository commitmentDetailRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentDetailRepository();
+    ISavingService savingService =
+        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
+
+    List<ExpnsCommitment> commitmentTableDataList =
+        await commitmentRepo.watchAllByUser(startupManager.currentUser).first;
+
+    for (ExpnsCommitment commitment in commitmentTableDataList) {
+      List<ExpnsCommitmentDetail> detailsList =
+          await commitmentDetailRepo.watchAllByCommitment(commitment).first;
+      CommitmentVO vo = CommitmentVO();
+      vo.name = commitment.name;
+      vo.description = commitment.description;
+
+      double totalAmount = .0;
+      for (ExpnsCommitmentDetail commitmentDetail in detailsList) {
+        totalAmount += commitmentDetail.amount;
+
+        SvngSaving? saving = await savingService
+            .watchSavingById(commitment.referredSavingId)
+            .first;
+
+        CommitmentDetailVO commitmentDetailVO =
+            CommitmentDetailVO.fromExpnsCommitmentDetail(
+                commitmentDetail, saving);
+
+        vo.commitmentDetailVOList.add(commitmentDetailVO);
+      }
+      vo.totalAmount = totalAmount;
+
+      SvngSaving? saving = await savingService
+          .watchSavingById(commitment.referredSavingId)
+          .first;
+
+      if (saving != null) {
+        SavingVO savingVO = SavingVO.fromSvngSaving(saving);
+        vo.referredSavingVO = savingVO;
+      }
+
+      commitmentList.add(vo);
+    }
+
+    return commitmentList;
+  }
+
+  @override
+  Future<void> saveCommitmentVO(CommitmentVO commitmentVO) async {
+    final IStartupManager startupManager =
+        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+
+    ICommitmentRepository commitmentRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentRepository();
+
+    CommitmentTableCompanion commitmentTableCompanion =
+        CommitmentTableCompanion.insert(
+      id: commitmentVO.commitmentId != null
+          ? Value(commitmentVO.commitmentId!)
+          : const Value.absent(),
+      createdBy: startupManager.currentUser.name,
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: startupManager.currentUser.name,
+      name: commitmentVO.name!,
+      referredSavingId: commitmentVO.referredSavingVO!.savingId!,
+      userId: startupManager.currentUser.id,
+    );
+
+    String commitmentId = '';
+    if (commitmentVO.commitmentId != null) {
+      commitmentId = commitmentVO.commitmentId!;
+      await commitmentRepo.updatePart(
+          tableCompanion: commitmentTableCompanion,
+          id: commitmentVO.commitmentId!);
+    } else {
+      ExpnsCommitment commitment =
+          await commitmentRepo.save(commitmentTableCompanion);
+      commitmentId = commitment.id;
+    }
+
+    await saveCommitmentDetailVO(
+        commitmentId, commitmentVO.commitmentDetailVOList);
+  }
+
+  @override
+  Future<void> saveCommitmentDetailVO(String commitmentId,
+      List<CommitmentDetailVO> commitmentDetailVOList) async {
+    if (commitmentDetailVOList.isEmpty) {
+      return;
+    }
+
+    final IStartupManager startupManager =
+        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+
+    ICommitmentDetailRepository commitmentDetailRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentDetailRepository();
+
+    for (CommitmentDetailVO vo in commitmentDetailVOList) {
+      CommitmentDetailTableCompanion tableCompanion =
+          CommitmentDetailTableCompanion.insert(
+        id: vo.commitmentDetailId == null
+            ? const Value.absent()
+            : Value(vo.commitmentDetailId!),
+        createdBy: startupManager.currentUser.name,
+        dateUpdated: DateTime.now(),
+        lastModifiedBy: startupManager.currentUser.name,
+        amount: vo.amount ?? .0,
+        description: vo.description ?? '-',
+        type: vo.type ?? '-',
+        savingId: vo.referredSavingVO!.savingId!,
+        commitmentId: commitmentId,
+      );
+
+      if (vo.commitmentDetailId != null) {
+        await commitmentDetailRepo.updatePart(
+            tableCompanion: tableCompanion, id: vo.commitmentDetailId!);
+      } else {
+        commitmentDetailRepo.save(tableCompanion);
+      }
+    }
+  }
+}

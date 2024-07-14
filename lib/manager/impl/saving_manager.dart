@@ -46,17 +46,16 @@ class SavingManager extends ISavingManager {
     required SavingTableType savingTableType,
   }) async {
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
-      createdBy: _startupManager.currentUser.name,
-      lastModifiedBy: _startupManager.currentUser.name,
-      dateUpdated: DateTime.now(),
-      name: Value(name),
-      userId: Value(_startupManager.currentUser.id),
-      currentAmount: Value(initialAmount),
-      isHasGoal: Value(isHasGoal),
-      goal: Value(goalAmount),
-      moneyStorageId: Value(moneyStorageId),
-      type: savingTableType.value
-    );
+        createdBy: _startupManager.currentUser.name,
+        lastModifiedBy: _startupManager.currentUser.name,
+        dateUpdated: DateTime.now(),
+        name: Value(name),
+        userId: Value(_startupManager.currentUser.id),
+        currentAmount: Value(initialAmount),
+        isHasGoal: Value(isHasGoal),
+        goal: Value(goalAmount),
+        moneyStorageId: Value(moneyStorageId),
+        type: savingTableType.value);
 
     return await _savingService.add(savingTableCompanion);
   }
@@ -106,13 +105,12 @@ class SavingManager extends ISavingManager {
           currentAmount -= transactionAmount;
       }
       SavingTableCompanion updatedSaving = SavingTableCompanion.insert(
-        createdBy: _startupManager.currentUser.name,
-        lastModifiedBy: _startupManager.currentUser.name,
-        id: Value(savingId),
-        dateUpdated: DateTime.now(),
-        currentAmount: Value(currentAmount),
-        type: currentSaving.type
-      );
+          createdBy: _startupManager.currentUser.name,
+          lastModifiedBy: _startupManager.currentUser.name,
+          id: Value(savingId),
+          dateUpdated: DateTime.now(),
+          currentAmount: Value(currentAmount),
+          type: currentSaving.type);
 
       await _savingService.updatePart(updatedSaving);
     }

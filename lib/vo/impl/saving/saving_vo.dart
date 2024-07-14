@@ -9,6 +9,7 @@ class SavingVO with IVO {
   bool? isHasGoal;
   String? moneyStorageId;
   SavingTableType? savingTableType;
+  String? savingId;
 
   SavingVO({
     this.savingName,
@@ -17,9 +18,11 @@ class SavingVO with IVO {
     this.isHasGoal,
     this.moneyStorageId,
     this.savingTableType,
+    this.savingId,
   });
 
   SavingVO.fromSvngSaving(SvngSaving saving) {
+    savingId = saving.id;
     savingName = saving.name;
     currentAmount = saving.currentAmount;
     goalAmount = saving.goal;
@@ -29,6 +32,7 @@ class SavingVO with IVO {
   }
 
   SavingVO.fromJson(Map<String, dynamic> json) {
+    savingId = json['savingId'];
     savingName = json['savingName'];
     currentAmount = json['currentAmount'];
     goalAmount = json['goalAmount'];
@@ -44,6 +48,7 @@ class SavingVO with IVO {
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['savingId'] = savingId;
     data['savingName'] = savingName;
     data['currentAmount'] = currentAmount;
     data['goalAmount'] = goalAmount;

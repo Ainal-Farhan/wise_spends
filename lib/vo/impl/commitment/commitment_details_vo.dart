@@ -3,6 +3,7 @@ import 'package:wise_spends/vo/i_vo.dart';
 import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
 
 class CommitmentDetailVO extends IVO {
+  String? commitmentDetailId;
   String? description;
   double? amount;
   String? type;
@@ -10,6 +11,7 @@ class CommitmentDetailVO extends IVO {
 
   CommitmentDetailVO.fromExpnsCommitmentDetail(
       ExpnsCommitmentDetail commitmentDetail, SvngSaving? saving) {
+    commitmentDetailId = commitmentDetail.id;
     description = commitmentDetail.description;
     amount = commitmentDetail.amount;
     type = commitmentDetail.type;
@@ -19,6 +21,7 @@ class CommitmentDetailVO extends IVO {
   }
 
   CommitmentDetailVO.fromJson(Map<String, dynamic> json) {
+    commitmentDetailId = json['commitmentDetailId'];
     description = json['description'];
     amount = json['amount'];
     type = json['type'];
@@ -27,6 +30,7 @@ class CommitmentDetailVO extends IVO {
 
   @override
   Map<String, dynamic> toJson() => {
+        'commitmentDetailId': commitmentDetailId,
         'description': description,
         'amount': amount,
         'type': type,
