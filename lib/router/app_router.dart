@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/bloc/impl/commitment/commitment_page.dart';
+import 'package:wise_spends/bloc/impl/commitment_task/commitment_task_page.dart';
 import 'package:wise_spends/bloc/impl/login/login_page.dart';
 import 'package:wise_spends/bloc/impl/money_storage/money_storage_page.dart';
 import 'package:wise_spends/bloc/impl/savings/savings_page.dart';
@@ -25,6 +26,8 @@ abstract class AppRouter {
         return MaterialPageRoute(builder: (_) => const MoneyStoragePage());
       case commitmentPageRoute:
         return MaterialPageRoute(builder: (_) => const CommitmentPage());
+      case commitmentTaskPageRoute:
+        return MaterialPageRoute(builder: (_) => const CommitmentTaskPage());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

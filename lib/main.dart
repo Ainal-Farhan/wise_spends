@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/impl/commitment/commitment_bloc.dart';
+import 'package:wise_spends/bloc/impl/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/bloc/impl/login/login_bloc.dart';
 import 'package:wise_spends/bloc/impl/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
@@ -50,6 +51,12 @@ Future<void> main() async {
         BlocProvider<CommitmentBloc>(
           create: (context) => CommitmentBloc(),
           child: BlocBuilder<CommitmentBloc, IState<dynamic>>(
+            builder: (context, state) => state.build(context),
+          ),
+        ),
+        BlocProvider<CommitmentTaskBloc>(
+          create: (context) => CommitmentTaskBloc(),
+          child: BlocBuilder<CommitmentTaskBloc, IState<dynamic>>(
             builder: (context, state) => state.build(context),
           ),
         ),

@@ -1,16 +1,20 @@
 import 'package:drift/drift.dart';
+import 'package:wise_spends/constant/saving/saving_constant.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/locator/i_repository_locator.dart';
 import 'package:wise_spends/locator/i_service_locator.dart';
 import 'package:wise_spends/manager/i_commitment_manager.dart';
+import 'package:wise_spends/manager/i_saving_manager.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
 import 'package:wise_spends/repository/expense/i_commitment_detail_repository.dart';
 import 'package:wise_spends/repository/expense/i_commitment_repository.dart';
 import 'package:wise_spends/repository/expense/i_commitment_task_repository.dart';
+import 'package:wise_spends/service/local/saving/i_money_storage_service.dart';
 import 'package:wise_spends/service/local/saving/i_saving_service.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_detail_vo.dart';
+import 'package:wise_spends/vo/impl/commitment/commitment_task_vo.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_vo.dart';
 import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
 
@@ -242,7 +246,7 @@ class CommitmentManager extends ICommitmentManager {
         createdBy: startupManager.currentUser.name,
         dateUpdated: DateTime.now(),
         lastModifiedBy: startupManager.currentUser.name,
-        name: 'Extract Amount for distributing commitment',
+        name: 'Distributing commitment',
         amount: -vo.totalAmount!,
         referredSavingId: savingToBeExtracted.id,
       );
@@ -264,5 +268,69 @@ class CommitmentManager extends ICommitmentManager {
     await commitmentTaskRepo.saveAllFromTableCompanion(tasks);
 
     return 'Successfully distribute the commitment';
+  }
+
+  @override
+  Future<List<CommitmentTaskVO>> retrieveListOfCommitmentTask(
+      bool isDone) async {
+    ICommitmentTaskRepository commitmentTaskRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentTaskRepository();
+
+    ISavingService savingService =
+        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
+    IMoneyStorageService moneyStorageService =
+        SingletonUtil.getSingleton<IServiceLocator>()!.getMoneyStorageService();
+    List<ExpnsCommitmentTask> tasks =
+        await commitmentTaskRepo.watchAll(isDone).first;
+
+    List<CommitmentTaskVO> taskVOs = [];
+    for (ExpnsCommitmentTask task in tasks) {
+      SvngSaving? saving =
+          await savingService.watchSavingById(task.referredSavingId).first;
+      if (saving != null) {
+        SvngMoneyStorage? moneyStorage;
+        if (saving.moneyStorageId != null) {
+          moneyStorage = await moneyStorageService
+              .watchMoneyStorageById(saving.moneyStorageId!)
+              .first;
+          if (moneyStorage != null) {}
+        }
+        taskVOs.add(CommitmentTaskVO.fromExpnsCommitmentTask(
+          task,
+          saving,
+          moneyStorage,
+        ));
+      }
+    }
+
+    return taskVOs;
+  }
+
+  @override
+  Future<void> updateStatusCommitmentTask(
+      bool isDone, CommitmentTaskVO taskVO) async {
+    ICommitmentTaskRepository commitmentTaskRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentTaskRepository();
+
+    if (isDone) {
+      ISavingManager savingManager =
+          SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
+
+      savingManager.updateSavingCurrentAmount(
+        savingId: taskVO.referredSavingVO!.savingId!,
+        transactionType: taskVO.amount! < 0
+            ? SavingConstant.savingTransactionOut
+            : SavingConstant.savingTransactionIn,
+        transactionAmount: taskVO.amount!.abs(),
+      );
+    }
+
+    if (taskVO.commitmentTaskId == null) {
+      return;
+    }
+
+    await commitmentTaskRepo.deleteById(id: taskVO.commitmentTaskId!);
   }
 }

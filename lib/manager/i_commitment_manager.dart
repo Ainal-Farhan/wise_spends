@@ -1,5 +1,6 @@
 import 'package:wise_spends/manager/i_manager.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_detail_vo.dart';
+import 'package:wise_spends/vo/impl/commitment/commitment_task_vo.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_vo.dart';
 
 abstract class ICommitmentManager extends IManager {
@@ -20,4 +21,8 @@ abstract class ICommitmentManager extends IManager {
   Stream<int> retrieveTotalCommitmentTask();
 
   Future<String> startDistributeCommitment(CommitmentVO vo);
+
+  Future<List<CommitmentTaskVO>> retrieveListOfCommitmentTask(bool isDone);
+
+  Future<void> updateStatusCommitmentTask(bool isDone, CommitmentTaskVO taskVO);
 }
