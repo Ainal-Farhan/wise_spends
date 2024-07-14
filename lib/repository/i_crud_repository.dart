@@ -53,7 +53,7 @@ abstract class ICrudRepository<
   }
 
   Future<void> deleteById({required String id}) async {
-    db.delete(table).where((tbl) => tbl.id.equals(id));
+    await (db.delete(table)..where((tbl) => tbl.id.equals(id))).go();
   }
 
   Future<void> delete(final D item) async {
