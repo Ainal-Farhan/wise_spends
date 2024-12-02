@@ -3,6 +3,7 @@ import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/impl/commitment/commitment_bloc.dart';
 import 'package:wise_spends/bloc/impl/commitment/state/success_process_commitment_state.dart';
 import 'package:wise_spends/bloc/state/loading_state.dart';
+import 'package:wise_spends/constant/enum/function_enum.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/manager/i_commitment_manager.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
@@ -24,6 +25,10 @@ class StartDistributeCommitmentEvent extends IEvent<CommitmentBloc> {
 
     String message = await _commitmentManager
         .startDistributeCommitment(toBeDistributedCommitment);
+
+    if (bloc != null && bloc.functionMap[FunctionEnum.updateAppBar] != null) {
+      bloc.functionMap[FunctionEnum.updateAppBar]!([]);
+    }
 
     yield SuccessProsesCommitmentState(version: 0, message: message);
   }

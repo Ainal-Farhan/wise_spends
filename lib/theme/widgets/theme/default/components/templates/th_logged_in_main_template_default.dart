@@ -26,6 +26,8 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
   final ICommitmentManager commitmentManager =
       SingletonUtil.getSingleton<IManagerLocator>()!.getCommitmentManager();
   final bool showBottomNavBar;
+  final StreamController<int> streamController =
+      StreamController<int>.broadcast();
 
   ThLoggedInMainTemplateDefault({
     super.key,
@@ -54,13 +56,16 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
 
   @override
   bool? get stringify => null;
+
+  @override
+  void updateAppBar() {
+    streamController.addStream(commitmentManager.retrieveTotalCommitmentTask());
+  }
 }
 
 class _ThLoggedInMainTemplateDefaultState
     extends State<ThLoggedInMainTemplateDefault> with TickerProviderStateMixin {
   late AnimationController _colorAnimationController;
-
-  StreamController<int> streamController = StreamController<int>();
 
   late AnimationController _textAnimationController;
   late Animation _colorTween,
@@ -91,13 +96,12 @@ class _ThLoggedInMainTemplateDefaultState
 
     _addScrollListener();
 
-    streamController
-        .addStream(widget.commitmentManager.retrieveTotalCommitmentTask());
+    widget.updateAppBar();
   }
 
   @override
   void dispose() {
-    streamController.close();
+    widget.streamController.close();
     super.dispose();
   }
 
@@ -169,7 +173,7 @@ class _ThLoggedInMainTemplateDefaultState
                       ),
                     ),
                     StreamBuilder<int>(
-                      stream: streamController.stream,
+                      stream: widget.streamController.stream,
                       builder: (context, snapshot) => IThLoggedInAppbar(
                         drawerTween: _drawerTween,
                         onPressed: () {

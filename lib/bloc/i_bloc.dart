@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/bloc/i_event.dart';
 import 'package:wise_spends/bloc/i_state.dart';
+import 'package:wise_spends/constant/enum/function_enum.dart';
 import 'package:wise_spends/error/error_state.dart';
 
 abstract class IBloc<B extends IBloc<B>>
@@ -11,6 +12,7 @@ abstract class IBloc<B extends IBloc<B>>
   final IState<dynamic> _initialState;
   final List<IBloc<dynamic>> anotherBlocList;
   final Map<IBloc<dynamic>, StreamSubscription> anotherBlocSubscriptionMap = {};
+  final Map<FunctionEnum, void Function(List<dynamic>?)> functionMap = {};
 
   IBloc(this._initialState, {this.anotherBlocList = const []})
       : super(_initialState) {
