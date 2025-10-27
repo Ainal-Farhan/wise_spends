@@ -47,12 +47,7 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
       _ThLoggedInMainTemplateDefaultState();
 
   @override
-  List<Object?> get props => [
-        screen,
-        pageRoute,
-        bloc,
-        floatingActionButtons,
-      ];
+  List<Object?> get props => [screen, pageRoute, bloc, floatingActionButtons];
 
   @override
   bool? get stringify => null;
@@ -64,7 +59,8 @@ class ThLoggedInMainTemplateDefault extends StatefulWidget
 }
 
 class _ThLoggedInMainTemplateDefaultState
-    extends State<ThLoggedInMainTemplateDefault> with TickerProviderStateMixin {
+    extends State<ThLoggedInMainTemplateDefault>
+    with TickerProviderStateMixin {
   late AnimationController _colorAnimationController;
 
   late AnimationController _textAnimationController;
@@ -76,21 +72,34 @@ class _ThLoggedInMainTemplateDefaultState
 
   @override
   void initState() {
-    _colorAnimationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 0));
-    _colorTween = ColorTween(begin: Colors.transparent, end: Colors.white)
-        .animate(_colorAnimationController);
+    _colorAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 0),
+    );
+    _colorTween = ColorTween(
+      begin: Colors.transparent,
+      end: Colors.white,
+    ).animate(_colorAnimationController);
     _iconTween = ColorTween(
-            begin: Colors.white, end: Colors.lightBlue.withValues(alpha: 0.5))
-        .animate(_colorAnimationController);
-    _drawerTween = ColorTween(begin: Colors.white, end: Colors.black)
-        .animate(_colorAnimationController);
-    _homeTween = ColorTween(begin: Colors.white, end: Colors.blue)
-        .animate(_colorAnimationController);
-    _workOutTween = ColorTween(begin: Colors.white, end: Colors.black)
-        .animate(_colorAnimationController);
-    _textAnimationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 0));
+      begin: Colors.white,
+      end: Colors.lightBlue.withValues(alpha: 0.5),
+    ).animate(_colorAnimationController);
+    _drawerTween = ColorTween(
+      begin: Colors.white,
+      end: Colors.black,
+    ).animate(_colorAnimationController);
+    _homeTween = ColorTween(
+      begin: Colors.white,
+      end: Colors.blue,
+    ).animate(_colorAnimationController);
+    _workOutTween = ColorTween(
+      begin: Colors.white,
+      end: Colors.black,
+    ).animate(_colorAnimationController);
+    _textAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 0),
+    );
 
     super.initState();
 
@@ -149,57 +158,52 @@ class _ThLoggedInMainTemplateDefaultState
             .getThemeManager()
             .colorTheme
             .complexDrawerCanvasColor,
-        body: NotificationListener<ScrollNotification>(
-          onNotification: scrollListener,
-          child: Stack(
-            children: [
-              SizedBox(
-                height: double.infinity,
-                child: Stack(
-                  children: <Widget>[
-                    SingleChildScrollView(
-                      child: Stack(
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              SizedBox(
-                                height: screenHeight * 0.05,
-                                child: Container(),
-                              ),
-                              widget.screen,
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    StreamBuilder<int>(
-                      stream: widget.streamController.stream,
-                      builder: (context, snapshot) => IThLoggedInAppbar(
-                        drawerTween: _drawerTween,
-                        onPressed: () {
-                          scaffoldKey.currentState!.openDrawer();
-                        },
-                        colorAnimationController: _colorAnimationController,
-                        colorTween: _colorTween,
-                        homeTween: _homeTween,
-                        iconTween: _iconTween,
-                        workOutTween: _workOutTween,
-                        loggedInUserName:
-                            widget.startupManager.currentUser.name,
-                        onPressedTaskIcon: () => Navigator.pushReplacementNamed(
-                            context, AppRouter.commitmentTaskPageRoute),
-                        totalTask: snapshot.data ?? 0,
-                      ),
-                    ),
-                  ],
-                ),
+        body: Stack(
+          children: [
+            NotificationListener<ScrollNotification>(
+              onNotification: scrollListener,
+              child: Padding(
+                padding: EdgeInsets.only(top: screenHeight * 0.1),
+                child: widget.screen,
               ),
-            ],
-          ),
-        ),
-        floatingActionButton: Wrap(
-          direction: Axis.horizontal,
-          children: widget.floatingActionButtons,
+            ),
+            StreamBuilder<int>(
+              stream: widget.streamController.stream,
+              builder: (context, snapshot) => IThLoggedInAppbar(
+                drawerTween: _drawerTween,
+                onPressed: () {
+                  scaffoldKey.currentState!.openDrawer();
+                },
+                colorAnimationController: _colorAnimationController,
+                colorTween: _colorTween,
+                homeTween: _homeTween,
+                iconTween: _iconTween,
+                workOutTween: _workOutTween,
+                loggedInUserName: widget.startupManager.currentUser.name,
+                onPressedTaskIcon: () => Navigator.pushReplacementNamed(
+                  context,
+                  AppRouter.commitmentTaskPageRoute,
+                ),
+                totalTask: snapshot.data ?? 0,
+              ),
+            ),
+
+            // Floating buttons as a vertical stack in bottom-right corner
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: widget.floatingActionButtons.map((button) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: button,
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: widget.showBottomNavBar
             ? IThLoggedInBottomNavbar(

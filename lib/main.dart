@@ -88,8 +88,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   ThemeData _getThemeData() {
-    final themeManager =
-        SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
+    final themeManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getThemeManager();
     return ThemeData.light().copyWith(
       brightness: Brightness.light,
       primaryColor: themeManager.colorTheme.backgroundBlue,
@@ -113,8 +113,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   ThemeData _getDarkThemeData() {
-    final themeManager =
-        SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
+    final themeManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getThemeManager();
     return ThemeData.dark().copyWith(
       brightness: Brightness.dark,
       primaryColor: themeManager.colorTheme.backgroundBlue,

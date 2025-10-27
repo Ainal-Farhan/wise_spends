@@ -20,6 +20,7 @@ abstract class AppRouter {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      // case rootRoute:
       case loginPageRoute:
         return MaterialPageRoute(builder: (_) => const LoginPage());
       case savingsPageRoute:

@@ -11,28 +11,26 @@ abstract class StatelessWidgetScreen<T extends IBloc<T>>
     extends StatelessWidget {
   final T bloc;
 
-  const StatelessWidgetScreen({
-    required this.bloc,
-    super.key,
-  });
+  const StatelessWidgetScreen({required this.bloc, super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<T, IState<dynamic>>(
-        bloc: bloc,
-        builder: (
-          BuildContext context,
-          IState<dynamic> currentState,
-        ) =>
-            currentState.build(context));
+      bloc: bloc,
+      builder: (BuildContext context, IState<dynamic> currentState) =>
+          currentState.build(context),
+    );
   }
 }
 
 /// Depends on the situation, please use [StatelessWidgetScreen] or [StatefulWidgetScreen] accordingly
 /// For example:
 /// If required initial event, please use [StatefulWidgetScreen] and include the [initialEvent] properties
-abstract class StatefulWidgetScreen<T extends IBloc<T>,
-    S extends ScreenState<T>> extends StatefulWidget {
+abstract class StatefulWidgetScreen<
+  T extends IBloc<T>,
+  S extends ScreenState<T>
+>
+    extends StatefulWidget {
   const StatefulWidgetScreen({
     required this.bloc,
     this.initialEvent,
@@ -46,7 +44,7 @@ abstract class StatefulWidgetScreen<T extends IBloc<T>,
   S createState();
 }
 
-/// Please extends this [ScreenState] if there is a need. 
+/// Please extends this [ScreenState] if there is a need.
 /// For example, need to enhance [dispose] method
 class ScreenState<T extends IBloc<T>> extends State<StatefulWidgetScreen> {
   @override
@@ -62,14 +60,17 @@ class ScreenState<T extends IBloc<T>> extends State<StatefulWidgetScreen> {
     super.dispose();
   }
 
+  Widget onBuilder(BuildContext context, IState<dynamic> state) =>
+      state.build(context);
+
+  void onListener(BuildContext context, IState<dynamic> state) {}
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<T, IState<dynamic>>(
-        bloc: widget.bloc as T,
-        builder: (
-          BuildContext context,
-          IState<dynamic> currentState,
-        ) =>
-            currentState.build(context));
+    return BlocConsumer<T, IState<dynamic>>(
+      bloc: widget.bloc as T,
+      listener: onListener,
+      builder: onBuilder,
+    );
   }
 }
