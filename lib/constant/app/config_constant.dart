@@ -1,13 +1,15 @@
 abstract class ConfigConstant {
   static const themeDefault = 'default';
+  static const themeDark = 'dark';
   static final List<String> themeList = List.unmodifiable([
     themeDefault,
+    themeDark,
   ]);
   static const defaultTheme = themeDefault;
 
   static const languageEnglish = 'en';
   static final List<String> languageList = List.unmodifiable([
-    themeDefault,
+    languageEnglish,
   ]);
   static const defaultLanguage = languageEnglish;
 

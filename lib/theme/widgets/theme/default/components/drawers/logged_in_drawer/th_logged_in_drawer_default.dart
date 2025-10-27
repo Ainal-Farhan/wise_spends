@@ -44,6 +44,13 @@ class _ThLoggedInDrawerDefaultState extends State<ThLoggedInDrawerDefault> {
     menuWidgets.clear();
     menuWidgets.addAll([
       MenuWidget(
+        iconData: Icons.settings,
+        title: "Settings",
+        onPressed: () async => await Navigator.pushReplacementNamed(
+            context, AppRouter.settingsPageRoute),
+        submenus: const [],
+      ),
+      MenuWidget(
         iconData: Icons.task,
         title: "Commitment",
         onPressed: () async => await Navigator.pushReplacementNamed(

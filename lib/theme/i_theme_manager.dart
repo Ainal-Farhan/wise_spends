@@ -7,4 +7,5 @@ abstract class IThemeManager extends IManager {
   ITheme getCurrentTheme();
   bool validateListOfWidgets();
   IColorTheme get colorTheme;
+  Future<void> refresh();
 }
