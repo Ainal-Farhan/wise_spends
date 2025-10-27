@@ -7,10 +7,10 @@ import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
 import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
-import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
-import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
+
+// Enhanced card widget for savings is not needed since we're using a direct approach in the build method
 
 class ListSavingsWidget extends StatelessWidget {
   final List<ListSavingVO> _listSavingVOList;
@@ -22,106 +22,234 @@ class ListSavingsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savingsBloc = BlocProvider.of<SavingsBloc>(context);
-    Map<SavingTableType, List<ListTilesOneVO>> savingListMap = {};
 
-    for (SavingTableType savingTableType in SavingTableType.values) {
-      savingListMap[savingTableType] = [];
+    // Group savings by type
+    Map<SavingTableType, List<ListSavingVO>> savingGroupMap = {};
+    for (SavingTableType savingType in SavingTableType.values) {
+      savingGroupMap[savingType] = [];
     }
 
     for (int index = 0; index < _listSavingVOList.length; index++) {
-      bool isMinus = _listSavingVOList[index].saving.currentAmount < 0;
-
-      savingListMap[SavingTableType.findByValue(
-              _listSavingVOList[index].saving.type)]!
-          .add(
-        ListTilesOneVO(
-          index: index,
-          title: _listSavingVOList[index].saving.name ?? '',
-          icon:
-              const Icon(Icons.money, color: Color.fromARGB(255, 23, 194, 31)),
-          subtitleWidget: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                _listSavingVOList[index].moneyStorage != null
-                    ? _listSavingVOList[index].moneyStorage!.shortName
-                    : '',
-                style: const TextStyle(color: Colors.white),
-              ),
-              Text(
-                '${isMinus ? '- ' : ''}RM ${_listSavingVOList[index].saving.currentAmount.abs().toStringAsFixed(2)}',
-                style: TextStyle(color: isMinus ? Colors.red : Colors.black),
-              ),
-            ],
-          ),
-          trailingWidget: IconButton(
-            onPressed: () => BlocProvider.of<SavingsBloc>(context).add(
-                LoadSavingTransactionEvent(
-                    savingId: _listSavingVOList[index].saving.id)),
-            icon: const Icon(Icons.attach_money_outlined),
-          ),
-          onTap: () async => BlocProvider.of<SavingsBloc>(context)
-              .add(LoadEditSavingsEvent(_listSavingVOList[index].saving.id)),
-          onLongPressed: () async {
-            showDeleteDialog(
-              context: context,
-              onDelete: () async {
-                await SingletonUtil.getSingleton<IManagerLocator>()!
-                    .getSavingManager()
-                    .deleteSelectedSaving(_listSavingVOList[index].saving.id);
-                savingsBloc.add(LoadListSavingsEvent());
-              },
-            );
-          },
-        ),
-      );
+      SavingTableType? type =
+          SavingTableType.findByValue(_listSavingVOList[index].saving.type);
+      if (type != null) {
+        savingGroupMap[type]?.add(_listSavingVOList[index]);
+      }
     }
 
-    List<Widget> listViewWidget = [];
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double screenWidth = MediaQuery.of(context).size.width;
-
-    listViewWidget.add(SizedBox(
-      height: screenHeight * 0.05,
-    ));
-
-    List<Widget> listSavingsWidget = [];
-    for (var entry in savingListMap.entries) {
-      listSavingsWidget.add(IThListTilesOne(
-        maxWidth: screenWidth * 0.88,
-        maxHeight: screenHeight * 0.70,
-        items: entry.value,
-        needBorder: true,
-        label: entry.key.label,
-        emptyListMessage: 'No Savings Added',
-      ));
-    }
-
-    listViewWidget.add(
-      SizedBox(
-        height: screenHeight * 0.85,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: screenWidth,
-          ),
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            itemCount: listSavingsWidget.length,
-            itemBuilder: (BuildContext context, int index) {
-              return listSavingsWidget[index];
-            },
-          ),
-        ),
-      ),
-    );
-
-    return SingleChildScrollView(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: listViewWidget,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            child: Text(
+              'Your Savings',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          ...savingGroupMap.entries.map((entry) {
+            final savingsOfType = entry.value;
+            if (savingsOfType.isEmpty) return Container();
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text(
+                      entry.key.label,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  ...savingsOfType.asMap().entries.map((entry) {
+                    final saving = entry.value;
+                    bool isMinus = saving.saving.currentAmount < 0;
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      elevation: 4.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.0),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.1),
+                              Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.3),
+                            ],
+                          ),
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(16.0),
+                          leading: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            child: const Icon(
+                              Icons.money,
+                              color: Colors.white,
+                            ),
+                          ),
+                          title: Text(
+                            saving.saving.name ?? 'Unnamed Saving',
+                            style: const TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                if (saving.moneyStorage != null)
+                                  Text(
+                                    'From: ${saving.moneyStorage!.shortName}',
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
+                                const SizedBox(height: 4.0),
+                                Text(
+                                  '${isMinus ? '- ' : ''}RM ${saving.saving.currentAmount.abs().toStringAsFixed(2)}',
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: isMinus ? Colors.red : Colors.green,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          trailing: PopupMenuButton<String>(
+                            icon: Icon(Icons.more_vert,
+                                color: Theme.of(context).primaryColor),
+                            onSelected: (String result) {
+                              if (result == 'edit') {
+                                BlocProvider.of<SavingsBloc>(context).add(
+                                    LoadEditSavingsEvent(saving.saving.id));
+                              }
+                              if (result == 'transaction') {
+                                BlocProvider.of<SavingsBloc>(context).add(
+                                    LoadSavingTransactionEvent(
+                                        savingId: saving.saving.id));
+                              }
+                              if (result == 'delete') {
+                                showDeleteDialog(
+                                  context: context,
+                                  onDelete: () async {
+                                    await SingletonUtil.getSingleton<
+                                            IManagerLocator>()!
+                                        .getSavingManager()
+                                        .deleteSelectedSaving(saving.saving.id);
+                                    savingsBloc.add(LoadListSavingsEvent());
+                                  },
+                                );
+                              }
+                            },
+                            itemBuilder: (BuildContext context) => [
+                              const PopupMenuItem<String>(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit, size: 18),
+                                    SizedBox(width: 8),
+                                    Text('Edit'),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'transaction',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.attach_money, size: 18),
+                                    SizedBox(width: 8),
+                                    Text('View Transactions'),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem<String>(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete,
+                                        size: 18, color: Colors.red),
+                                    SizedBox(width: 8),
+                                    Text('Delete',
+                                        style: TextStyle(color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () => BlocProvider.of<SavingsBloc>(context)
+                              .add(LoadEditSavingsEvent(saving.saving.id)),
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            );
+          }),
+          if (_listSavingVOList.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.account_balance_wallet_outlined,
+                      size: 80,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16.0),
+                    const Text(
+                      'No savings yet',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    const Text(
+                      'Add your first savings account to get started',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/theme/theme_list/default/default_theme.dart';
-import 'package:wise_spends/theme/widgets/i_th_widget.dart';
+import 'package:wise_spends/theme/theme_list/dark/dark_theme.dart';
 import 'package:wise_spends/theme/widgets/i_widget_theme.dart';
+import 'package:wise_spends/theme/widgets/theme/dark/components/list_tiles/th_list_tiles_one_dark.dart';
 import 'package:wise_spends/theme/widgets/theme/default/components/list_tiles/th_list_tiles_one_default.dart';
 import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 
-abstract class IThListTilesOne extends IThWidget {
+abstract class IThListTilesOne extends StatelessWidget {
   factory IThListTilesOne({
     Key? key,
     required List<ListTilesOneVO> items,
@@ -17,6 +18,15 @@ abstract class IThListTilesOne extends IThWidget {
   }) {
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       return ThListTilesOneDefault(
+        items: items,
+        emptyListMessage: emptyListMessage,
+        label: label,
+        needBorder: needBorder,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
+      );
+    } else if (IWidgetTheme.themeManager.getCurrentTheme() is DarkTheme) {
+      return ThListTilesOneDark(
         items: items,
         emptyListMessage: emptyListMessage,
         label: label,

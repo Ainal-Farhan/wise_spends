@@ -6450,22 +6450,298 @@ typedef $$UserTableTableUpdateCompanionBuilder = UserTableCompanion Function({
   Value<int> rowid,
 });
 
+final class $$UserTableTableReferences
+    extends BaseReferences<_$AppDatabase, $UserTableTable, CmmnUser> {
+  $$UserTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$MoneyStorageTableTable, List<SvngMoneyStorage>>
+      _moneyStorageTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.moneyStorageTable,
+              aliasName: $_aliasNameGenerator(
+                  db.userTable.id, db.moneyStorageTable.userId));
+
+  $$MoneyStorageTableTableProcessedTableManager get moneyStorageTableRefs {
+    final manager =
+        $$MoneyStorageTableTableTableManager($_db, $_db.moneyStorageTable)
+            .filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_moneyStorageTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$SavingTableTable, List<SvngSaving>>
+      _savingTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.savingTable,
+              aliasName:
+                  $_aliasNameGenerator(db.userTable.id, db.savingTable.userId));
+
+  $$SavingTableTableProcessedTableManager get savingTableRefs {
+    final manager = $$SavingTableTableTableManager($_db, $_db.savingTable)
+        .filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_savingTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$CommitmentTableTable, List<ExpnsCommitment>>
+      _commitmentTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.commitmentTable,
+              aliasName: $_aliasNameGenerator(
+                  db.userTable.id, db.commitmentTable.userId));
+
+  $$CommitmentTableTableProcessedTableManager get commitmentTableRefs {
+    final manager =
+        $$CommitmentTableTableTableManager($_db, $_db.commitmentTable)
+            .filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_commitmentTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$UserTableTableFilterComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> moneyStorageTableRefs(
+      Expression<bool> Function($$MoneyStorageTableTableFilterComposer f) f) {
+    final $$MoneyStorageTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.moneyStorageTable,
+        getReferencedColumn: (t) => t.userId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MoneyStorageTableTableFilterComposer(
+              $db: $db,
+              $table: $db.moneyStorageTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> savingTableRefs(
+      Expression<bool> Function($$SavingTableTableFilterComposer f) f) {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.userId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableFilterComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> commitmentTableRefs(
+      Expression<bool> Function($$CommitmentTableTableFilterComposer f) f) {
+    final $$CommitmentTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.commitmentTable,
+        getReferencedColumn: (t) => t.userId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CommitmentTableTableFilterComposer(
+              $db: $db,
+              $table: $db.commitmentTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$UserTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+}
+
+class $$UserTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  Expression<T> moneyStorageTableRefs<T extends Object>(
+      Expression<T> Function($$MoneyStorageTableTableAnnotationComposer a) f) {
+    final $$MoneyStorageTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.moneyStorageTable,
+            getReferencedColumn: (t) => t.userId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$MoneyStorageTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.moneyStorageTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+
+  Expression<T> savingTableRefs<T extends Object>(
+      Expression<T> Function($$SavingTableTableAnnotationComposer a) f) {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.userId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> commitmentTableRefs<T extends Object>(
+      Expression<T> Function($$CommitmentTableTableAnnotationComposer a) f) {
+    final $$CommitmentTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.commitmentTable,
+        getReferencedColumn: (t) => t.userId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CommitmentTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.commitmentTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$UserTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $UserTableTable,
     CmmnUser,
     $$UserTableTableFilterComposer,
     $$UserTableTableOrderingComposer,
+    $$UserTableTableAnnotationComposer,
     $$UserTableTableCreateCompanionBuilder,
-    $$UserTableTableUpdateCompanionBuilder> {
+    $$UserTableTableUpdateCompanionBuilder,
+    (CmmnUser, $$UserTableTableReferences),
+    CmmnUser,
+    PrefetchHooks Function(
+        {bool moneyStorageTableRefs,
+        bool savingTableRefs,
+        bool commitmentTableRefs})> {
   $$UserTableTableTableManager(_$AppDatabase db, $UserTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$UserTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$UserTableTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$UserTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -6502,133 +6778,87 @@ class $$UserTableTableTableManager extends RootTableManager<
             name: name,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$UserTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {moneyStorageTableRefs = false,
+              savingTableRefs = false,
+              commitmentTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (moneyStorageTableRefs) db.moneyStorageTable,
+                if (savingTableRefs) db.savingTable,
+                if (commitmentTableRefs) db.commitmentTable
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (moneyStorageTableRefs)
+                    await $_getPrefetchedData<CmmnUser, $UserTableTable,
+                            SvngMoneyStorage>(
+                        currentTable: table,
+                        referencedTable: $$UserTableTableReferences
+                            ._moneyStorageTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$UserTableTableReferences(db, table, p0)
+                                .moneyStorageTableRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.userId == item.id),
+                        typedResults: items),
+                  if (savingTableRefs)
+                    await $_getPrefetchedData<CmmnUser, $UserTableTable,
+                            SvngSaving>(
+                        currentTable: table,
+                        referencedTable: $$UserTableTableReferences
+                            ._savingTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$UserTableTableReferences(db, table, p0)
+                                .savingTableRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.userId == item.id),
+                        typedResults: items),
+                  if (commitmentTableRefs)
+                    await $_getPrefetchedData<CmmnUser, $UserTableTable,
+                            ExpnsCommitment>(
+                        currentTable: table,
+                        referencedTable: $$UserTableTableReferences
+                            ._commitmentTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$UserTableTableReferences(db, table, p0)
+                                .commitmentTableRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.userId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$UserTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $UserTableTable> {
-  $$UserTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ComposableFilter moneyStorageTableRefs(
-      ComposableFilter Function($$MoneyStorageTableTableFilterComposer f) f) {
-    final $$MoneyStorageTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.moneyStorageTable,
-            getReferencedColumn: (t) => (t as $MoneyStorageTableTable).userId,
-            builder: (joinBuilder, parentComposers) =>
-                $$MoneyStorageTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.moneyStorageTable,
-                    joinBuilder,
-                    parentComposers)));
-    return f(composer);
-  }
-
-  ComposableFilter savingTableRefs(
-      ComposableFilter Function($$SavingTableTableFilterComposer f) f) {
-    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).userId,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableFilterComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-
-  ComposableFilter commitmentTableRefs(
-      ComposableFilter Function($$CommitmentTableTableFilterComposer f) f) {
-    final $$CommitmentTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.commitmentTable,
-            getReferencedColumn: (t) => (t as $CommitmentTableTable).userId,
-            builder: (joinBuilder, parentComposers) =>
-                $$CommitmentTableTableFilterComposer(ComposerState($state.db,
-                    $state.db.commitmentTable, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$UserTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $UserTableTable> {
-  $$UserTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-}
-
+typedef $$UserTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $UserTableTable,
+    CmmnUser,
+    $$UserTableTableFilterComposer,
+    $$UserTableTableOrderingComposer,
+    $$UserTableTableAnnotationComposer,
+    $$UserTableTableCreateCompanionBuilder,
+    $$UserTableTableUpdateCompanionBuilder,
+    (CmmnUser, $$UserTableTableReferences),
+    CmmnUser,
+    PrefetchHooks Function(
+        {bool moneyStorageTableRefs,
+        bool savingTableRefs,
+        bool commitmentTableRefs})>;
 typedef $$GroupReferenceTableTableCreateCompanionBuilder
     = GroupReferenceTableCompanion Function({
   Value<String> id,
@@ -6652,23 +6882,189 @@ typedef $$GroupReferenceTableTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+final class $$GroupReferenceTableTableReferences extends BaseReferences<
+    _$AppDatabase, $GroupReferenceTableTable, MstrdtGroupReference> {
+  $$GroupReferenceTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$ReferenceTableTable, List<MstrdtReference>>
+      _referenceTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.referenceTable,
+              aliasName: $_aliasNameGenerator(
+                  db.groupReferenceTable.id, db.referenceTable.groupId));
+
+  $$ReferenceTableTableProcessedTableManager get referenceTableRefs {
+    final manager = $$ReferenceTableTableTableManager($_db, $_db.referenceTable)
+        .filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_referenceTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$GroupReferenceTableTableFilterComposer
+    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
+  $$GroupReferenceTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get label => $composableBuilder(
+      column: $table.label, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> referenceTableRefs(
+      Expression<bool> Function($$ReferenceTableTableFilterComposer f) f) {
+    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.groupId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableFilterComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$GroupReferenceTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
+  $$GroupReferenceTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get label => $composableBuilder(
+      column: $table.label, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnOrderings(column));
+}
+
+class $$GroupReferenceTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
+  $$GroupReferenceTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  Expression<T> referenceTableRefs<T extends Object>(
+      Expression<T> Function($$ReferenceTableTableAnnotationComposer a) f) {
+    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.groupId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$GroupReferenceTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $GroupReferenceTableTable,
     MstrdtGroupReference,
     $$GroupReferenceTableTableFilterComposer,
     $$GroupReferenceTableTableOrderingComposer,
+    $$GroupReferenceTableTableAnnotationComposer,
     $$GroupReferenceTableTableCreateCompanionBuilder,
-    $$GroupReferenceTableTableUpdateCompanionBuilder> {
+    $$GroupReferenceTableTableUpdateCompanionBuilder,
+    (MstrdtGroupReference, $$GroupReferenceTableTableReferences),
+    MstrdtGroupReference,
+    PrefetchHooks Function({bool referenceTableRefs})> {
   $$GroupReferenceTableTableTableManager(
       _$AppDatabase db, $GroupReferenceTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$GroupReferenceTableTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$GroupReferenceTableTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$GroupReferenceTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GroupReferenceTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GroupReferenceTableTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -6709,114 +7105,53 @@ class $$GroupReferenceTableTableTableManager extends RootTableManager<
             value: value,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$GroupReferenceTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({referenceTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (referenceTableRefs) db.referenceTable
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (referenceTableRefs)
+                    await $_getPrefetchedData<MstrdtGroupReference,
+                            $GroupReferenceTableTable, MstrdtReference>(
+                        currentTable: table,
+                        referencedTable: $$GroupReferenceTableTableReferences
+                            ._referenceTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$GroupReferenceTableTableReferences(db, table, p0)
+                                .referenceTableRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.groupId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$GroupReferenceTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $GroupReferenceTableTable> {
-  $$GroupReferenceTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get label => $state.composableBuilder(
-      column: $state.table.label,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get value => $state.composableBuilder(
-      column: $state.table.value,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ComposableFilter referenceTableRefs(
-      ComposableFilter Function($$ReferenceTableTableFilterComposer f) f) {
-    final $$ReferenceTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.referenceTable,
-        getReferencedColumn: (t) => (t as $ReferenceTableTable).groupId,
-        builder: (joinBuilder, parentComposers) =>
-            $$ReferenceTableTableFilterComposer(ComposerState($state.db,
-                $state.db.referenceTable, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$GroupReferenceTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $GroupReferenceTableTable> {
-  $$GroupReferenceTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get label => $state.composableBuilder(
-      column: $state.table.label,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get value => $state.composableBuilder(
-      column: $state.table.value,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-}
-
+typedef $$GroupReferenceTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $GroupReferenceTableTable,
+    MstrdtGroupReference,
+    $$GroupReferenceTableTableFilterComposer,
+    $$GroupReferenceTableTableOrderingComposer,
+    $$GroupReferenceTableTableAnnotationComposer,
+    $$GroupReferenceTableTableCreateCompanionBuilder,
+    $$GroupReferenceTableTableUpdateCompanionBuilder,
+    (MstrdtGroupReference, $$GroupReferenceTableTableReferences),
+    MstrdtGroupReference,
+    PrefetchHooks Function({bool referenceTableRefs})>;
 typedef $$ReferenceTableTableCreateCompanionBuilder = ReferenceTableCompanion
     Function({
   Value<String> id,
@@ -6846,23 +7181,422 @@ typedef $$ReferenceTableTableUpdateCompanionBuilder = ReferenceTableCompanion
   Value<int> rowid,
 });
 
+final class $$ReferenceTableTableReferences extends BaseReferences<
+    _$AppDatabase, $ReferenceTableTable, MstrdtReference> {
+  $$ReferenceTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $ReferenceTableTable _belongToTable(_$AppDatabase db) =>
+      db.referenceTable.createAlias($_aliasNameGenerator(
+          db.referenceTable.belongTo, db.referenceTable.id));
+
+  $$ReferenceTableTableProcessedTableManager get belongTo {
+    final $_column = $_itemColumn<String>('belong_to')!;
+
+    final manager = $$ReferenceTableTableTableManager($_db, $_db.referenceTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_belongToTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $GroupReferenceTableTable _groupIdTable(_$AppDatabase db) =>
+      db.groupReferenceTable.createAlias($_aliasNameGenerator(
+          db.referenceTable.groupId, db.groupReferenceTable.id));
+
+  $$GroupReferenceTableTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager =
+        $$GroupReferenceTableTableTableManager($_db, $_db.groupReferenceTable)
+            .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$ReferenceDataTableTable,
+      List<MstrdtReferenceData>> _referenceDataTableRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.referenceDataTable,
+          aliasName: $_aliasNameGenerator(
+              db.referenceTable.id, db.referenceDataTable.referenceId));
+
+  $$ReferenceDataTableTableProcessedTableManager get referenceDataTableRefs {
+    final manager = $$ReferenceDataTableTableTableManager(
+            $_db, $_db.referenceDataTable)
+        .filter((f) => f.referenceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_referenceDataTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$ExpenseReferenceTableTable,
+      List<MstrdtExpenseReference>> _expenseReferenceTableRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.expenseReferenceTable,
+          aliasName: $_aliasNameGenerator(
+              db.referenceTable.id, db.expenseReferenceTable.referenceId));
+
+  $$ExpenseReferenceTableTableProcessedTableManager
+      get expenseReferenceTableRefs {
+    final manager = $$ExpenseReferenceTableTableTableManager(
+            $_db, $_db.expenseReferenceTable)
+        .filter((f) => f.referenceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_expenseReferenceTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$ReferenceTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ReferenceTableTable> {
+  $$ReferenceTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get label => $composableBuilder(
+      column: $table.label, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnFilters(column));
+
+  $$ReferenceTableTableFilterComposer get belongTo {
+    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.belongTo,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableFilterComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GroupReferenceTableTableFilterComposer get groupId {
+    final $$GroupReferenceTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.groupId,
+        referencedTable: $db.groupReferenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$GroupReferenceTableTableFilterComposer(
+              $db: $db,
+              $table: $db.groupReferenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> referenceDataTableRefs(
+      Expression<bool> Function($$ReferenceDataTableTableFilterComposer f) f) {
+    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.referenceDataTable,
+        getReferencedColumn: (t) => t.referenceId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceDataTableTableFilterComposer(
+              $db: $db,
+              $table: $db.referenceDataTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> expenseReferenceTableRefs(
+      Expression<bool> Function($$ExpenseReferenceTableTableFilterComposer f)
+          f) {
+    final $$ExpenseReferenceTableTableFilterComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.expenseReferenceTable,
+            getReferencedColumn: (t) => t.referenceId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$ExpenseReferenceTableTableFilterComposer(
+                  $db: $db,
+                  $table: $db.expenseReferenceTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
+class $$ReferenceTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReferenceTableTable> {
+  $$ReferenceTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get label => $composableBuilder(
+      column: $table.label, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+
+  $$ReferenceTableTableOrderingComposer get belongTo {
+    final $$ReferenceTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.belongTo,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GroupReferenceTableTableOrderingComposer get groupId {
+    final $$GroupReferenceTableTableOrderingComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.groupId,
+            referencedTable: $db.groupReferenceTable,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$GroupReferenceTableTableOrderingComposer(
+                  $db: $db,
+                  $table: $db.groupReferenceTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+}
+
+class $$ReferenceTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReferenceTableTable> {
+  $$ReferenceTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  $$ReferenceTableTableAnnotationComposer get belongTo {
+    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.belongTo,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$GroupReferenceTableTableAnnotationComposer get groupId {
+    final $$GroupReferenceTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.groupId,
+            referencedTable: $db.groupReferenceTable,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$GroupReferenceTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.groupReferenceTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+
+  Expression<T> referenceDataTableRefs<T extends Object>(
+      Expression<T> Function($$ReferenceDataTableTableAnnotationComposer a) f) {
+    final $$ReferenceDataTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.referenceDataTable,
+            getReferencedColumn: (t) => t.referenceId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$ReferenceDataTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.referenceDataTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+
+  Expression<T> expenseReferenceTableRefs<T extends Object>(
+      Expression<T> Function($$ExpenseReferenceTableTableAnnotationComposer a)
+          f) {
+    final $$ExpenseReferenceTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.expenseReferenceTable,
+            getReferencedColumn: (t) => t.referenceId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$ExpenseReferenceTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.expenseReferenceTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
 class $$ReferenceTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ReferenceTableTable,
     MstrdtReference,
     $$ReferenceTableTableFilterComposer,
     $$ReferenceTableTableOrderingComposer,
+    $$ReferenceTableTableAnnotationComposer,
     $$ReferenceTableTableCreateCompanionBuilder,
-    $$ReferenceTableTableUpdateCompanionBuilder> {
+    $$ReferenceTableTableUpdateCompanionBuilder,
+    (MstrdtReference, $$ReferenceTableTableReferences),
+    MstrdtReference,
+    PrefetchHooks Function(
+        {bool belongTo,
+        bool groupId,
+        bool referenceDataTableRefs,
+        bool expenseReferenceTableRefs})> {
   $$ReferenceTableTableTableManager(
       _$AppDatabase db, $ReferenceTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$ReferenceTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$ReferenceTableTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$ReferenceTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReferenceTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReferenceTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -6915,207 +7649,110 @@ class $$ReferenceTableTableTableManager extends RootTableManager<
             groupId: groupId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$ReferenceTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {belongTo = false,
+              groupId = false,
+              referenceDataTableRefs = false,
+              expenseReferenceTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (referenceDataTableRefs) db.referenceDataTable,
+                if (expenseReferenceTableRefs) db.expenseReferenceTable
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (belongTo) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.belongTo,
+                    referencedTable:
+                        $$ReferenceTableTableReferences._belongToTable(db),
+                    referencedColumn:
+                        $$ReferenceTableTableReferences._belongToTable(db).id,
+                  ) as T;
+                }
+                if (groupId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.groupId,
+                    referencedTable:
+                        $$ReferenceTableTableReferences._groupIdTable(db),
+                    referencedColumn:
+                        $$ReferenceTableTableReferences._groupIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (referenceDataTableRefs)
+                    await $_getPrefetchedData<MstrdtReference,
+                            $ReferenceTableTable, MstrdtReferenceData>(
+                        currentTable: table,
+                        referencedTable: $$ReferenceTableTableReferences
+                            ._referenceDataTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ReferenceTableTableReferences(db, table, p0)
+                                .referenceDataTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.referenceId == item.id),
+                        typedResults: items),
+                  if (expenseReferenceTableRefs)
+                    await $_getPrefetchedData<MstrdtReference,
+                            $ReferenceTableTable, MstrdtExpenseReference>(
+                        currentTable: table,
+                        referencedTable: $$ReferenceTableTableReferences
+                            ._expenseReferenceTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ReferenceTableTableReferences(db, table, p0)
+                                .expenseReferenceTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.referenceId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$ReferenceTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $ReferenceTableTable> {
-  $$ReferenceTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get label => $state.composableBuilder(
-      column: $state.table.label,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get value => $state.composableBuilder(
-      column: $state.table.value,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isActive => $state.composableBuilder(
-      column: $state.table.isActive,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  $$ReferenceTableTableFilterComposer get belongTo {
-    final $$ReferenceTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.belongTo,
-        referencedTable: $state.db.referenceTable,
-        getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$ReferenceTableTableFilterComposer(ComposerState($state.db,
-                $state.db.referenceTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$GroupReferenceTableTableFilterComposer get groupId {
-    final $$GroupReferenceTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.groupId,
-            referencedTable: $state.db.groupReferenceTable,
-            getReferencedColumn: (t) => (t as $GroupReferenceTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$GroupReferenceTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.groupReferenceTable,
-                    joinBuilder,
-                    parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter referenceDataTableRefs(
-      ComposableFilter Function($$ReferenceDataTableTableFilterComposer f) f) {
-    final $$ReferenceDataTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.referenceDataTable,
-            getReferencedColumn: (t) =>
-                (t as $ReferenceDataTableTable).referenceId,
-            builder: (joinBuilder, parentComposers) =>
-                $$ReferenceDataTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.referenceDataTable,
-                    joinBuilder,
-                    parentComposers)));
-    return f(composer);
-  }
-
-  ComposableFilter expenseReferenceTableRefs(
-      ComposableFilter Function($$ExpenseReferenceTableTableFilterComposer f)
-          f) {
-    final $$ExpenseReferenceTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.expenseReferenceTable,
-            getReferencedColumn: (t) =>
-                (t as $ExpenseReferenceTableTable).referenceId,
-            builder: (joinBuilder, parentComposers) =>
-                $$ExpenseReferenceTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.expenseReferenceTable,
-                    joinBuilder,
-                    parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$ReferenceTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $ReferenceTableTable> {
-  $$ReferenceTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get label => $state.composableBuilder(
-      column: $state.table.label,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get value => $state.composableBuilder(
-      column: $state.table.value,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isActive => $state.composableBuilder(
-      column: $state.table.isActive,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  $$ReferenceTableTableOrderingComposer get belongTo {
-    final $$ReferenceTableTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.belongTo,
-            referencedTable: $state.db.referenceTable,
-            getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$ReferenceTableTableOrderingComposer(ComposerState($state.db,
-                    $state.db.referenceTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$GroupReferenceTableTableOrderingComposer get groupId {
-    final $$GroupReferenceTableTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.groupId,
-            referencedTable: $state.db.groupReferenceTable,
-            getReferencedColumn: (t) => (t as $GroupReferenceTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$GroupReferenceTableTableOrderingComposer(ComposerState(
-                    $state.db,
-                    $state.db.groupReferenceTable,
-                    joinBuilder,
-                    parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$ReferenceTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ReferenceTableTable,
+    MstrdtReference,
+    $$ReferenceTableTableFilterComposer,
+    $$ReferenceTableTableOrderingComposer,
+    $$ReferenceTableTableAnnotationComposer,
+    $$ReferenceTableTableCreateCompanionBuilder,
+    $$ReferenceTableTableUpdateCompanionBuilder,
+    (MstrdtReference, $$ReferenceTableTableReferences),
+    MstrdtReference,
+    PrefetchHooks Function(
+        {bool belongTo,
+        bool groupId,
+        bool referenceDataTableRefs,
+        bool expenseReferenceTableRefs})>;
 typedef $$ReferenceDataTableTableCreateCompanionBuilder
     = ReferenceDataTableCompanion Function({
   Value<String> id,
@@ -7149,23 +7786,369 @@ typedef $$ReferenceDataTableTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+final class $$ReferenceDataTableTableReferences extends BaseReferences<
+    _$AppDatabase, $ReferenceDataTableTable, MstrdtReferenceData> {
+  $$ReferenceDataTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $ReferenceTableTable _referenceIdTable(_$AppDatabase db) =>
+      db.referenceTable.createAlias($_aliasNameGenerator(
+          db.referenceDataTable.referenceId, db.referenceTable.id));
+
+  $$ReferenceTableTableProcessedTableManager? get referenceId {
+    final $_column = $_itemColumn<String>('reference_id');
+    if ($_column == null) return null;
+    final manager = $$ReferenceTableTableTableManager($_db, $_db.referenceTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_referenceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $ReferenceDataTableTable _nextReferenceDataIdTable(_$AppDatabase db) =>
+      db.referenceDataTable.createAlias($_aliasNameGenerator(
+          db.referenceDataTable.nextReferenceDataId, db.referenceDataTable.id));
+
+  $$ReferenceDataTableTableProcessedTableManager? get nextReferenceDataId {
+    final $_column = $_itemColumn<String>('next_reference_data_id');
+    if ($_column == null) return null;
+    final manager =
+        $$ReferenceDataTableTableTableManager($_db, $_db.referenceDataTable)
+            .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_nextReferenceDataIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$ExpenseTableTable, List<ExpnsExpense>>
+      _expenseTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.expenseTable,
+              aliasName: $_aliasNameGenerator(
+                  db.referenceDataTable.id, db.expenseTable.referenceDataId));
+
+  $$ExpenseTableTableProcessedTableManager get expenseTableRefs {
+    final manager = $$ExpenseTableTableTableManager($_db, $_db.expenseTable)
+        .filter(
+            (f) => f.referenceDataId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_expenseTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$ReferenceDataTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
+  $$ReferenceDataTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get label => $composableBuilder(
+      column: $table.label, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get groupLabel => $composableBuilder(
+      column: $table.groupLabel, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get groupValue => $composableBuilder(
+      column: $table.groupValue, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isHasNext => $composableBuilder(
+      column: $table.isHasNext, builder: (column) => ColumnFilters(column));
+
+  $$ReferenceTableTableFilterComposer get referenceId {
+    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceId,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableFilterComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$ReferenceDataTableTableFilterComposer get nextReferenceDataId {
+    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.nextReferenceDataId,
+        referencedTable: $db.referenceDataTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceDataTableTableFilterComposer(
+              $db: $db,
+              $table: $db.referenceDataTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> expenseTableRefs(
+      Expression<bool> Function($$ExpenseTableTableFilterComposer f) f) {
+    final $$ExpenseTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.expenseTable,
+        getReferencedColumn: (t) => t.referenceDataId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseTableTableFilterComposer(
+              $db: $db,
+              $table: $db.expenseTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$ReferenceDataTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
+  $$ReferenceDataTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get label => $composableBuilder(
+      column: $table.label, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get groupLabel => $composableBuilder(
+      column: $table.groupLabel, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get value => $composableBuilder(
+      column: $table.value, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get groupValue => $composableBuilder(
+      column: $table.groupValue, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isHasNext => $composableBuilder(
+      column: $table.isHasNext, builder: (column) => ColumnOrderings(column));
+
+  $$ReferenceTableTableOrderingComposer get referenceId {
+    final $$ReferenceTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceId,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$ReferenceDataTableTableOrderingComposer get nextReferenceDataId {
+    final $$ReferenceDataTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.nextReferenceDataId,
+        referencedTable: $db.referenceDataTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceDataTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.referenceDataTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ReferenceDataTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
+  $$ReferenceDataTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get groupLabel => $composableBuilder(
+      column: $table.groupLabel, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<String> get groupValue => $composableBuilder(
+      column: $table.groupValue, builder: (column) => column);
+
+  GeneratedColumn<bool> get isHasNext =>
+      $composableBuilder(column: $table.isHasNext, builder: (column) => column);
+
+  $$ReferenceTableTableAnnotationComposer get referenceId {
+    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceId,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$ReferenceDataTableTableAnnotationComposer get nextReferenceDataId {
+    final $$ReferenceDataTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.nextReferenceDataId,
+            referencedTable: $db.referenceDataTable,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$ReferenceDataTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.referenceDataTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+
+  Expression<T> expenseTableRefs<T extends Object>(
+      Expression<T> Function($$ExpenseTableTableAnnotationComposer a) f) {
+    final $$ExpenseTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.expenseTable,
+        getReferencedColumn: (t) => t.referenceDataId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.expenseTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$ReferenceDataTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ReferenceDataTableTable,
     MstrdtReferenceData,
     $$ReferenceDataTableTableFilterComposer,
     $$ReferenceDataTableTableOrderingComposer,
+    $$ReferenceDataTableTableAnnotationComposer,
     $$ReferenceDataTableTableCreateCompanionBuilder,
-    $$ReferenceDataTableTableUpdateCompanionBuilder> {
+    $$ReferenceDataTableTableUpdateCompanionBuilder,
+    (MstrdtReferenceData, $$ReferenceDataTableTableReferences),
+    MstrdtReferenceData,
+    PrefetchHooks Function(
+        {bool referenceId, bool nextReferenceDataId, bool expenseTableRefs})> {
   $$ReferenceDataTableTableTableManager(
       _$AppDatabase db, $ReferenceDataTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$ReferenceDataTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$ReferenceDataTableTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$ReferenceDataTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReferenceDataTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReferenceDataTableTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -7226,207 +8209,92 @@ class $$ReferenceDataTableTableTableManager extends RootTableManager<
             nextReferenceDataId: nextReferenceDataId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$ReferenceDataTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {referenceId = false,
+              nextReferenceDataId = false,
+              expenseTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (expenseTableRefs) db.expenseTable],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (referenceId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.referenceId,
+                    referencedTable: $$ReferenceDataTableTableReferences
+                        ._referenceIdTable(db),
+                    referencedColumn: $$ReferenceDataTableTableReferences
+                        ._referenceIdTable(db)
+                        .id,
+                  ) as T;
+                }
+                if (nextReferenceDataId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.nextReferenceDataId,
+                    referencedTable: $$ReferenceDataTableTableReferences
+                        ._nextReferenceDataIdTable(db),
+                    referencedColumn: $$ReferenceDataTableTableReferences
+                        ._nextReferenceDataIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (expenseTableRefs)
+                    await $_getPrefetchedData<MstrdtReferenceData,
+                            $ReferenceDataTableTable, ExpnsExpense>(
+                        currentTable: table,
+                        referencedTable: $$ReferenceDataTableTableReferences
+                            ._expenseTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ReferenceDataTableTableReferences(db, table, p0)
+                                .expenseTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.referenceDataId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$ReferenceDataTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $ReferenceDataTableTable> {
-  $$ReferenceDataTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get label => $state.composableBuilder(
-      column: $state.table.label,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get groupLabel => $state.composableBuilder(
-      column: $state.table.groupLabel,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get value => $state.composableBuilder(
-      column: $state.table.value,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get groupValue => $state.composableBuilder(
-      column: $state.table.groupValue,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isHasNext => $state.composableBuilder(
-      column: $state.table.isHasNext,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  $$ReferenceTableTableFilterComposer get referenceId {
-    final $$ReferenceTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.referenceId,
-        referencedTable: $state.db.referenceTable,
-        getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$ReferenceTableTableFilterComposer(ComposerState($state.db,
-                $state.db.referenceTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$ReferenceDataTableTableFilterComposer get nextReferenceDataId {
-    final $$ReferenceDataTableTableFilterComposer composer = $state
-        .composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.nextReferenceDataId,
-            referencedTable: $state.db.referenceDataTable,
-            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$ReferenceDataTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.referenceDataTable,
-                    joinBuilder,
-                    parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter expenseTableRefs(
-      ComposableFilter Function($$ExpenseTableTableFilterComposer f) f) {
-    final $$ExpenseTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.expenseTable,
-        getReferencedColumn: (t) => (t as $ExpenseTableTable).referenceDataId,
-        builder: (joinBuilder, parentComposers) =>
-            $$ExpenseTableTableFilterComposer(ComposerState($state.db,
-                $state.db.expenseTable, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$ReferenceDataTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $ReferenceDataTableTable> {
-  $$ReferenceDataTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get label => $state.composableBuilder(
-      column: $state.table.label,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get groupLabel => $state.composableBuilder(
-      column: $state.table.groupLabel,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get value => $state.composableBuilder(
-      column: $state.table.value,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get groupValue => $state.composableBuilder(
-      column: $state.table.groupValue,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isHasNext => $state.composableBuilder(
-      column: $state.table.isHasNext,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  $$ReferenceTableTableOrderingComposer get referenceId {
-    final $$ReferenceTableTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.referenceId,
-            referencedTable: $state.db.referenceTable,
-            getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$ReferenceTableTableOrderingComposer(ComposerState($state.db,
-                    $state.db.referenceTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$ReferenceDataTableTableOrderingComposer get nextReferenceDataId {
-    final $$ReferenceDataTableTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.nextReferenceDataId,
-            referencedTable: $state.db.referenceDataTable,
-            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$ReferenceDataTableTableOrderingComposer(ComposerState(
-                    $state.db,
-                    $state.db.referenceDataTable,
-                    joinBuilder,
-                    parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$ReferenceDataTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ReferenceDataTableTable,
+    MstrdtReferenceData,
+    $$ReferenceDataTableTableFilterComposer,
+    $$ReferenceDataTableTableOrderingComposer,
+    $$ReferenceDataTableTableAnnotationComposer,
+    $$ReferenceDataTableTableCreateCompanionBuilder,
+    $$ReferenceDataTableTableUpdateCompanionBuilder,
+    (MstrdtReferenceData, $$ReferenceDataTableTableReferences),
+    MstrdtReferenceData,
+    PrefetchHooks Function(
+        {bool referenceId, bool nextReferenceDataId, bool expenseTableRefs})>;
 typedef $$ExpenseReferenceTableTableCreateCompanionBuilder
     = ExpenseReferenceTableCompanion Function({
   Value<String> id,
@@ -7452,23 +8320,210 @@ typedef $$ExpenseReferenceTableTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+final class $$ExpenseReferenceTableTableReferences extends BaseReferences<
+    _$AppDatabase, $ExpenseReferenceTableTable, MstrdtExpenseReference> {
+  $$ExpenseReferenceTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $ReferenceTableTable _referenceIdTable(_$AppDatabase db) =>
+      db.referenceTable.createAlias($_aliasNameGenerator(
+          db.expenseReferenceTable.referenceId, db.referenceTable.id));
+
+  $$ReferenceTableTableProcessedTableManager get referenceId {
+    final $_column = $_itemColumn<String>('reference_id')!;
+
+    final manager = $$ReferenceTableTableTableManager($_db, $_db.referenceTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_referenceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$ExpenseReferenceTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ExpenseReferenceTableTable> {
+  $$ExpenseReferenceTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get suggestedAmount => $composableBuilder(
+      column: $table.suggestedAmount,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  $$ReferenceTableTableFilterComposer get referenceId {
+    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceId,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableFilterComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ExpenseReferenceTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExpenseReferenceTableTable> {
+  $$ExpenseReferenceTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get suggestedAmount => $composableBuilder(
+      column: $table.suggestedAmount,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  $$ReferenceTableTableOrderingComposer get referenceId {
+    final $$ReferenceTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceId,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ExpenseReferenceTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExpenseReferenceTableTable> {
+  $$ExpenseReferenceTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<double> get suggestedAmount => $composableBuilder(
+      column: $table.suggestedAmount, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  $$ReferenceTableTableAnnotationComposer get referenceId {
+    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceId,
+        referencedTable: $db.referenceTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.referenceTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
 class $$ExpenseReferenceTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ExpenseReferenceTableTable,
     MstrdtExpenseReference,
     $$ExpenseReferenceTableTableFilterComposer,
     $$ExpenseReferenceTableTableOrderingComposer,
+    $$ExpenseReferenceTableTableAnnotationComposer,
     $$ExpenseReferenceTableTableCreateCompanionBuilder,
-    $$ExpenseReferenceTableTableUpdateCompanionBuilder> {
+    $$ExpenseReferenceTableTableUpdateCompanionBuilder,
+    (MstrdtExpenseReference, $$ExpenseReferenceTableTableReferences),
+    MstrdtExpenseReference,
+    PrefetchHooks Function({bool referenceId})> {
   $$ExpenseReferenceTableTableTableManager(
       _$AppDatabase db, $ExpenseReferenceTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$ExpenseReferenceTableTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$ExpenseReferenceTableTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$ExpenseReferenceTableTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExpenseReferenceTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExpenseReferenceTableTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -7513,126 +8568,64 @@ class $$ExpenseReferenceTableTableTableManager extends RootTableManager<
             referenceId: referenceId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$ExpenseReferenceTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({referenceId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (referenceId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.referenceId,
+                    referencedTable: $$ExpenseReferenceTableTableReferences
+                        ._referenceIdTable(db),
+                    referencedColumn: $$ExpenseReferenceTableTableReferences
+                        ._referenceIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
-class $$ExpenseReferenceTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $ExpenseReferenceTableTable> {
-  $$ExpenseReferenceTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get suggestedAmount => $state.composableBuilder(
-      column: $state.table.suggestedAmount,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  $$ReferenceTableTableFilterComposer get referenceId {
-    final $$ReferenceTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.referenceId,
-        referencedTable: $state.db.referenceTable,
-        getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$ReferenceTableTableFilterComposer(ComposerState($state.db,
-                $state.db.referenceTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-class $$ExpenseReferenceTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $ExpenseReferenceTableTable> {
-  $$ExpenseReferenceTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get suggestedAmount => $state.composableBuilder(
-      column: $state.table.suggestedAmount,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  $$ReferenceTableTableOrderingComposer get referenceId {
-    final $$ReferenceTableTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.referenceId,
-            referencedTable: $state.db.referenceTable,
-            getReferencedColumn: (t) => (t as $ReferenceTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$ReferenceTableTableOrderingComposer(ComposerState($state.db,
-                    $state.db.referenceTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$ExpenseReferenceTableTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $ExpenseReferenceTableTable,
+        MstrdtExpenseReference,
+        $$ExpenseReferenceTableTableFilterComposer,
+        $$ExpenseReferenceTableTableOrderingComposer,
+        $$ExpenseReferenceTableTableAnnotationComposer,
+        $$ExpenseReferenceTableTableCreateCompanionBuilder,
+        $$ExpenseReferenceTableTableUpdateCompanionBuilder,
+        (MstrdtExpenseReference, $$ExpenseReferenceTableTableReferences),
+        MstrdtExpenseReference,
+        PrefetchHooks Function({bool referenceId})>;
 typedef $$MoneyStorageTableTableCreateCompanionBuilder
     = MoneyStorageTableCompanion Function({
   Value<String> id,
@@ -7662,23 +8655,282 @@ typedef $$MoneyStorageTableTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+final class $$MoneyStorageTableTableReferences extends BaseReferences<
+    _$AppDatabase, $MoneyStorageTableTable, SvngMoneyStorage> {
+  $$MoneyStorageTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $UserTableTable _userIdTable(_$AppDatabase db) =>
+      db.userTable.createAlias(
+          $_aliasNameGenerator(db.moneyStorageTable.userId, db.userTable.id));
+
+  $$UserTableTableProcessedTableManager? get userId {
+    final $_column = $_itemColumn<String>('user_id');
+    if ($_column == null) return null;
+    final manager = $$UserTableTableTableManager($_db, $_db.userTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$SavingTableTable, List<SvngSaving>>
+      _savingTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.savingTable,
+              aliasName: $_aliasNameGenerator(
+                  db.moneyStorageTable.id, db.savingTable.moneyStorageId));
+
+  $$SavingTableTableProcessedTableManager get savingTableRefs {
+    final manager = $$SavingTableTableTableManager($_db, $_db.savingTable)
+        .filter(
+            (f) => f.moneyStorageId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_savingTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$MoneyStorageTableTableFilterComposer
+    extends Composer<_$AppDatabase, $MoneyStorageTableTable> {
+  $$MoneyStorageTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get iconUrl => $composableBuilder(
+      column: $table.iconUrl, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get longName => $composableBuilder(
+      column: $table.longName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get shortName => $composableBuilder(
+      column: $table.shortName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  $$UserTableTableFilterComposer get userId {
+    final $$UserTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableFilterComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> savingTableRefs(
+      Expression<bool> Function($$SavingTableTableFilterComposer f) f) {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.moneyStorageId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableFilterComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$MoneyStorageTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $MoneyStorageTableTable> {
+  $$MoneyStorageTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get iconUrl => $composableBuilder(
+      column: $table.iconUrl, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get longName => $composableBuilder(
+      column: $table.longName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get shortName => $composableBuilder(
+      column: $table.shortName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  $$UserTableTableOrderingComposer get userId {
+    final $$UserTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$MoneyStorageTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MoneyStorageTableTable> {
+  $$MoneyStorageTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get iconUrl =>
+      $composableBuilder(column: $table.iconUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get longName =>
+      $composableBuilder(column: $table.longName, builder: (column) => column);
+
+  GeneratedColumn<String> get shortName =>
+      $composableBuilder(column: $table.shortName, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  $$UserTableTableAnnotationComposer get userId {
+    final $$UserTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> savingTableRefs<T extends Object>(
+      Expression<T> Function($$SavingTableTableAnnotationComposer a) f) {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.moneyStorageId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$MoneyStorageTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $MoneyStorageTableTable,
     SvngMoneyStorage,
     $$MoneyStorageTableTableFilterComposer,
     $$MoneyStorageTableTableOrderingComposer,
+    $$MoneyStorageTableTableAnnotationComposer,
     $$MoneyStorageTableTableCreateCompanionBuilder,
-    $$MoneyStorageTableTableUpdateCompanionBuilder> {
+    $$MoneyStorageTableTableUpdateCompanionBuilder,
+    (SvngMoneyStorage, $$MoneyStorageTableTableReferences),
+    SvngMoneyStorage,
+    PrefetchHooks Function({bool userId, bool savingTableRefs})> {
   $$MoneyStorageTableTableTableManager(
       _$AppDatabase db, $MoneyStorageTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$MoneyStorageTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer: $$MoneyStorageTableTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$MoneyStorageTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MoneyStorageTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MoneyStorageTableTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -7731,162 +8983,76 @@ class $$MoneyStorageTableTableTableManager extends RootTableManager<
             userId: userId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$MoneyStorageTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({userId = false, savingTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (savingTableRefs) db.savingTable],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (userId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.userId,
+                    referencedTable:
+                        $$MoneyStorageTableTableReferences._userIdTable(db),
+                    referencedColumn:
+                        $$MoneyStorageTableTableReferences._userIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (savingTableRefs)
+                    await $_getPrefetchedData<SvngMoneyStorage,
+                            $MoneyStorageTableTable, SvngSaving>(
+                        currentTable: table,
+                        referencedTable: $$MoneyStorageTableTableReferences
+                            ._savingTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$MoneyStorageTableTableReferences(db, table, p0)
+                                .savingTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.moneyStorageId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$MoneyStorageTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $MoneyStorageTableTable> {
-  $$MoneyStorageTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get iconUrl => $state.composableBuilder(
-      column: $state.table.iconUrl,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get longName => $state.composableBuilder(
-      column: $state.table.longName,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get shortName => $state.composableBuilder(
-      column: $state.table.shortName,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  $$UserTableTableFilterComposer get userId {
-    final $$UserTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.userId,
-        referencedTable: $state.db.userTable,
-        getReferencedColumn: (t) => (t as $UserTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$UserTableTableFilterComposer(ComposerState(
-                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter savingTableRefs(
-      ComposableFilter Function($$SavingTableTableFilterComposer f) f) {
-    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).moneyStorageId,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableFilterComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$MoneyStorageTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $MoneyStorageTableTable> {
-  $$MoneyStorageTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get iconUrl => $state.composableBuilder(
-      column: $state.table.iconUrl,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get longName => $state.composableBuilder(
-      column: $state.table.longName,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get shortName => $state.composableBuilder(
-      column: $state.table.shortName,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  $$UserTableTableOrderingComposer get userId {
-    final $$UserTableTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.userId,
-        referencedTable: $state.db.userTable,
-        getReferencedColumn: (t) => (t as $UserTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$UserTableTableOrderingComposer(ComposerState(
-                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$MoneyStorageTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $MoneyStorageTableTable,
+    SvngMoneyStorage,
+    $$MoneyStorageTableTableFilterComposer,
+    $$MoneyStorageTableTableOrderingComposer,
+    $$MoneyStorageTableTableAnnotationComposer,
+    $$MoneyStorageTableTableCreateCompanionBuilder,
+    $$MoneyStorageTableTableUpdateCompanionBuilder,
+    (SvngMoneyStorage, $$MoneyStorageTableTableReferences),
+    SvngMoneyStorage,
+    PrefetchHooks Function({bool userId, bool savingTableRefs})>;
 typedef $$SavingTableTableCreateCompanionBuilder = SavingTableCompanion
     Function({
   Value<String> id,
@@ -7936,22 +9102,638 @@ typedef $$SavingTableTableUpdateCompanionBuilder = SavingTableCompanion
   Value<int> rowid,
 });
 
+final class $$SavingTableTableReferences
+    extends BaseReferences<_$AppDatabase, $SavingTableTable, SvngSaving> {
+  $$SavingTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $UserTableTable _userIdTable(_$AppDatabase db) =>
+      db.userTable.createAlias(
+          $_aliasNameGenerator(db.savingTable.userId, db.userTable.id));
+
+  $$UserTableTableProcessedTableManager? get userId {
+    final $_column = $_itemColumn<String>('user_id');
+    if ($_column == null) return null;
+    final manager = $$UserTableTableTableManager($_db, $_db.userTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $MoneyStorageTableTable _moneyStorageIdTable(_$AppDatabase db) =>
+      db.moneyStorageTable.createAlias($_aliasNameGenerator(
+          db.savingTable.moneyStorageId, db.moneyStorageTable.id));
+
+  $$MoneyStorageTableTableProcessedTableManager? get moneyStorageId {
+    final $_column = $_itemColumn<String>('money_storage_id');
+    if ($_column == null) return null;
+    final manager =
+        $$MoneyStorageTableTableTableManager($_db, $_db.moneyStorageTable)
+            .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_moneyStorageIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$CommitmentTableTable, List<ExpnsCommitment>>
+      _commitmentTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.commitmentTable,
+              aliasName: $_aliasNameGenerator(
+                  db.savingTable.id, db.commitmentTable.referredSavingId));
+
+  $$CommitmentTableTableProcessedTableManager get commitmentTableRefs {
+    final manager =
+        $$CommitmentTableTableTableManager($_db, $_db.commitmentTable).filter(
+            (f) =>
+                f.referredSavingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_commitmentTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$CommitmentDetailTableTable,
+      List<ExpnsCommitmentDetail>> _commitmentDetailTableRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.commitmentDetailTable,
+          aliasName: $_aliasNameGenerator(
+              db.savingTable.id, db.commitmentDetailTable.savingId));
+
+  $$CommitmentDetailTableTableProcessedTableManager
+      get commitmentDetailTableRefs {
+    final manager = $$CommitmentDetailTableTableTableManager(
+            $_db, $_db.commitmentDetailTable)
+        .filter((f) => f.savingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_commitmentDetailTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$CommitmentTaskTableTable,
+      List<ExpnsCommitmentTask>> _commitmentTaskTableRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.commitmentTaskTable,
+          aliasName: $_aliasNameGenerator(
+              db.savingTable.id, db.commitmentTaskTable.referredSavingId));
+
+  $$CommitmentTaskTableTableProcessedTableManager get commitmentTaskTableRefs {
+    final manager =
+        $$CommitmentTaskTableTableTableManager($_db, $_db.commitmentTaskTable)
+            .filter((f) =>
+                f.referredSavingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_commitmentTaskTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+
+  static MultiTypedResultKey<$TransactionTableTable, List<TrnsctnTransaction>>
+      _transactionTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.transactionTable,
+              aliasName: $_aliasNameGenerator(
+                  db.savingTable.id, db.transactionTable.savingId));
+
+  $$TransactionTableTableProcessedTableManager get transactionTableRefs {
+    final manager = $$TransactionTableTableTableManager(
+            $_db, $_db.transactionTable)
+        .filter((f) => f.savingId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_transactionTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$SavingTableTableFilterComposer
+    extends Composer<_$AppDatabase, $SavingTableTable> {
+  $$SavingTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isPublic => $composableBuilder(
+      column: $table.isPublic, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isHasGoal => $composableBuilder(
+      column: $table.isHasGoal, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get goal => $composableBuilder(
+      column: $table.goal, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isHasStartDate => $composableBuilder(
+      column: $table.isHasStartDate,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get startDate => $composableBuilder(
+      column: $table.startDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isHasEndDate => $composableBuilder(
+      column: $table.isHasEndDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get endDate => $composableBuilder(
+      column: $table.endDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSaveDaily => $composableBuilder(
+      column: $table.isSaveDaily, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSaveWeekly => $composableBuilder(
+      column: $table.isSaveWeekly, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isSaveMonthly => $composableBuilder(
+      column: $table.isSaveMonthly, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get currentAmount => $composableBuilder(
+      column: $table.currentAmount, builder: (column) => ColumnFilters(column));
+
+  $$UserTableTableFilterComposer get userId {
+    final $$UserTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableFilterComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$MoneyStorageTableTableFilterComposer get moneyStorageId {
+    final $$MoneyStorageTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.moneyStorageId,
+        referencedTable: $db.moneyStorageTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MoneyStorageTableTableFilterComposer(
+              $db: $db,
+              $table: $db.moneyStorageTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> commitmentTableRefs(
+      Expression<bool> Function($$CommitmentTableTableFilterComposer f) f) {
+    final $$CommitmentTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.commitmentTable,
+        getReferencedColumn: (t) => t.referredSavingId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CommitmentTableTableFilterComposer(
+              $db: $db,
+              $table: $db.commitmentTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> commitmentDetailTableRefs(
+      Expression<bool> Function($$CommitmentDetailTableTableFilterComposer f)
+          f) {
+    final $$CommitmentDetailTableTableFilterComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.commitmentDetailTable,
+            getReferencedColumn: (t) => t.savingId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$CommitmentDetailTableTableFilterComposer(
+                  $db: $db,
+                  $table: $db.commitmentDetailTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+
+  Expression<bool> commitmentTaskTableRefs(
+      Expression<bool> Function($$CommitmentTaskTableTableFilterComposer f) f) {
+    final $$CommitmentTaskTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.commitmentTaskTable,
+        getReferencedColumn: (t) => t.referredSavingId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CommitmentTaskTableTableFilterComposer(
+              $db: $db,
+              $table: $db.commitmentTaskTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<bool> transactionTableRefs(
+      Expression<bool> Function($$TransactionTableTableFilterComposer f) f) {
+    final $$TransactionTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.transactionTable,
+        getReferencedColumn: (t) => t.savingId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionTableTableFilterComposer(
+              $db: $db,
+              $table: $db.transactionTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$SavingTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavingTableTable> {
+  $$SavingTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isPublic => $composableBuilder(
+      column: $table.isPublic, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isHasGoal => $composableBuilder(
+      column: $table.isHasGoal, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get goal => $composableBuilder(
+      column: $table.goal, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isHasStartDate => $composableBuilder(
+      column: $table.isHasStartDate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get startDate => $composableBuilder(
+      column: $table.startDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isHasEndDate => $composableBuilder(
+      column: $table.isHasEndDate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get endDate => $composableBuilder(
+      column: $table.endDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSaveDaily => $composableBuilder(
+      column: $table.isSaveDaily, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSaveWeekly => $composableBuilder(
+      column: $table.isSaveWeekly,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isSaveMonthly => $composableBuilder(
+      column: $table.isSaveMonthly,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get currentAmount => $composableBuilder(
+      column: $table.currentAmount,
+      builder: (column) => ColumnOrderings(column));
+
+  $$UserTableTableOrderingComposer get userId {
+    final $$UserTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$MoneyStorageTableTableOrderingComposer get moneyStorageId {
+    final $$MoneyStorageTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.moneyStorageId,
+        referencedTable: $db.moneyStorageTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MoneyStorageTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.moneyStorageTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$SavingTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavingTableTable> {
+  $$SavingTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPublic =>
+      $composableBuilder(column: $table.isPublic, builder: (column) => column);
+
+  GeneratedColumn<bool> get isHasGoal =>
+      $composableBuilder(column: $table.isHasGoal, builder: (column) => column);
+
+  GeneratedColumn<double> get goal =>
+      $composableBuilder(column: $table.goal, builder: (column) => column);
+
+  GeneratedColumn<bool> get isHasStartDate => $composableBuilder(
+      column: $table.isHasStartDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<bool> get isHasEndDate => $composableBuilder(
+      column: $table.isHasEndDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endDate =>
+      $composableBuilder(column: $table.endDate, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSaveDaily => $composableBuilder(
+      column: $table.isSaveDaily, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSaveWeekly => $composableBuilder(
+      column: $table.isSaveWeekly, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSaveMonthly => $composableBuilder(
+      column: $table.isSaveMonthly, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<double> get currentAmount => $composableBuilder(
+      column: $table.currentAmount, builder: (column) => column);
+
+  $$UserTableTableAnnotationComposer get userId {
+    final $$UserTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$MoneyStorageTableTableAnnotationComposer get moneyStorageId {
+    final $$MoneyStorageTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.moneyStorageId,
+            referencedTable: $db.moneyStorageTable,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$MoneyStorageTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.moneyStorageTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+
+  Expression<T> commitmentTableRefs<T extends Object>(
+      Expression<T> Function($$CommitmentTableTableAnnotationComposer a) f) {
+    final $$CommitmentTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.commitmentTable,
+        getReferencedColumn: (t) => t.referredSavingId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CommitmentTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.commitmentTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+
+  Expression<T> commitmentDetailTableRefs<T extends Object>(
+      Expression<T> Function($$CommitmentDetailTableTableAnnotationComposer a)
+          f) {
+    final $$CommitmentDetailTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.commitmentDetailTable,
+            getReferencedColumn: (t) => t.savingId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$CommitmentDetailTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.commitmentDetailTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+
+  Expression<T> commitmentTaskTableRefs<T extends Object>(
+      Expression<T> Function($$CommitmentTaskTableTableAnnotationComposer a)
+          f) {
+    final $$CommitmentTaskTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.commitmentTaskTable,
+            getReferencedColumn: (t) => t.referredSavingId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$CommitmentTaskTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.commitmentTaskTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+
+  Expression<T> transactionTableRefs<T extends Object>(
+      Expression<T> Function($$TransactionTableTableAnnotationComposer a) f) {
+    final $$TransactionTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.transactionTable,
+        getReferencedColumn: (t) => t.savingId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.transactionTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$SavingTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $SavingTableTable,
     SvngSaving,
     $$SavingTableTableFilterComposer,
     $$SavingTableTableOrderingComposer,
+    $$SavingTableTableAnnotationComposer,
     $$SavingTableTableCreateCompanionBuilder,
-    $$SavingTableTableUpdateCompanionBuilder> {
+    $$SavingTableTableUpdateCompanionBuilder,
+    (SvngSaving, $$SavingTableTableReferences),
+    SvngSaving,
+    PrefetchHooks Function(
+        {bool userId,
+        bool moneyStorageId,
+        bool commitmentTableRefs,
+        bool commitmentDetailTableRefs,
+        bool commitmentTaskTableRefs,
+        bool transactionTableRefs})> {
   $$SavingTableTableTableManager(_$AppDatabase db, $SavingTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$SavingTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$SavingTableTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$SavingTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavingTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavingTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -8044,355 +9826,142 @@ class $$SavingTableTableTableManager extends RootTableManager<
             moneyStorageId: moneyStorageId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$SavingTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {userId = false,
+              moneyStorageId = false,
+              commitmentTableRefs = false,
+              commitmentDetailTableRefs = false,
+              commitmentTaskTableRefs = false,
+              transactionTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (commitmentTableRefs) db.commitmentTable,
+                if (commitmentDetailTableRefs) db.commitmentDetailTable,
+                if (commitmentTaskTableRefs) db.commitmentTaskTable,
+                if (transactionTableRefs) db.transactionTable
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (userId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.userId,
+                    referencedTable:
+                        $$SavingTableTableReferences._userIdTable(db),
+                    referencedColumn:
+                        $$SavingTableTableReferences._userIdTable(db).id,
+                  ) as T;
+                }
+                if (moneyStorageId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.moneyStorageId,
+                    referencedTable:
+                        $$SavingTableTableReferences._moneyStorageIdTable(db),
+                    referencedColumn: $$SavingTableTableReferences
+                        ._moneyStorageIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (commitmentTableRefs)
+                    await $_getPrefetchedData<SvngSaving, $SavingTableTable,
+                            ExpnsCommitment>(
+                        currentTable: table,
+                        referencedTable: $$SavingTableTableReferences
+                            ._commitmentTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$SavingTableTableReferences(db, table, p0)
+                                .commitmentTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.referredSavingId == item.id),
+                        typedResults: items),
+                  if (commitmentDetailTableRefs)
+                    await $_getPrefetchedData<SvngSaving, $SavingTableTable,
+                            ExpnsCommitmentDetail>(
+                        currentTable: table,
+                        referencedTable: $$SavingTableTableReferences
+                            ._commitmentDetailTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$SavingTableTableReferences(db, table, p0)
+                                .commitmentDetailTableRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.savingId == item.id),
+                        typedResults: items),
+                  if (commitmentTaskTableRefs)
+                    await $_getPrefetchedData<SvngSaving, $SavingTableTable,
+                            ExpnsCommitmentTask>(
+                        currentTable: table,
+                        referencedTable: $$SavingTableTableReferences
+                            ._commitmentTaskTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$SavingTableTableReferences(db, table, p0)
+                                .commitmentTaskTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.referredSavingId == item.id),
+                        typedResults: items),
+                  if (transactionTableRefs)
+                    await $_getPrefetchedData<SvngSaving, $SavingTableTable, TrnsctnTransaction>(
+                        currentTable: table,
+                        referencedTable: $$SavingTableTableReferences
+                            ._transactionTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$SavingTableTableReferences(db, table, p0)
+                                .transactionTableRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.savingId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$SavingTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $SavingTableTable> {
-  $$SavingTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isPublic => $state.composableBuilder(
-      column: $state.table.isPublic,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isHasGoal => $state.composableBuilder(
-      column: $state.table.isHasGoal,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get goal => $state.composableBuilder(
-      column: $state.table.goal,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isHasStartDate => $state.composableBuilder(
-      column: $state.table.isHasStartDate,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get startDate => $state.composableBuilder(
-      column: $state.table.startDate,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isHasEndDate => $state.composableBuilder(
-      column: $state.table.isHasEndDate,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get endDate => $state.composableBuilder(
-      column: $state.table.endDate,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isSaveDaily => $state.composableBuilder(
-      column: $state.table.isSaveDaily,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isSaveWeekly => $state.composableBuilder(
-      column: $state.table.isSaveWeekly,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isSaveMonthly => $state.composableBuilder(
-      column: $state.table.isSaveMonthly,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get currentAmount => $state.composableBuilder(
-      column: $state.table.currentAmount,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  $$UserTableTableFilterComposer get userId {
-    final $$UserTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.userId,
-        referencedTable: $state.db.userTable,
-        getReferencedColumn: (t) => (t as $UserTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$UserTableTableFilterComposer(ComposerState(
-                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$MoneyStorageTableTableFilterComposer get moneyStorageId {
-    final $$MoneyStorageTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.moneyStorageId,
-            referencedTable: $state.db.moneyStorageTable,
-            getReferencedColumn: (t) => (t as $MoneyStorageTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$MoneyStorageTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.moneyStorageTable,
-                    joinBuilder,
-                    parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter commitmentTableRefs(
-      ComposableFilter Function($$CommitmentTableTableFilterComposer f) f) {
-    final $$CommitmentTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.commitmentTable,
-            getReferencedColumn: (t) =>
-                (t as $CommitmentTableTable).referredSavingId,
-            builder: (joinBuilder, parentComposers) =>
-                $$CommitmentTableTableFilterComposer(ComposerState($state.db,
-                    $state.db.commitmentTable, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-
-  ComposableFilter commitmentDetailTableRefs(
-      ComposableFilter Function($$CommitmentDetailTableTableFilterComposer f)
-          f) {
-    final $$CommitmentDetailTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.commitmentDetailTable,
-            getReferencedColumn: (t) =>
-                (t as $CommitmentDetailTableTable).savingId,
-            builder: (joinBuilder, parentComposers) =>
-                $$CommitmentDetailTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.commitmentDetailTable,
-                    joinBuilder,
-                    parentComposers)));
-    return f(composer);
-  }
-
-  ComposableFilter commitmentTaskTableRefs(
-      ComposableFilter Function($$CommitmentTaskTableTableFilterComposer f) f) {
-    final $$CommitmentTaskTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.commitmentTaskTable,
-            getReferencedColumn: (t) =>
-                (t as $CommitmentTaskTableTable).referredSavingId,
-            builder: (joinBuilder, parentComposers) =>
-                $$CommitmentTaskTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.commitmentTaskTable,
-                    joinBuilder,
-                    parentComposers)));
-    return f(composer);
-  }
-
-  ComposableFilter transactionTableRefs(
-      ComposableFilter Function($$TransactionTableTableFilterComposer f) f) {
-    final $$TransactionTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.transactionTable,
-            getReferencedColumn: (t) => (t as $TransactionTableTable).savingId,
-            builder: (joinBuilder, parentComposers) =>
-                $$TransactionTableTableFilterComposer(ComposerState($state.db,
-                    $state.db.transactionTable, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$SavingTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $SavingTableTable> {
-  $$SavingTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isPublic => $state.composableBuilder(
-      column: $state.table.isPublic,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isHasGoal => $state.composableBuilder(
-      column: $state.table.isHasGoal,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get goal => $state.composableBuilder(
-      column: $state.table.goal,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isHasStartDate => $state.composableBuilder(
-      column: $state.table.isHasStartDate,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get startDate => $state.composableBuilder(
-      column: $state.table.startDate,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isHasEndDate => $state.composableBuilder(
-      column: $state.table.isHasEndDate,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get endDate => $state.composableBuilder(
-      column: $state.table.endDate,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isSaveDaily => $state.composableBuilder(
-      column: $state.table.isSaveDaily,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isSaveWeekly => $state.composableBuilder(
-      column: $state.table.isSaveWeekly,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isSaveMonthly => $state.composableBuilder(
-      column: $state.table.isSaveMonthly,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get currentAmount => $state.composableBuilder(
-      column: $state.table.currentAmount,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  $$UserTableTableOrderingComposer get userId {
-    final $$UserTableTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.userId,
-        referencedTable: $state.db.userTable,
-        getReferencedColumn: (t) => (t as $UserTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$UserTableTableOrderingComposer(ComposerState(
-                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$MoneyStorageTableTableOrderingComposer get moneyStorageId {
-    final $$MoneyStorageTableTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.moneyStorageId,
-            referencedTable: $state.db.moneyStorageTable,
-            getReferencedColumn: (t) => (t as $MoneyStorageTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$MoneyStorageTableTableOrderingComposer(ComposerState(
-                    $state.db,
-                    $state.db.moneyStorageTable,
-                    joinBuilder,
-                    parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$SavingTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $SavingTableTable,
+    SvngSaving,
+    $$SavingTableTableFilterComposer,
+    $$SavingTableTableOrderingComposer,
+    $$SavingTableTableAnnotationComposer,
+    $$SavingTableTableCreateCompanionBuilder,
+    $$SavingTableTableUpdateCompanionBuilder,
+    (SvngSaving, $$SavingTableTableReferences),
+    SvngSaving,
+    PrefetchHooks Function(
+        {bool userId,
+        bool moneyStorageId,
+        bool commitmentTableRefs,
+        bool commitmentDetailTableRefs,
+        bool commitmentTaskTableRefs,
+        bool transactionTableRefs})>;
 typedef $$ExpenseTableTableCreateCompanionBuilder = ExpenseTableCompanion
     Function({
   Value<String> id,
@@ -8420,22 +9989,273 @@ typedef $$ExpenseTableTableUpdateCompanionBuilder = ExpenseTableCompanion
   Value<int> rowid,
 });
 
+final class $$ExpenseTableTableReferences
+    extends BaseReferences<_$AppDatabase, $ExpenseTableTable, ExpnsExpense> {
+  $$ExpenseTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ReferenceDataTableTable _referenceDataIdTable(_$AppDatabase db) =>
+      db.referenceDataTable.createAlias($_aliasNameGenerator(
+          db.expenseTable.referenceDataId, db.referenceDataTable.id));
+
+  $$ReferenceDataTableTableProcessedTableManager get referenceDataId {
+    final $_column = $_itemColumn<String>('reference_data_id')!;
+
+    final manager =
+        $$ReferenceDataTableTableTableManager($_db, $_db.referenceDataTable)
+            .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_referenceDataIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$TransactionTableTable, List<TrnsctnTransaction>>
+      _transactionTableRefsTable(_$AppDatabase db) =>
+          MultiTypedResultKey.fromTable(db.transactionTable,
+              aliasName: $_aliasNameGenerator(
+                  db.expenseTable.id, db.transactionTable.expenseId));
+
+  $$TransactionTableTableProcessedTableManager get transactionTableRefs {
+    final manager = $$TransactionTableTableTableManager(
+            $_db, $_db.transactionTable)
+        .filter((f) => f.expenseId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_transactionTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$ExpenseTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ExpenseTableTable> {
+  $$ExpenseTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get expenseDate => $composableBuilder(
+      column: $table.expenseDate, builder: (column) => ColumnFilters(column));
+
+  $$ReferenceDataTableTableFilterComposer get referenceDataId {
+    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceDataId,
+        referencedTable: $db.referenceDataTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceDataTableTableFilterComposer(
+              $db: $db,
+              $table: $db.referenceDataTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> transactionTableRefs(
+      Expression<bool> Function($$TransactionTableTableFilterComposer f) f) {
+    final $$TransactionTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.transactionTable,
+        getReferencedColumn: (t) => t.expenseId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionTableTableFilterComposer(
+              $db: $db,
+              $table: $db.transactionTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
+class $$ExpenseTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExpenseTableTable> {
+  $$ExpenseTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get expenseDate => $composableBuilder(
+      column: $table.expenseDate, builder: (column) => ColumnOrderings(column));
+
+  $$ReferenceDataTableTableOrderingComposer get referenceDataId {
+    final $$ReferenceDataTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referenceDataId,
+        referencedTable: $db.referenceDataTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ReferenceDataTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.referenceDataTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$ExpenseTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExpenseTableTable> {
+  $$ExpenseTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<double> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get expenseDate => $composableBuilder(
+      column: $table.expenseDate, builder: (column) => column);
+
+  $$ReferenceDataTableTableAnnotationComposer get referenceDataId {
+    final $$ReferenceDataTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.referenceDataId,
+            referencedTable: $db.referenceDataTable,
+            getReferencedColumn: (t) => t.id,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$ReferenceDataTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.referenceDataTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return composer;
+  }
+
+  Expression<T> transactionTableRefs<T extends Object>(
+      Expression<T> Function($$TransactionTableTableAnnotationComposer a) f) {
+    final $$TransactionTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.transactionTable,
+        getReferencedColumn: (t) => t.expenseId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$TransactionTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.transactionTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
+}
+
 class $$ExpenseTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ExpenseTableTable,
     ExpnsExpense,
     $$ExpenseTableTableFilterComposer,
     $$ExpenseTableTableOrderingComposer,
+    $$ExpenseTableTableAnnotationComposer,
     $$ExpenseTableTableCreateCompanionBuilder,
-    $$ExpenseTableTableUpdateCompanionBuilder> {
+    $$ExpenseTableTableUpdateCompanionBuilder,
+    (ExpnsExpense, $$ExpenseTableTableReferences),
+    ExpnsExpense,
+    PrefetchHooks Function({bool referenceDataId, bool transactionTableRefs})> {
   $$ExpenseTableTableTableManager(_$AppDatabase db, $ExpenseTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$ExpenseTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$ExpenseTableTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$ExpenseTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExpenseTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExpenseTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -8484,159 +10304,80 @@ class $$ExpenseTableTableTableManager extends RootTableManager<
             referenceDataId: referenceDataId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$ExpenseTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {referenceDataId = false, transactionTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (transactionTableRefs) db.transactionTable
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (referenceDataId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.referenceDataId,
+                    referencedTable:
+                        $$ExpenseTableTableReferences._referenceDataIdTable(db),
+                    referencedColumn: $$ExpenseTableTableReferences
+                        ._referenceDataIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (transactionTableRefs)
+                    await $_getPrefetchedData<ExpnsExpense, $ExpenseTableTable,
+                            TrnsctnTransaction>(
+                        currentTable: table,
+                        referencedTable: $$ExpenseTableTableReferences
+                            ._transactionTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$ExpenseTableTableReferences(db, table, p0)
+                                .transactionTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.expenseId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$ExpenseTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $ExpenseTableTable> {
-  $$ExpenseTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get amount => $state.composableBuilder(
-      column: $state.table.amount,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get expenseDate => $state.composableBuilder(
-      column: $state.table.expenseDate,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  $$ReferenceDataTableTableFilterComposer get referenceDataId {
-    final $$ReferenceDataTableTableFilterComposer composer = $state
-        .composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.referenceDataId,
-            referencedTable: $state.db.referenceDataTable,
-            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$ReferenceDataTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.referenceDataTable,
-                    joinBuilder,
-                    parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter transactionTableRefs(
-      ComposableFilter Function($$TransactionTableTableFilterComposer f) f) {
-    final $$TransactionTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.transactionTable,
-            getReferencedColumn: (t) => (t as $TransactionTableTable).expenseId,
-            builder: (joinBuilder, parentComposers) =>
-                $$TransactionTableTableFilterComposer(ComposerState($state.db,
-                    $state.db.transactionTable, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$ExpenseTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $ExpenseTableTable> {
-  $$ExpenseTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get amount => $state.composableBuilder(
-      column: $state.table.amount,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get expenseDate => $state.composableBuilder(
-      column: $state.table.expenseDate,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  $$ReferenceDataTableTableOrderingComposer get referenceDataId {
-    final $$ReferenceDataTableTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.referenceDataId,
-            referencedTable: $state.db.referenceDataTable,
-            getReferencedColumn: (t) => (t as $ReferenceDataTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$ReferenceDataTableTableOrderingComposer(ComposerState(
-                    $state.db,
-                    $state.db.referenceDataTable,
-                    joinBuilder,
-                    parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$ExpenseTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $ExpenseTableTable,
+    ExpnsExpense,
+    $$ExpenseTableTableFilterComposer,
+    $$ExpenseTableTableOrderingComposer,
+    $$ExpenseTableTableAnnotationComposer,
+    $$ExpenseTableTableCreateCompanionBuilder,
+    $$ExpenseTableTableUpdateCompanionBuilder,
+    (ExpnsExpense, $$ExpenseTableTableReferences),
+    ExpnsExpense,
+    PrefetchHooks Function({bool referenceDataId, bool transactionTableRefs})>;
 typedef $$CommitmentTableTableCreateCompanionBuilder = CommitmentTableCompanion
     Function({
   Value<String> id,
@@ -8664,23 +10405,347 @@ typedef $$CommitmentTableTableUpdateCompanionBuilder = CommitmentTableCompanion
   Value<int> rowid,
 });
 
+final class $$CommitmentTableTableReferences extends BaseReferences<
+    _$AppDatabase, $CommitmentTableTable, ExpnsCommitment> {
+  $$CommitmentTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $SavingTableTable _referredSavingIdTable(_$AppDatabase db) =>
+      db.savingTable.createAlias($_aliasNameGenerator(
+          db.commitmentTable.referredSavingId, db.savingTable.id));
+
+  $$SavingTableTableProcessedTableManager get referredSavingId {
+    final $_column = $_itemColumn<String>('referred_saving_id')!;
+
+    final manager = $$SavingTableTableTableManager($_db, $_db.savingTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_referredSavingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $UserTableTable _userIdTable(_$AppDatabase db) =>
+      db.userTable.createAlias(
+          $_aliasNameGenerator(db.commitmentTable.userId, db.userTable.id));
+
+  $$UserTableTableProcessedTableManager get userId {
+    final $_column = $_itemColumn<String>('user_id')!;
+
+    final manager = $$UserTableTableTableManager($_db, $_db.userTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static MultiTypedResultKey<$CommitmentDetailTableTable,
+      List<ExpnsCommitmentDetail>> _commitmentDetailTableRefsTable(
+          _$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(db.commitmentDetailTable,
+          aliasName: $_aliasNameGenerator(
+              db.commitmentTable.id, db.commitmentDetailTable.commitmentId));
+
+  $$CommitmentDetailTableTableProcessedTableManager
+      get commitmentDetailTableRefs {
+    final manager = $$CommitmentDetailTableTableTableManager(
+            $_db, $_db.commitmentDetailTable)
+        .filter(
+            (f) => f.commitmentId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache =
+        $_typedResult.readTableOrNull(_commitmentDetailTableRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$CommitmentTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CommitmentTableTable> {
+  $$CommitmentTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  $$SavingTableTableFilterComposer get referredSavingId {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referredSavingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableFilterComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$UserTableTableFilterComposer get userId {
+    final $$UserTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableFilterComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<bool> commitmentDetailTableRefs(
+      Expression<bool> Function($$CommitmentDetailTableTableFilterComposer f)
+          f) {
+    final $$CommitmentDetailTableTableFilterComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.commitmentDetailTable,
+            getReferencedColumn: (t) => t.commitmentId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$CommitmentDetailTableTableFilterComposer(
+                  $db: $db,
+                  $table: $db.commitmentDetailTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
+class $$CommitmentTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CommitmentTableTable> {
+  $$CommitmentTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  $$SavingTableTableOrderingComposer get referredSavingId {
+    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referredSavingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$UserTableTableOrderingComposer get userId {
+    final $$UserTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CommitmentTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CommitmentTableTable> {
+  $$CommitmentTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  $$SavingTableTableAnnotationComposer get referredSavingId {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referredSavingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$UserTableTableAnnotationComposer get userId {
+    final $$UserTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.userId,
+        referencedTable: $db.userTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$UserTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.userTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  Expression<T> commitmentDetailTableRefs<T extends Object>(
+      Expression<T> Function($$CommitmentDetailTableTableAnnotationComposer a)
+          f) {
+    final $$CommitmentDetailTableTableAnnotationComposer composer =
+        $composerBuilder(
+            composer: this,
+            getCurrentColumn: (t) => t.id,
+            referencedTable: $db.commitmentDetailTable,
+            getReferencedColumn: (t) => t.commitmentId,
+            builder: (joinBuilder,
+                    {$addJoinBuilderToRootComposer,
+                    $removeJoinBuilderFromRootComposer}) =>
+                $$CommitmentDetailTableTableAnnotationComposer(
+                  $db: $db,
+                  $table: $db.commitmentDetailTable,
+                  $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                  joinBuilder: joinBuilder,
+                  $removeJoinBuilderFromRootComposer:
+                      $removeJoinBuilderFromRootComposer,
+                ));
+    return f(composer);
+  }
+}
+
 class $$CommitmentTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $CommitmentTableTable,
     ExpnsCommitment,
     $$CommitmentTableTableFilterComposer,
     $$CommitmentTableTableOrderingComposer,
+    $$CommitmentTableTableAnnotationComposer,
     $$CommitmentTableTableCreateCompanionBuilder,
-    $$CommitmentTableTableUpdateCompanionBuilder> {
+    $$CommitmentTableTableUpdateCompanionBuilder,
+    (ExpnsCommitment, $$CommitmentTableTableReferences),
+    ExpnsCommitment,
+    PrefetchHooks Function(
+        {bool referredSavingId, bool userId, bool commitmentDetailTableRefs})> {
   $$CommitmentTableTableTableManager(
       _$AppDatabase db, $CommitmentTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$CommitmentTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$CommitmentTableTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$CommitmentTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CommitmentTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CommitmentTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -8729,168 +10794,93 @@ class $$CommitmentTableTableTableManager extends RootTableManager<
             userId: userId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$CommitmentTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: (
+              {referredSavingId = false,
+              userId = false,
+              commitmentDetailTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (commitmentDetailTableRefs) db.commitmentDetailTable
+              ],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (referredSavingId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.referredSavingId,
+                    referencedTable: $$CommitmentTableTableReferences
+                        ._referredSavingIdTable(db),
+                    referencedColumn: $$CommitmentTableTableReferences
+                        ._referredSavingIdTable(db)
+                        .id,
+                  ) as T;
+                }
+                if (userId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.userId,
+                    referencedTable:
+                        $$CommitmentTableTableReferences._userIdTable(db),
+                    referencedColumn:
+                        $$CommitmentTableTableReferences._userIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (commitmentDetailTableRefs)
+                    await $_getPrefetchedData<ExpnsCommitment,
+                            $CommitmentTableTable, ExpnsCommitmentDetail>(
+                        currentTable: table,
+                        referencedTable: $$CommitmentTableTableReferences
+                            ._commitmentDetailTableRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$CommitmentTableTableReferences(db, table, p0)
+                                .commitmentDetailTableRefs,
+                        referencedItemsForCurrentItem:
+                            (item, referencedItems) => referencedItems
+                                .where((e) => e.commitmentId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
-class $$CommitmentTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $CommitmentTableTable> {
-  $$CommitmentTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  $$SavingTableTableFilterComposer get referredSavingId {
-    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.referredSavingId,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableFilterComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$UserTableTableFilterComposer get userId {
-    final $$UserTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.userId,
-        referencedTable: $state.db.userTable,
-        getReferencedColumn: (t) => (t as $UserTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$UserTableTableFilterComposer(ComposerState(
-                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  ComposableFilter commitmentDetailTableRefs(
-      ComposableFilter Function($$CommitmentDetailTableTableFilterComposer f)
-          f) {
-    final $$CommitmentDetailTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.commitmentDetailTable,
-            getReferencedColumn: (t) =>
-                (t as $CommitmentDetailTableTable).commitmentId,
-            builder: (joinBuilder, parentComposers) =>
-                $$CommitmentDetailTableTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.commitmentDetailTable,
-                    joinBuilder,
-                    parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$CommitmentTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $CommitmentTableTable> {
-  $$CommitmentTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  $$SavingTableTableOrderingComposer get referredSavingId {
-    final $$SavingTableTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.referredSavingId,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableOrderingComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$UserTableTableOrderingComposer get userId {
-    final $$UserTableTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.userId,
-        referencedTable: $state.db.userTable,
-        getReferencedColumn: (t) => (t as $UserTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$UserTableTableOrderingComposer(ComposerState(
-                $state.db, $state.db.userTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$CommitmentTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $CommitmentTableTable,
+    ExpnsCommitment,
+    $$CommitmentTableTableFilterComposer,
+    $$CommitmentTableTableOrderingComposer,
+    $$CommitmentTableTableAnnotationComposer,
+    $$CommitmentTableTableCreateCompanionBuilder,
+    $$CommitmentTableTableUpdateCompanionBuilder,
+    (ExpnsCommitment, $$CommitmentTableTableReferences),
+    ExpnsCommitment,
+    PrefetchHooks Function(
+        {bool referredSavingId, bool userId, bool commitmentDetailTableRefs})>;
 typedef $$CommitmentDetailTableTableCreateCompanionBuilder
     = CommitmentDetailTableCompanion Function({
   Value<String> id,
@@ -8920,23 +10910,293 @@ typedef $$CommitmentDetailTableTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+final class $$CommitmentDetailTableTableReferences extends BaseReferences<
+    _$AppDatabase, $CommitmentDetailTableTable, ExpnsCommitmentDetail> {
+  $$CommitmentDetailTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $SavingTableTable _savingIdTable(_$AppDatabase db) =>
+      db.savingTable.createAlias($_aliasNameGenerator(
+          db.commitmentDetailTable.savingId, db.savingTable.id));
+
+  $$SavingTableTableProcessedTableManager get savingId {
+    final $_column = $_itemColumn<String>('saving_id')!;
+
+    final manager = $$SavingTableTableTableManager($_db, $_db.savingTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_savingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $CommitmentTableTable _commitmentIdTable(_$AppDatabase db) =>
+      db.commitmentTable.createAlias($_aliasNameGenerator(
+          db.commitmentDetailTable.commitmentId, db.commitmentTable.id));
+
+  $$CommitmentTableTableProcessedTableManager get commitmentId {
+    final $_column = $_itemColumn<String>('commitment_id')!;
+
+    final manager =
+        $$CommitmentTableTableTableManager($_db, $_db.commitmentTable)
+            .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_commitmentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$CommitmentDetailTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
+  $$CommitmentDetailTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  $$SavingTableTableFilterComposer get savingId {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.savingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableFilterComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$CommitmentTableTableFilterComposer get commitmentId {
+    final $$CommitmentTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.commitmentId,
+        referencedTable: $db.commitmentTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CommitmentTableTableFilterComposer(
+              $db: $db,
+              $table: $db.commitmentTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CommitmentDetailTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
+  $$CommitmentDetailTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  $$SavingTableTableOrderingComposer get savingId {
+    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.savingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$CommitmentTableTableOrderingComposer get commitmentId {
+    final $$CommitmentTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.commitmentId,
+        referencedTable: $db.commitmentTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CommitmentTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.commitmentTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CommitmentDetailTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
+  $$CommitmentDetailTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<double> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  $$SavingTableTableAnnotationComposer get savingId {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.savingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$CommitmentTableTableAnnotationComposer get commitmentId {
+    final $$CommitmentTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.commitmentId,
+        referencedTable: $db.commitmentTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$CommitmentTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.commitmentTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
 class $$CommitmentDetailTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $CommitmentDetailTableTable,
     ExpnsCommitmentDetail,
     $$CommitmentDetailTableTableFilterComposer,
     $$CommitmentDetailTableTableOrderingComposer,
+    $$CommitmentDetailTableTableAnnotationComposer,
     $$CommitmentDetailTableTableCreateCompanionBuilder,
-    $$CommitmentDetailTableTableUpdateCompanionBuilder> {
+    $$CommitmentDetailTableTableUpdateCompanionBuilder,
+    (ExpnsCommitmentDetail, $$CommitmentDetailTableTableReferences),
+    ExpnsCommitmentDetail,
+    PrefetchHooks Function({bool savingId, bool commitmentId})> {
   $$CommitmentDetailTableTableTableManager(
       _$AppDatabase db, $CommitmentDetailTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$CommitmentDetailTableTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$CommitmentDetailTableTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$CommitmentDetailTableTableFilterComposer(
+                  $db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CommitmentDetailTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CommitmentDetailTableTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -8989,163 +11249,75 @@ class $$CommitmentDetailTableTableTableManager extends RootTableManager<
             commitmentId: commitmentId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$CommitmentDetailTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({savingId = false, commitmentId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (savingId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.savingId,
+                    referencedTable: $$CommitmentDetailTableTableReferences
+                        ._savingIdTable(db),
+                    referencedColumn: $$CommitmentDetailTableTableReferences
+                        ._savingIdTable(db)
+                        .id,
+                  ) as T;
+                }
+                if (commitmentId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.commitmentId,
+                    referencedTable: $$CommitmentDetailTableTableReferences
+                        ._commitmentIdTable(db),
+                    referencedColumn: $$CommitmentDetailTableTableReferences
+                        ._commitmentIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
-class $$CommitmentDetailTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $CommitmentDetailTableTable> {
-  $$CommitmentDetailTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get amount => $state.composableBuilder(
-      column: $state.table.amount,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  $$SavingTableTableFilterComposer get savingId {
-    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.savingId,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableFilterComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$CommitmentTableTableFilterComposer get commitmentId {
-    final $$CommitmentTableTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.commitmentId,
-            referencedTable: $state.db.commitmentTable,
-            getReferencedColumn: (t) => (t as $CommitmentTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$CommitmentTableTableFilterComposer(ComposerState($state.db,
-                    $state.db.commitmentTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-class $$CommitmentDetailTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $CommitmentDetailTableTable> {
-  $$CommitmentDetailTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get amount => $state.composableBuilder(
-      column: $state.table.amount,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  $$SavingTableTableOrderingComposer get savingId {
-    final $$SavingTableTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.savingId,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableOrderingComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$CommitmentTableTableOrderingComposer get commitmentId {
-    final $$CommitmentTableTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.commitmentId,
-            referencedTable: $state.db.commitmentTable,
-            getReferencedColumn: (t) => (t as $CommitmentTableTable).id,
-            builder: (joinBuilder, parentComposers) =>
-                $$CommitmentTableTableOrderingComposer(ComposerState($state.db,
-                    $state.db.commitmentTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$CommitmentDetailTableTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $CommitmentDetailTableTable,
+        ExpnsCommitmentDetail,
+        $$CommitmentDetailTableTableFilterComposer,
+        $$CommitmentDetailTableTableOrderingComposer,
+        $$CommitmentDetailTableTableAnnotationComposer,
+        $$CommitmentDetailTableTableCreateCompanionBuilder,
+        $$CommitmentDetailTableTableUpdateCompanionBuilder,
+        (ExpnsCommitmentDetail, $$CommitmentDetailTableTableReferences),
+        ExpnsCommitmentDetail,
+        PrefetchHooks Function({bool savingId, bool commitmentId})>;
 typedef $$CommitmentTaskTableTableCreateCompanionBuilder
     = CommitmentTaskTableCompanion Function({
   Value<String> id,
@@ -9173,23 +11345,216 @@ typedef $$CommitmentTaskTableTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+final class $$CommitmentTaskTableTableReferences extends BaseReferences<
+    _$AppDatabase, $CommitmentTaskTableTable, ExpnsCommitmentTask> {
+  $$CommitmentTaskTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $SavingTableTable _referredSavingIdTable(_$AppDatabase db) =>
+      db.savingTable.createAlias($_aliasNameGenerator(
+          db.commitmentTaskTable.referredSavingId, db.savingTable.id));
+
+  $$SavingTableTableProcessedTableManager get referredSavingId {
+    final $_column = $_itemColumn<String>('referred_saving_id')!;
+
+    final manager = $$SavingTableTableTableManager($_db, $_db.savingTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_referredSavingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$CommitmentTaskTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CommitmentTaskTableTable> {
+  $$CommitmentTaskTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isDone => $composableBuilder(
+      column: $table.isDone, builder: (column) => ColumnFilters(column));
+
+  $$SavingTableTableFilterComposer get referredSavingId {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referredSavingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableFilterComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CommitmentTaskTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CommitmentTaskTableTable> {
+  $$CommitmentTaskTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isDone => $composableBuilder(
+      column: $table.isDone, builder: (column) => ColumnOrderings(column));
+
+  $$SavingTableTableOrderingComposer get referredSavingId {
+    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referredSavingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$CommitmentTaskTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CommitmentTaskTableTable> {
+  $$CommitmentTaskTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<double> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<bool> get isDone =>
+      $composableBuilder(column: $table.isDone, builder: (column) => column);
+
+  $$SavingTableTableAnnotationComposer get referredSavingId {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.referredSavingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
 class $$CommitmentTaskTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $CommitmentTaskTableTable,
     ExpnsCommitmentTask,
     $$CommitmentTaskTableTableFilterComposer,
     $$CommitmentTaskTableTableOrderingComposer,
+    $$CommitmentTaskTableTableAnnotationComposer,
     $$CommitmentTaskTableTableCreateCompanionBuilder,
-    $$CommitmentTaskTableTableUpdateCompanionBuilder> {
+    $$CommitmentTaskTableTableUpdateCompanionBuilder,
+    (ExpnsCommitmentTask, $$CommitmentTaskTableTableReferences),
+    ExpnsCommitmentTask,
+    PrefetchHooks Function({bool referredSavingId})> {
   $$CommitmentTaskTableTableTableManager(
       _$AppDatabase db, $CommitmentTaskTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer: $$CommitmentTaskTableTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$CommitmentTaskTableTableOrderingComposer(
-              ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$CommitmentTaskTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CommitmentTaskTableTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CommitmentTaskTableTableAnnotationComposer(
+                  $db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -9238,137 +11603,63 @@ class $$CommitmentTaskTableTableTableManager extends RootTableManager<
             referredSavingId: referredSavingId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$CommitmentTaskTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({referredSavingId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (referredSavingId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.referredSavingId,
+                    referencedTable: $$CommitmentTaskTableTableReferences
+                        ._referredSavingIdTable(db),
+                    referencedColumn: $$CommitmentTaskTableTableReferences
+                        ._referredSavingIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
-class $$CommitmentTaskTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $CommitmentTaskTableTable> {
-  $$CommitmentTaskTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get amount => $state.composableBuilder(
-      column: $state.table.amount,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isDone => $state.composableBuilder(
-      column: $state.table.isDone,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  $$SavingTableTableFilterComposer get referredSavingId {
-    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.referredSavingId,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableFilterComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-class $$CommitmentTaskTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $CommitmentTaskTableTable> {
-  $$CommitmentTaskTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get amount => $state.composableBuilder(
-      column: $state.table.amount,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isDone => $state.composableBuilder(
-      column: $state.table.isDone,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  $$SavingTableTableOrderingComposer get referredSavingId {
-    final $$SavingTableTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.referredSavingId,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableOrderingComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
+typedef $$CommitmentTaskTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $CommitmentTaskTableTable,
+    ExpnsCommitmentTask,
+    $$CommitmentTaskTableTableFilterComposer,
+    $$CommitmentTaskTableTableOrderingComposer,
+    $$CommitmentTaskTableTableAnnotationComposer,
+    $$CommitmentTaskTableTableCreateCompanionBuilder,
+    $$CommitmentTaskTableTableUpdateCompanionBuilder,
+    (ExpnsCommitmentTask, $$CommitmentTaskTableTableReferences),
+    ExpnsCommitmentTask,
+    PrefetchHooks Function({bool referredSavingId})>;
 typedef $$TransactionTableTableCreateCompanionBuilder
     = TransactionTableCompanion Function({
   Value<String> id,
@@ -9400,23 +11691,298 @@ typedef $$TransactionTableTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
+final class $$TransactionTableTableReferences extends BaseReferences<
+    _$AppDatabase, $TransactionTableTable, TrnsctnTransaction> {
+  $$TransactionTableTableReferences(
+      super.$_db, super.$_table, super.$_typedResult);
+
+  static $SavingTableTable _savingIdTable(_$AppDatabase db) =>
+      db.savingTable.createAlias($_aliasNameGenerator(
+          db.transactionTable.savingId, db.savingTable.id));
+
+  $$SavingTableTableProcessedTableManager get savingId {
+    final $_column = $_itemColumn<String>('saving_id')!;
+
+    final manager = $$SavingTableTableTableManager($_db, $_db.savingTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_savingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+
+  static $ExpenseTableTable _expenseIdTable(_$AppDatabase db) =>
+      db.expenseTable.createAlias($_aliasNameGenerator(
+          db.transactionTable.expenseId, db.expenseTable.id));
+
+  $$ExpenseTableTableProcessedTableManager? get expenseId {
+    final $_column = $_itemColumn<String>('expense_id');
+    if ($_column == null) return null;
+    final manager = $$ExpenseTableTableTableManager($_db, $_db.expenseTable)
+        .filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_expenseIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$TransactionTableTableFilterComposer
+    extends Composer<_$AppDatabase, $TransactionTableTable> {
+  $$TransactionTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isExpense => $composableBuilder(
+      column: $table.isExpense, builder: (column) => ColumnFilters(column));
+
+  $$SavingTableTableFilterComposer get savingId {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.savingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableFilterComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$ExpenseTableTableFilterComposer get expenseId {
+    final $$ExpenseTableTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.expenseTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseTableTableFilterComposer(
+              $db: $db,
+              $table: $db.expenseTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TransactionTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $TransactionTableTable> {
+  $$TransactionTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+      column: $table.createdBy, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get type => $composableBuilder(
+      column: $table.type, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get amount => $composableBuilder(
+      column: $table.amount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isExpense => $composableBuilder(
+      column: $table.isExpense, builder: (column) => ColumnOrderings(column));
+
+  $$SavingTableTableOrderingComposer get savingId {
+    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.savingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$ExpenseTableTableOrderingComposer get expenseId {
+    final $$ExpenseTableTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.expenseTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseTableTableOrderingComposer(
+              $db: $db,
+              $table: $db.expenseTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$TransactionTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TransactionTableTable> {
+  $$TransactionTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+      column: $table.dateCreated, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+      column: $table.dateUpdated, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+      column: $table.lastModifiedBy, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<double> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<bool> get isExpense =>
+      $composableBuilder(column: $table.isExpense, builder: (column) => column);
+
+  $$SavingTableTableAnnotationComposer get savingId {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.savingId,
+        referencedTable: $db.savingTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$SavingTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.savingTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+
+  $$ExpenseTableTableAnnotationComposer get expenseId {
+    final $$ExpenseTableTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.expenseId,
+        referencedTable: $db.expenseTable,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$ExpenseTableTableAnnotationComposer(
+              $db: $db,
+              $table: $db.expenseTable,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
 class $$TransactionTableTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TransactionTableTable,
     TrnsctnTransaction,
     $$TransactionTableTableFilterComposer,
     $$TransactionTableTableOrderingComposer,
+    $$TransactionTableTableAnnotationComposer,
     $$TransactionTableTableCreateCompanionBuilder,
-    $$TransactionTableTableUpdateCompanionBuilder> {
+    $$TransactionTableTableUpdateCompanionBuilder,
+    (TrnsctnTransaction, $$TransactionTableTableReferences),
+    TrnsctnTransaction,
+    PrefetchHooks Function({bool savingId, bool expenseId})> {
   $$TransactionTableTableTableManager(
       _$AppDatabase db, $TransactionTableTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          filteringComposer:
-              $$TransactionTableTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$TransactionTableTableOrderingComposer(ComposerState(db, table)),
+          createFilteringComposer: () =>
+              $$TransactionTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TransactionTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TransactionTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> createdBy = const Value.absent(),
@@ -9473,172 +12039,73 @@ class $$TransactionTableTableTableManager extends RootTableManager<
             expenseId: expenseId,
             rowid: rowid,
           ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$TransactionTableTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({savingId = false, expenseId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (savingId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.savingId,
+                    referencedTable:
+                        $$TransactionTableTableReferences._savingIdTable(db),
+                    referencedColumn:
+                        $$TransactionTableTableReferences._savingIdTable(db).id,
+                  ) as T;
+                }
+                if (expenseId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.expenseId,
+                    referencedTable:
+                        $$TransactionTableTableReferences._expenseIdTable(db),
+                    referencedColumn: $$TransactionTableTableReferences
+                        ._expenseIdTable(db)
+                        .id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
         ));
 }
 
-class $$TransactionTableTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $TransactionTableTable> {
-  $$TransactionTableTableFilterComposer(super.$state);
-  ColumnFilters<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<double> get amount => $state.composableBuilder(
-      column: $state.table.amount,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnFilters<bool> get isExpense => $state.composableBuilder(
-      column: $state.table.isExpense,
-      builder: (column, joinBuilders) => ColumnFilters(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  $$SavingTableTableFilterComposer get savingId {
-    final $$SavingTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.savingId,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableFilterComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$ExpenseTableTableFilterComposer get expenseId {
-    final $$ExpenseTableTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.expenseId,
-        referencedTable: $state.db.expenseTable,
-        getReferencedColumn: (t) => (t as $ExpenseTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$ExpenseTableTableFilterComposer(ComposerState($state.db,
-                $state.db.expenseTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-class $$TransactionTableTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $TransactionTableTable> {
-  $$TransactionTableTableOrderingComposer(super.$state);
-  ColumnOrderings<String> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get createdBy => $state.composableBuilder(
-      column: $state.table.createdBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateCreated => $state.composableBuilder(
-      column: $state.table.dateCreated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get dateUpdated => $state.composableBuilder(
-      column: $state.table.dateUpdated,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<DateTime>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get lastModifiedBy => $state.composableBuilder(
-      column: $state.table.lastModifiedBy,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get description => $state.composableBuilder(
-      column: $state.table.description,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<String>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<double> get amount => $state.composableBuilder(
-      column: $state.table.amount,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<double>),
-          joinBuilders: joinBuilders));
-
-  ColumnOrderings<bool> get isExpense => $state.composableBuilder(
-      column: $state.table.isExpense,
-      builder: (column, joinBuilders) => ColumnOrderings(
-          (column as Expression<bool>),
-          joinBuilders: joinBuilders));
-
-  $$SavingTableTableOrderingComposer get savingId {
-    final $$SavingTableTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.savingId,
-        referencedTable: $state.db.savingTable,
-        getReferencedColumn: (t) => (t as $SavingTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$SavingTableTableOrderingComposer(ComposerState($state.db,
-                $state.db.savingTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-
-  $$ExpenseTableTableOrderingComposer get expenseId {
-    final $$ExpenseTableTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.expenseId,
-        referencedTable: $state.db.expenseTable,
-        getReferencedColumn: (t) => (t as $ExpenseTableTable).id,
-        builder: (joinBuilder, parentComposers) =>
-            $$ExpenseTableTableOrderingComposer(ComposerState($state.db,
-                $state.db.expenseTable, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
+typedef $$TransactionTableTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $TransactionTableTable,
+    TrnsctnTransaction,
+    $$TransactionTableTableFilterComposer,
+    $$TransactionTableTableOrderingComposer,
+    $$TransactionTableTableAnnotationComposer,
+    $$TransactionTableTableCreateCompanionBuilder,
+    $$TransactionTableTableUpdateCompanionBuilder,
+    (TrnsctnTransaction, $$TransactionTableTableReferences),
+    TrnsctnTransaction,
+    PrefetchHooks Function({bool savingId, bool expenseId})>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

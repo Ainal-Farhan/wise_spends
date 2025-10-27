@@ -1,7 +1,7 @@
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/vo/i_vo.dart';
 
-class SavingTransactionFormVO with IVO {
+class SavingTransactionFormVO implements IVO {
   SvngSaving? saving;
 
   double? transactionAmount;

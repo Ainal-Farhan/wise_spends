@@ -65,7 +65,7 @@ abstract class FileUtil {
   }
 
   static Future<File?> getFileFromDirectory(
-      {required fileNameWithDirectory}) async {
+      {required String fileNameWithDirectory}) async {
     File file = File(fileNameWithDirectory);
     if (await file.exists()) {
       return file;

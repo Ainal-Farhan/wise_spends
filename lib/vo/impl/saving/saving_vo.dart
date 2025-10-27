@@ -2,7 +2,7 @@ import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/vo/i_vo.dart';
 
-class SavingVO with IVO {
+class SavingVO implements IVO {
   String? savingName;
   double? currentAmount;
   double? goalAmount;

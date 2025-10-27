@@ -80,9 +80,9 @@ class _ThLoggedInMainTemplateDefaultState
         AnimationController(vsync: this, duration: const Duration(seconds: 0));
     _colorTween = ColorTween(begin: Colors.transparent, end: Colors.white)
         .animate(_colorAnimationController);
-    _iconTween =
-        ColorTween(begin: Colors.white, end: Colors.lightBlue.withOpacity(0.5))
-            .animate(_colorAnimationController);
+    _iconTween = ColorTween(
+            begin: Colors.white, end: Colors.lightBlue.withValues(alpha: 0.5))
+        .animate(_colorAnimationController);
     _drawerTween = ColorTween(begin: Colors.white, end: Colors.black)
         .animate(_colorAnimationController);
     _homeTween = ColorTween(begin: Colors.white, end: Colors.blue)

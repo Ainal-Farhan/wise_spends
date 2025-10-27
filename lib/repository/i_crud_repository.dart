@@ -31,8 +31,12 @@ abstract class ICrudRepository<
     await db.batch((batch) => batch.insertAll(table, items));
   }
 
-  Future<D> save(final item) async {
+  Future<D> save(final D item) async {
     return await db.into(table).insertReturning(item);
+  }
+
+  Future<D> insertOne(final C itemCompanion) async {
+    return await db.into(table).insertReturning(itemCompanion);
   }
 
   // update all columns except primary key

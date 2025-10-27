@@ -97,7 +97,7 @@ class _ThAddMoneyStorageFormDefaultState
     );
   }
 
-  List<Widget> _setFormFields(context) {
+  List<Widget> _setFormFields(BuildContext context) {
     List<Widget> fields = [];
     for (IThWidget widget in _formFields) {
       fields.add(

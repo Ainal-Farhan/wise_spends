@@ -9,7 +9,7 @@ import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/vo/impl/saving/edit_saving_form_vo.dart';
 
-class UpdateEditSavingsEvent with IEvent<SavingsBloc> {
+class UpdateEditSavingsEvent extends IEvent<SavingsBloc> {
   final EditSavingFormVO _editSavingFormVO;
   final ISavingManager _savingsManager =
       SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();

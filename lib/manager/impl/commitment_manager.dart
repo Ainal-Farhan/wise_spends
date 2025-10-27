@@ -74,7 +74,7 @@ class CommitmentManager extends ICommitmentManager {
           id: commitmentVO.commitmentId!);
     } else {
       ExpnsCommitment commitment =
-          await commitmentRepo.save(commitmentTableCompanion);
+          await commitmentRepo.insertOne(commitmentTableCompanion);
       commitmentId = commitment.id;
     }
 
@@ -116,7 +116,7 @@ class CommitmentManager extends ICommitmentManager {
         await commitmentDetailRepo.updatePart(
             tableCompanion: tableCompanion, id: vo.commitmentDetailId!);
       } else {
-        commitmentDetailRepo.save(tableCompanion);
+        await commitmentDetailRepo.insertOne(tableCompanion);
       }
     }
   }

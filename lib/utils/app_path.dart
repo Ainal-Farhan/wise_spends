@@ -27,7 +27,7 @@ class AppPath {
   Future<String> getDownloadsDirectory() async {
     if (await PermissionUtil.isStoragePermissionGranted()) {
       if (platform is AndroidPlatform) {
-        return '${await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOADS)}/wise_spends';
+        return '${await ExternalPath.getExternalStoragePublicDirectory(ExternalPath.DIRECTORY_DOWNLOAD)}/wise_spends';
       }
     }
     return "";

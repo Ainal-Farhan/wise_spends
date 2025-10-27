@@ -123,7 +123,7 @@ class Widgets {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: colorz.withOpacity(0.15),
+        color: colorz.withValues(alpha: 0.15),
         shape: BoxShape.circle,
       ),
       child: Transform.rotate(

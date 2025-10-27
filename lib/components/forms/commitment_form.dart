@@ -140,7 +140,7 @@ class _CommitmentFormState extends State<CommitmentForm> {
         .add(SaveCommitmentEvent(toBeSaved: widget.commitmentVO));
   }
 
-  List<Widget> _setFormFields(context) {
+  List<Widget> _setFormFields(BuildContext context) {
     List<Widget> fields = [];
     for (IThWidget widget in _formFields) {
       fields.add(

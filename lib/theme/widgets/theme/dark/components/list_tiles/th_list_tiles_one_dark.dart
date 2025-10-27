@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 
-class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
+class ThListTilesOneDark extends StatelessWidget implements IThListTilesOne {
   final List<ListTilesOneVO> items;
   final String emptyListMessage;
   final bool needBorder;
@@ -10,7 +10,7 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
   final double? maxWidth;
   final double? maxHeight;
 
-  const ThListTilesOneDefault({
+  const ThListTilesOneDark({
     super.key,
     required this.items,
     required this.emptyListMessage,
@@ -38,7 +38,8 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
                 ),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(226, 68, 185, 214),
+                    color: const Color.fromARGB(
+                        226, 58, 58, 68), // Darker background
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: ListTile(
@@ -48,7 +49,7 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
                       padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30.0),
-                        color: Colors.white,
+                        color: Colors.grey[700], // Darker accent
                       ),
                       child: item.icon,
                     ),
@@ -75,6 +76,7 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
         : Center(
             child: Text(
               emptyListMessage,
+              style: TextStyle(color: Colors.grey[300]),
             ),
           );
 
@@ -86,14 +88,13 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
                     const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Colors.grey,
+                    color: Colors.grey[600]!, // Darker border
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color.fromARGB(255, 245, 245, 245)
-                          .withValues(alpha: 0.5),
+                      color: Colors.black.withValues(alpha: 0.5),
                       spreadRadius: 2,
                       blurRadius: 5,
                       offset: const Offset(0, 3),
@@ -117,12 +118,12 @@ class ThListTilesOneDefault extends StatelessWidget implements IThListTilesOne {
                   margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  color: const Color.fromARGB(255, 226, 226, 226)
-                      .withValues(alpha: 0.9),
+                  color: const Color.fromARGB(255, 58, 58, 68)
+                      .withValues(alpha: 0.9), // Dark label background
                   child: Text(
                     label,
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),

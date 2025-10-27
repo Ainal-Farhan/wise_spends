@@ -7,10 +7,8 @@ class HelperFunctions {
   }) {
     return AnimatedBuilder(
       animation: animation,
-      builder: (_, __) => FractionalTranslation(
-        translation: animation.value,
-        child: child,
-      ),
+      builder: (_, _) =>
+          FractionalTranslation(translation: animation.value, child: child),
     );
   }
 }

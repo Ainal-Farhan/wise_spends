@@ -24,7 +24,8 @@ class ThemeInitialState extends IState<ThemeInitialState> {
   }
 
   ThemeData _getThemeData() {
-    final themeManager = SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
+    final themeManager =
+        SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
     return ThemeData.light().copyWith(
       brightness: Brightness.light,
       primaryColor: themeManager.colorTheme.backgroundBlue,
@@ -32,7 +33,7 @@ class ThemeInitialState extends IState<ThemeInitialState> {
       appBarTheme: AppBarTheme(
         backgroundColor: themeManager.colorTheme.backgroundBlue,
         foregroundColor: Colors.white,
-        titleTextStyle: TextStyle(
+        titleTextStyle: const TextStyle(
           color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
@@ -48,7 +49,8 @@ class ThemeInitialState extends IState<ThemeInitialState> {
   }
 
   ThemeData _getDarkThemeData() {
-    final themeManager = SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
+    final themeManager =
+        SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
     return ThemeData.dark().copyWith(
       brightness: Brightness.dark,
       primaryColor: themeManager.colorTheme.backgroundBlue,
@@ -75,7 +77,7 @@ class ThemeInitialState extends IState<ThemeInitialState> {
     final currentTheme = SingletonUtil.getSingleton<IManagerLocator>()!
         .getConfigurationManager()
         .getTheme();
-    
+
     return currentTheme == 'dark' ? ThemeMode.dark : ThemeMode.light;
   }
 
