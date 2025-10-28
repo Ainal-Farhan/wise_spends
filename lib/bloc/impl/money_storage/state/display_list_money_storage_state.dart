@@ -5,6 +5,7 @@ import 'package:wise_spends/bloc/impl/money_storage/events/in_load_edit_money_st
 import 'package:wise_spends/bloc/impl/money_storage/events/in_load_add_money_storage_event.dart';
 import 'package:wise_spends/bloc/impl/money_storage/events/on_delete_view_list_money_storage_event.dart';
 import 'package:wise_spends/bloc/impl/money_storage/money_storage_bloc.dart';
+import 'package:wise_spends/constants/hero_tags.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
 
@@ -188,7 +189,7 @@ class DisplayListMoneyStorageState
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: FloatingActionButton(
-              heroTag: 'add_new_money_storage',
+              heroTag: HeroTagConstants.addNewMoneyStorage,
               onPressed: () => BlocProvider.of<MoneyStorageBloc>(context)
                   .add(InLoadAddMoneyStorageEvent()),
               backgroundColor: Theme.of(context).primaryColor,

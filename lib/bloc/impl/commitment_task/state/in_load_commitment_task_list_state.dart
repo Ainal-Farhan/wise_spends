@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/impl/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/bloc/impl/commitment_task/event/update_status_commitment_task_event.dart';
+import 'package:wise_spends/constants/hero_tags.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_task_vo.dart';
@@ -188,7 +189,7 @@ class InLoadCommitmentTaskListState
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FloatingActionButton(
-                  heroTag: 'back_to_main_page',
+                  heroTag: HeroTagConstants.backToMainPage,
                   onPressed: () => Navigator.pushReplacementNamed(
                     context,
                     AppRouter.savingsPageRoute,

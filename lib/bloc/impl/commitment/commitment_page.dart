@@ -10,10 +10,8 @@ import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_plus_button_round.dart';
-import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
-import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
+import 'package:wise_spends/constants/hero_tags.dart';
 
 class CommitmentPage extends StatefulWidget {
   static const String routeName = AppRouter.commitmentPageRoute;
@@ -340,7 +338,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           FloatingActionButton(
-                            heroTag: 'back_to_main',
+                            heroTag: HeroTagConstants.backToMain,
                             onPressed: () => Navigator.pushReplacementNamed(
                               context,
                               AppRouter.savingsPageRoute,
@@ -349,7 +347,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                             child: const Icon(Icons.arrow_back),
                           ),
                           FloatingActionButton(
-                            heroTag: 'display_commitment',
+                            heroTag: HeroTagConstants.displayCommitment,
                             onPressed: () => BlocProvider.of<CommitmentBloc>(
                               context,
                             ).add(const LoadCommitmentFormEvent()),
@@ -432,86 +430,234 @@ class _CommitmentPageState extends State<CommitmentPage> {
             }
 
             if (state is CommitmentStateCommitmentDetailLoaded) {
-              List<ListTilesOneVO> commitmentListTilesOneVOList = [];
-
-              for (
-                int index = 0;
-                index < state.commitmentDetails.length;
-                index++
-              ) {
-                commitmentListTilesOneVOList.add(
-                  ListTilesOneVO(
-                    index: index,
-                    title: state.commitmentDetails[index].description ?? '-',
-                    icon: const Icon(
-                      Icons.task,
-                      color: Color.fromARGB(255, 67, 18, 160),
-                    ),
-                    subtitleWidget: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Savings: ${state.commitmentDetails[index].referredSavingVO?.savingName ?? '-'}',
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                        Text(
-                          'Total: RM ${(state.commitmentDetails[index].amount ?? .0).toStringAsFixed(2)}',
-                          style: const TextStyle(color: Colors.black),
-                        ),
-                      ],
-                    ),
-                    onTap: () async =>
-                        BlocProvider.of<CommitmentBloc>(context).add(
-                          EditCommitmentDetailEvent(
-                            commitmentDetailVO: state.commitmentDetails[index],
-                            commitmentId: state.commitmentId,
-                          ),
-                        ),
-                    onLongPressed: () async {
-                      showDeleteDialog(
-                        context: context,
-                        onDelete: () async {
-                          BlocProvider.of<CommitmentBloc>(context).add(
-                            DeleteCommitmentDetailEvent(
-                              state
-                                  .commitmentDetails[index]
-                                  .commitmentDetailId!,
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                );
-              }
-
+              final commitmentDetails = state.commitmentDetails;
+              
               return Padding(
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    SizedBox(
-                      height: screenHeight * 0.8,
-                      child: IThListTilesOne(
-                        items: commitmentListTilesOneVOList,
-                        emptyListMessage: 'No Commitment Detail Available...',
+                    const Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 12.0,
+                      ),
+                      child: Text(
+                        'Commitment Details',
+                        style: TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IThBackButtonRound(
-                          onTap: () => bloc.add(LoadCommitmentsEvent()),
-                        ),
-                        IThPlusButtonRound(
-                          onTap: () => bloc.add(
-                            LoadCommitmentDetailFormEvent(
-                              commitmentId: state.commitmentId,
+                    Expanded(
+                      child: commitmentDetails.isNotEmpty
+                          ? ListView.builder(
+                              itemCount: commitmentDetails.length,
+                              itemBuilder: (context, index) {
+                                final detail = commitmentDetails[index];
+
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 16.0,
+                                    vertical: 8.0,
+                                  ),
+                                  elevation: 4.0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12.0),
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                                          Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                                        ],
+                                      ),
+                                    ),
+                                    child: ExpansionTile(
+                                      title: Text(
+                                        detail.description ?? 'Unnamed Detail',
+                                        style: const TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      leading: Container(
+                                        width: 50,
+                                        height: 50,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        child: const Icon(
+                                          Icons.task,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      subtitle: Text(
+                                        'RM ${(detail.amount ?? .0).toStringAsFixed(2)} • From: ${detail.referredSavingVO?.savingName ?? 'N/A'}',
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 14.0,
+                                        ),
+                                      ),
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  bottom: 8.0,
+                                                ),
+                                                child: Text(
+                                                  'Amount: RM ${(detail.amount ?? .0).toStringAsFixed(2)}',
+                                                  style: const TextStyle(
+                                                    fontSize: 14.0,
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  bottom: 8.0,
+                                                ),
+                                                child: Text(
+                                                  'From: ${detail.referredSavingVO?.savingName ?? 'N/A'}',
+                                                  style: const TextStyle(
+                                                    fontSize: 14.0,
+                                                  ),
+                                                ),
+                                              ),
+                                              if (detail.description != null && detail.description!.isNotEmpty)
+                                                Padding(
+                                                  padding: const EdgeInsets.only(
+                                                    bottom: 8.0,
+                                                  ),
+                                                 child: Text(
+                                                    'Description: ${detail.description}',
+                                                    style: const TextStyle(
+                                                      fontSize: 14.0,
+                                                    ),
+                                                  ),
+                                                ),
+                                              SingleChildScrollView(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    IconButton(
+                                                      onPressed: () => bloc.add(
+                                                        EditCommitmentDetailEvent(
+                                                          commitmentDetailVO: detail,
+                                                          commitmentId: state.commitmentId,
+                                                        ),
+                                                      ),
+                                                      icon: const Icon(
+                                                        Icons.edit,
+                                                      ),
+                                                      tooltip: 'Edit',
+                                                      color: Theme.of(
+                                                        context,
+                                                      ).primaryColor,
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        showDeleteDialog(
+                                                          context: context,
+                                                          onDelete: () async {
+                                                            BlocProvider.of<
+                                                                  CommitmentBloc
+                                                                >(context)
+                                                                .add(
+                                                                  DeleteCommitmentDetailEvent(
+                                                                    detail
+                                                                        .commitmentDetailId!,
+                                                                  ),
+                                                                );
+                                                          },
+                                                        );
+                                                      },
+                                                      icon: const Icon(
+                                                        Icons.delete,
+                                                        color: Colors.red,
+                                                      ),
+                                                      tooltip: 'Delete',
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.task_outlined,
+                                      size: 80,
+                                      color: Colors.grey[400],
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                    const Text(
+                                      'No commitment details yet',
+                                      style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8.0),
+                                    const Text(
+                                      'Add details to track your commitment progress',
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FloatingActionButton(
+                            heroTag: HeroTagConstants.backToCommitments,
+                            onPressed: () => bloc.add(const LoadCommitmentsEvent()),
+                            backgroundColor: Colors.grey,
+                            child: const Icon(Icons.arrow_back),
                           ),
-                        ),
-                      ],
+                          FloatingActionButton(
+                            heroTag: HeroTagConstants.addCommitmentDetail,
+                            onPressed: () => bloc.add(
+                              LoadCommitmentDetailFormEvent(
+                                commitmentId: state.commitmentId,
+                              ),
+                            ),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            child: const Icon(Icons.add),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
