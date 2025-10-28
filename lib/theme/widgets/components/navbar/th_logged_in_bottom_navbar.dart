@@ -20,7 +20,18 @@ class ThLoggedInBottomNavbar extends StatelessWidget {
         children: [
           IconButton(
             icon: Icon(Icons.home),
-            color: pageRoute.contains('savings') || pageRoute.contains('home')
+            color: pageRoute.contains('home')
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey,
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRouter.homeLoggedInPageRoute,
+              (context) => false,
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.money),
+            color: pageRoute.contains('savings')
                 ? Theme.of(context).colorScheme.primary
                 : Colors.grey,
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
@@ -30,7 +41,7 @@ class ThLoggedInBottomNavbar extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: Icon(Icons.account_balance_wallet),
+            icon: Icon(Icons.account_balance),
             color: pageRoute.contains('money_storage')
                 ? Theme.of(context).colorScheme.primary
                 : Colors.grey,

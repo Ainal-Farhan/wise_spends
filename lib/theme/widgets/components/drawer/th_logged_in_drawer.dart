@@ -35,7 +35,7 @@ class ThLoggedInDrawer extends StatelessWidget {
             title: Text('Home'),
             onTap: () => Navigator.pushNamedAndRemoveUntil(
               context,
-              AppRouter.savingsPageRoute,
+              AppRouter.homeLoggedInPageRoute,
               (context) => false,
             ),
           ),

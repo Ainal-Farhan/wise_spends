@@ -31,8 +31,9 @@ class SavingManager extends ISavingManager {
   @override
   Future<List<SavingWithTransactions>> loadSavingWithTransactionsAsync() async {
     Stream<List<SavingWithTransactions>> streamSavingWithTransactionsList =
-        _savingService
-            .watchAllSavingWithTransactions(_startupManager.currentUser.id);
+        _savingService.watchAllSavingWithTransactions(
+          _startupManager.currentUser.id,
+        );
     return await streamSavingWithTransactionsList.first;
   }
 
@@ -46,16 +47,17 @@ class SavingManager extends ISavingManager {
     required SavingTableType savingTableType,
   }) async {
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
-        createdBy: _startupManager.currentUser.name,
-        lastModifiedBy: _startupManager.currentUser.name,
-        dateUpdated: DateTime.now(),
-        name: Value(name),
-        userId: Value(_startupManager.currentUser.id),
-        currentAmount: Value(initialAmount),
-        isHasGoal: Value(isHasGoal),
-        goal: Value(goalAmount),
-        moneyStorageId: Value(moneyStorageId),
-        type: savingTableType.value);
+      createdBy: _startupManager.currentUser.name,
+      lastModifiedBy: _startupManager.currentUser.name,
+      dateUpdated: DateTime.now(),
+      name: Value(name),
+      userId: Value(_startupManager.currentUser.id),
+      currentAmount: Value(initialAmount),
+      isHasGoal: Value(isHasGoal),
+      goal: Value(goalAmount),
+      moneyStorageId: Value(moneyStorageId),
+      type: savingTableType.value,
+    );
 
     return await _savingService.add(savingTableCompanion);
   }
@@ -91,26 +93,32 @@ class SavingManager extends ISavingManager {
     required String transactionType,
     required double transactionAmount,
   }) async {
-    SvngSaving? currentSaving =
-        await _savingService.watchSavingById(savingId).first;
+    SvngSaving? currentSaving = await _savingService
+        .watchSavingById(savingId)
+        .first;
 
     if (currentSaving != null) {
       double currentAmount = currentSaving.currentAmount;
 
       switch (transactionType) {
         case SavingConstant.savingTransactionIn:
+        case SavingConstant.deposit:
+        case SavingConstant.transferIn:
           currentAmount += transactionAmount;
           break;
         case SavingConstant.savingTransactionOut:
+        case SavingConstant.withdrawal:
+        case SavingConstant.transferOut:
           currentAmount -= transactionAmount;
       }
       SavingTableCompanion updatedSaving = SavingTableCompanion.insert(
-          createdBy: _startupManager.currentUser.name,
-          lastModifiedBy: _startupManager.currentUser.name,
-          id: Value(savingId),
-          dateUpdated: DateTime.now(),
-          currentAmount: Value(currentAmount),
-          type: currentSaving.type);
+        createdBy: _startupManager.currentUser.name,
+        lastModifiedBy: _startupManager.currentUser.name,
+        id: Value(savingId),
+        dateUpdated: DateTime.now(),
+        currentAmount: Value(currentAmount),
+        type: currentSaving.type,
+      );
 
       await _savingService.updatePart(updatedSaving);
     }
@@ -137,17 +145,19 @@ class SavingManager extends ISavingManager {
 
   @override
   Future<List<DropDownValueModel>>
-      getCurrentUserMoneyStorageDropDownValueModelList() async {
+  getCurrentUserMoneyStorageDropDownValueModelList() async {
     String currentUser = _startupManager.currentUser.id;
     List<DropDownValueModel> moneyStorageDropDownValueModelList = [];
-    Stream<List<SvngMoneyStorage>> streamMoneyStorageList =
-        _moneyStorageService.watchMoneyStorageListByUserId(currentUser);
+    Stream<List<SvngMoneyStorage>> streamMoneyStorageList = _moneyStorageService
+        .watchMoneyStorageListByUserId(currentUser);
 
     for (SvngMoneyStorage moneyStorage in await streamMoneyStorageList.first) {
-      moneyStorageDropDownValueModelList.add(DropDownValueModel(
-        name: '${moneyStorage.shortName} - ${moneyStorage.longName}',
-        value: moneyStorage.id,
-      ));
+      moneyStorageDropDownValueModelList.add(
+        DropDownValueModel(
+          name: '${moneyStorage.shortName} - ${moneyStorage.longName}',
+          value: moneyStorage.id,
+        ),
+      );
     }
 
     return moneyStorageDropDownValueModelList;
@@ -185,21 +195,23 @@ class SavingManager extends ISavingManager {
   @override
   Future<List<MoneyStorageVO>> getCurrentUserMoneyStorageVOList() async {
     List<MoneyStorageVO> moneyStorageVOList = [];
-    for (SvngMoneyStorage moneyStorage in (await _moneyStorageService
-        .watchMoneyStorageListByUserId(_startupManager.currentUser.id)
-        .first)) {
-      double amount = (await _savingService
-              .watchAllSavingBasedOnMoneyStorageId(moneyStorage.id)
-              .first)
-          .fold(
-              0,
-              (previousValue, SvngSaving saving) =>
-                  previousValue + saving.currentAmount);
+    for (SvngMoneyStorage moneyStorage
+        in (await _moneyStorageService
+            .watchMoneyStorageListByUserId(_startupManager.currentUser.id)
+            .first)) {
+      double amount =
+          (await _savingService
+                  .watchAllSavingBasedOnMoneyStorageId(moneyStorage.id)
+                  .first)
+              .fold(
+                0,
+                (previousValue, SvngSaving saving) =>
+                    previousValue + saving.currentAmount,
+              );
 
-      moneyStorageVOList.add(MoneyStorageVO(
-        moneyStorage: moneyStorage,
-        amount: amount,
-      ));
+      moneyStorageVOList.add(
+        MoneyStorageVO(moneyStorage: moneyStorage, amount: amount),
+      );
     }
 
     return moneyStorageVOList;
@@ -213,15 +225,15 @@ class SavingManager extends ISavingManager {
   }) async {
     MoneyStorageTableCompanion moneyStorageTableCompanion =
         MoneyStorageTableCompanion.insert(
-      createdBy: _startupManager.currentUser.name,
-      lastModifiedBy: _startupManager.currentUser.name,
-      dateUpdated: DateTime.now(),
-      longName: longName,
-      shortName: shortName,
-      type: type,
-      dateCreated: Value(DateTime.now()),
-      userId: Value(_startupManager.currentUser.id),
-    );
+          createdBy: _startupManager.currentUser.name,
+          lastModifiedBy: _startupManager.currentUser.name,
+          dateUpdated: DateTime.now(),
+          longName: longName,
+          shortName: shortName,
+          type: type,
+          dateCreated: Value(DateTime.now()),
+          userId: Value(_startupManager.currentUser.id),
+        );
 
     return await _moneyStorageService.add(moneyStorageTableCompanion);
   }
@@ -245,11 +257,15 @@ class SavingManager extends ISavingManager {
   Future<List<ListSavingVO>> loadListSavingVOList() async {
     return (await _savingService
             .watchAllSavingWithMoneyStorageBasedOnUserId(
-                _startupManager.currentUser.id)
+              _startupManager.currentUser.id,
+            )
             .first)
-        .map((savingWithMoneyStorage) => ListSavingVO(
+        .map(
+          (savingWithMoneyStorage) => ListSavingVO(
             saving: savingWithMoneyStorage.saving,
-            moneyStorage: savingWithMoneyStorage.moneyStorage))
+            moneyStorage: savingWithMoneyStorage.moneyStorage,
+          ),
+        )
         .toList();
   }
 }
