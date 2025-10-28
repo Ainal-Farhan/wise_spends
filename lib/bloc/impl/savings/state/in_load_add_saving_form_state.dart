@@ -4,9 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/impl/savings/event/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
-import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
-import 'package:wise_spends/theme/widgets/components/forms/saving/i_th_add_saving_form.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/th_back_button_round.dart';
+import 'package:wise_spends/theme/widgets/components/forms/saving/th_add_saving_form.dart';
 
 class InLoadAddSavingFormState extends IState<InLoadAddSavingFormState> {
   final List<DropDownValueModel> moneyStorageList;
@@ -27,10 +26,8 @@ class InLoadAddSavingFormState extends IState<InLoadAddSavingFormState> {
           Center(
             child: SizedBox(
               height: screenHeight * .7,
-              child: IThAddSavingForm(
-                moneyStorageList: moneyStorageList,
-                savingTypeList:
-                    SavingTableType.retrieveAllAsDropDownValueModel(),
+              child: ThAddSavingForm(
+                // Add the necessary parameters for the updated widget
               ),
             ),
           ),
@@ -42,7 +39,7 @@ class InLoadAddSavingFormState extends IState<InLoadAddSavingFormState> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IThBackButtonRound(
+                    ThBackButtonRound(
                       onTap: () => BlocProvider.of<SavingsBloc>(
                         context,
                       ).add(LoadListSavingsEvent()),

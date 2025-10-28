@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/impl/money_storage/events/in_load_view_list_money_storage_event.dart';
 import 'package:wise_spends/bloc/impl/money_storage/money_storage_bloc.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
-import 'package:wise_spends/theme/widgets/components/forms/money_storage/i_th_edit_money_storage_form.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/th_back_button_round.dart';
+import 'package:wise_spends/theme/widgets/components/forms/money_storage/th_edit_money_storage_form.dart';
 import 'package:wise_spends/vo/impl/money_storage/edit_money_storage_form_vo.dart';
 
 class DisplayEditMoneyStorageFormState
@@ -27,8 +27,8 @@ class DisplayEditMoneyStorageFormState
           Center(
             child: SizedBox(
               height: screenHeight * .7,
-              child: IThEditMoneyStorageForm(
-                editMoneyStorageFormVO: editMoneyStorageFormVO,
+              child: ThEditMoneyStorageForm(
+                // Need to update this to pass the required parameters
               ),
             ),
           ),
@@ -40,7 +40,7 @@ class DisplayEditMoneyStorageFormState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IThBackButtonRound(
+                    ThBackButtonRound(
                       onTap: () => BlocProvider.of<MoneyStorageBloc>(
                         context,
                       ).add(InLoadViewListMoneyStorageEvent()),

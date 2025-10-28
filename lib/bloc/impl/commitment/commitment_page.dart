@@ -9,8 +9,8 @@ import 'package:wise_spends/resource/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
-import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/th_back_button_round.dart';
+import 'package:wise_spends/theme/widgets/components/templates/th_logged_in_main_template.dart';
 import 'package:wise_spends/constants/hero_tags.dart';
 
 class CommitmentPage extends StatefulWidget {
@@ -26,7 +26,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
   @override
   Widget build(BuildContext context) {
     CommitmentBloc bloc = CommitmentBloc();
-    return IThLoggedInMainTemplate(
+    return ThLoggedInMainTemplate(
       pageRoute: AppRouter.commitmentPageRoute,
       screen: BlocProvider(
         create: (_) => bloc..add(const LoadCommitmentsEvent()),
@@ -66,7 +66,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IThBackButtonRound(
+                              ThBackButtonRound(
                                 onTap: () => bloc.add(
                                   const LoadCommitmentDetailEvent(null),
                                 ),
@@ -384,7 +384,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IThBackButtonRound(
+                              ThBackButtonRound(
                                 onTap: () =>
                                     bloc.add(const LoadCommitmentsEvent()),
                               ),

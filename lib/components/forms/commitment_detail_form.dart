@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/impl/commitment/commitment_bloc.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';
-import 'package:wise_spends/theme/widgets/components/form_fields/i_th_input_select_one_form_fields.dart';
-import 'package:wise_spends/theme/widgets/components/form_fields/i_th_input_text_form_fields.dart';
-import 'package:wise_spends/theme/widgets/components/form_fields/i_th_vertical_spacing_form_fields.dart';
-import 'package:wise_spends/theme/widgets/i_th_widget.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/th_save_button.dart';
+import 'package:wise_spends/theme/widgets/components/form_fields/th_input_select_one_form_fields.dart';
+import 'package:wise_spends/theme/widgets/components/form_fields/th_input_text_form_fields.dart';
+import 'package:wise_spends/theme/widgets/components/form_fields/th_vertical_spacing_form_fields.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_detail_vo.dart';
 import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
@@ -39,7 +38,7 @@ class _CommitmentFormState extends State<CommitmentDetailForm> {
   final SingleValueDropDownController _commitmentReferredSavingController =
       SingleValueDropDownController();
 
-  final List<IThWidget> _formFields = [];
+  final List<Widget> _formFields = [];
   final List<DropDownValueModel> savingDropDownValues = [];
 
   @override
@@ -77,16 +76,26 @@ class _CommitmentFormState extends State<CommitmentDetailForm> {
   Widget build(BuildContext context) {
     _formFields.clear();
     _formFields.addAll([
-      IThInputTextFormFields(
+      ThInputTextFormFields(
         label: 'Description',
+        hint: 'Enter description',
         controller: _descriptionController,
       ),
-      IThInputTextFormFields(label: 'Amount', controller: _amountController),
-      IThInputSelectOneFormFields(
-        dropDownValues: savingDropDownValues,
-        controller: _commitmentReferredSavingController,
-        withLabel: true,
+      ThInputTextFormFields(
+        label: 'Amount',
+        hint: 'Enter amount',
+        controller: _amountController,
+        keyboardType: TextInputType.number,
+      ),
+      ThInputSelectOneFormFields(
         label: 'Savings',
+        hint: 'Select a saving',
+        value: _commitmentReferredSavingController.dropDownValue?.name,
+        options: savingDropDownValues.map((e) => e.name).toList(),
+        onChanged: (value) {
+          var selected = savingDropDownValues.firstWhere((e) => e.name == value);
+          _commitmentReferredSavingController.dropDownValue = selected;
+        },
       ),
     ]);
 
@@ -97,7 +106,7 @@ class _CommitmentFormState extends State<CommitmentDetailForm> {
         child: Column(
           children: <Widget>[
             ..._setFormFields(context),
-            IThSaveButton(onTap: onSave),
+            ThSaveButton(onTap: onSave),
           ],
         ),
       ),
@@ -151,9 +160,9 @@ class _CommitmentFormState extends State<CommitmentDetailForm> {
 
   List<Widget> _setFormFields(BuildContext context) {
     List<Widget> fields = [];
-    for (IThWidget widget in _formFields) {
+    for (Widget widget in _formFields) {
       fields.add(_inputField(widget, context));
-      fields.add(IThVerticalSpacingFormFields(height: 20.0));
+      fields.add(ThVerticalSpacingFormFields(height: 20.0));
     }
     return fields;
   }

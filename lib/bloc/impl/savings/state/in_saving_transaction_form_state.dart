@@ -5,7 +5,7 @@ import 'package:wise_spends/bloc/impl/savings/components/saving_transaction/savi
 import 'package:wise_spends/bloc/impl/savings/event/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
 import 'package:wise_spends/db/app_database.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/th_back_button_round.dart';
 
 class InSavingTransactionFormState
     extends IState<InSavingTransactionFormState> {
@@ -38,7 +38,7 @@ class InSavingTransactionFormState
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IThBackButtonRound(
+                    ThBackButtonRound(
                       onTap: () => BlocProvider.of<SavingsBloc>(
                         context,
                       ).add(LoadListSavingsEvent()),

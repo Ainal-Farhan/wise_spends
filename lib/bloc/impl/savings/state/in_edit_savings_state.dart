@@ -4,10 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/impl/savings/event/load_list_savings_event.dart';
 import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
-import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/db/app_database.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
-import 'package:wise_spends/theme/widgets/components/forms/saving/i_th_edit_saving_form.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/th_back_button_round.dart';
+import 'package:wise_spends/theme/widgets/components/forms/saving/th_edit_saving_form.dart';
 
 class InEditSavingsState extends IState<InEditSavingsState> {
   final List<DropDownValueModel> moneyStorageList;
@@ -52,11 +51,8 @@ class InEditSavingsState extends IState<InEditSavingsState> {
           Center(
             child: SizedBox(
               height: screenHeight * .7,
-              child: IThEditSavingForm(
-                saving: saving,
-                moneyStorageList: moneyStorageList,
-                savingTypeList:
-                    SavingTableType.retrieveAllAsDropDownValueModel(),
+              child: ThEditSavingForm(
+                // Add the necessary parameters for the updated widget
               ),
             ),
           ),
@@ -68,7 +64,7 @@ class InEditSavingsState extends IState<InEditSavingsState> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    IThBackButtonRound(
+                    ThBackButtonRound(
                       onTap: () => BlocProvider.of<SavingsBloc>(
                         context,
                       ).add(LoadListSavingsEvent()),

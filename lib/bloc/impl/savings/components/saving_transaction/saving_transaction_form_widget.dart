@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/impl/savings/event/save_saving_transaction_event.dart';
 import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
 import 'package:wise_spends/constant/saving/saving_constant.dart';
-import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';
-import 'package:wise_spends/theme/widgets/components/form_fields/i_th_input_number_form_fields.dart';
-import 'package:wise_spends/theme/widgets/components/form_fields/i_th_input_radio_form_fields.dart';
-import 'package:wise_spends/theme/widgets/components/form_fields/i_th_output_number_form_fields.dart';
-import 'package:wise_spends/theme/widgets/components/form_fields/i_th_output_text_form_fields.dart';
-import 'package:wise_spends/theme/widgets/components/form_fields/i_th_vertical_spacing_form_fields.dart';
+import 'package:wise_spends/theme/widgets/components/buttons/th_save_button.dart';
+import 'package:wise_spends/theme/widgets/components/form_fields/th_input_number_form_fields.dart';
+import 'package:wise_spends/theme/widgets/components/form_fields/th_input_radio_form_fields.dart';
+import 'package:wise_spends/theme/widgets/components/form_fields/th_output_number_form_fields.dart';
+import 'package:wise_spends/theme/widgets/components/form_fields/th_output_text_form_fields.dart';
+import 'package:wise_spends/theme/widgets/components/form_fields/th_vertical_spacing_form_fields.dart';
 import 'package:wise_spends/db/app_database.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/vo/impl/saving/saving_transaction_form_vo.dart';
@@ -49,28 +49,27 @@ class SavingTransactionFormWidget extends StatelessWidget {
 
     List<Widget> formFields = <Widget>[
       _inputField(
-        IThOutputTextFormFields(
-            title: _savingTransactionFormVO.saving?.name ?? '-'),
+        ThOutputTextFormFields(
+            label: "Saving Name", value: _savingTransactionFormVO.saving?.name ?? '-'),
         context,
       ),
-      IThVerticalSpacingFormFields(height: 40),
+      ThVerticalSpacingFormFields(height: 40),
       _inputField(
-        IThOutputNumberFormFields(
+        ThOutputNumberFormFields(
+          label: "Current Amount",
           value: _savingTransactionFormVO.saving?.currentAmount ?? .0,
-          decimalPoint: 2,
-          prefix: 'RM ',
         ),
         context,
       ),
-      IThVerticalSpacingFormFields(height: 40),
+      ThVerticalSpacingFormFields(height: 40),
     ];
 
     if (_savingTransactionFormVO.saving!.isHasGoal) {
       formFields.add(
         _inputField(
-          IThOutputTextFormFields(
-            title:
-                'Goal: RM ${_savingTransactionFormVO.saving!.goal.toStringAsFixed(2)}',
+          ThOutputTextFormFields(
+            label: "Goal",
+            value: 'RM ${_savingTransactionFormVO.saving!.goal.toStringAsFixed(2)}',
           ),
           context,
         ),
@@ -79,24 +78,25 @@ class SavingTransactionFormWidget extends StatelessWidget {
 
     formFields.addAll([
       _inputField(
-        IThInputRadioFormFields(
+        ThInputRadioFormFields(
           label: 'Type',
-          setValueFunc: setSelectedTypeOfTransaction,
-          optionsList: SavingConstant.savingTransactionList,
-          isInline: true,
+          options: {for (String item in SavingConstant.savingTransactionList) item: item},
+          value: _typeOfTransaction,
+          onChanged: (value) => setSelectedTypeOfTransaction(value!),
         ),
         context,
       ),
-      IThVerticalSpacingFormFields(height: 40),
+      ThVerticalSpacingFormFields(height: 40),
       _inputField(
-        IThInputNumberFormFields(
+        ThInputNumberFormFields(
           label: 'Transaction Amount',
+          hint: 'Enter amount',
           controller: _transactionAmountController,
         ),
         context,
       ),
-      IThVerticalSpacingFormFields(height: 40),
-      IThSaveButton(onTap: onSave),
+      ThVerticalSpacingFormFields(height: 40),
+      ThSaveButton(onTap: onSave),
     ]);
 
     return Form(
