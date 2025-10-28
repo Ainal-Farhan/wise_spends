@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_state.dart';
 import 'package:wise_spends/bloc/impl/login/login_bloc.dart';
-import 'package:wise_spends/bloc/impl/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/bloc/impl/savings/savings_bloc.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/locator/i_repository_locator.dart';
@@ -38,12 +37,6 @@ Future<void> main() async {
           BlocProvider<SavingsBloc>(
             create: (context) => SavingsBloc(),
             child: BlocBuilder<SavingsBloc, IState<dynamic>>(
-              builder: (context, state) => state.build(context),
-            ),
-          ),
-          BlocProvider<MoneyStorageBloc>(
-            create: (context) => MoneyStorageBloc(),
-            child: BlocBuilder<MoneyStorageBloc, IState<dynamic>>(
               builder: (context, state) => state.build(context),
             ),
           ),
