@@ -28,7 +28,9 @@ class CommitmentStateError extends CommitmentStateWithMessage {
 }
 
 class CommitmentStateSuccess extends CommitmentStateWithMessage {
-  const CommitmentStateSuccess(super.message);
+  final CommitmentEvent nextEvent;
+
+  const CommitmentStateSuccess(super.message, {required this.nextEvent});
 }
 
 class CommitmentStateCommitmentsLoaded extends CommitmentState {
@@ -89,8 +91,8 @@ extension CommitmentStateX on CommitmentState {
   static CommitmentState initial() => const CommitmentStateInitial();
   static CommitmentState loading() => const CommitmentStateLoading();
   static CommitmentState error(String message) => CommitmentStateError(message);
-  static CommitmentState success(String message) =>
-      CommitmentStateSuccess(message);
+  static CommitmentState success(String message, CommitmentEvent nextEvent) =>
+      CommitmentStateSuccess(message, nextEvent: nextEvent);
   static CommitmentState commitmentsLoaded(List<CommitmentVO> commitments) =>
       CommitmentStateCommitmentsLoaded(commitments);
   static CommitmentState commitmentDetailLoaded(

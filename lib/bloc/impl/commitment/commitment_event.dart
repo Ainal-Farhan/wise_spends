@@ -77,9 +77,10 @@ class DeleteCommitmentEvent extends CommitmentEvent {
 }
 
 class DeleteCommitmentDetailEvent extends CommitmentEvent {
+  final String commitmentId;
   final String commitmentDetailId;
 
-  const DeleteCommitmentDetailEvent(this.commitmentDetailId);
+  const DeleteCommitmentDetailEvent(this.commitmentDetailId, {required this.commitmentId});
 
   @override
   List<Object> get props => [commitmentDetailId];

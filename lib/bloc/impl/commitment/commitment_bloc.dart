@@ -118,7 +118,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     emit(CommitmentStateX.loading());
     try {
       await _commitmentManager.saveCommitmentVO(event.commitmentVO);
-      emit(CommitmentStateX.success('Successfully saved commitment'));
+      emit(
+        CommitmentStateX.success(
+          'Successfully saved commitment',
+          const LoadCommitmentsEvent(),
+        ),
+      );
     } catch (e) {
       emit(CommitmentStateX.error(e.toString()));
     }
@@ -133,7 +138,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       await _commitmentManager.saveCommitmentDetailVO(event.commitmentId, [
         event.commitmentDetailVO,
       ]);
-      emit(CommitmentStateX.success('Successfully saved commitment detail'));
+      emit(
+        CommitmentStateX.success(
+          'Successfully saved commitment detail',
+          LoadCommitmentDetailEvent(event.commitmentId),
+        ),
+      );
     } catch (e) {
       emit(CommitmentStateX.error(e.toString()));
     }
@@ -146,7 +156,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     emit(CommitmentStateX.loading());
     try {
       await _commitmentManager.deleteCommitmentVO(event.commitmentId);
-      emit(CommitmentStateX.success('Successfully deleted commitment'));
+      emit(
+        CommitmentStateX.success(
+          'Successfully deleted commitment',
+          const LoadCommitmentsEvent(),
+        ),
+      );
     } catch (e) {
       emit(CommitmentStateX.error(e.toString()));
     }
@@ -161,7 +176,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       await _commitmentManager.deleteCommitmentDetailVO(
         event.commitmentDetailId,
       );
-      emit(CommitmentStateX.success('Successfully deleted commitment detail'));
+      emit(
+        CommitmentStateX.success(
+          'Successfully deleted commitment detail',
+          LoadCommitmentDetailEvent(event.commitmentId),
+        ),
+      );
     } catch (e) {
       emit(CommitmentStateX.error(e.toString()));
     }
@@ -200,7 +220,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
         updateAppBar!();
       }
 
-      emit(CommitmentStateX.success(message));
+      emit(CommitmentStateX.success(message, const LoadCommitmentsEvent()));
     } catch (e) {
       emit(CommitmentStateX.error(e.toString()));
     }

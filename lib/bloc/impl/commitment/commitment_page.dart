@@ -37,7 +37,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
 
               // Add a small delay before navigating back to show success message
               Timer(const Duration(milliseconds: 1500), () {
-                bloc.add(const LoadCommitmentsEvent());
+                bloc.add(state.nextEvent);
               });
             }
           },
@@ -431,7 +431,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
 
             if (state is CommitmentStateCommitmentDetailLoaded) {
               final commitmentDetails = state.commitmentDetails;
-              
+
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Column(
@@ -472,8 +472,12 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                         colors: [
-                                          Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                          Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withValues(alpha: 0.1),
+                                          Theme.of(
+                                            context,
+                                          ).primaryColor.withValues(alpha: 0.3),
                                         ],
                                       ),
                                     ),
@@ -533,12 +537,16 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                                   ),
                                                 ),
                                               ),
-                                              if (detail.description != null && detail.description!.isNotEmpty)
+                                              if (detail.description != null &&
+                                                  detail
+                                                      .description!
+                                                      .isNotEmpty)
                                                 Padding(
-                                                  padding: const EdgeInsets.only(
-                                                    bottom: 8.0,
-                                                  ),
-                                                 child: Text(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        bottom: 8.0,
+                                                      ),
+                                                  child: Text(
                                                     'Description: ${detail.description}',
                                                     style: const TextStyle(
                                                       fontSize: 14.0,
@@ -556,8 +564,10 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                                     IconButton(
                                                       onPressed: () => bloc.add(
                                                         EditCommitmentDetailEvent(
-                                                          commitmentDetailVO: detail,
-                                                          commitmentId: state.commitmentId,
+                                                          commitmentDetailVO:
+                                                              detail,
+                                                          commitmentId: state
+                                                              .commitmentId,
                                                         ),
                                                       ),
                                                       icon: const Icon(
@@ -573,15 +583,16 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                                         showDeleteDialog(
                                                           context: context,
                                                           onDelete: () async {
-                                                            BlocProvider.of<
-                                                                  CommitmentBloc
-                                                                >(context)
-                                                                .add(
-                                                                  DeleteCommitmentDetailEvent(
-                                                                    detail
-                                                                        .commitmentDetailId!,
-                                                                  ),
-                                                                );
+                                                            BlocProvider.of<CommitmentBloc>(
+                                                              context,
+                                                            ).add(
+                                                              DeleteCommitmentDetailEvent(
+                                                                detail
+                                                                    .commitmentDetailId!,
+                                                                commitmentId: state
+                                                                    .commitmentId,
+                                                              ),
+                                                            );
                                                           },
                                                         );
                                                       },
@@ -642,7 +653,8 @@ class _CommitmentPageState extends State<CommitmentPage> {
                         children: [
                           FloatingActionButton(
                             heroTag: HeroTagConstants.backToCommitments,
-                            onPressed: () => bloc.add(const LoadCommitmentsEvent()),
+                            onPressed: () =>
+                                bloc.add(const LoadCommitmentsEvent()),
                             backgroundColor: Colors.grey,
                             child: const Icon(Icons.arrow_back),
                           ),
