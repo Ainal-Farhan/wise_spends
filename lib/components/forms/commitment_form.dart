@@ -2,7 +2,6 @@ import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/impl/commitment/commitment_bloc.dart';
-import 'package:wise_spends/bloc/impl/commitment/event/save_commitment_event.dart';
 import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_save_button.dart';
 import 'package:wise_spends/theme/widgets/components/form_fields/i_th_input_select_one_form_fields.dart';
@@ -76,10 +75,7 @@ class _CommitmentFormState extends State<CommitmentForm> {
   Widget build(BuildContext context) {
     _formFields.clear();
     _formFields.addAll([
-      IThInputTextFormFields(
-        label: 'Name',
-        controller: _nameController,
-      ),
+      IThInputTextFormFields(label: 'Name', controller: _nameController),
       IThInputTextFormFields(
         label: 'Description',
         controller: _descriptionController,
@@ -128,27 +124,24 @@ class _CommitmentFormState extends State<CommitmentForm> {
     }
 
     SavingVO referredSavingVO = SavingVO.fromSvngSaving(
-        (_commitmentReferredSavingController.dropDownValue!.value
-                as ListSavingVO)
-            .saving);
+      (_commitmentReferredSavingController.dropDownValue!.value as ListSavingVO)
+          .saving,
+    );
 
     widget.commitmentVO.name = _nameController.text;
     widget.commitmentVO.description = _descriptionController.text;
     widget.commitmentVO.referredSavingVO = referredSavingVO;
 
-    BlocProvider.of<CommitmentBloc>(context)
-        .add(SaveCommitmentEvent(toBeSaved: widget.commitmentVO));
+    BlocProvider.of<CommitmentBloc>(
+      context,
+    ).add(SaveCommitmentEvent(toBeSaved: widget.commitmentVO));
   }
 
   List<Widget> _setFormFields(BuildContext context) {
     List<Widget> fields = [];
     for (IThWidget widget in _formFields) {
-      fields.add(
-        _inputField(widget, context),
-      );
-      fields.add(
-        IThVerticalSpacingFormFields(height: 20.0),
-      );
+      fields.add(_inputField(widget, context));
+      fields.add(IThVerticalSpacingFormFields(height: 20.0));
     }
     return fields;
   }
@@ -158,9 +151,7 @@ class _CommitmentFormState extends State<CommitmentForm> {
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          widget,
-        ],
+        children: [widget],
       ),
     );
   }

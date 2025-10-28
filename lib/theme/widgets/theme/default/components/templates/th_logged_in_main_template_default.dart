@@ -16,7 +16,7 @@ import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_ma
 
 class ThLoggedInMainTemplateDefault extends StatefulWidget
     implements IThLoggedInMainTemplate {
-  final StatefulWidget screen;
+  final Widget screen;
   final String pageRoute;
   final Bloc bloc;
   final BottomNavBarNotifier bottomNavBarNotifier = BottomNavBarNotifier();

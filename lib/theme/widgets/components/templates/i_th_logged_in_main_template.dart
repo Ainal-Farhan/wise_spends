@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/bloc/i_bloc.dart';
+import 'package:wise_spends/bloc/impl/commitment/commitment_bloc.dart';
 import 'package:wise_spends/constant/enum/function_enum.dart';
 import 'package:wise_spends/theme/theme_list/default/default_theme.dart';
 import 'package:wise_spends/theme/widgets/i_th_widget.dart';
@@ -10,7 +11,7 @@ import 'package:wise_spends/theme/widgets/theme/default/components/templates/th_
 abstract class IThLoggedInMainTemplate extends IThWidget {
   factory IThLoggedInMainTemplate({
     Key? key,
-    required StatefulWidget screen,
+    required Widget screen,
     required String pageRoute,
     required Bloc bloc,
     List<FloatingActionButton> floatingActionButtons =
@@ -20,26 +21,32 @@ abstract class IThLoggedInMainTemplate extends IThWidget {
     IThLoggedInMainTemplate? thLoggedInMainTemplate;
     if (IWidgetTheme.themeManager.getCurrentTheme() is DefaultTheme) {
       thLoggedInMainTemplate = ThLoggedInMainTemplateDefault(
-          key: key,
-          screen: screen,
-          pageRoute: pageRoute,
-          bloc: bloc,
-          showBottomNavBar: showBottomNavBar);
-    }
-
-    thLoggedInMainTemplate ??= ThLoggedInMainTemplateDefault(
         key: key,
         screen: screen,
         pageRoute: pageRoute,
         bloc: bloc,
-        showBottomNavBar: showBottomNavBar);
+        showBottomNavBar: showBottomNavBar,
+      );
+    }
+
+    thLoggedInMainTemplate ??= ThLoggedInMainTemplateDefault(
+      key: key,
+      screen: screen,
+      pageRoute: pageRoute,
+      bloc: bloc,
+      showBottomNavBar: showBottomNavBar,
+    );
 
     if (bloc is IBloc) {
       IBloc iBloc = bloc;
       iBloc.functionMap.addAll({
         FunctionEnum.updateAppBar: (List<dynamic>? params) =>
-            thLoggedInMainTemplate?.updateAppBar()
+            thLoggedInMainTemplate?.updateAppBar(),
       });
+    }
+
+    if (bloc is CommitmentBloc) {
+      bloc.updateAppBar = thLoggedInMainTemplate.updateAppBar;
     }
 
     return thLoggedInMainTemplate;
