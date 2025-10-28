@@ -8,15 +8,14 @@ import 'package:wise_spends/bloc/impl/settings/settings_page.dart';
 
 abstract class AppRouter {
   static const String rootRoute = "/";
-  static const String loginPageRoute = "/loginPage";
-  static const String homeLoggedInPageRoute = "/homeLoggedInPage";
-  static const String savingsPageRoute = "/savingsPage";
-  static const String commitmentPageRoute = "/commitmentPage";
-  static const String transactionPageRoute = "/transactionPage";
-  static const String commitmentTaskPageRoute = "/commitmentTaskPage";
-  static const String viewListMoneyStoragePageRoute =
-      "/viewListMoneyStoragePageRoute";
-  static const String settingsPageRoute = "/settingsPage";
+  static const String loginPageRoute = "/login";
+  static const String homeLoggedInPageRoute = "/home";
+  static const String savingsPageRoute = "/savings";
+  static const String commitmentPageRoute = "/commitment";
+  static const String transactionPageRoute = "/transaction";
+  static const String commitmentTaskPageRoute = "/commitment_task";
+  static const String viewListMoneyStoragePageRoute = "/money_storage";
+  static const String settingsPageRoute = "/settings";
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {

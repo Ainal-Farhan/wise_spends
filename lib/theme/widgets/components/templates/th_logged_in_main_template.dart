@@ -1,66 +1,218 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-class ThLoggedInMainTemplate extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/bloc/impl/commitment/commitment_bloc.dart';
+import 'package:wise_spends/locator/i_manager_locator.dart';
+import 'package:wise_spends/manager/i_commitment_manager.dart';
+import 'package:wise_spends/manager/i_startup_manager.dart';
+import 'package:wise_spends/resource/notifiers/bottom_nav_bar_notifier.dart';
+import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/utils/singleton_util.dart';
+import 'package:wise_spends/theme/widgets/components/appbar/th_logged_in_appbar.dart';
+import 'package:wise_spends/theme/widgets/components/drawer/th_logged_in_drawer.dart';
+import 'package:wise_spends/theme/widgets/components/navbar/th_logged_in_bottom_navbar.dart';
+
+class ThLoggedInMainTemplate extends StatefulWidget {
   final Widget screen;
   final String pageRoute;
-  final dynamic bloc;
+  final Bloc? bloc;
+  final BottomNavBarNotifier bottomNavBarNotifier;
   final List<FloatingActionButton> floatingActionButtons;
   final bool showBottomNavBar;
+  final IStartupManager startupManager;
+  final ICommitmentManager commitmentManager;
+  final StreamController<int> streamController;
 
-  const ThLoggedInMainTemplate({
+  ThLoggedInMainTemplate({
     super.key,
     required this.screen,
     required this.pageRoute,
-    required this.bloc,
+    this.bloc,
     this.floatingActionButtons = const <FloatingActionButton>[],
     this.showBottomNavBar = true,
-  });
+  }) : bottomNavBarNotifier = BottomNavBarNotifier(),
+       startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
+           .getStartupManager(),
+       commitmentManager = SingletonUtil.getSingleton<IManagerLocator>()!
+           .getCommitmentManager(),
+       streamController = StreamController<int>.broadcast() {
+    if (!showBottomNavBar) {
+      bottomNavBarNotifier.hideBottomNavBar = false;
+    }
+
+    if (bloc != null && bloc is CommitmentBloc) {
+      (bloc as CommitmentBloc).updateAppBar = updateAppBar;
+    }
+  }
+
+  @override
+  State<ThLoggedInMainTemplate> createState() => _ThLoggedInMainTemplateState();
+
+  void updateAppBar() {
+    streamController.addStream(commitmentManager.retrieveTotalCommitmentTask());
+  }
+}
+
+class _ThLoggedInMainTemplateState extends State<ThLoggedInMainTemplate>
+    with TickerProviderStateMixin {
+  late AnimationController _colorAnimationController;
+  late AnimationController _textAnimationController;
+  late Animation _colorTween,
+      _homeTween,
+      _workOutTween,
+      _iconTween,
+      _drawerTween;
+
+  @override
+  void initState() {
+    _colorAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 0),
+    );
+    _colorTween = ColorTween(
+      begin: Colors.transparent,
+      end: Colors.white,
+    ).animate(_colorAnimationController);
+    _iconTween = ColorTween(
+      begin: Colors.white,
+      end: Colors.lightBlue.withValues(alpha: 0.5),
+    ).animate(_colorAnimationController);
+    _drawerTween = ColorTween(
+      begin: Colors.white,
+      end: Colors.black,
+    ).animate(_colorAnimationController);
+    _homeTween = ColorTween(
+      begin: Colors.white,
+      end: Colors.blue,
+    ).animate(_colorAnimationController);
+    _workOutTween = ColorTween(
+      begin: Colors.white,
+      end: Colors.black,
+    ).animate(_colorAnimationController);
+    _textAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 0),
+    );
+
+    super.initState();
+
+    _addScrollListener();
+
+    widget.updateAppBar();
+  }
+
+  @override
+  void dispose() {
+    widget.streamController.close();
+    _colorAnimationController.dispose();
+    _textAnimationController.dispose();
+    super.dispose();
+  }
+
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+
+  bool scrollListener(ScrollNotification scrollInfo) {
+    bool scroll = false;
+    if (scrollInfo.metrics.axis == Axis.vertical) {
+      _colorAnimationController.animateTo(scrollInfo.metrics.pixels / 80);
+
+      _textAnimationController.animateTo(scrollInfo.metrics.pixels);
+      return scroll = true;
+    }
+    return scroll;
+  }
+
+  final _scrollController = ScrollController();
+
+  void _addScrollListener() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (widget.bottomNavBarNotifier.hideBottomNavBar) {
+          widget.bottomNavBarNotifier.hideBottomNavBar = false;
+        }
+      } else {
+        if (!widget.bottomNavBarNotifier.hideBottomNavBar) {
+          widget.bottomNavBarNotifier.hideBottomNavBar = true;
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: screen,
-      floatingActionButton: floatingActionButtons.isNotEmpty
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: floatingActionButtons,
-            )
-          : null,
-      bottomNavigationBar: showBottomNavBar
-          ? Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.3),
-                    spreadRadius: 1,
-                    blurRadius: 3,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        key: scaffoldKey,
+        drawer: ThLoggedInDrawer(
+          pageRoute: widget.pageRoute,
+        ),
+        drawerScrimColor: Colors.transparent,
+        backgroundColor: SingletonUtil.getSingleton<IManagerLocator>()!
+            .getThemeManager()
+            .colorTheme
+            .complexDrawerCanvasColor,
+        body: Stack(
+          children: [
+            NotificationListener<ScrollNotification>(
+              onNotification: scrollListener,
+              child: Padding(
+                padding: EdgeInsets.only(top: screenHeight * 0.1),
+                child: widget.screen,
               ),
-              child: BottomNavigationBar(
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.account_balance_wallet),
-                    label: 'Wallet',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.assignment),
-                    label: 'Commitments',
-                  ),
-                ],
-                selectedItemColor: Theme.of(context).colorScheme.primary,
-                unselectedItemColor: Colors.grey,
+            ),
+            StreamBuilder<int>(
+              stream: widget.streamController.stream,
+              builder: (context, snapshot) => ThLoggedInAppbar(
+                drawerTween: _drawerTween,
+                onPressed: () {
+                  scaffoldKey.currentState!.openDrawer();
+                },
+                colorAnimationController: _colorAnimationController,
+                colorTween: _colorTween,
+                homeTween: _homeTween,
+                iconTween: _iconTween,
+                workOutTween: _workOutTween,
+                loggedInUserName: widget.startupManager.currentUser.name,
+                onPressedTaskIcon: () => Navigator.pushReplacementNamed(
+                  context,
+                  AppRouter.commitmentTaskPageRoute,
+                ),
+                totalTask: snapshot.data ?? 0,
               ),
-            )
-          : null,
+            ),
+
+            // Floating buttons as a vertical stack in bottom-right corner
+            // Positioned above bottom navigation bar if it exists
+            if (widget.floatingActionButtons.isNotEmpty)
+              Positioned(
+                bottom: widget.showBottomNavBar ? 80.0 : 16.0, // 80px accounts for bottom nav bar height + padding
+                right: 16,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: widget.floatingActionButtons.map((button) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: button,
+                    );
+                  }).toList(),
+                ),
+              ),
+          ],
+        ),
+        bottomNavigationBar: widget.showBottomNavBar
+            ? ThLoggedInBottomNavbar(
+                pageRoute: widget.pageRoute,
+                model: widget.bottomNavBarNotifier,
+              )
+            : null,
+      ),
     );
   }
 }

@@ -25,7 +25,7 @@ class _CommitmentTaskPageState extends State<CommitmentTaskPage> {
         bloc: bloc,
         initialEvent: InLoadCommitmentTaskEvent(),
       ),
-      showBottomNavBar: false,
+      showBottomNavBar: true,
       bloc: bloc,
     );
   }

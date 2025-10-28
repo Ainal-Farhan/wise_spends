@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as path;
 import 'package:wise_spends/db/db_connection.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:wise_spends/db/domain/common/index.dart';
 import 'package:wise_spends/db/domain/expense/index.dart';
 import 'package:wise_spends/db/domain/masterdata/index.dart';
@@ -13,7 +15,6 @@ import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/locator/i_repository_locator.dart';
 import 'package:wise_spends/utils/app_path.dart';
 import 'package:wise_spends/utils/file_util.dart';
-import 'package:wise_spends/utils/permission_util.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
 import 'package:wise_spends/utils/uuid_generator.dart';
 
@@ -42,40 +43,107 @@ class AppDatabase extends _$AppDatabase {
     final isJson = type != '.sqlite';
     final ext = isJson ? 'json' : 'sqlite';
 
+    final dir = await AppPath().getApplicationDocumentsDirectory();
+    final backupDir = Directory('${dir.path}/temp_backup');
+
+    if (!(await backupDir.exists())) {
+      await backupDir.create(recursive: true);
+    }
+
+    final String fullPath = path.join(dir.path, 'temp_backup');
+
     final File file = FileUtil.createFileWithCurrentDateTime(
-      path: '${await AppPath().getDownloadsDirectory()}/backup/db',
+      path: fullPath,
       fileName: 'backup',
       extension: ext,
     );
 
-    if (await PermissionUtil.isManageExternalStoragePermissionGranted()) {
-      if (file.existsSync()) {
-        file.deleteSync();
-      }
-
-      FileUtil.createFileIntoDirectory(file);
-      if (isJson) {
-        Map<String, dynamic> data = await retrieveDataFromAllTables();
-
-        String jsonString = jsonEncode(data);
-
-        await file.writeAsString(jsonString);
-      } else {
-        await customStatement('VACUUM INTO ?', [file.path]);
-      }
-      return file.path;
+    if (file.existsSync()) {
+      file.deleteSync();
     }
 
-    throw 'Permission Manage External Storage is not granted';
+    FileUtil.createFileIntoDirectory(file);
+    if (isJson) {
+      Map<String, dynamic> data = await retrieveDataFromAllTables();
+
+      String jsonString = jsonEncode(data);
+
+      await file.writeAsString(jsonString);
+    } else {
+      await customStatement('VACUUM INTO ?', [file.path]);
+    }
+    return file.path;
+  }
+
+  Future<Directory> getAppMediaDirectory() async {
+    // Example: /storage/emulated/0/Android/media/com.example.wise_spends/
+    final Directory? baseDir = await getExternalStorageDirectory();
+    if (baseDir == null) {
+      throw Exception("External storage not available");
+    }
+
+    final mediaDir = Directory(
+      path.join('/storage/emulated/0/Android/media', 'com.example.wise_spends'),
+    );
+
+    if (!(await mediaDir.exists())) {
+      await mediaDir.create(recursive: true);
+    }
+
+    return mediaDir;
+  }
+
+  Future<String> getBackupFolderPath() async {
+    final Directory dir = await getAppMediaDirectory();
+
+    final backupDir = Directory(path.join(dir.path, 'backup', 'db'));
+    if (!(await backupDir.exists())) {
+      await backupDir.create(recursive: true);
+    }
+
+    return backupDir.path;
+  }
+
+  Future<String> exportToInternalStorageMedia(final String type) async {
+    final isJson = type != '.sqlite';
+    final ext = isJson ? 'json' : 'sqlite';
+
+    String backupPath = await getBackupFolderPath();
+
+    final File file = FileUtil.createFileWithCurrentDateTime(
+      path: backupPath,
+      fileName: 'backup',
+      extension: ext,
+    );
+
+    if (file.existsSync()) {
+      file.deleteSync();
+    }
+
+    FileUtil.createFileIntoDirectory(file);
+    if (isJson) {
+      Map<String, dynamic> data = await retrieveDataFromAllTables();
+
+      String jsonString = jsonEncode(data);
+
+      await file.writeAsString(jsonString);
+    } else {
+      await customStatement('VACUUM INTO ?', [file.path]);
+    }
+    return file.path;
   }
 
   Future<bool> restore(final String type) async {
     final isJson = type != '.sqlite';
     final ext = isJson ? 'json' : 'sqlite';
 
+    String backupPath = await getBackupFolderPath();
+
     final filePicker = await FilePicker.platform.pickFiles(
       allowMultiple: false,
-      type: FileType.any,
+      type: FileType.custom,
+      allowedExtensions: ['sqlite', 'json'],
+      initialDirectory: backupPath,
     );
     if (filePicker != null && filePicker.count == 1) {
       File file = File(filePicker.files.single.path ?? '');

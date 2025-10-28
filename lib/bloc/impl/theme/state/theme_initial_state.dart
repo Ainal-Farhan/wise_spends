@@ -53,16 +53,26 @@ class ThemeInitialState extends IState<ThemeInitialState> {
         SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
     return ThemeData.dark().copyWith(
       brightness: Brightness.dark,
-      primaryColor: themeManager.colorTheme.backgroundBlue,
+      primaryColor: themeManager.colorTheme.primaryColor,
       scaffoldBackgroundColor: themeManager.colorTheme.complexDrawerCanvasColor,
       appBarTheme: AppBarTheme(
-        backgroundColor: themeManager.colorTheme.complexDrawerBlueGrey,
-        foregroundColor: themeManager.colorTheme.complexDrawerBlack,
-        titleTextStyle: TextStyle(
-          color: themeManager.colorTheme.complexDrawerBlack,
+        backgroundColor: themeManager.colorTheme.backgroundBlue,
+        foregroundColor: Colors.white,
+        titleTextStyle: const TextStyle(
+          color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
+      ),
+      textTheme: ThemeData.dark().textTheme.apply(
+        bodyColor: Colors.white,
+        displayColor: Colors.white,
+      ),
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: themeManager.colorTheme.primaryColor,
+        brightness: Brightness.dark,
+      ).copyWith(
+        onSurface: Colors.white,  // For text on dark surfaces
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

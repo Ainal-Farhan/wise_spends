@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/resource/ui/snack_bar/message.dart';
+import 'package:wise_spends/router/app_router.dart';
+
 class ThLoggedInDrawer extends StatelessWidget {
   final String userName;
+  final String pageRoute;
 
-  const ThLoggedInDrawer({super.key, this.userName = 'User'});
+  const ThLoggedInDrawer({
+    super.key,
+    this.userName = 'User',
+    required this.pageRoute,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,23 +31,28 @@ class ThLoggedInDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text(userName),
-            onTap: () {
-              Navigator.pop(context);
-            },
+            leading: Icon(Icons.home),
+            title: Text('Home'),
+            onTap: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRouter.savingsPageRoute,
+              (context) => false,
+            ),
           ),
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('Settings'),
-            onTap: () {
-              Navigator.pop(context);
-            },
+            onTap: () => Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRouter.settingsPageRoute,
+              (context) => false,
+            ),
           ),
           ListTile(
             leading: Icon(Icons.help),
             title: Text('Help'),
             onTap: () {
+              showSnackBarMessage(context, "Not Implemented yet");
               Navigator.pop(context);
             },
           ),
@@ -48,4 +61,3 @@ class ThLoggedInDrawer extends StatelessWidget {
     );
   }
 }
-

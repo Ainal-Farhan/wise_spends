@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/config/configuration/i_configuration_manager.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/main.dart';
+import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/service/backup_service.dart';
 import 'package:wise_spends/theme/i_theme_manager.dart';
+import 'package:wise_spends/theme/widgets/components/templates/th_logged_in_main_template.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -62,14 +65,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        foregroundColor: Theme.of(context).appBarTheme.foregroundColor,
-        titleTextStyle: Theme.of(context).appBarTheme.titleTextStyle,
-      ),
-      body: ListView(
+    return ThLoggedInMainTemplate(
+      pageRoute: AppRouter.settingsPageRoute,
+      showBottomNavBar: false,
+      screen: ListView(
         children: [
           // Theme Settings
           Container(
@@ -126,6 +125,44 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               title: Text('About'),
               subtitle: Text('Wise Spends - Manage your finances'),
+            ),
+          ),
+
+          // Backup and Restore Section
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'Backup & Restore',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Theme.of(context).primaryColor,
+              ),
+            ),
+          ),
+          Card(
+            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(
+                    Icons.backup,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  title: const Text('Backup Data'),
+                  subtitle: const Text('Create a backup of your data'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: _showBackupOptions,
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: Icon(
+                    Icons.restore,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  title: const Text('Restore Data'),
+                  subtitle: const Text('Restore from a backup file'),
+                  onTap: _restoreData,
+                ),
+              ],
             ),
           ),
         ],
@@ -206,5 +243,168 @@ class _SettingsPageState extends State<SettingsPage> {
         );
       },
     );
+  }
+
+  void _showBackupOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(
+                  Icons.share,
+                  color: Theme.of(context).primaryColor,
+                ),
+                title: const Text('Share Backup'),
+                subtitle: const Text('Share backup file with other apps'),
+                onTap: () {
+                  _performBackupAndShare(type: '.json');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.save,
+                  color: Theme.of(context).primaryColor,
+                ),
+                title: const Text('Save to Downloads'),
+                subtitle: const Text('Save backup to Downloads folder'),
+                onTap: () {
+                  _performBackupToDownloads();
+                  Navigator.pop(context);
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: Icon(Icons.close, color: Colors.red),
+                title: const Text('Cancel'),
+                onTap: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _performBackupAndShare({String type = '.json'}) async {
+    try {
+      final backupService = BackupService();
+      await backupService.backupAndShare(type: type);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Backup created and shared successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Backup failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _performBackupToDownloads() async {
+    try {
+      final backupService = BackupService();
+      final filePath = await backupService.backupToInternalStorageMedia();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Backup saved to $filePath successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Backup to downloads failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _restoreData() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Restore'),
+          content: const Text(
+            'Restoring data will replace your current data. Are you sure you want to continue?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _performRestore();
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: const Text('Restore'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _performRestore() async {
+    try {
+      final backupService = BackupService();
+      bool success = await backupService.restore();
+
+      if (success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Data restored successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Refresh the app to reflect restored changes
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRouter.savingsPageRoute,
+            (route) => false,
+          );
+        });
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Restore was cancelled or failed'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Restore failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

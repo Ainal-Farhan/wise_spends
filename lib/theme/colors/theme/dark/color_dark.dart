@@ -12,7 +12,7 @@ class ColorDark implements IColorTheme {
   static const Color _backgroundBlue = Color(0xff2d2b55);
 
   static const Color _complexDrawerCanvasColor = Color(0xff1e1e2e);
-  static const Color _complexDrawerBlack = Color(0xfff8f8f2);
+  static const Color _complexDrawerBlack = Color(0xfff8f8f2);  // This is actually light gray/white
   static const Color _complexDrawerBlueGrey = Color(0xff44475a);
 
   @override
@@ -25,7 +25,7 @@ class ColorDark implements IColorTheme {
   Color get complexDrawerCanvasColor => _complexDrawerCanvasColor;
   
   @override
-  Color get complexDrawerBlack => _complexDrawerBlack;
+  Color get complexDrawerBlack => _complexDrawerBlack;  // Light text for contrast
   
   @override
   Color get complexDrawerBlueGrey => _complexDrawerBlueGrey;

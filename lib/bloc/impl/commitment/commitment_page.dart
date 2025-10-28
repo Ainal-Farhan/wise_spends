@@ -338,15 +338,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           FloatingActionButton(
-                            heroTag: HeroTagConstants.backToMain,
-                            onPressed: () => Navigator.pushReplacementNamed(
-                              context,
-                              AppRouter.savingsPageRoute,
-                            ),
-                            backgroundColor: Colors.grey,
-                            child: const Icon(Icons.arrow_back),
-                          ),
-                          FloatingActionButton(
                             heroTag: HeroTagConstants.displayCommitment,
                             onPressed: () => BlocProvider.of<CommitmentBloc>(
                               context,
@@ -680,7 +671,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
           },
         ),
       ),
-      showBottomNavBar: false,
+      showBottomNavBar: true,
       bloc: bloc,
     );
   }
