@@ -90,7 +90,9 @@ class _CommitmentFormState extends State<CommitmentForm> {
         value: _commitmentReferredSavingController.dropDownValue?.name,
         options: savingDropDownValues.map((e) => e.name).toList(),
         onChanged: (value) {
-          var selected = savingDropDownValues.firstWhere((e) => e.name == value);
+          var selected = savingDropDownValues.firstWhere(
+            (e) => e.name == value,
+          );
           _commitmentReferredSavingController.dropDownValue = selected;
         },
       ),
@@ -157,10 +159,7 @@ class _CommitmentFormState extends State<CommitmentForm> {
   Widget _inputField(Widget widget, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [widget],
-      ),
+      child: widget,
     );
   }
 }
