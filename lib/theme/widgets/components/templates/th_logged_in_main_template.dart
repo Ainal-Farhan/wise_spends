@@ -7,6 +7,7 @@ import 'package:wise_spends/bloc/impl/commitment/commitment_bloc.dart';
 import 'package:wise_spends/locator/i_manager_locator.dart';
 import 'package:wise_spends/manager/i_commitment_manager.dart';
 import 'package:wise_spends/manager/i_startup_manager.dart';
+import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/resource/notifiers/bottom_nav_bar_notifier.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/utils/singleton_util.dart';
@@ -42,8 +43,13 @@ class ThLoggedInMainTemplate extends StatefulWidget {
       bottomNavBarNotifier.hideBottomNavBar = false;
     }
 
-    if (bloc != null && bloc is CommitmentBloc) {
-      (bloc as CommitmentBloc).updateAppBar = updateAppBar;
+    if (bloc != null) {
+      if (bloc is CommitmentBloc) {
+        (bloc as CommitmentBloc).updateAppBar = updateAppBar;
+      }
+      if (bloc is CommitmentTaskBloc) {
+        (bloc as CommitmentTaskBloc).updateAppBar = updateAppBar;
+      }
     }
   }
 
@@ -149,9 +155,7 @@ class _ThLoggedInMainTemplateState extends State<ThLoggedInMainTemplate>
       canPop: false,
       child: Scaffold(
         key: scaffoldKey,
-        drawer: ThLoggedInDrawer(
-          pageRoute: widget.pageRoute,
-        ),
+        drawer: ThLoggedInDrawer(pageRoute: widget.pageRoute),
         drawerScrimColor: Colors.transparent,
         backgroundColor: SingletonUtil.getSingleton<IManagerLocator>()!
             .getThemeManager()
@@ -191,7 +195,9 @@ class _ThLoggedInMainTemplateState extends State<ThLoggedInMainTemplate>
             // Positioned above bottom navigation bar if it exists
             if (widget.floatingActionButtons.isNotEmpty)
               Positioned(
-                bottom: widget.showBottomNavBar ? 80.0 : 16.0, // 80px accounts for bottom nav bar height + padding
+                bottom: widget.showBottomNavBar
+                    ? 80.0
+                    : 16.0, // 80px accounts for bottom nav bar height + padding
                 right: 16,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/data/repositories/commitment_task_repository.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_event.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_state.dart';
@@ -8,14 +7,14 @@ import 'package:wise_spends/resource/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/vo/impl/commitment/commitment_task_vo.dart';
 
 class CommitmentTaskScreen extends StatelessWidget {
-  const CommitmentTaskScreen({super.key});
+  final CommitmentTaskBloc bloc;
+
+  const CommitmentTaskScreen({super.key, required this.bloc});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          CommitmentTaskBloc(CommitmentTaskRepository())
-            ..add(LoadCommitmentTasksEvent()),
+      create: (context) => bloc..add(LoadCommitmentTasksEvent()),
       child: BlocConsumer<CommitmentTaskBloc, CommitmentTaskState>(
         listener: (context, state) {
           if (state is CommitmentTaskUpdated) {

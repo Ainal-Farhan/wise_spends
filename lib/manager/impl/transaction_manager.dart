@@ -6,13 +6,13 @@ class TransactionManager extends ITransactionManager {
   @override
   Future<void> loadAsync(String token) async {
     /// write from keystore/keychain
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
   }
 
   @override
   Future<void> saveAsync(String token) async {
     /// write from keystore/keychain
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
   }
 
   @override

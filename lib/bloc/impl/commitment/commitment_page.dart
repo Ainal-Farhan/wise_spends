@@ -50,7 +50,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
               showSnackBarMessage(context, state.message);
 
               // Add a small delay before navigating back to show success message
-              Timer(const Duration(milliseconds: 1500), () {
+              Timer(const Duration(milliseconds: 500), () {
                 bloc.add(state.nextEvent);
               });
             }
