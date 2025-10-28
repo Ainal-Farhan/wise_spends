@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
-import 'package:wise_spends/db/app_database.dart';
+import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
+import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_bloc.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_event.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_state.dart';
-import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
-import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/shared/resources/ui/alert_dialog/delete_dialog.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
 class SavingsScreen extends StatelessWidget {
   const SavingsScreen({super.key});

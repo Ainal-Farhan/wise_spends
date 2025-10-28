@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:wise_spends/vo/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
 
 abstract class CommitmentTaskState extends Equatable {
   const CommitmentTaskState();

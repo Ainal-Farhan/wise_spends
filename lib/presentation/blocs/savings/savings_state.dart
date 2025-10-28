@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:wise_spends/db/app_database.dart';
-import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
 abstract class SavingsState extends Equatable {
   const SavingsState();

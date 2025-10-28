@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/bloc/impl/commitment/commitment_page.dart';
-import 'package:wise_spends/bloc/impl/login/login_page.dart';
-import 'package:wise_spends/bloc/impl/settings/settings_page.dart';
+import 'package:wise_spends/presentation/blocs/commitment_bloc/commitment_page.dart';
+import 'package:wise_spends/presentation/screens/login/ui/login_page.dart';
+import 'package:wise_spends/presentation/screens/settings/ui/settings_page.dart';
 import 'package:wise_spends/presentation/pages/home/home_page.dart';
 import 'package:wise_spends/presentation/pages/money_storage/money_storage_page.dart';
 import 'package:wise_spends/presentation/pages/commitment_task/commitment_task_page.dart';

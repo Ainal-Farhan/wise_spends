@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/data/repositories/money_storage_repository.dart';
+import 'package:wise_spends/data/repositories/saving/impl/money_storage_repository.dart';
 import 'package:wise_spends/presentation/blocs/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/presentation/blocs/money_storage/money_storage_event.dart';
 import 'package:wise_spends/presentation/blocs/money_storage/money_storage_state.dart';
-import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
-import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
+import 'package:wise_spends/shared/resources/ui/alert_dialog/delete_dialog.dart';
+import 'package:wise_spends/domain/entities/impl/money_storage/money_storage_vo.dart';
 
 class MoneyStorageScreen extends StatelessWidget {
   const MoneyStorageScreen({super.key});

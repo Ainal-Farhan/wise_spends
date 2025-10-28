@@ -3,7 +3,7 @@ import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_b
 import 'package:wise_spends/presentation/screens/commitment_task/commitment_task_screen.dart';
 import 'package:wise_spends/data/repositories/commitment_task_repository.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/theme/widgets/components/templates/th_logged_in_main_template.dart';
+import 'package:wise_spends/shared/theme/widgets/components/templates/th_logged_in_main_template.dart';
 
 class CommitmentTaskPage extends StatelessWidget {
   const CommitmentTaskPage({super.key});

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:wise_spends/vo/impl/money_storage/money_storage_vo.dart';
+import 'package:wise_spends/domain/entities/impl/money_storage/money_storage_vo.dart';
 
 abstract class MoneyStorageState extends Equatable {
   const MoneyStorageState();

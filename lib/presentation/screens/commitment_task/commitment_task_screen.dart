@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_event.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_state.dart';
-import 'package:wise_spends/resource/ui/alert_dialog/confirm_dialog.dart';
-import 'package:wise_spends/vo/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/shared/resources/ui/alert_dialog/confirm_dialog.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
 
 class CommitmentTaskScreen extends StatelessWidget {
   final CommitmentTaskBloc bloc;

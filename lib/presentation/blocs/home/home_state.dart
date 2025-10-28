@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();

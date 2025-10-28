@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/bloc/i_state.dart';
-import 'package:wise_spends/bloc/impl/login/login_bloc.dart';
-import 'package:wise_spends/locator/i_manager_locator.dart';
-import 'package:wise_spends/locator/i_repository_locator.dart';
-import 'package:wise_spends/locator/i_service_locator.dart';
-import 'package:wise_spends/locator/impl/manager_locator.dart';
-import 'package:wise_spends/locator/impl/repository_locator.dart';
-import 'package:wise_spends/locator/impl/service_locator.dart';
+
+import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/di/i_service_locator.dart';
+import 'package:wise_spends/core/di/impl/manager_locator.dart';
+import 'package:wise_spends/core/di/impl/repository_locator.dart';
+import 'package:wise_spends/core/di/impl/service_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/utils/singleton_util.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,21 +21,7 @@ Future<void> main() async {
         .onRunApp(null);
   }();
 
-  runApp(
-    ThemeProvider(
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<LoginBloc>(
-            create: (context) => LoginBloc(),
-            child: BlocBuilder<LoginBloc, IState<dynamic>>(
-              builder: (context, state) => state.build(context),
-            ),
-          ),
-        ],
-        child: const MyApp(),
-      ),
-    ),
-  );
+  runApp(ThemeProvider(child: const MyApp()));
 }
 
 class ThemeProvider extends StatefulWidget {
@@ -177,7 +161,7 @@ class _MyAppState extends State<MyApp> {
       theme: themeProvider?.getThemeData(),
       darkTheme: themeProvider?.getThemeData(),
       themeMode: themeProvider?.themeMode ?? ThemeMode.system,
-      initialRoute: AppRouter.savingsPageRoute,
+      initialRoute: AppRouter.rootRoute,
       onGenerateRoute: AppRouter.generateRoute,
       debugShowCheckedModeBanner: false,
     );

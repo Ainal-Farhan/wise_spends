@@ -4,8 +4,8 @@ import 'package:wise_spends/data/repositories/home_repository.dart';
 import 'package:wise_spends/presentation/blocs/home/home_bloc.dart';
 import 'package:wise_spends/presentation/blocs/home/home_event.dart';
 import 'package:wise_spends/presentation/blocs/home/home_state.dart';
-import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
-import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

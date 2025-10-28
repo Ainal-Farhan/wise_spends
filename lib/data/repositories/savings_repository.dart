@@ -1,9 +1,9 @@
-import 'package:wise_spends/constant/domain/saving_table_type_enum.dart';
-import 'package:wise_spends/db/app_database.dart';
-import 'package:wise_spends/locator/i_manager_locator.dart';
-import 'package:wise_spends/vo/impl/saving/edit_saving_form_vo.dart';
-import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
-import 'package:wise_spends/utils/singleton_util.dart';
+import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
+import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/domain/entities/impl/saving/edit_saving_form_vo.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
 abstract class ISavingsRepository {
   Future<List<ListSavingVO>> getSavingsList();

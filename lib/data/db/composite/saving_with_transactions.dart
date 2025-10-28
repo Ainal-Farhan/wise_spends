@@ -1,0 +1,15 @@
+import 'package:wise_spends/data/db/app_database.dart';
+
+class SavingWithTransactions {
+  final SvngSaving saving;
+  final List<TrnsctnTransaction> transactions;
+
+  SavingWithTransactions({required this.transactions, required this.saving});
+
+  @override
+  String toString() => (StringBuffer('SavingWithTransactions(')
+        ..write('saving: $saving, ')
+        ..write('transactions: $transactions')
+        ..write(')'))
+      .toString();
+}

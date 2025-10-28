@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
-import 'package:wise_spends/db/app_database.dart';
+import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
-import 'package:wise_spends/locator/i_manager_locator.dart';
-import 'package:wise_spends/locator/i_repository_locator.dart';
-import 'package:wise_spends/utils/singleton_util.dart';
 
 abstract class IUserProfileRepository {
   Future<UserProfile?> getCurrentUser();

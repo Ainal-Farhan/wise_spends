@@ -1,6 +1,6 @@
-import 'package:wise_spends/locator/i_manager_locator.dart';
-import 'package:wise_spends/utils/singleton_util.dart';
-import 'package:wise_spends/vo/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
 
 abstract class ICommitmentTaskRepository {
   Future<List<CommitmentTaskVO>> getCommitmentTasks();
