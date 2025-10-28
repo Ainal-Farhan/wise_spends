@@ -188,6 +188,7 @@ class DisplayListMoneyStorageState
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: FloatingActionButton(
+              heroTag: 'add_new_money_storage',
               onPressed: () => BlocProvider.of<MoneyStorageBloc>(context)
                   .add(InLoadAddMoneyStorageEvent()),
               backgroundColor: Theme.of(context).primaryColor,

@@ -7,12 +7,12 @@ import 'package:wise_spends/components/forms/commitment_detail_form.dart';
 import 'package:wise_spends/components/forms/commitment_form.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/resource/ui/alert_dialog/delete_dialog.dart';
+import 'package:wise_spends/resource/ui/snack_bar/message.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_back_button_round.dart';
 import 'package:wise_spends/theme/widgets/components/buttons/i_th_plus_button_round.dart';
 import 'package:wise_spends/theme/widgets/components/list_tiles/i_th_list_tiles_one.dart';
 import 'package:wise_spends/theme/widgets/components/templates/i_th_logged_in_main_template.dart';
-import 'package:wise_spends/theme/widgets/theme/default/components/templates/th_logged_in_main_template_default.dart';
 import 'package:wise_spends/vo/impl/widgets/list_tiles/list_tiles_one_vo.dart';
 
 class CommitmentPage extends StatefulWidget {
@@ -25,65 +25,61 @@ class CommitmentPage extends StatefulWidget {
 }
 
 class _CommitmentPageState extends State<CommitmentPage> {
-  final GlobalKey<ThLoggedInMainTemplateDefaultState> _templateKey = 
-      GlobalKey<ThLoggedInMainTemplateDefaultState>();
-
   @override
   Widget build(BuildContext context) {
     CommitmentBloc bloc = CommitmentBloc();
     return IThLoggedInMainTemplate(
-      key: _templateKey,
       pageRoute: AppRouter.commitmentPageRoute,
       screen: BlocProvider(
         create: (_) => bloc..add(const LoadCommitmentsEvent()),
-        child: BlocConsumer(
+        child: BlocConsumer<CommitmentBloc, CommitmentState>(
           listener: (context, state) {
             if (state is CommitmentStateSuccess) {
-              // Call updateAppBar when distribution succeeds
-              _templateKey.currentState?.updateAppBar();
-              
+              showSnackBarMessage(context, state.message);
+
               // Add a small delay before navigating back to show success message
               Timer(const Duration(milliseconds: 1500), () {
-                if (ModalRoute.of(context)?.isCurrent == true) {
-                  bloc.add(const LoadCommitmentsEvent());
-                }
+                bloc.add(const LoadCommitmentsEvent());
               });
             }
           },
           builder: (context, state) {
             final double screenHeight = MediaQuery.of(context).size.height;
             if (state is CommitmentStateCommitmentDetailFormLoaded) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  SizedBox(height: screenHeight * 0.1, child: Container()),
-                  Center(
-                    child: SizedBox(
-                      height: screenHeight * .7,
-                      child: CommitmentDetailForm(
-                        commitmentDetailVO: state.commitmentDetailVO,
-                        savingVOList: state.savingVOList,
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Center(
+                      child: SizedBox(
+                        height: screenHeight * .7,
+                        child: CommitmentDetailForm(
+                          commitmentDetailVO: state.commitmentDetailVO,
+                          savingVOList: state.savingVOList,
+                          commitmentId: state.commitmentId!,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IThBackButtonRound(
-                              onTap: () =>
-                                  bloc.add(const LoadCommitmentDetailEvent(null)),
-                            ),
-                          ],
-                        ),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IThBackButtonRound(
+                                onTap: () => bloc.add(
+                                  const LoadCommitmentDetailEvent(null),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
 
@@ -111,8 +107,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                           ? ListView.builder(
                               itemCount: commitments.length,
                               itemBuilder: (context, index) {
-                                final commitment =
-                                    commitments[index];
+                                final commitment = commitments[index];
 
                                 return Card(
                                   margin: const EdgeInsets.symmetric(
@@ -198,99 +193,105 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                                   ),
                                                 ),
                                               ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  ElevatedButton.icon(
-                                                    onPressed: () => bloc.add(
-                                                      LoadCommitmentDetailEvent(
-                                                        commitment.commitmentId,
-                                                      ),
-                                                    ),
-                                                    icon: const Icon(
-                                                      Icons.list,
-                                                      size: 18,
-                                                    ),
-                                                    label: const Text(
-                                                      'Details',
-                                                    ),
-                                                    style:
-                                                        ElevatedButton.styleFrom(
-                                                          backgroundColor:
-                                                              Theme.of(
-                                                                context,
-                                                              ).primaryColor,
-                                                          foregroundColor:
-                                                              Colors.white,
+                                              SingleChildScrollView(
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    ElevatedButton.icon(
+                                                      onPressed: () => bloc.add(
+                                                        LoadCommitmentDetailEvent(
+                                                          commitment
+                                                              .commitmentId,
                                                         ),
-                                                  ),
-                                                  ElevatedButton.icon(
-                                                    onPressed: () => showConfirmDialog(
-                                                      context: context,
-                                                      message:
-                                                          "Distribute Commitment?",
-                                                      onConfirm: () async {
-                                                        bloc.add(
-                                                          StartDistributeCommitmentEvent(
-                                                            commitment,
+                                                      ),
+                                                      icon: const Icon(
+                                                        Icons.list,
+                                                        size: 18,
+                                                      ),
+                                                      label: const Text(
+                                                        'Details',
+                                                      ),
+                                                      style:
+                                                          ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                Theme.of(
+                                                                  context,
+                                                                ).primaryColor,
+                                                            foregroundColor:
+                                                                Colors.white,
                                                           ),
+                                                    ),
+                                                    ElevatedButton.icon(
+                                                      onPressed: () => showConfirmDialog(
+                                                        context: context,
+                                                        message:
+                                                            "Distribute Commitment?",
+                                                        onConfirm: () async {
+                                                          bloc.add(
+                                                            StartDistributeCommitmentEvent(
+                                                              commitment,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                      icon: const Icon(
+                                                        Icons.start_rounded,
+                                                        size: 18,
+                                                      ),
+                                                      label: const Text(
+                                                        'Distribute',
+                                                      ),
+                                                      style:
+                                                          ElevatedButton.styleFrom(
+                                                            backgroundColor:
+                                                                Colors.green,
+                                                            foregroundColor:
+                                                                Colors.white,
+                                                          ),
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () => bloc.add(
+                                                        EditCommitmentEvent(
+                                                          commitment,
+                                                        ),
+                                                      ),
+                                                      icon: const Icon(
+                                                        Icons.edit,
+                                                      ),
+                                                      tooltip: 'Edit',
+                                                      color: Theme.of(
+                                                        context,
+                                                      ).primaryColor,
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        showDeleteDialog(
+                                                          context: context,
+                                                          onDelete: () async {
+                                                            BlocProvider.of<
+                                                                  CommitmentBloc
+                                                                >(context)
+                                                                .add(
+                                                                  DeleteCommitmentEvent(
+                                                                    commitment
+                                                                        .commitmentId!,
+                                                                  ),
+                                                                );
+                                                          },
                                                         );
                                                       },
-                                                    ),
-                                                    icon: const Icon(
-                                                      Icons.start_rounded,
-                                                      size: 18,
-                                                    ),
-                                                    label: const Text(
-                                                      'Distribute',
-                                                    ),
-                                                    style:
-                                                        ElevatedButton.styleFrom(
-                                                          backgroundColor:
-                                                              Colors.green,
-                                                          foregroundColor:
-                                                              Colors.white,
-                                                        ),
-                                                  ),
-                                                  IconButton(
-                                                    onPressed: () => bloc.add(
-                                                      EditCommitmentEvent(
-                                                        commitment,
+                                                      icon: const Icon(
+                                                        Icons.delete,
+                                                        color: Colors.red,
                                                       ),
+                                                      tooltip: 'Delete',
                                                     ),
-                                                    icon: const Icon(
-                                                      Icons.edit,
-                                                    ),
-                                                    tooltip: 'Edit',
-                                                    color: Theme.of(
-                                                      context,
-                                                    ).primaryColor,
-                                                  ),
-                                                  IconButton(
-                                                    onPressed: () {
-                                                      showDeleteDialog(
-                                                        context: context,
-                                                        onDelete: () async {
-                                                          BlocProvider.of<
-                                                                CommitmentBloc
-                                                              >(context)
-                                                              .add(
-                                                                DeleteCommitmentEvent(
-                                                                  commitment.commitmentId!,
-                                                                ),
-                                                              );
-                                                        },
-                                                      );
-                                                    },
-                                                    icon: const Icon(
-                                                      Icons.delete,
-                                                      color: Colors.red,
-                                                    ),
-                                                    tooltip: 'Delete',
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -339,6 +340,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           FloatingActionButton(
+                            heroTag: 'back_to_main',
                             onPressed: () => Navigator.pushReplacementNamed(
                               context,
                               AppRouter.savingsPageRoute,
@@ -347,6 +349,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                             child: const Icon(Icons.arrow_back),
                           ),
                           FloatingActionButton(
+                            heroTag: 'display_commitment',
                             onPressed: () => BlocProvider.of<CommitmentBloc>(
                               context,
                             ).add(const LoadCommitmentFormEvent()),
@@ -362,46 +365,45 @@ class _CommitmentPageState extends State<CommitmentPage> {
             }
 
             if (state is CommitmentStateCommitmentFormLoaded) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  SizedBox(height: screenHeight * 0.1, child: Container()),
-                  Center(
-                    child: SizedBox(
-                      height: screenHeight * .7,
-                      child: CommitmentForm(
-                        commitmentVO: state.commitmentVO,
-                        savingVOList: state.savingVOList,
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Center(
+                      child: SizedBox(
+                        height: screenHeight * .7,
+                        child: CommitmentForm(
+                          commitmentVO: state.commitmentVO,
+                          savingVOList: state.savingVOList,
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IThBackButtonRound(
-                              onTap: () =>
-                                  bloc.add(const LoadCommitmentsEvent()),
-                            ),
-                          ],
-                        ),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IThBackButtonRound(
+                                onTap: () =>
+                                    bloc.add(const LoadCommitmentsEvent()),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
 
             if (state is CommitmentStateLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
+              return const Center(child: CircularProgressIndicator());
             }
-            
+
             if (state is CommitmentStateError) {
               return Center(
                 child: Padding(
@@ -409,11 +411,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 80,
-                        color: Colors.red,
-                      ),
+                      Icon(Icons.error_outline, size: 80, color: Colors.red),
                       const SizedBox(height: 16.0),
                       Text(
                         'Error: ${state.message}',
@@ -433,19 +431,18 @@ class _CommitmentPageState extends State<CommitmentPage> {
               );
             }
 
-            if (state is InLoadCommitmentDetailListState) {
+            if (state is CommitmentStateCommitmentDetailLoaded) {
               List<ListTilesOneVO> commitmentListTilesOneVOList = [];
 
               for (
                 int index = 0;
-                index < state.commitmentDetailVOList.length;
+                index < state.commitmentDetails.length;
                 index++
               ) {
                 commitmentListTilesOneVOList.add(
                   ListTilesOneVO(
                     index: index,
-                    title:
-                        state.commitmentDetailVOList[index].description ?? '-',
+                    title: state.commitmentDetails[index].description ?? '-',
                     icon: const Icon(
                       Icons.task,
                       color: Color.fromARGB(255, 67, 18, 160),
@@ -455,11 +452,11 @@ class _CommitmentPageState extends State<CommitmentPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Savings: ${state.commitmentDetailVOList[index].referredSavingVO?.savingName ?? '-'}',
+                          'Savings: ${state.commitmentDetails[index].referredSavingVO?.savingName ?? '-'}',
                           style: const TextStyle(color: Colors.black),
                         ),
                         Text(
-                          'Total: RM ${(state.commitmentDetailVOList[index].amount ?? .0).toStringAsFixed(2)}',
+                          'Total: RM ${(state.commitmentDetails[index].amount ?? .0).toStringAsFixed(2)}',
                           style: const TextStyle(color: Colors.black),
                         ),
                       ],
@@ -467,7 +464,8 @@ class _CommitmentPageState extends State<CommitmentPage> {
                     onTap: () async =>
                         BlocProvider.of<CommitmentBloc>(context).add(
                           EditCommitmentDetailEvent(
-                            toBeEdited: state.commitmentDetailVOList[index],
+                            commitmentDetailVO: state.commitmentDetails[index],
+                            commitmentId: state.commitmentId,
                           ),
                         ),
                     onLongPressed: () async {
@@ -476,7 +474,9 @@ class _CommitmentPageState extends State<CommitmentPage> {
                         onDelete: () async {
                           BlocProvider.of<CommitmentBloc>(context).add(
                             DeleteCommitmentDetailEvent(
-                              toBeDeleted: state.commitmentDetailVOList[index],
+                              state
+                                  .commitmentDetails[index]
+                                  .commitmentDetailId!,
                             ),
                           );
                         },
@@ -502,13 +502,12 @@ class _CommitmentPageState extends State<CommitmentPage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IThBackButtonRound(
-                          onTap: () => bloc.add(OnLoadListCommitmentEvent()),
+                          onTap: () => bloc.add(LoadCommitmentsEvent()),
                         ),
                         IThPlusButtonRound(
                           onTap: () => bloc.add(
-                            OnViewAddCommitmentDetailFormEvent(
-                              state.commitmentId,
-                              state.commitmentDetailVOList,
+                            LoadCommitmentDetailFormEvent(
+                              commitmentId: state.commitmentId,
                             ),
                           ),
                         ),
@@ -519,7 +518,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
               );
             }
 
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           },
         ),
       ),

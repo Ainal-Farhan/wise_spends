@@ -221,7 +221,7 @@ class ListSavingsWidget extends StatelessWidget {
             children: [
               Icon(Icons.attach_money, size: 18),
               SizedBox(width: 8),
-              Text('View Transactions'),
+              Text('Make Transaction'),
             ],
           ),
         ),

@@ -188,6 +188,7 @@ class InLoadCommitmentTaskListState
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FloatingActionButton(
+                  heroTag: 'back_to_main_page',
                   onPressed: () => Navigator.pushReplacementNamed(
                     context,
                     AppRouter.savingsPageRoute,

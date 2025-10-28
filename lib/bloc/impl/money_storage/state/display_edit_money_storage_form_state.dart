@@ -20,39 +20,38 @@ class DisplayEditMoneyStorageFormState
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        SizedBox(
-          height: screenHeight * 0.1,
-          child: Container(),
-        ),
-        Center(
-          child: SizedBox(
-            height: screenHeight * .7,
-            child: IThEditMoneyStorageForm(
-              editMoneyStorageFormVO: editMoneyStorageFormVO,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Center(
+            child: SizedBox(
+              height: screenHeight * .7,
+              child: IThEditMoneyStorageForm(
+                editMoneyStorageFormVO: editMoneyStorageFormVO,
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IThBackButtonRound(
-                    onTap: () => BlocProvider.of<MoneyStorageBloc>(context)
-                        .add(InLoadViewListMoneyStorageEvent()),
-                  ),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IThBackButtonRound(
+                      onTap: () => BlocProvider.of<MoneyStorageBloc>(
+                        context,
+                      ).add(InLoadViewListMoneyStorageEvent()),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

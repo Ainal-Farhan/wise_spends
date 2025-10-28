@@ -7,7 +7,7 @@ abstract class IStreamRepository<
     A extends BaseEntityTable,
     B extends TableInfo<A, D>,
     C extends UpdateCompanion<D>,
-    D extends Insertable<D>> extends ISingleton {
+    D extends DataClass> extends ISingleton {
   final AppDatabase db;
   final B table;
 

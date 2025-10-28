@@ -24,10 +24,10 @@ class InEditSavingsState extends IState<InEditSavingsState> {
 
   @override
   InEditSavingsState getStateCopy() => InEditSavingsState(
-        version: version,
-        saving: saving,
-        moneyStorageList: [...moneyStorageList],
-      );
+    version: version,
+    saving: saving,
+    moneyStorageList: [...moneyStorageList],
+  );
 
   @override
   InEditSavingsState getNewVersion() {
@@ -45,41 +45,41 @@ class InEditSavingsState extends IState<InEditSavingsState> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        SizedBox(
-          height: screenHeight * .1,
-          child: Container(),
-        ),
-        Center(
-          child: SizedBox(
-            height: screenHeight * .7,
-            child: IThEditSavingForm(
-              saving: saving,
-              moneyStorageList: moneyStorageList,
-              savingTypeList: SavingTableType.retrieveAllAsDropDownValueModel(),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Center(
+            child: SizedBox(
+              height: screenHeight * .7,
+              child: IThEditSavingForm(
+                saving: saving,
+                moneyStorageList: moneyStorageList,
+                savingTypeList:
+                    SavingTableType.retrieveAllAsDropDownValueModel(),
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IThBackButtonRound(
-                    onTap: () => BlocProvider.of<SavingsBloc>(context)
-                        .add(LoadListSavingsEvent()),
-                  ),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IThBackButtonRound(
+                      onTap: () => BlocProvider.of<SavingsBloc>(
+                        context,
+                      ).add(LoadListSavingsEvent()),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

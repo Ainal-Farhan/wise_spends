@@ -134,7 +134,7 @@ class _CommitmentFormState extends State<CommitmentForm> {
 
     BlocProvider.of<CommitmentBloc>(
       context,
-    ).add(SaveCommitmentEvent(toBeSaved: widget.commitmentVO));
+    ).add(SaveCommitmentEvent(widget.commitmentVO));
   }
 
   List<Widget> _setFormFields(BuildContext context) {

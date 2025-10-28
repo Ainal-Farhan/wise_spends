@@ -88,7 +88,8 @@ class AppDatabase extends _$AppDatabase {
       )) {
         if (isJson) {
           await replaceDataFromTable(
-              await FileUtil.decodeFromJsonFile(jsonFile: file));
+            await FileUtil.decodeFromJsonFile(jsonFile: file),
+          );
         } else {
           await DbConnection.dbFile.writeAsBytes(await file.readAsBytes());
         }
@@ -108,14 +109,15 @@ class AppDatabase extends _$AppDatabase {
   Future<Map<String, dynamic>> retrieveDataFromAllTables() async {
     Map<String, dynamic> data = {};
 
-    for (final repo in SingletonUtil.getSingleton<IRepositoryLocator>()!
-        .retrieveAllRepository()) {
+    for (final repo
+        in SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .retrieveAllRepository()) {
       data[repo.tableName()] = [];
-      List<Insertable> insertableList = await repo.findAll();
+      List<DataClass> dataClassList = await repo.findAll();
 
-      if (insertableList.isNotEmpty) {
-        for (Insertable insertable in insertableList) {
-          data[repo.tableName()].add((insertable as DataClass).toJson());
+      if (dataClassList.isNotEmpty) {
+        for (DataClass dataClass in dataClassList) {
+          data[repo.tableName()].add(dataClass.toJson());
         }
       }
     }
@@ -124,8 +126,9 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future replaceDataFromTable(Map<String, dynamic> data) async {
-    for (final repo in SingletonUtil.getSingleton<IRepositoryLocator>()!
-        .retrieveAllRepository()) {
+    for (final repo
+        in SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .retrieveAllRepository()) {
       await repo.deleteAll();
 
       if (data[repo.tableName()] != null) {

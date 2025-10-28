@@ -23,6 +23,7 @@ abstract class AppRouter {
       // case rootRoute:
       case loginPageRoute:
         return MaterialPageRoute(builder: (_) => const LoginPage());
+      case rootRoute:
       case savingsPageRoute:
         return MaterialPageRoute(builder: (_) => const SavingsPage());
       case viewListMoneyStoragePageRoute:

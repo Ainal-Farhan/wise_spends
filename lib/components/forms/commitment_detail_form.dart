@@ -13,10 +13,12 @@ import 'package:wise_spends/vo/impl/saving/list_saving_vo.dart';
 import 'package:wise_spends/vo/impl/saving/saving_vo.dart';
 
 class CommitmentDetailForm extends StatefulWidget {
+  final String commitmentId;
   final CommitmentDetailVO commitmentDetailVO;
   final List<ListSavingVO> savingVOList;
 
   const CommitmentDetailForm({
+    required this.commitmentId,
     required this.commitmentDetailVO,
     required this.savingVOList,
     super.key,
@@ -139,9 +141,12 @@ class _CommitmentFormState extends State<CommitmentDetailForm> {
     widget.commitmentDetailVO.referredSavingVO = referredSavingVO;
     widget.commitmentDetailVO.amount = double.parse(_amountController.text);
 
-    BlocProvider.of<CommitmentBloc>(
-      context,
-    ).add(SaveCommitmentDetailEvent(toBeSaved: widget.commitmentDetailVO));
+    BlocProvider.of<CommitmentBloc>(context).add(
+      SaveCommitmentDetailEvent(
+        commitmentDetailVO: widget.commitmentDetailVO,
+        commitmentId: widget.commitmentId,
+      ),
+    );
   }
 
   List<Widget> _setFormFields(BuildContext context) {

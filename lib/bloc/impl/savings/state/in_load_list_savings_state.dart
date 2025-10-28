@@ -30,6 +30,7 @@ class InLoadListSavingsState extends IState<InLoadListSavingsState> {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: FloatingActionButton(
+            heroTag: 'view_saving_form',
             onPressed: () => BlocProvider.of<SavingsBloc>(context)
                 .add(LoadAddSavingsFormEvent()),
             backgroundColor: Theme.of(context).primaryColor,

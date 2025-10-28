@@ -14,16 +14,19 @@ part 'commitment_state.dart';
 class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   final ICommitmentManager _commitmentManager;
   final ISavingManager _savingManager;
+  Function? updateAppBar;
 
   CommitmentBloc({
     ICommitmentManager? commitmentManager,
     ISavingManager? savingManager,
-  })  : _commitmentManager = commitmentManager ?? 
-           SingletonUtil.getSingleton<IManagerLocator>()!.getCommitmentManager(),
-       _savingManager = savingManager ?? 
+  }) : _commitmentManager =
+           commitmentManager ??
+           SingletonUtil.getSingleton<IManagerLocator>()!
+               .getCommitmentManager(),
+       _savingManager =
+           savingManager ??
            SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager(),
-       super(const CommitmentState.initial()) {
-    
+       super(CommitmentStateX.initial()) {
     on<LoadCommitmentsEvent>(_onLoadCommitments);
     on<LoadCommitmentDetailEvent>(_onLoadCommitmentDetail);
     on<LoadCommitmentFormEvent>(_onLoadCommitmentForm);
@@ -41,13 +44,13 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     LoadCommitmentsEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(const CommitmentState.loading());
+    emit(CommitmentStateX.loading());
     try {
       final commitments = await _commitmentManager
           .retrieveListOfCommitmentOfCurrentUser();
-      emit(CommitmentState.commitmentsLoaded(commitments));
+      emit(CommitmentStateX.commitmentsLoaded(commitments));
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 
@@ -55,21 +58,23 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     LoadCommitmentDetailEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(const CommitmentState.loading());
+    emit(CommitmentStateX.loading());
     try {
       if (event.commitmentId == null) {
-        emit(const CommitmentState.error('Commitment ID is required'));
+        emit(CommitmentStateX.error('Commitment ID is required'));
         return;
       }
-      
+
       final commitment = await _commitmentManager
           .retrieveCommitmentVOBasedOnCommitmentId(event.commitmentId!);
-      emit(CommitmentState.commitmentDetailLoaded(
-        commitment.commitmentDetailVOList,
-        event.commitmentId!,
-      ));
+      emit(
+        CommitmentStateX.commitmentDetailLoaded(
+          commitment!.commitmentDetailVOList,
+          event.commitmentId!,
+        ),
+      );
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 
@@ -80,9 +85,9 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     try {
       final savingVOList = await _savingManager.loadListSavingVOList();
       final commitmentVO = event.commitmentVO ?? CommitmentVO();
-      emit(CommitmentState.commitmentFormLoaded(commitmentVO, savingVOList));
+      emit(CommitmentStateX.commitmentFormLoaded(commitmentVO, savingVOList));
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 
@@ -92,14 +97,17 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   ) async {
     try {
       final savingVOList = await _savingManager.loadListSavingVOList();
-      final commitmentDetailVO = event.commitmentDetailVO ?? CommitmentDetailVO();
-      emit(CommitmentState.commitmentDetailFormLoaded(
-        commitmentDetailVO,
-        savingVOList,
-        event.commitmentId,
-      ));
+      final commitmentDetailVO =
+          event.commitmentDetailVO ?? CommitmentDetailVO();
+      emit(
+        CommitmentStateX.commitmentDetailFormLoaded(
+          commitmentDetailVO,
+          savingVOList,
+          event.commitmentId,
+        ),
+      );
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 
@@ -107,12 +115,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     SaveCommitmentEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(const CommitmentState.loading());
+    emit(CommitmentStateX.loading());
     try {
       await _commitmentManager.saveCommitmentVO(event.commitmentVO);
-      emit(CommitmentState.success('Successfully saved commitment'));
+      emit(CommitmentStateX.success('Successfully saved commitment'));
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 
@@ -120,15 +128,14 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     SaveCommitmentDetailEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(const CommitmentState.loading());
+    emit(CommitmentStateX.loading());
     try {
-      await _commitmentManager.saveCommitmentDetailVO(
-        event.commitmentId,
-        [event.commitmentDetailVO],
-      );
-      emit(CommitmentState.success('Successfully saved commitment detail'));
+      await _commitmentManager.saveCommitmentDetailVO(event.commitmentId, [
+        event.commitmentDetailVO,
+      ]);
+      emit(CommitmentStateX.success('Successfully saved commitment detail'));
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 
@@ -136,12 +143,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     DeleteCommitmentEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(const CommitmentState.loading());
+    emit(CommitmentStateX.loading());
     try {
       await _commitmentManager.deleteCommitmentVO(event.commitmentId);
-      emit(CommitmentState.success('Successfully deleted commitment'));
+      emit(CommitmentStateX.success('Successfully deleted commitment'));
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 
@@ -149,12 +156,14 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     DeleteCommitmentDetailEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(const CommitmentState.loading());
+    emit(CommitmentStateX.loading());
     try {
-      await _commitmentManager.deleteCommitmentDetailVO(event.commitmentDetailId);
-      emit(CommitmentState.success('Successfully deleted commitment detail'));
+      await _commitmentManager.deleteCommitmentDetailVO(
+        event.commitmentDetailId,
+      );
+      emit(CommitmentStateX.success('Successfully deleted commitment detail'));
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 
@@ -169,24 +178,31 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     EditCommitmentDetailEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    add(LoadCommitmentDetailFormEvent(
-      commitmentDetailVO: event.commitmentDetailVO,
-      commitmentId: event.commitmentId,
-    ));
+    add(
+      LoadCommitmentDetailFormEvent(
+        commitmentDetailVO: event.commitmentDetailVO,
+        commitmentId: event.commitmentId,
+      ),
+    );
   }
 
   Future<void> _onStartDistributeCommitment(
     StartDistributeCommitmentEvent event,
     Emitter<CommitmentState> emit,
   ) async {
-    emit(const CommitmentState.loading());
+    emit(CommitmentStateX.loading());
     try {
       final message = await _commitmentManager.startDistributeCommitment(
         event.commitment,
       );
-      emit(CommitmentState.success(message));
+
+      if (updateAppBar != null) {
+        updateAppBar!();
+      }
+
+      emit(CommitmentStateX.success(message));
     } catch (e) {
-      emit(CommitmentState.error(e.toString()));
+      emit(CommitmentStateX.error(e.toString()));
     }
   }
 }

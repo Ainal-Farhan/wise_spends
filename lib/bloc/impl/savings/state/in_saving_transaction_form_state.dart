@@ -20,47 +20,44 @@ class InSavingTransactionFormState
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        SizedBox(
-          height: screenHeight * .1,
-          child: Container(),
-        ),
-        Center(
-          child: SizedBox(
-            height: screenHeight * .7,
-            child: SavingTransactionFormWidget(
-              saving: saving,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Center(
+            child: SizedBox(
+              height: screenHeight * .7,
+              child: SavingTransactionFormWidget(saving: saving),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IThBackButtonRound(
-                    onTap: () => BlocProvider.of<SavingsBloc>(context)
-                        .add(LoadListSavingsEvent()),
-                  ),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IThBackButtonRound(
+                      onTap: () => BlocProvider.of<SavingsBloc>(
+                        context,
+                      ).add(LoadListSavingsEvent()),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   @override
   InSavingTransactionFormState getNewVersion() => InSavingTransactionFormState(
-        version: version + 1,
-        saving: SvngSaving.fromJson(saving.toJson()),
-      );
+    version: version + 1,
+    saving: SvngSaving.fromJson(saving.toJson()),
+  );
 
   @override
   InSavingTransactionFormState getStateCopy() =>

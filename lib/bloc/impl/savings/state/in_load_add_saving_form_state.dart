@@ -20,52 +20,52 @@ class InLoadAddSavingFormState extends IState<InLoadAddSavingFormState> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        SizedBox(
-          height: screenHeight * 0.1,
-          child: Container(),
-        ),
-        Center(
-          child: SizedBox(
-            height: screenHeight * .7,
-            child: IThAddSavingForm(
-              moneyStorageList: moneyStorageList,
-              savingTypeList: SavingTableType.retrieveAllAsDropDownValueModel(),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Center(
+            child: SizedBox(
+              height: screenHeight * .7,
+              child: IThAddSavingForm(
+                moneyStorageList: moneyStorageList,
+                savingTypeList:
+                    SavingTableType.retrieveAllAsDropDownValueModel(),
+              ),
             ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IThBackButtonRound(
-                    onTap: () => BlocProvider.of<SavingsBloc>(context)
-                        .add(LoadListSavingsEvent()),
-                  ),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IThBackButtonRound(
+                      onTap: () => BlocProvider.of<SavingsBloc>(
+                        context,
+                      ).add(LoadListSavingsEvent()),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   @override
   InLoadAddSavingFormState getNewVersion() => InLoadAddSavingFormState(
-        version: version + 1,
-        moneyStorageList: [...moneyStorageList],
-      );
+    version: version + 1,
+    moneyStorageList: [...moneyStorageList],
+  );
 
   @override
   InLoadAddSavingFormState getStateCopy() => InLoadAddSavingFormState(
-        version: version,
-        moneyStorageList: [...moneyStorageList],
-      );
+    version: version,
+    moneyStorageList: [...moneyStorageList],
+  );
 }

@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart';
 import 'package:wise_spends/repository/i_crud_repository.dart';
 import 'package:wise_spends/service/i_service.dart';
 
@@ -8,12 +7,12 @@ abstract class ILocalService extends IService {
   ILocalService(this.crudRepository);
 
   @override
-  Future<dynamic> add(final Insertable<dynamic> item) async {
+  Future<dynamic> add(final dynamic item) async {
     return await crudRepository.save(item);
   }
 
   @override
-  Future<void> delete(final item) async {
+  Future<void> delete(final dynamic item) async {
     await crudRepository.delete(item);
   }
 
@@ -23,7 +22,7 @@ abstract class ILocalService extends IService {
   }
 
   @override
-  Future<void> update(final item) async {
+  Future<void> update(final dynamic item) async {
     await crudRepository.update(item);
   }
 }
