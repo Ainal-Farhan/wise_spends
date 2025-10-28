@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/router/app_router.dart';
 
 class ThLoggedInAppbar extends StatelessWidget {
   final String loggedInUserName;
@@ -30,18 +31,13 @@ class ThLoggedInAppbar extends StatelessWidget {
         animation: colorAnimationController,
         builder: (context, child) => AppBar(
           leading: IconButton(
-            icon: Icon(
-              Icons.dehaze,
-              color: drawerTween.value,
-            ),
+            icon: Icon(Icons.dehaze, color: drawerTween.value),
             onPressed: onPressed,
           ),
           backgroundColor: colorTween.value,
           elevation: 4,
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(16),
-            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
           ),
           titleSpacing: 0.0,
           title: Row(
@@ -70,10 +66,7 @@ class ThLoggedInAppbar extends StatelessWidget {
             IconButton(
               icon: Stack(
                 children: <Widget>[
-                  Icon(
-                    Icons.task_alt_rounded,
-                    color: iconTween.value,
-                  ),
+                  Icon(Icons.task_alt_rounded, color: iconTween.value),
                   Positioned(
                     right: 0,
                     child: Container(
@@ -95,15 +88,20 @@ class ThLoggedInAppbar extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
               onPressed: onPressedTaskIcon,
             ),
-            const Padding(
-              padding: EdgeInsets.all(8),
-              child: CircleAvatar(
-                child: Icon(Icons.person),
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: IconButton(
+                icon: const CircleAvatar(child: Icon(Icons.person)),
+                onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRouter.profilePageRoute,
+                  (context) => false,
+                ),
               ),
             ),
           ],

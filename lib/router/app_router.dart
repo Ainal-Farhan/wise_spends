@@ -5,6 +5,7 @@ import 'package:wise_spends/bloc/impl/login/login_page.dart';
 import 'package:wise_spends/bloc/impl/money_storage/money_storage_page.dart';
 import 'package:wise_spends/bloc/impl/savings/savings_page.dart';
 import 'package:wise_spends/bloc/impl/settings/settings_page.dart';
+import 'package:wise_spends/presentation/pages/profile/profile_page.dart';
 
 abstract class AppRouter {
   static const String rootRoute = "/";
@@ -16,6 +17,7 @@ abstract class AppRouter {
   static const String commitmentTaskPageRoute = "/commitment_task";
   static const String viewListMoneyStoragePageRoute = "/money_storage";
   static const String settingsPageRoute = "/settings";
+  static const String profilePageRoute = "/profile";
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -33,6 +35,8 @@ abstract class AppRouter {
         return MaterialPageRoute(builder: (_) => const CommitmentTaskPage());
       case settingsPageRoute:
         return MaterialPageRoute(builder: (_) => const SettingsPage());
+      case profilePageRoute:
+        return MaterialPageRoute(builder: (_) => const ProfilePage());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

@@ -5,6 +5,10 @@ import 'package:wise_spends/db/domain/base/base_entity_table.dart';
 @DataClassName("${DomainTableConstant.commonTablePrefix}User")
 class UserTable extends BaseEntityTable {
   TextColumn get name => text()();
+  
+  TextColumn get email => text().nullable()();
+  
+  TextColumn get phoneNumber => text().nullable()();
 
   @override
   List<Set<Column>> get uniqueKeys => [
@@ -13,6 +17,10 @@ class UserTable extends BaseEntityTable {
 
   @override
   Map<String, dynamic> toMapFromSubClass() {
-    return {'name':name.toString()};
+    return {
+      'name': name.toString(),
+      'email': email.toString(),
+      'phoneNumber': phoneNumber.toString(),
+    };
   }
 }

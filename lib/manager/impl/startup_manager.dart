@@ -22,6 +22,11 @@ class StartupManager extends IStartupManager {
   bool isFirstInit = true;
 
   @override
+  Future refreshCurrentUser() async {
+    await _initCurrentUser(_currentUser!.name, true, true);
+  }
+
+  @override
   Future onRunApp(bool? isFirstInit) async {
     isFirstInit ??= this.isFirstInit;
 
@@ -29,15 +34,19 @@ class StartupManager extends IStartupManager {
       _currentUser = null;
     }
 
-    await _initCurrentUser("Guest", true);
+    await _initCurrentUser("Guest", true, false);
     await _configurationManager.init();
     await _themeManager.init();
 
     this.isFirstInit = false;
   }
 
-  Future _initCurrentUser(final String name, final bool isFindAnyUser) async {
-    if (_currentUser != null) return;
+  Future _initCurrentUser(
+    final String name,
+    final bool isFindAnyUser,
+    bool isRefresh,
+  ) async {
+    if (_currentUser != null && !isRefresh) return;
 
     _currentUser = await _userService.findByName(name);
 
@@ -52,12 +61,14 @@ class StartupManager extends IStartupManager {
   }
 
   Future<CmmnUser> _addUser(final String name) async {
-    return await _userService.add(UserTableCompanion.insert(
-      name: name,
-      dateUpdated: DateTime.now(),
-      createdBy: name,
-      lastModifiedBy: name,
-    ));
+    return await _userService.add(
+      UserTableCompanion.insert(
+        name: name,
+        dateUpdated: DateTime.now(),
+        createdBy: name,
+        lastModifiedBy: name,
+      ),
+    );
   }
 
   @override
