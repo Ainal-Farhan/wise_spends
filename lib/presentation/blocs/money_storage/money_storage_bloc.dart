@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:wise_spends/data/repositories/money_storage_repository.dart';
+import 'package:wise_spends/data/repositories/saving/i_money_storage_repository.dart';
 import 'money_storage_event.dart';
 import 'money_storage_state.dart';
 
@@ -43,7 +43,9 @@ class MoneyStorageBloc extends Bloc<MoneyStorageEvent, MoneyStorageState> {
     try {
       final moneyStorage = await _repository.getMoneyStorageById(event.id);
       if (moneyStorage != null) {
-        emit(MoneyStorageFormLoaded(isEditing: true, moneyStorage: moneyStorage));
+        emit(
+          MoneyStorageFormLoaded(isEditing: true, moneyStorage: moneyStorage),
+        );
       } else {
         emit(MoneyStorageError('Money storage not found'));
       }

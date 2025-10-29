@@ -7,7 +7,7 @@ import 'package:wise_spends/data/repositories/expense/i_expense_repository.dart'
 import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_group_reference_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_reference_repository.dart';
-import 'package:wise_spends/data/repositories/money_storage_repository.dart';
+import 'package:wise_spends/data/repositories/saving/i_money_storage_repository.dart';
 
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';

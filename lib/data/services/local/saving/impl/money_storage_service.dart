@@ -1,6 +1,6 @@
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
-import 'package:wise_spends/data/repositories/money_storage_repository.dart';
+import 'package:wise_spends/data/repositories/saving/i_money_storage_repository.dart';
 import 'package:wise_spends/data/services/local/saving/i_money_storage_service.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 
@@ -10,8 +10,10 @@ class MoneyStorageService extends IMoneyStorageService {
           .getMoneyStorageRepository();
 
   MoneyStorageService()
-      : super(SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getMoneyStorageRepository());
+    : super(
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getMoneyStorageRepository(),
+      );
 
   @override
   Future<void> updatePart(

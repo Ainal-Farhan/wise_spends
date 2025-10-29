@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:wise_spends/data/repositories/home_repository.dart';
+import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final IHomeRepository _repository;
+  final ISavingRepository _repository;
 
   HomeBloc(this._repository) : super(HomeInitial()) {
     on<LoadHomeDataEvent>(_onLoadHomeData);
@@ -20,10 +20,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final dailyUsageSavings = await _repository.getDailyUsageSavings();
       final creditSavings = await _repository.getCreditSavings();
-      emit(HomeLoaded(
-        dailyUsageSavings: dailyUsageSavings,
-        creditSavings: creditSavings,
-      ));
+      emit(
+        HomeLoaded(
+          dailyUsageSavings: dailyUsageSavings,
+          creditSavings: creditSavings,
+        ),
+      );
     } catch (e) {
       emit(HomeError(e.toString()));
     }

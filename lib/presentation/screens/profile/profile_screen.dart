@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/data/repositories/user_profile_repository.dart';
+import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
 import 'package:wise_spends/presentation/blocs/profile/profile_bloc.dart';
 import 'package:wise_spends/presentation/blocs/profile/profile_event.dart';
@@ -25,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          ProfileBloc(UserProfileRepository())..add(LoadProfileEvent()),
+          ProfileBloc(UserRepository())..add(LoadProfileEvent()),
       child: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           if (state is ProfileUpdated) {

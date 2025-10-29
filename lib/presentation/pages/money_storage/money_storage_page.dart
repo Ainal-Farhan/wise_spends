@@ -13,8 +13,7 @@ class MoneyStoragePage extends StatelessWidget {
     return ThLoggedInMainTemplate(
       pageRoute: routeName,
       screen: const MoneyStorageScreen(),
-      bloc: null, // Standard BLoC doesn't require passing the bloc here
-      floatingActionButtons: const [],
+      bloc: null,
       showBottomNavBar: true,
     );
   }

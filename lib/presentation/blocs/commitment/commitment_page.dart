@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/core/constants/extra_constants/hero_tags.dart';
-import 'package:wise_spends/presentation/blocs/commitment_bloc/commitment_bloc.dart';
+import 'package:wise_spends/core/constants/constant/enum/action_button_enum.dart';
+import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
+import 'package:wise_spends/presentation/blocs/commitment/commitment_bloc.dart';
 import 'package:wise_spends/shared/components/forms/commitment_detail_form.dart';
 import 'package:wise_spends/shared/components/forms/commitment_form.dart';
 import 'package:wise_spends/shared/resources/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/shared/resources/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/shared/resources/ui/snack_bar/message.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/shared/theme/widgets/components/buttons/th_back_button_round.dart';
 import 'package:wise_spends/shared/theme/widgets/components/templates/th_logged_in_main_template.dart';
 
 class CommitmentPage extends StatefulWidget {
@@ -24,7 +24,6 @@ class CommitmentPage extends StatefulWidget {
 
 class _CommitmentPageState extends State<CommitmentPage> {
   late final CommitmentBloc bloc;
-  final List<FloatingActionButton> floatingActionButtons = [];
 
   @override
   void initState() {
@@ -61,6 +60,34 @@ class _CommitmentPageState extends State<CommitmentPage> {
             // Helper to wrap content so it has bounded constraints inside the parent's Stack
             Widget bounded(Widget child) => SizedBox.expand(child: child);
 
+            Map<ActionButtonEnum, VoidCallback?> floatingActionButtonMap = {};
+            if (state is CommitmentStateCommitmentsLoaded) {
+              floatingActionButtonMap[ActionButtonEnum.displayCommitment] =
+                  () => BlocProvider.of<CommitmentBloc>(
+                    context,
+                  ).add(const LoadCommitmentFormEvent());
+            } else if (state is CommitmentStateCommitmentDetailLoaded) {
+              floatingActionButtonMap[ActionButtonEnum.addCommitmentDetail] =
+                  () => bloc.add(const LoadCommitmentsEvent());
+              floatingActionButtonMap[ActionButtonEnum
+                  .addCommitmentDetail] = () => bloc.add(
+                LoadCommitmentDetailFormEvent(commitmentId: state.commitmentId),
+              );
+            } else if (state is CommitmentStateCommitmentDetailFormLoaded) {
+              floatingActionButtonMap[ActionButtonEnum.backButton] = () =>
+                  bloc.add(LoadCommitmentDetailEvent(state.commitmentId));
+            } else if (state is CommitmentStateCommitmentFormLoaded) {
+              floatingActionButtonMap[ActionButtonEnum.backButton] = () =>
+                  bloc.add(const LoadCommitmentsEvent());
+            }
+
+            BlocProvider.of<ActionButtonBloc>(context).add(
+              OnUpdateActionButtonEvent(
+                context: context,
+                actionButtonMap: floatingActionButtonMap,
+              ),
+            );
+
             if (state is CommitmentStateCommitmentDetailFormLoaded) {
               return bounded(
                 SingleChildScrollView(
@@ -75,26 +102,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
                             savingVOList: state.savingVOList,
                             commitmentId: state.commitmentId!,
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ThBackButtonRound(
-                                  onTap: () => bloc.add(
-                                    LoadCommitmentDetailEvent(
-                                      state.commitmentId,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
                         ),
                       ),
                     ],
@@ -360,22 +367,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                 ),
                               ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            FloatingActionButton(
-                              heroTag: HeroTagConstants.displayCommitment,
-                              onPressed: () => BlocProvider.of<CommitmentBloc>(
-                                context,
-                              ).add(const LoadCommitmentFormEvent()),
-                              backgroundColor: Theme.of(context).primaryColor,
-                              child: const Icon(Icons.add),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -395,23 +386,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
                             commitmentVO: state.commitmentVO,
                             savingVOList: state.savingVOList,
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                ThBackButtonRound(
-                                  onTap: () =>
-                                      bloc.add(const LoadCommitmentsEvent()),
-                                ),
-                              ],
-                            ),
-                          ],
                         ),
                       ),
                     ],
@@ -679,31 +653,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                 ),
                               ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            FloatingActionButton(
-                              heroTag: HeroTagConstants.backToCommitments,
-                              onPressed: () =>
-                                  bloc.add(const LoadCommitmentsEvent()),
-                              backgroundColor: Colors.grey,
-                              child: const Icon(Icons.arrow_back),
-                            ),
-                            FloatingActionButton(
-                              heroTag: HeroTagConstants.addCommitmentDetail,
-                              onPressed: () => bloc.add(
-                                LoadCommitmentDetailFormEvent(
-                                  commitmentId: state.commitmentId,
-                                ),
-                              ),
-                              backgroundColor: Theme.of(context).primaryColor,
-                              child: const Icon(Icons.add),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -716,7 +665,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
       ),
       showBottomNavBar: true,
       bloc: bloc,
-      floatingActionButtons: [],
     );
   }
 }

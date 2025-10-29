@@ -13,56 +13,45 @@ class ThLoggedInBottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final inactiveColor = Theme.of(context).colorScheme.primary;
+    final activeColor = Colors.grey;
+
+    final menuList = [
+      {'route': AppRouter.homeLoggedInPageRoute, 'icon': Icons.home},
+      {'route': AppRouter.savingsPageRoute, 'icon': Icons.money},
+      {
+        'route': AppRouter.viewListMoneyStoragePageRoute,
+        'icon': Icons.account_balance,
+      },
+      {'route': AppRouter.commitmentPageRoute, 'icon': Icons.assignment},
+    ];
+
+    final List<Widget> widgetList = [];
+    for (final menu in menuList) {
+      final route = menu['route']! as String;
+      final isActive = pageRoute == route;
+      widgetList.add(
+        IconButton(
+          icon: Icon(menu['icon']! as IconData),
+          color: isActive ? inactiveColor : activeColor,
+          onPressed: () {
+            if (!isActive) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                route,
+                (context) => false,
+              );
+            }
+          },
+        ),
+      );
+    }
+
     return BottomAppBar(
       color: Theme.of(context).colorScheme.surface,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-            icon: Icon(Icons.home),
-            color: pageRoute.contains('home')
-                ? Theme.of(context).colorScheme.primary
-                : Colors.grey,
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRouter.homeLoggedInPageRoute,
-              (context) => false,
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.money),
-            color: pageRoute.contains('savings')
-                ? Theme.of(context).colorScheme.primary
-                : Colors.grey,
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRouter.savingsPageRoute,
-              (context) => false,
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.account_balance),
-            color: pageRoute.contains('money_storage')
-                ? Theme.of(context).colorScheme.primary
-                : Colors.grey,
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRouter.viewListMoneyStoragePageRoute,
-              (context) => false,
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.assignment),
-            color: pageRoute.contains('commitment')
-                ? Theme.of(context).colorScheme.primary
-                : Colors.grey,
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRouter.commitmentPageRoute,
-              (context) => false,
-            ),
-          ),
-        ],
+        children: widgetList,
       ),
     );
   }

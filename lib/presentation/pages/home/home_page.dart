@@ -13,8 +13,7 @@ class HomePage extends StatelessWidget {
     return ThLoggedInMainTemplate(
       pageRoute: routeName,
       screen: const HomeScreen(),
-      bloc: null, 
-      floatingActionButtons: const [],
+      bloc: null,
       showBottomNavBar: true,
     );
   }

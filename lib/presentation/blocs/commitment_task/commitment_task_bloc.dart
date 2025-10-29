@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:wise_spends/data/repositories/commitment_task_repository.dart';
+import 'package:wise_spends/data/repositories/expense/i_commitment_task_repository.dart';
 import 'commitment_task_event.dart';
 import 'commitment_task_state.dart';
 

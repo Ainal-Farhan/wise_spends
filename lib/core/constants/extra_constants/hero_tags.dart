@@ -14,6 +14,7 @@ class HeroTagConstants {
 
   // Savings Page Hero Tags
   static const String viewSavingForm = 'savings_view_saving_form';
-  
+
   // Add more hero tags as needed for other pages
+  static const String backButton = 'back_button_round';
 }

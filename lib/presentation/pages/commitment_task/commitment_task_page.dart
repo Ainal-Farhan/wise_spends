@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/presentation/screens/commitment_task/commitment_task_screen.dart';
-import 'package:wise_spends/data/repositories/commitment_task_repository.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/theme/widgets/components/templates/th_logged_in_main_template.dart';
 
@@ -16,8 +16,7 @@ class CommitmentTaskPage extends StatelessWidget {
     return ThLoggedInMainTemplate(
       pageRoute: routeName,
       screen: CommitmentTaskScreen(bloc: bloc),
-      bloc: bloc, // Standard BLoC doesn't require passing the bloc here
-      floatingActionButtons: const [],
+      bloc: bloc,
       showBottomNavBar: true,
     );
   }

@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:wise_spends/data/repositories/savings_repository.dart';
+import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'savings_event.dart';
 import 'savings_state.dart';
 
 class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
-  final ISavingsRepository _repository;
+  final ISavingRepository _repository;
 
   SavingsBloc(this._repository) : super(SavingsInitial()) {
     on<LoadSavingsListEvent>(_onLoadSavingsList);

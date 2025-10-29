@@ -1,20 +1,19 @@
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
-import 'package:wise_spends/data/repositories/money_storage_repository.dart';
+import 'package:wise_spends/data/repositories/saving/i_money_storage_repository.dart';
 import 'package:wise_spends/domain/entities/impl/money_storage/edit_money_storage_form_vo.dart';
 import 'package:wise_spends/domain/entities/impl/money_storage/money_storage_vo.dart';
 
 class MoneyStorageRepository extends IMoneyStorageRepository {
-  final savingManager = SingletonUtil.getSingleton<IManagerLocator>()!
-      .getSavingManager();
-
   MoneyStorageRepository() : super(AppDatabase());
 
   @override
   Future<List<MoneyStorageVO>> getMoneyStorageList() async {
     try {
-      return await savingManager.getCurrentUserMoneyStorageVOList();
+      return await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingManager()
+          .getCurrentUserMoneyStorageVOList();
     } catch (e) {
       throw Exception('Failed to load money storage: $e');
     }
@@ -40,11 +39,13 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
     double amount,
   ) async {
     try {
-      await savingManager.addNewMoneyStorage(
-        shortName: shortName,
-        longName: longName,
-        type: 'General', // Default type, could be made configurable
-      );
+      await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingManager()
+          .addNewMoneyStorage(
+            shortName: shortName,
+            longName: longName,
+            type: 'General', // Default type, could be made configurable
+          );
     } catch (e) {
       throw Exception('Failed to add money storage: $e');
     }
@@ -65,9 +66,9 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
         type: 'General', // Default type for update
       );
 
-      await savingManager.updateMoneyStorage(
-        editMoneyStorageFormVO: editMoneyStorageFormVO,
-      );
+      await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingManager()
+          .updateMoneyStorage(editMoneyStorageFormVO: editMoneyStorageFormVO);
     } catch (e) {
       throw Exception('Failed to update money storage: $e');
     }
@@ -76,7 +77,9 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
   @override
   Future<void> deleteMoneyStorage(String id) async {
     try {
-      await savingManager.deleteSelectedMoneyStorage(id);
+      await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingManager()
+          .deleteSelectedMoneyStorage(id);
     } catch (e) {
       throw Exception('Failed to delete money storage: $e');
     }

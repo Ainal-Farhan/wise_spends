@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:wise_spends/data/repositories/user_profile_repository.dart';
+import 'package:wise_spends/data/repositories/common/i_user.repository.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  final IUserProfileRepository _repository;
+  final IUserRepository _repository;
 
   ProfileBloc(this._repository) : super(ProfileInitial()) {
     on<LoadProfileEvent>(_onLoadProfile);

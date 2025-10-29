@@ -13,9 +13,8 @@ class ProfilePage extends StatelessWidget {
     return ThLoggedInMainTemplate(
       pageRoute: routeName,
       screen: const ProfileScreen(),
-      bloc: null, // Standard BLoC doesn't require passing the bloc here
-      floatingActionButtons: const [], // No FABs needed
-      showBottomNavBar: true, // Show bottom navigation
+      bloc: null,
+      showBottomNavBar: true,
     );
   }
 }

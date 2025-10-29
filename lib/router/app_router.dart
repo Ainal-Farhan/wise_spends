@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/presentation/blocs/commitment_bloc/commitment_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
+import 'package:wise_spends/presentation/blocs/commitment/commitment_page.dart';
 import 'package:wise_spends/presentation/screens/login/ui/login_page.dart';
 import 'package:wise_spends/presentation/screens/settings/ui/settings_page.dart';
 import 'package:wise_spends/presentation/pages/home/home_page.dart';
@@ -24,28 +26,38 @@ abstract class AppRouter {
     switch (settings.name) {
       // case rootRoute:
       case loginPageRoute:
-        return MaterialPageRoute(builder: (_) => const LoginPage());
+        return getMaterialPageRoute(const LoginPage());
       case rootRoute:
       case homeLoggedInPageRoute:
-        return MaterialPageRoute(builder: (_) => const HomePage());
+        return getMaterialPageRoute(const HomePage());
       case savingsPageRoute:
-        return MaterialPageRoute(builder: (_) => const SavingsPage());
+        return getMaterialPageRoute(const SavingsPage());
       case viewListMoneyStoragePageRoute:
-        return MaterialPageRoute(builder: (_) => const MoneyStoragePage());
+        return getMaterialPageRoute(const MoneyStoragePage());
       case commitmentPageRoute:
-        return MaterialPageRoute(builder: (_) => const CommitmentPage());
+        return getMaterialPageRoute(const CommitmentPage());
       case commitmentTaskPageRoute:
-        return MaterialPageRoute(builder: (_) => const CommitmentTaskPage());
+        return getMaterialPageRoute(const CommitmentTaskPage());
       case settingsPageRoute:
-        return MaterialPageRoute(builder: (_) => const SettingsPage());
+        return getMaterialPageRoute(const SettingsPage());
       case profilePageRoute:
-        return MaterialPageRoute(builder: (_) => const ProfilePage());
+        return getMaterialPageRoute(const ProfilePage());
       default:
-        return MaterialPageRoute(
-          builder: (_) => Scaffold(
+        return getMaterialPageRoute(
+          Scaffold(
             body: Center(child: Text('No route defined for ${settings.name}')),
           ),
         );
     }
   }
+
+  static MaterialPageRoute getMaterialPageRoute(Widget widget) =>
+      MaterialPageRoute(
+        builder: (context) {
+          BlocProvider.of<ActionButtonBloc>(
+            context,
+          ).add(OnUpdateActionButtonEvent(context: context));
+          return widget;
+        },
+      );
 }

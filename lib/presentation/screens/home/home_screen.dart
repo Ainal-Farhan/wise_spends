@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/data/repositories/home_repository.dart';
+import 'package:wise_spends/data/repositories/saving/impl/saving_repository.dart';
 import 'package:wise_spends/presentation/blocs/home/home_bloc.dart';
 import 'package:wise_spends/presentation/blocs/home/home_event.dart';
 import 'package:wise_spends/presentation/blocs/home/home_state.dart';
@@ -13,7 +13,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc(HomeRepository())..add(LoadHomeDataEvent()),
+      create: (context) =>
+          HomeBloc(SavingRepository())..add(LoadHomeDataEvent()),
       child: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
           if (state is TransactionSuccess) {

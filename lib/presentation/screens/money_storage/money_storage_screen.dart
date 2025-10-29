@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/constants/constant/enum/action_button_enum.dart';
 import 'package:wise_spends/data/repositories/saving/impl/money_storage_repository.dart';
+import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
 import 'package:wise_spends/presentation/blocs/money_storage/money_storage_bloc.dart';
 import 'package:wise_spends/presentation/blocs/money_storage/money_storage_event.dart';
 import 'package:wise_spends/presentation/blocs/money_storage/money_storage_state.dart';
@@ -13,9 +15,9 @@ class MoneyStorageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => MoneyStorageBloc(
-        MoneyStorageRepository(),
-      )..add(LoadMoneyStorageListEvent()),
+      create: (context) =>
+          MoneyStorageBloc(MoneyStorageRepository())
+            ..add(LoadMoneyStorageListEvent()),
       child: BlocConsumer<MoneyStorageBloc, MoneyStorageState>(
         listener: (context, state) {
           if (state is MoneyStorageSuccess) {
@@ -35,6 +37,21 @@ class MoneyStorageScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
+          Map<ActionButtonEnum, VoidCallback?> floatingActionButtonMap = {};
+          if (state is MoneyStorageListLoaded) {
+            floatingActionButtonMap[ActionButtonEnum.addMoneyStorage] = () =>
+                context.read<MoneyStorageBloc>().add(
+                  LoadAddMoneyStorageEvent(),
+                );
+          }
+
+          BlocProvider.of<ActionButtonBloc>(context).add(
+            OnUpdateActionButtonEvent(
+              context: context,
+              actionButtonMap: floatingActionButtonMap,
+            ),
+          );
+
           if (state is MoneyStorageLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is MoneyStorageListLoaded) {
@@ -50,11 +67,7 @@ class MoneyStorageScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red,
-                  ),
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
                     state.message,
@@ -64,7 +77,9 @@ class MoneyStorageScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<MoneyStorageBloc>().add(LoadMoneyStorageListEvent());
+                      context.read<MoneyStorageBloc>().add(
+                        LoadMoneyStorageListEvent(),
+                      );
                     },
                     child: const Text('Retry'),
                   ),
@@ -88,7 +103,10 @@ class MoneyStorageScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMoneyStorageList(BuildContext context, List<MoneyStorageVO> moneyStorageList) {
+  Widget _buildMoneyStorageList(
+    BuildContext context,
+    List<MoneyStorageVO> moneyStorageList,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
@@ -97,10 +115,7 @@ class MoneyStorageScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             child: Text(
               'Your Money Storage',
-              style: TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
@@ -112,7 +127,10 @@ class MoneyStorageScreen extends StatelessWidget {
                       bool isMinus = storage.amount < 0;
 
                       return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
                         elevation: 4.0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12.0),
@@ -124,8 +142,12 @@ class MoneyStorageScreen extends StatelessWidget {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                                Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.1),
+                                Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.3),
                               ],
                             ),
                           ),
@@ -168,18 +190,25 @@ class MoneyStorageScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 16.0,
                                       fontWeight: FontWeight.w600,
-                                      color: isMinus ? Colors.red : Colors.green,
+                                      color: isMinus
+                                          ? Colors.red
+                                          : Colors.green,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                             trailing: PopupMenuButton<String>(
-                              icon: Icon(Icons.more_vert, color: Theme.of(context).primaryColor),
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Theme.of(context).primaryColor,
+                              ),
                               onSelected: (String result) {
                                 if (result == 'edit') {
                                   context.read<MoneyStorageBloc>().add(
-                                    LoadEditMoneyStorageEvent(storage.moneyStorage.id),
+                                    LoadEditMoneyStorageEvent(
+                                      storage.moneyStorage.id,
+                                    ),
                                   );
                                 }
                                 if (result == 'delete') {
@@ -187,7 +216,9 @@ class MoneyStorageScreen extends StatelessWidget {
                                     context: context,
                                     onDelete: () {
                                       context.read<MoneyStorageBloc>().add(
-                                        DeleteMoneyStorageEvent(storage.moneyStorage.id),
+                                        DeleteMoneyStorageEvent(
+                                          storage.moneyStorage.id,
+                                        ),
                                       );
                                     },
                                   );
@@ -208,16 +239,25 @@ class MoneyStorageScreen extends StatelessWidget {
                                   value: 'delete',
                                   child: Row(
                                     children: [
-                                      Icon(Icons.delete, size: 18, color: Colors.red),
+                                      Icon(
+                                        Icons.delete,
+                                        size: 18,
+                                        color: Colors.red,
+                                      ),
                                       SizedBox(width: 8),
-                                      Text('Delete', style: TextStyle(color: Colors.red)),
+                                      Text(
+                                        'Delete',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
                             onTap: () => context.read<MoneyStorageBloc>().add(
-                              LoadEditMoneyStorageEvent(storage.moneyStorage.id),
+                              LoadEditMoneyStorageEvent(
+                                storage.moneyStorage.id,
+                              ),
                             ),
                           ),
                         ),
@@ -255,14 +295,6 @@ class MoneyStorageScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: FloatingActionButton(
-              onPressed: () => context.read<MoneyStorageBloc>().add(LoadAddMoneyStorageEvent()),
-              backgroundColor: Theme.of(context).primaryColor,
-              child: const Icon(Icons.add),
-            ),
           ),
         ],
       ),
@@ -353,7 +385,9 @@ class MoneyStorageScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       // Navigate back to list
-                      context.read<MoneyStorageBloc>().add(LoadMoneyStorageListEvent());
+                      context.read<MoneyStorageBloc>().add(
+                        LoadMoneyStorageListEvent(),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey,

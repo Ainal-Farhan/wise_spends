@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/presentation/blocs/commitment_bloc/commitment_bloc.dart';
+import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
+import 'package:wise_spends/presentation/blocs/commitment/commitment_bloc.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/domain/usecases/i_commitment_manager.dart';
 import 'package:wise_spends/domain/usecases/i_startup_manager.dart';
@@ -20,7 +21,6 @@ class ThLoggedInMainTemplate extends StatefulWidget {
   final String pageRoute;
   final Bloc? bloc;
   final BottomNavBarNotifier bottomNavBarNotifier;
-  final List<FloatingActionButton> floatingActionButtons;
   final bool showBottomNavBar;
   final IStartupManager startupManager;
   final ICommitmentManager commitmentManager;
@@ -31,7 +31,6 @@ class ThLoggedInMainTemplate extends StatefulWidget {
     required this.screen,
     required this.pageRoute,
     this.bloc,
-    this.floatingActionButtons = const <FloatingActionButton>[],
     this.showBottomNavBar = true,
   }) : bottomNavBarNotifier = BottomNavBarNotifier(),
        startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
@@ -193,23 +192,28 @@ class _ThLoggedInMainTemplateState extends State<ThLoggedInMainTemplate>
 
             // Floating buttons as a vertical stack in bottom-right corner
             // Positioned above bottom navigation bar if it exists
-            if (widget.floatingActionButtons.isNotEmpty)
-              Positioned(
-                bottom: widget.showBottomNavBar
-                    ? 80.0
-                    : 16.0, // 80px accounts for bottom nav bar height + padding
-                right: 16,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: widget.floatingActionButtons.map((button) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: button,
-                    );
-                  }).toList(),
-                ),
-              ),
+            BlocBuilder<ActionButtonBloc, ActionButtonState>(
+              builder: (context, state) {
+                if (state is ActionButtonsLoaded &&
+                    state.floatingActionButtonList.isNotEmpty) {
+                  return Positioned(
+                    bottom: widget.showBottomNavBar ? 10.0 : 5,
+                    right: 16,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: state.floatingActionButtonList.map((button) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: button,
+                        );
+                      }).toList(),
+                    ),
+                  );
+                }
+                return SizedBox.shrink();
+              },
+            ),
           ],
         ),
         bottomNavigationBar: widget.showBottomNavBar

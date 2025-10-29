@@ -15,7 +15,7 @@ import 'package:wise_spends/data/repositories/masterdata/i_group_reference_repos
 import 'package:wise_spends/data/repositories/masterdata/i_reference_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/impl/group_reference_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/impl/reference_repository.dart';
-import 'package:wise_spends/data/repositories/money_storage_repository.dart';
+import 'package:wise_spends/data/repositories/saving/i_money_storage_repository.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/saving/impl/money_storage_repository.dart';
 import 'package:wise_spends/data/repositories/saving/impl/saving_repository.dart';
@@ -48,7 +48,8 @@ class RepositoryLocator extends IRepositoryLocator {
 
     if (repository == null) {
       SingletonUtil.registerSingleton<IGroupReferenceRepository>(
-          GroupReferenceRepository());
+        GroupReferenceRepository(),
+      );
     }
 
     return SingletonUtil.getSingleton<IGroupReferenceRepository>()!;
@@ -61,7 +62,8 @@ class RepositoryLocator extends IRepositoryLocator {
 
     if (repository == null) {
       SingletonUtil.registerSingleton<IMoneyStorageRepository>(
-          MoneyStorageRepository());
+        MoneyStorageRepository(),
+      );
     }
 
     return SingletonUtil.getSingleton<IMoneyStorageRepository>()!;
@@ -74,7 +76,8 @@ class RepositoryLocator extends IRepositoryLocator {
 
     if (repository == null) {
       SingletonUtil.registerSingleton<IReferenceRepository>(
-          ReferenceRepository());
+        ReferenceRepository(),
+      );
     }
 
     return SingletonUtil.getSingleton<IReferenceRepository>()!;
@@ -99,7 +102,8 @@ class RepositoryLocator extends IRepositoryLocator {
 
     if (repository == null) {
       SingletonUtil.registerSingleton<ITransactionRepository>(
-          TransactionRepository());
+        TransactionRepository(),
+      );
     }
 
     return SingletonUtil.getSingleton<ITransactionRepository>()!;
@@ -123,7 +127,8 @@ class RepositoryLocator extends IRepositoryLocator {
 
     if (repository == null) {
       SingletonUtil.registerSingleton<ICommitmentDetailRepository>(
-          CommitmentDetailRepository());
+        CommitmentDetailRepository(),
+      );
     }
 
     return SingletonUtil.getSingleton<ICommitmentDetailRepository>()!;
@@ -136,7 +141,8 @@ class RepositoryLocator extends IRepositoryLocator {
 
     if (repository == null) {
       SingletonUtil.registerSingleton<ICommitmentRepository>(
-          CommitmentRepository());
+        CommitmentRepository(),
+      );
     }
 
     return SingletonUtil.getSingleton<ICommitmentRepository>()!;
@@ -161,7 +167,8 @@ class RepositoryLocator extends IRepositoryLocator {
 
     if (repository == null) {
       SingletonUtil.registerSingleton<ICommitmentTaskRepository>(
-          CommitmentTaskRepository());
+        CommitmentTaskRepository(),
+      );
     }
 
     return SingletonUtil.getSingleton<ICommitmentTaskRepository>()!;

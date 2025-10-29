@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
@@ -7,6 +8,7 @@ import 'package:wise_spends/core/di/impl/manager_locator.dart';
 import 'package:wise_spends/core/di/impl/repository_locator.dart';
 import 'package:wise_spends/core/di/impl/service_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
 import 'package:wise_spends/router/app_router.dart';
 
 Future<void> main() async {
@@ -21,7 +23,12 @@ Future<void> main() async {
         .onRunApp(null);
   }();
 
-  runApp(ThemeProvider(child: const MyApp()));
+  runApp(
+    BlocProvider(
+      create: (context) => ActionButtonBloc(),
+      child: ThemeProvider(child: const MyApp()),
+    ),
+  );
 }
 
 class ThemeProvider extends StatefulWidget {

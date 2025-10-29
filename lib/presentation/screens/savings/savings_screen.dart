@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
+import 'package:wise_spends/core/constants/constant/enum/action_button_enum.dart';
 import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/data/repositories/saving/impl/saving_repository.dart';
+import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_bloc.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_event.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_state.dart';
@@ -13,72 +16,93 @@ class SavingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SavingsBloc, SavingsState>(
-      listener: (context, state) {
-        if (state is SavingsSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.green,
+    return BlocProvider(
+      create: (context) =>
+          SavingsBloc(SavingRepository())..add(LoadSavingsListEvent()),
+      child: BlocConsumer<SavingsBloc, SavingsState>(
+        listener: (context, state) {
+          if (state is SavingsSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.green,
+              ),
+            );
+          } else if (state is SavingsError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          Map<ActionButtonEnum, VoidCallback?> floatingActionButtonMap = {};
+          if (!(state is SavingsFormLoaded ||
+              state is SavingTransactionFormLoaded)) {
+            floatingActionButtonMap[ActionButtonEnum.addNewSaving] = () {
+              context.read<SavingsBloc>().add(LoadAddSavingsFormEvent());
+            };
+          }
+          BlocProvider.of<ActionButtonBloc>(context).add(
+            OnUpdateActionButtonEvent(
+              context: context,
+              actionButtonMap: floatingActionButtonMap,
             ),
           );
-        } else if (state is SavingsError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-          );
-        }
-      },
-      builder: (context, state) {
-        if (state is SavingsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is SavingsListLoaded) {
-          return _buildSavingsList(context, state.savingsList);
-        } else if (state is SavingsFormLoaded) {
-          return _buildSavingsForm(
-            context,
-            isEditing: state.isEditing,
-            saving: state.saving,
-            moneyStorageList: state.moneyStorageOptions,
-          );
-        } else if (state is SavingTransactionFormLoaded) {
-          // For transaction form, we'll show a placeholder for now
-          // Since we don't have the full transaction implementation
-          return _buildTransactionForm(context, state.savingId);
-        } else if (state is SavingsError) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(
-                  state.message,
-                  style: const TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    context.read<SavingsBloc>().add(LoadSavingsListEvent());
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        } else {
-          return const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading...'),
-              ],
-            ),
-          );
-        }
-      },
+
+          if (state is SavingsLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is SavingsListLoaded) {
+            return _buildSavingsList(context, state.savingsList);
+          } else if (state is SavingsFormLoaded) {
+            return _buildSavingsForm(
+              context,
+              isEditing: state.isEditing,
+              saving: state.saving,
+              moneyStorageList: state.moneyStorageOptions,
+            );
+          } else if (state is SavingTransactionFormLoaded) {
+            // For transaction form, we'll show a placeholder for now
+            // Since we don't have the full transaction implementation
+            return _buildTransactionForm(context, state.savingId);
+          } else if (state is SavingsError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    state.message,
+                    style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<SavingsBloc>().add(LoadSavingsListEvent());
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Loading...'),
+                ],
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 
