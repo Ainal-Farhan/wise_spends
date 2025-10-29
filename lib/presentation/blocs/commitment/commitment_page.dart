@@ -67,12 +67,12 @@ class _CommitmentPageState extends State<CommitmentPage> {
                     context,
                   ).add(const LoadCommitmentFormEvent());
             } else if (state is CommitmentStateCommitmentDetailLoaded) {
-              floatingActionButtonMap[ActionButtonEnum.addCommitmentDetail] =
-                  () => bloc.add(const LoadCommitmentsEvent());
               floatingActionButtonMap[ActionButtonEnum
                   .addCommitmentDetail] = () => bloc.add(
                 LoadCommitmentDetailFormEvent(commitmentId: state.commitmentId),
               );
+              floatingActionButtonMap[ActionButtonEnum.backToCommitments] =
+                  () => bloc.add(const LoadCommitmentsEvent());
             } else if (state is CommitmentStateCommitmentDetailFormLoaded) {
               floatingActionButtonMap[ActionButtonEnum.backButton] = () =>
                   bloc.add(LoadCommitmentDetailEvent(state.commitmentId));

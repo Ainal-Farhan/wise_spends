@@ -84,8 +84,7 @@ class SavingRepository extends ISavingRepository {
       final editSavingFormVO = EditSavingFormVO(
         savingId: id,
         savingName: name,
-        currentAmount:
-            initialAmount, // Note: this might be wrong - need to verify
+        currentAmount: initialAmount,
         goalAmount: goalAmount,
         isHasGoal: isHasGoal,
         moneyStorageId: moneyStorageId,

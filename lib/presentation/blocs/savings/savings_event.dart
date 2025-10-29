@@ -47,7 +47,14 @@ class AddSavingsEvent extends SavingsEvent {
   });
 
   @override
-  List<Object> get props => [name, initialAmount, isHasGoal, goalAmount, moneyStorageId, savingType];
+  List<Object> get props => [
+    name,
+    initialAmount,
+    isHasGoal,
+    goalAmount,
+    moneyStorageId,
+    savingType,
+  ];
 }
 
 class UpdateSavingsEvent extends SavingsEvent {
@@ -70,5 +77,22 @@ class UpdateSavingsEvent extends SavingsEvent {
   });
 
   @override
-  List<Object> get props => [id, name, initialAmount, isHasGoal, goalAmount, moneyStorageId, savingType];
+  List<Object> get props => [
+    id,
+    name,
+    initialAmount,
+    isHasGoal,
+    goalAmount,
+    moneyStorageId,
+    savingType,
+  ];
+}
+
+class DeleteSavingEvent extends SavingsEvent {
+  final String id;
+
+  const DeleteSavingEvent(this.id);
+
+  @override
+  List<Object> get props => [id];
 }

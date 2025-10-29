@@ -4,6 +4,7 @@ import 'package:wise_spends/shared/resources/ui/snack_bar/message.dart';
 void showDeleteDialog({
   required BuildContext context,
   required VoidCallback onDelete,
+  bool autoDisplayMessage = true,
   VoidCallback? onCancelled,
 }) {
   showDialog(
@@ -16,16 +17,17 @@ void showDeleteDialog({
           onPressed: () {
             Navigator.of(ctx).pop();
             onDelete();
-            showSnackBarMessage(
-                context, 'Successfully delete the selected information');
+            if (autoDisplayMessage) {
+              showSnackBarMessage(
+                context,
+                'Successfully delete the selected information',
+              );
+            }
           },
           child: Container(
             color: Colors.red,
             padding: const EdgeInsets.all(14),
-            child: const Text(
-              "Yes",
-              style: TextStyle(color: Colors.black),
-            ),
+            child: const Text("Yes", style: TextStyle(color: Colors.black)),
           ),
         ),
         TextButton(
@@ -33,15 +35,14 @@ void showDeleteDialog({
             Navigator.of(ctx).pop();
             if (onCancelled != null) onCancelled();
             showSnackBarMessage(
-                context, 'Cancel to delete the selected information');
+              context,
+              'Cancel to delete the selected information',
+            );
           },
           child: Container(
             color: Colors.green,
             padding: const EdgeInsets.all(14),
-            child: const Text(
-              "No",
-              style: TextStyle(color: Colors.black),
-            ),
+            child: const Text("No", style: TextStyle(color: Colors.black)),
           ),
         ),
       ],

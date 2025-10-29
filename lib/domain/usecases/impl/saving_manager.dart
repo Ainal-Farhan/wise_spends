@@ -137,6 +137,7 @@ class SavingManager extends ISavingManager {
         editSavingFormVO.isHasGoal ? editSavingFormVO.goalAmount : .0,
       ),
       moneyStorageId: Value(editSavingFormVO.moneyStorageId),
+      type: Value(editSavingFormVO.savingTableType!.value),
       dateUpdated: Value(DateTime.now()),
     );
 

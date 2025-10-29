@@ -277,9 +277,10 @@ class SavingsScreen extends StatelessWidget {
           case 'delete':
             showDeleteDialog(
               context: context,
+              autoDisplayMessage: false,
               onDelete: () async {
                 context.read<SavingsBloc>().add(
-                  _DeleteSavingEvent(saving.saving.id),
+                  DeleteSavingEvent(saving.saving.id),
                 );
               },
             );
@@ -558,14 +559,4 @@ class SavingsScreen extends StatelessWidget {
   Widget _buildTransactionForm(BuildContext context, String savingId) {
     return const Center(child: Text('Transaction form coming soon'));
   }
-}
-
-// Helper event for deletion that's not exposed publicly
-class _DeleteSavingEvent extends SavingsEvent {
-  final String id;
-
-  const _DeleteSavingEvent(this.id);
-
-  @override
-  List<Object> get props => [id];
 }

@@ -1,10 +1,14 @@
 import 'package:bloc/bloc.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
+import 'package:wise_spends/domain/usecases/i_saving_manager.dart';
 import 'savings_event.dart';
 import 'savings_state.dart';
 
 class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
   final ISavingRepository _repository;
+  final ISavingManager _savingManager =
+      SingletonUtil.getSingleton<ISavingManager>()!;
 
   SavingsBloc(this._repository) : super(SavingsInitial()) {
     on<LoadSavingsListEvent>(_onLoadSavingsList);
@@ -13,6 +17,26 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
     on<LoadSavingTransactionEvent>(_onLoadSavingTransaction);
     on<AddSavingsEvent>(_onAddSavings);
     on<UpdateSavingsEvent>(_onUpdateSavings);
+    on<DeleteSavingEvent>(_onDeleteSaving);
+  }
+
+  Future<void> _onDeleteSaving(
+    DeleteSavingEvent event,
+    Emitter<SavingsState> emit,
+  ) async {
+    emit(SavingsLoading());
+
+    try {
+      bool successDelete = await _savingManager.deleteSelectedSaving(event.id);
+      if (successDelete) {
+        emit(SavingsSuccess('Successfully delete saving'));
+        add(LoadSavingsListEvent());
+      } else {
+        emit(SavingsError('Failed to delete saving'));
+      }
+    } catch (e) {
+      emit(SavingsError(e.toString()));
+    }
   }
 
   Future<void> _onLoadSavingsList(

@@ -77,9 +77,10 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
   @override
   Future<void> deleteMoneyStorage(String id) async {
     try {
-      await SingletonUtil.getSingleton<IManagerLocator>()!
-          .getSavingManager()
-          .deleteSelectedMoneyStorage(id);
+      final moneyStorage = await (db.select(
+        table,
+      )..where((tbl) => tbl.id.equals(id))).getSingle();
+      await delete(moneyStorage);
     } catch (e) {
       throw Exception('Failed to delete money storage: $e');
     }
