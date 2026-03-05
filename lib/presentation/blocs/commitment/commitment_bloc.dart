@@ -1,10 +1,14 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo.dart';
 import 'package:wise_spends/domain/usecases/i_commitment_manager.dart';
 import 'package:wise_spends/domain/usecases/i_saving_manager.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
-import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo.dart';
+// FIX: Removed direct import of commitment_detail_vo.dart — it is already
+// imported transitively through commitment_vo.dart, and having both caused
+// ambiguous_import errors for CommitmentDetailVO across this file and
+// commitment_event.dart (which is a part of this library).
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
@@ -97,6 +101,8 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   ) async {
     try {
       final savingVOList = await _savingManager.loadListSavingVOList();
+      // FIX: CommitmentDetailVO() is now unambiguous — only one definition
+      // visible since we removed the duplicate direct import.
       final commitmentDetailVO =
           event.commitmentDetailVO ?? CommitmentDetailVO();
       emit(

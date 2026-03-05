@@ -19,6 +19,8 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     on<DeleteMultipleBudgetsEvent>(_onDeleteMultipleBudgets);
     on<RefreshBudgetsEvent>(_onRefreshBudgets);
     on<ReloadBudgetsEvent>(_onReloadBudgets);
+    on<FilterBudgetsByPeriodEvent>(_onFilterByPeriod);
+    on<ClearBudgetFiltersEvent>(_onClearFilters);
   }
 
   /// Load all budgets
@@ -199,12 +201,46 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     add(LoadBudgetsEvent());
   }
 
+  /// Filter budgets by period
+  Future<void> _onFilterByPeriod(
+    FilterBudgetsByPeriodEvent event,
+    Emitter<BudgetState> emit,
+  ) async {
+    try {
+      final currentState = state;
+      if (currentState is BudgetsLoaded) {
+        final filtered = event.period == null
+            ? currentState.budgets
+            : currentState.budgets
+                  .where((b) => b.period == event.period)
+                  .toList();
+
+        emit(BudgetsLoaded(
+          budgets: filtered,
+          activeCount: filtered.where((b) => b.isActive).length,
+          onTrackCount: filtered.where((b) => !b.isExceeded).length,
+          filterPeriod: event.period,
+        ));
+      }
+    } catch (e) {
+      emit(BudgetError('Failed to filter budgets: ${e.toString()}'));
+    }
+  }
+
+  /// Clear budget filters
+  Future<void> _onClearFilters(
+    ClearBudgetFiltersEvent event,
+    Emitter<BudgetState> emit,
+  ) async {
+    add(LoadBudgetsEvent());
+  }
+
   /// Helper method to determine budget period from dates
   BudgetPeriod _getPeriodFromDates(DateTime startDate, DateTime? endDate) {
     if (endDate == null) return BudgetPeriod.monthly;
-    
+
     final difference = endDate.difference(startDate).inDays;
-    
+
     if (difference <= 1) return BudgetPeriod.daily;
     if (difference <= 7) return BudgetPeriod.weekly;
     if (difference <= 31) return BudgetPeriod.monthly;

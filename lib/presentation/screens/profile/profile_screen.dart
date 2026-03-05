@@ -7,7 +7,17 @@ import 'package:wise_spends/domain/models/user_profile.dart';
 import 'package:wise_spends/presentation/blocs/profile/profile_bloc.dart';
 import 'package:wise_spends/presentation/blocs/profile/profile_event.dart';
 import 'package:wise_spends/presentation/blocs/profile/profile_state.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
+/// Enhanced Profile Screen
+/// Features:
+/// - Avatar with initial
+/// - Form with validation
+/// - Account information section
+/// - Loading and error states
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -30,9 +40,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         listener: (context, state) {
           if (state is ProfileUpdated) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Profile updated successfully'),
-                backgroundColor: Colors.green,
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: AppSpacing.sm),
+                    const Text('Profile updated successfully'),
+                  ],
+                ),
+                backgroundColor: AppColors.success,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
               ),
             );
 
@@ -43,14 +63,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
               ),
             );
           }
         },
         builder: (context, state) {
           if (state is ProfileLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const _ProfileScreenLoading();
           } else if (state is ProfileLoaded) {
             _nameController.text = state.profile.name;
             _emailController.text = state.profile.email ?? '';
@@ -58,38 +82,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             return _buildProfileForm(context, state.profile);
           } else if (state is ProfileError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.message,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<ProfileBloc>().add(LoadProfileEvent());
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
+            return _buildErrorState(context, state.message);
           } else {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading profile...'),
-                ],
-              ),
-            );
+            return const _ProfileScreenLoading();
           }
         },
       ),
@@ -97,109 +92,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileForm(BuildContext context, UserProfile profile) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _formKey,
-        child: ListView(
-          children: [
-            CircleAvatar(
-              radius: 60,
-              backgroundColor: Theme.of(context).primaryColor,
-              child: Text(
-                profile.name.isNotEmpty
-                    ? profile.name.substring(0, 1).toUpperCase()
-                    : 'U',
-                style: const TextStyle(
-                  fontSize: 36,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Profile')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Avatar
+              Center(
+                child: AppAvatar(
+                  label: profile.name,
+                  size: AppAvatarSize.hero,
+                  backgroundColor: AppColors.primary,
+                  iconColor: Colors.white,
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Personal Information',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Theme.of(context).primaryColor,
+              const SizedBox(height: AppSpacing.xxl),
+
+              // Personal Information Section
+              SectionHeader(
+                title: 'Personal Information',
+                subtitle: 'Update your personal details',
               ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
+              const SizedBox(height: AppSpacing.lg),
+
+              AppTextField(
+                label: 'Name',
+                controller: _nameController,
+                prefixIcon: Icons.person,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your name';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email),
+              const SizedBox(height: AppSpacing.lg),
+              AppTextField(
+                label: 'Email',
+                controller: _emailController,
+                prefixIcon: Icons.email,
+                keyboardType: AppTextFieldKeyboardType.email,
               ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _phoneController,
-              decoration: const InputDecoration(
-                labelText: 'Phone',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.phone),
+              const SizedBox(height: AppSpacing.lg),
+              AppTextField(
+                label: 'Phone',
+                controller: _phoneController,
+                prefixIcon: Icons.phone,
+                keyboardType: AppTextFieldKeyboardType.phone,
               ),
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () => _updateProfile(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
+              const SizedBox(height: AppSpacing.xxl),
+
+              AppButton.primary(
+                label: 'Update Profile',
+                onPressed: () => _updateProfile(context),
+                isFullWidth: true,
               ),
-              child: const Text(
-                'Update Profile',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              const SizedBox(height: AppSpacing.xxl),
+
+              // Account Information Section
+              SectionHeader(
+                title: 'Account Information',
+                subtitle: 'Your account details',
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Account Information',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+              const SizedBox(height: AppSpacing.lg),
+
+              AppCard(
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildInfoRow(
                       'Member Since:',
-                      profile.dateCreated.toString().split(' ')[0],
+                      _formatDate(profile.dateCreated),
                     ),
-                    const Divider(),
+                    const Divider(height: AppSpacing.xl),
                     _buildInfoRow(
                       'Last Updated:',
-                      profile.dateUpdated.toString().split(' ')[0],
+                      _formatDate(profile.dateUpdated),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: AppSpacing.xxl),
+            ],
+          ),
         ),
       ),
     );
@@ -207,21 +187,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              color: Colors.grey,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
             ),
           ),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            value,
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 
   void _updateProfile(BuildContext context) {
@@ -245,11 +233,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Widget _buildErrorState(BuildContext context, String message) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Profile')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: AppIconSize.hero,
+              color: AppColors.secondary,
+            ),
+            const SizedBox(height: AppSpacing.xxl),
+            Text('Oops! Something went wrong', style: AppTextStyles.h3),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              message,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            SizedBox(
+              width: 200,
+              child: AppButton.primary(
+                label: 'Retry',
+                onPressed: () {
+                  context.read<ProfileBloc>().add(LoadProfileEvent());
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
     super.dispose();
+  }
+}
+
+class _ProfileScreenLoading extends StatelessWidget {
+  const _ProfileScreenLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Profile')),
+      body: const Center(child: CircularProgressIndicator()),
+    );
   }
 }

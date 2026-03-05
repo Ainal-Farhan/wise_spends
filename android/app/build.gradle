@@ -15,7 +15,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.example.wise_spends"
+    namespace "com.my.aftechlabs.wise.spends"
     compileSdkVersion 36
     ndkVersion "27.0.12077973"
 
@@ -29,7 +29,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.wise_spends"
+        applicationId "com.my.aftechlabs.wise.spends"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
         versionCode flutter.versionCode

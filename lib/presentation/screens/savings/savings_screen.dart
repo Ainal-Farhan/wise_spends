@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/core/constants/constant/enum/action_button_enum.dart';
 import 'package:wise_spends/data/db/app_database.dart';
@@ -8,9 +9,20 @@ import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.
 import 'package:wise_spends/presentation/blocs/savings/savings_bloc.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_event.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_state.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/resources/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
+/// Enhanced Savings Screen
+/// Features:
+/// - Grouped savings by type
+/// - Progress indicators for goal-based savings
+/// - Quick action buttons
+/// - Pull-to-refresh
+/// - Empty state with CTA
 class SavingsScreen extends StatelessWidget {
   const SavingsScreen({super.key});
 
@@ -25,15 +37,29 @@ class SavingsScreen extends StatelessWidget {
           if (state is SavingsSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.green,
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(state.message),
+                  ],
+                ),
+                backgroundColor: AppColors.success,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
               ),
             );
           } else if (state is SavingsError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
               ),
             );
           }
@@ -54,7 +80,7 @@ class SavingsScreen extends StatelessWidget {
           );
 
           if (state is SavingsLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const _SavingsScreenLoading();
           } else if (state is SavingsListLoaded) {
             return _buildSavingsList(context, state.savingsList);
           } else if (state is SavingsFormLoaded) {
@@ -65,42 +91,11 @@ class SavingsScreen extends StatelessWidget {
               moneyStorageList: state.moneyStorageOptions,
             );
           } else if (state is SavingTransactionFormLoaded) {
-            // For transaction form, we'll show a placeholder for now
-            // Since we don't have the full transaction implementation
             return _buildTransactionForm(context, state.savingId);
           } else if (state is SavingsError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.message,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<SavingsBloc>().add(LoadSavingsListEvent());
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
+            return _buildErrorState(context, state.message);
           } else {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading...'),
-                ],
-              ),
-            );
+            return const _SavingsScreenLoading();
           }
         },
       ),
@@ -123,51 +118,59 @@ class SavingsScreen extends StatelessWidget {
 
     // If there are no savings, show empty state
     if (savingsList.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.account_balance_wallet_outlined,
-                size: 80,
-                color: Colors.grey[400],
-              ),
-              const SizedBox(height: 16.0),
-              const Text(
-                'No savings yet',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 8.0),
-              const Text(
-                'Add your first savings account to get started',
-                style: TextStyle(fontSize: 14.0, color: Colors.grey),
-              ),
-            ],
-          ),
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Savings'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                context.read<SavingsBloc>().add(LoadAddSavingsFormEvent());
+              },
+              tooltip: 'Add Savings',
+            ),
+          ],
         ),
+        body: NoSavingsEmptyState(onAdd: () {
+          context.read<SavingsBloc>().add(LoadAddSavingsFormEvent());
+        }),
       );
     }
 
     // Otherwise, build scrollable list
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-            child: Text(
-              'Your Savings',
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Savings'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              context.read<SavingsBloc>().add(LoadAddSavingsFormEvent());
+            },
+            tooltip: 'Add Savings',
           ),
-          ...savingGroupMap.entries
-              .where((entry) => entry.value.isNotEmpty)
-              .map((entry) => _buildSavingGroup(context, entry)),
-          const SizedBox(height: 88.0), // Add extra space for the FAB
         ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<SavingsBloc>().add(LoadSavingsListEvent());
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(AppSpacing.lg),
+                child: Text('Your Savings', style: AppTextStyles.h1),
+              ),
+              ...savingGroupMap.entries
+                  .where((entry) => entry.value.isNotEmpty)
+                  .map((entry) => _buildSavingGroup(context, entry)),
+              const SizedBox(height: AppSpacing.xxl),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -177,22 +180,20 @@ class SavingsScreen extends StatelessWidget {
     MapEntry<SavingTableType, List<ListSavingVO>> entry,
   ) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
+      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
             child: Text(
               entry.key.label,
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).primaryColor,
-              ),
+              style: AppTextStyles.h3.copyWith(color: AppColors.primary),
             ),
           ),
-          const SizedBox(height: 8.0),
           ...entry.value.map((saving) => _buildSavingCard(context, saving)),
         ],
       ),
@@ -201,115 +202,184 @@ class SavingsScreen extends StatelessWidget {
 
   Widget _buildSavingCard(BuildContext context, ListSavingVO saving) {
     final isMinus = saving.saving.currentAmount < 0;
+    final hasGoal = saving.saving.isHasGoal && saving.saving.goal > 0;
+    final progress = hasGoal
+        ? (saving.saving.currentAmount / saving.saving.goal).clamp(0.0, 1.0)
+        : 0.0;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.0),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Theme.of(context).primaryColor.withValues(alpha: 0.1),
-              Theme.of(context).primaryColor.withValues(alpha: 0.3),
+    return AppCard(
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.sm,
+      ),
+      onTap: () => context.read<SavingsBloc>().add(
+        LoadEditSavingsEvent(saving.saving.id),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: AppColors.primary,
+                radius: AppIconSize.xl,
+                child: const Icon(Icons.savings, color: Colors.white),
+              ),
+              const SizedBox(width: AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      saving.saving.name ?? 'Unnamed Saving',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (saving.moneyStorage != null) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        'From: ${saving.moneyStorage!.shortName}',
+                        style: AppTextStyles.bodySmall,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              PopupMenuButton<String>(
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: AppColors.textSecondary,
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: AppTouchTarget.min,
+                  minHeight: AppTouchTarget.min,
+                ),
+                onSelected: (String result) async {
+                  switch (result) {
+                    case 'edit':
+                      context.read<SavingsBloc>().add(
+                        LoadEditSavingsEvent(saving.saving.id),
+                      );
+                      break;
+                    case 'transaction':
+                      context.read<SavingsBloc>().add(
+                        LoadSavingTransactionEvent(savingId: saving.saving.id),
+                      );
+                      break;
+                    case 'delete':
+                      showDeleteDialog(
+                        context: context,
+                        autoDisplayMessage: false,
+                        onDelete: () async {
+                          context.read<SavingsBloc>().add(
+                            DeleteSavingEvent(saving.saving.id),
+                          );
+                        },
+                      );
+                      break;
+                  }
+                },
+                itemBuilder: (context) => const [
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, size: AppIconSize.sm),
+                        SizedBox(width: AppSpacing.sm),
+                        Text('Edit'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'transaction',
+                    child: Row(
+                      children: [
+                        Icon(Icons.swap_horiz, size: AppIconSize.sm),
+                        SizedBox(width: AppSpacing.sm),
+                        Text('Transactions'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.delete,
+                          size: AppIconSize.sm,
+                          color: AppColors.secondary,
+                        ),
+                        SizedBox(width: AppSpacing.sm),
+                        Text(
+                          'Delete',
+                          style: TextStyle(color: AppColors.secondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
-        ),
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(16.0),
-          leading: CircleAvatar(
-            backgroundColor: Theme.of(context).primaryColor,
-            radius: 25,
-            child: const Icon(Icons.money, color: Colors.white),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Expanded(
+                child: AmountText.medium(
+                  amount: saving.saving.currentAmount.abs(),
+                  type: isMinus ? AmountType.expense : AmountType.neutral,
+                ),
+              ),
+              if (isMinus)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: AppSpacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                  child: Text(
+                    'Withdrawal',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.secondary,
+                    ),
+                  ),
+                ),
+            ],
           ),
-          title: Text(
-            saving.saving.name ?? 'Unnamed Saving',
-            style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-          ),
-          subtitle: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          if (hasGoal) ...[
+            const SizedBox(height: AppSpacing.md),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.full),
+              child: LinearProgressIndicator(
+                value: progress,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.2),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  AppColors.primary,
+                ),
+                minHeight: 8,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (saving.moneyStorage != null)
-                  Text(
-                    'From: ${saving.moneyStorage!.shortName}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12.0),
-                  ),
-                const SizedBox(height: 4.0),
                 Text(
-                  '${isMinus ? '- ' : ''}RM ${saving.saving.currentAmount.abs().toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w600,
-                    color: isMinus ? Colors.red : Colors.green,
-                  ),
+                  '${(progress * 100).toInt()}% of goal',
+                  style: AppTextStyles.caption,
+                ),
+                Text(
+                  'Goal: ${NumberFormat.currency(symbol: 'RM', decimalDigits: 2).format(saving.saving.goal)}',
+                  style: AppTextStyles.caption,
                 ),
               ],
             ),
-          ),
-          trailing: _buildPopupMenu(context, saving),
-          onTap: () => context.read<SavingsBloc>().add(
-            LoadEditSavingsEvent(saving.saving.id),
-          ),
-        ),
+          ],
+        ],
       ),
-    );
-  }
-
-  Widget _buildPopupMenu(BuildContext context, ListSavingVO saving) {
-    return PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert, color: Theme.of(context).primaryColor),
-      onSelected: (String result) async {
-        switch (result) {
-          case 'edit':
-            context.read<SavingsBloc>().add(
-              LoadEditSavingsEvent(saving.saving.id),
-            );
-            break;
-          case 'transaction':
-            context.read<SavingsBloc>().add(
-              LoadSavingTransactionEvent(savingId: saving.saving.id),
-            );
-            break;
-          case 'delete':
-            showDeleteDialog(
-              context: context,
-              autoDisplayMessage: false,
-              onDelete: () async {
-                context.read<SavingsBloc>().add(
-                  DeleteSavingEvent(saving.saving.id),
-                );
-              },
-            );
-            break;
-        }
-      },
-      itemBuilder: (context) => const [
-        PopupMenuItem(
-          value: 'edit',
-          child: Row(
-            children: [
-              Icon(Icons.edit, size: 18),
-              SizedBox(width: 8),
-              Text('Edit'),
-            ],
-          ),
-        ),
-        PopupMenuItem(
-          value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete, size: 18, color: Colors.red),
-              SizedBox(width: 8),
-              Text('Delete', style: TextStyle(color: Colors.red)),
-            ],
-          ),
-        ),
-      ],
     );
   }
 
@@ -355,209 +425,256 @@ class SavingsScreen extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: formKey,
-        child: ListView(
-          children: [
-            Text(
-              isEditing ? 'Edit Saving' : 'Add New Saving',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Theme.of(context).primaryColor,
+    return Scaffold(
+      appBar: AppBar(title: Text(isEditing ? 'Edit Saving' : 'Add New Saving')),
+      body: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Form(
+          key: formKey,
+          child: ListView(
+            children: [
+              AppTextField(
+                label: 'Name',
+                controller: nameController,
+                prefixIcon: Icons.label,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 24),
-            TextFormField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.label),
+              const SizedBox(height: AppSpacing.lg),
+              AppTextField(
+                label: 'Initial Amount (RM)',
+                controller: initialAmountController,
+                prefixText: 'RM',
+                keyboardType: AppTextFieldKeyboardType.decimal,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an amount';
+                  }
+                  if (double.tryParse(value) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: initialAmountController,
-              decoration: const InputDecoration(
-                labelText: 'Initial Amount (RM)',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.attach_money),
+              const SizedBox(height: AppSpacing.lg),
+              StatefulBuilder(
+                builder: (context, setState) {
+                  return AppCard(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Column(
+                      children: [
+                        SwitchListTile(
+                          title: const Text('Has Goal?'),
+                          value: isHasGoal,
+                          onChanged: (value) {
+                            setState(() {
+                              isHasGoal = value;
+                            });
+                          },
+                        ),
+                        if (isHasGoal)
+                          AppTextField(
+                            label: 'Goal Amount (RM)',
+                            controller: goalAmountController,
+                            prefixText: 'RM',
+                            keyboardType: AppTextFieldKeyboardType.decimal,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a goal amount';
+                              }
+                              if (double.tryParse(value) == null) {
+                                return 'Please enter a valid number';
+                              }
+                              return null;
+                            },
+                          ),
+                      ],
+                    ),
+                  );
+                },
               ),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter an amount';
-                }
-                if (double.tryParse(value) == null) {
-                  return 'Please enter a valid number';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            StatefulBuilder(
-              builder: (context, setState) {
-                return Column(
-                  children: [
-                    SwitchListTile(
-                      title: const Text('Has Goal?'),
-                      value: isHasGoal,
-                      onChanged: (value) {
-                        setState(() {
-                          isHasGoal = value;
-                        });
+              const SizedBox(height: AppSpacing.lg),
+              // Dropdown for saving type
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                child: DropdownButtonFormField<String>(
+                  initialValue: selectedSavingType,
+                  decoration: const InputDecoration(
+                    labelText: 'Saving Type',
+                    prefixIcon: Icon(Icons.category),
+                  ),
+                  items: SavingTableType.values.map((type) {
+                    return DropdownMenuItem<String>(
+                      value: type.value,
+                      child: Text(type.label),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      selectedSavingType = newValue;
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              // Dropdown for money storage
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                child: DropdownButtonFormField<String>(
+                  initialValue: selectedMoneyStorageId,
+                  decoration: const InputDecoration(
+                    labelText: 'Money Storage',
+                    prefixIcon: Icon(Icons.account_balance),
+                  ),
+                  items: moneyStorageItems,
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      selectedMoneyStorageId = newValue;
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButton.secondary(
+                      label: 'Cancel',
+                      onPressed: () {
+                        context.read<SavingsBloc>().add(LoadSavingsListEvent());
                       },
                     ),
-                    if (isHasGoal)
-                      TextFormField(
-                        controller: goalAmountController,
-                        decoration: const InputDecoration(
-                          labelText: 'Goal Amount (RM)',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.flag),
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (isHasGoal) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a goal amount';
-                            }
-                            if (double.tryParse(value) == null) {
-                              return 'Please enter a valid number';
-                            }
-                          }
-                          return null;
-                        },
-                      ),
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-            // Dropdown for saving type
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: DropdownButtonFormField<String>(
-                initialValue: selectedSavingType,
-                decoration: const InputDecoration(
-                  labelText: 'Saving Type',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.category),
-                ),
-                items: SavingTableType.values.map((type) {
-                  return DropdownMenuItem<String>(
-                    value: type.value,
-                    child: Text(type.label),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    selectedSavingType = newValue;
-                  }
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Dropdown for money storage
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: DropdownButtonFormField<String>(
-                initialValue: selectedMoneyStorageId,
-                decoration: const InputDecoration(
-                  labelText: 'Money Storage',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.account_balance),
-                ),
-                items: moneyStorageItems,
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    selectedMoneyStorageId = newValue;
-                  }
-                },
-              ),
-            ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Navigate back to list
-                      context.read<SavingsBloc>().add(LoadSavingsListEvent());
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Cancel'),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        final initialAmount = double.parse(
-                          initialAmountController.text,
-                        );
-                        final goalAmount =
-                            isHasGoal && goalAmountController.text.isNotEmpty
-                            ? double.parse(goalAmountController.text)
-                            : 0.0;
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: AppButton.primary(
+                      label: isEditing ? 'Update' : 'Add',
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          final initialAmount = double.parse(
+                            initialAmountController.text,
+                          );
+                          final goalAmount =
+                              isHasGoal && goalAmountController.text.isNotEmpty
+                              ? double.parse(goalAmountController.text)
+                              : 0.0;
 
-                        if (isEditing && saving != null) {
-                          context.read<SavingsBloc>().add(
-                            UpdateSavingsEvent(
-                              id: saving.saving.id,
-                              name: nameController.text,
-                              initialAmount: initialAmount,
-                              isHasGoal: isHasGoal,
-                              goalAmount: goalAmount,
-                              moneyStorageId: selectedMoneyStorageId ?? '',
-                              savingType: selectedSavingType,
-                            ),
-                          );
-                        } else {
-                          // For now, using empty string for money storage ID
-                          // In a real implementation, we'd need to fetch available money storage options
-                          context.read<SavingsBloc>().add(
-                            AddSavingsEvent(
-                              name: nameController.text,
-                              initialAmount: initialAmount,
-                              isHasGoal: isHasGoal,
-                              goalAmount: goalAmount,
-                              moneyStorageId:
-                                  selectedMoneyStorageId ??
-                                  '', // Would need to implement selection
-                              savingType: selectedSavingType,
-                            ),
-                          );
+                          if (isEditing && saving != null) {
+                            context.read<SavingsBloc>().add(
+                              UpdateSavingsEvent(
+                                id: saving.saving.id,
+                                name: nameController.text,
+                                initialAmount: initialAmount,
+                                isHasGoal: isHasGoal,
+                                goalAmount: goalAmount,
+                                moneyStorageId: selectedMoneyStorageId ?? '',
+                                savingType: selectedSavingType,
+                              ),
+                            );
+                          } else {
+                            context.read<SavingsBloc>().add(
+                              AddSavingsEvent(
+                                name: nameController.text,
+                                initialAmount: initialAmount,
+                                isHasGoal: isHasGoal,
+                                goalAmount: goalAmount,
+                                moneyStorageId: selectedMoneyStorageId ?? '',
+                                savingType: selectedSavingType,
+                              ),
+                            );
+                          }
                         }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
+                      },
                     ),
-                    child: Text(isEditing ? 'Update' : 'Add'),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildTransactionForm(BuildContext context, String savingId) {
-    return const Center(child: Text('Transaction form coming soon'));
+    return Scaffold(
+      appBar: AppBar(title: const Text('Saving Transactions')),
+      body: const Center(child: Text('Transaction form coming soon')),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String message) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Savings')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: AppIconSize.hero,
+              color: AppColors.secondary,
+            ),
+            const SizedBox(height: AppSpacing.xxl),
+            Text('Oops! Something went wrong', style: AppTextStyles.h3),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              message,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            SizedBox(
+              width: 200,
+              child: AppButton.primary(
+                label: 'Retry',
+                onPressed: () {
+                  context.read<SavingsBloc>().add(LoadSavingsListEvent());
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SavingsScreenLoading extends StatelessWidget {
+  const _SavingsScreenLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Savings')),
+      body: const Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+class NoSavingsEmptyState extends StatelessWidget {
+  final VoidCallback? onAdd;
+
+  const NoSavingsEmptyState({super.key, this.onAdd});
+
+  @override
+  Widget build(BuildContext context) {
+    return EmptyStateWidget(
+      icon: Icons.savings_outlined,
+      title: 'No savings yet',
+      subtitle: 'Add your first savings account to get started',
+      actionLabel: 'Add Savings',
+      onAction: onAdd ??
+          () {
+            context.read<SavingsBloc>().add(LoadAddSavingsFormEvent());
+          },
+      iconColor: AppColors.success,
+    );
   }
 }

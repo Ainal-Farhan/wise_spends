@@ -18,11 +18,12 @@ class CategoryLoading extends CategoryState {}
 /// Categories loaded successfully
 class CategoryLoaded extends CategoryState {
   final List<CategoryEntity> categories;
+  final String? filterType;
 
-  const CategoryLoaded(this.categories);
+  const CategoryLoaded(this.categories, {this.filterType});
 
   @override
-  List<Object> get props => [categories];
+  List<Object?> get props => [categories, filterType];
 }
 
 /// Income categories loaded

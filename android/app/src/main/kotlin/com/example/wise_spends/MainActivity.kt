@@ -1,4 +1,4 @@
-package com.example.wise_spends
+package com.my.aftechlabs.wise.spends
 
 import io.flutter.embedding.android.FlutterActivity
 

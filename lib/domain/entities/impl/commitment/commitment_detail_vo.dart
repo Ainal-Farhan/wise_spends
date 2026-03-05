@@ -7,17 +7,22 @@ class CommitmentDetailVO extends IVO {
   String? description;
   double? amount;
   String? type;
+  // Added: savingId for linking a saving at creation time
+  String? savingId;
   SavingVO? referredSavingVO;
 
   CommitmentDetailVO();
 
   CommitmentDetailVO.fromExpnsCommitmentDetail(
-      ExpnsCommitmentDetail commitmentDetail, SvngSaving? saving) {
+    ExpnsCommitmentDetail commitmentDetail,
+    SvngSaving? saving,
+  ) {
     commitmentDetailId = commitmentDetail.id;
     description = commitmentDetail.description;
     amount = commitmentDetail.amount;
     type = commitmentDetail.type;
     if (saving != null) {
+      savingId = saving.id;
       referredSavingVO = SavingVO.fromSvngSaving(saving);
     }
   }
@@ -25,17 +30,24 @@ class CommitmentDetailVO extends IVO {
   CommitmentDetailVO.fromJson(Map<String, dynamic> json) {
     commitmentDetailId = json['commitmentDetailId'];
     description = json['description'];
-    amount = json['amount'];
+    // FIX: Read as double, not dynamic
+    amount = json['amount'] as double?;
     type = json['type'];
-    referredSavingVO = SavingVO.fromJson(json['referredSavingVO']);
+    savingId = json['savingId'];
+    // FIX: Null-guard before parsing referredSavingVO
+    referredSavingVO = json['referredSavingVO'] != null
+        ? SavingVO.fromJson(json['referredSavingVO'] as Map<String, dynamic>)
+        : null;
   }
 
   @override
   Map<String, dynamic> toJson() => {
-        'commitmentDetailId': commitmentDetailId,
-        'description': description,
-        'amount': amount,
-        'type': type,
-        'referredSavingVO': referredSavingVO?.toJson() ?? {},
-      };
+    'commitmentDetailId': commitmentDetailId,
+    'description': description,
+    'amount': amount,
+    'type': type,
+    'savingId': savingId,
+    // FIX: Emit null instead of {} when referredSavingVO is absent
+    'referredSavingVO': referredSavingVO?.toJson(),
+  };
 }

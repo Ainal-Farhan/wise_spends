@@ -1,405 +1,375 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/core/config/configuration/i_configuration_manager.dart';
-import 'package:wise_spends/core/constants/app_routes.dart';
-import 'package:wise_spends/core/di/i_manager_locator.dart';
-import 'package:wise_spends/data/services/backup_service.dart';
-import 'package:wise_spends/shared/theme/i_theme_manager.dart';
-import 'package:wise_spends/shared/theme/widgets/components/templates/th_logged_in_main_template.dart';
-import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import '../category_management_screen.dart';
+import '../../commitment/commitment_management_screen.dart';
 
-class SettingsPage extends StatefulWidget {
+/// Settings Screen
+/// Features:
+/// - Grouped sections with icons
+/// - Consistent list tile style
+/// - Destructive actions in red
+/// - Version info at bottom
+class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
-  final IConfigurationManager _configurationManager =
-      SingletonUtil.getSingleton<IManagerLocator>()!.getConfigurationManager();
-
-  final IThemeManager _themeManager =
-      SingletonUtil.getSingleton<IManagerLocator>()!.getThemeManager();
-
-  String _selectedTheme = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCurrentTheme();
-  }
-
-  void _loadCurrentTheme() {
-    setState(() {
-      _selectedTheme = _configurationManager.getTheme();
-    });
-  }
-
-  void _changeTheme(String theme) async {
-    if (theme != _selectedTheme) {
-      setState(() {
-        _selectedTheme = theme;
-      });
-
-      await _configurationManager.update(theme: theme);
-      await _themeManager.refresh();
-
-      // Refresh the theme in the app by restarting
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Theme changed to ${_getThemeDisplayName(theme)}. Please restart the app for changes to take full effect.',
-            ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ThLoggedInMainTemplate(
-      pageRoute: AppRoutes.settings,
-      showBottomNavBar: false,
-      screen: ListView(
-        children: [
-          // Theme Settings
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Theme Settings',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: ListTile(
-              leading: Icon(
-                Icons.color_lens,
-                color: Theme.of(context).primaryColor,
-              ),
-              title: const Text('Theme'),
-              subtitle: Text(_getThemeDisplayName(_selectedTheme)),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                _showThemeSelectionDialog();
-              },
-            ),
-          ),
-          // App Information
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'App Information',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: const ListTile(
-              leading: Icon(
-                Icons.info,
-                color: Colors.blue, // Using theme primary color
-              ),
-              title: Text('Version'),
-              subtitle: Text('1.0.0'),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: const ListTile(
-              leading: Icon(
-                Icons.help,
-                color: Colors.blue, // Using theme primary color
-              ),
-              title: Text('About'),
-              subtitle: Text('Wise Spends - Manage your finances'),
-            ),
-          ),
-
-          // Backup and Restore Section
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Backup & Restore',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Profile Section
+            _buildSection(
+              context,
+              title: 'Account',
               children: [
-                ListTile(
-                  leading: Icon(
-                    Icons.backup,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  title: const Text('Backup Data'),
-                  subtitle: const Text('Create a backup of your data'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: _showBackupOptions,
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.person_outline,
+                  title: 'Profile',
+                  subtitle: 'Manage your personal information',
+                  onTap: () {
+                    // Navigate to profile
+                  },
                 ),
-                const Divider(height: 1),
-                ListTile(
-                  leading: Icon(
-                    Icons.restore,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  title: const Text('Restore Data'),
-                  subtitle: const Text('Restore from a backup file'),
-                  onTap: _restoreData,
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.security_outlined,
+                  title: 'Privacy & Security',
+                  subtitle: 'Password, biometrics, and data',
+                  onTap: () {
+                    // Navigate to security
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.notifications_outlined,
+                  title: 'Notifications',
+                  subtitle: 'Manage notification preferences',
+                  onTap: () {
+                    // Navigate to notifications
+                  },
                 ),
               ],
             ),
+
+            // App Preferences Section
+            _buildSection(
+              context,
+              title: 'Preferences',
+              children: [
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.calendar_month_outlined,
+                  title: 'Commitments',
+                  subtitle: 'Manage recurring expenses and bills',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const CommitmentManagementScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.category_outlined,
+                  title: 'Manage Categories',
+                  subtitle: 'Add, edit, or delete transaction categories',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CategoryManagementScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.palette_outlined,
+                  title: 'Theme',
+                  subtitle: 'Light, Dark, System',
+                  trailing: const Text(
+                    'System',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                  onTap: () {
+                    // Navigate to theme settings
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.language_outlined,
+                  title: 'Language',
+                  subtitle: 'English',
+                  trailing: const Text(
+                    'English',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                  onTap: () {
+                    // Navigate to language settings
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.currency_exchange,
+                  title: 'Currency',
+                  subtitle: 'Malaysian Ringgit (RM)',
+                  trailing: const Text(
+                    'RM',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                  onTap: () {
+                    // Navigate to currency settings
+                  },
+                ),
+              ],
+            ),
+
+            // Data & Storage Section
+            _buildSection(
+              context,
+              title: 'Data & Storage',
+              children: [
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.backup_outlined,
+                  title: 'Backup & Restore',
+                  subtitle: 'Save and restore your data',
+                  onTap: () {
+                    // Navigate to backup
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.file_download_outlined,
+                  title: 'Export Data',
+                  subtitle: 'Export transactions to CSV',
+                  onTap: () {
+                    // Navigate to export
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.delete_outline,
+                  title: 'Clear Data',
+                  subtitle: 'Remove all local data',
+                  isDestructive: true,
+                  onTap: () {
+                    _showClearDataConfirmation(context);
+                  },
+                ),
+              ],
+            ),
+
+            // Support Section
+            _buildSection(
+              context,
+              title: 'Support',
+              children: [
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.help_outline,
+                  title: 'Help & FAQ',
+                  subtitle: 'Get help and answers',
+                  onTap: () {
+                    // Navigate to help
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.feedback_outlined,
+                  title: 'Send Feedback',
+                  subtitle: 'Share your thoughts with us',
+                  onTap: () {
+                    // Navigate to feedback
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.info_outline,
+                  title: 'About',
+                  subtitle: 'Version 1.0.0',
+                  onTap: () {
+                    _showAboutDialog(context);
+                  },
+                ),
+              ],
+            ),
+
+            // Logout / Sign Out Section
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: AppButton.destructive(
+                label: 'Sign Out',
+                onPressed: () {
+                  _showSignOutConfirmation(context);
+                },
+                isFullWidth: true,
+              ),
+            ),
+
+            const SizedBox(height: AppSpacing.xxl),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection(
+    BuildContext context, {
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          child: Text(
+            title,
+            style: AppTextStyles.labelMedium.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: Border.all(color: AppColors.divider),
+          ),
+          child: Column(children: children),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSettingsTile(
+    BuildContext context, {
+    required IconData leading,
+    required String title,
+    String? subtitle,
+    Widget? trailing,
+    bool isDestructive = false,
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      minLeadingWidth: AppTouchTarget.min,
+      leading: Container(
+        width: AppTouchTarget.min,
+        height: AppTouchTarget.min,
+        decoration: BoxDecoration(
+          color: isDestructive
+              ? AppColors.secondary.withValues(alpha: 0.1)
+              : AppColors.primaryContainer,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        child: Icon(
+          leading,
+          color: isDestructive ? AppColors.secondary : AppColors.primary,
+          size: AppIconSize.md,
+        ),
+      ),
+      title: Text(
+        title,
+        style: AppTextStyles.bodyMedium.copyWith(
+          fontWeight: FontWeight.w600,
+          color: isDestructive ? AppColors.secondary : AppColors.textPrimary,
+        ),
+      ),
+      subtitle: subtitle != null
+          ? Text(subtitle, style: AppTextStyles.bodySmall)
+          : null,
+      trailing:
+          trailing ??
+          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+      onTap: onTap,
+    );
+  }
+
+  void _showClearDataConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear All Data?'),
+        content: const Text(
+          'This will permanently delete all your local data including transactions, budgets, and settings. This action cannot be undone.',
+        ),
+        actions: [
+          AppButton.text(
+            label: 'Cancel',
+            onPressed: () => Navigator.pop(context),
+          ),
+          AppButton.destructive(
+            label: 'Clear All',
+            onPressed: () {
+              Navigator.pop(context);
+              // Clear data logic
+            },
           ),
         ],
       ),
     );
   }
 
-  String _getThemeDisplayName(String theme) {
-    switch (theme) {
-      case 'default':
-        return 'Default Theme';
-      case 'dark':
-        return 'Dark Theme';
-      default:
-        return 'Default Theme';
-    }
-  }
-
-  void _showThemeSelectionDialog() {
+  void _showSignOutConfirmation(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        String selectedTheme = _selectedTheme; // Local copy for the dialog
-        return AlertDialog(
-          title: const Text('Select Theme'),
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-            color: Theme.of(context).primaryColor,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Out'),
+        content: const Text(
+          'Are you sure you want to sign out? You will need to sign in again to access your data.',
+        ),
+        actions: [
+          AppButton.text(
+            label: 'Cancel',
+            onPressed: () => Navigator.pop(context),
           ),
-          content: StatefulBuilder(
-            builder: (BuildContext context, StateSetter setStateDialog) {
-              return RadioGroup<String>(
-                groupValue: selectedTheme,
-                onChanged: (value) {
-                  setStateDialog(() {
-                    selectedTheme = value!;
-                  });
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    RadioListTile<String>(
-                      title: const Text('Default Theme'),
-                      value: 'default',
-                      activeColor: Theme.of(context).primaryColor,
-                    ),
-                    RadioListTile<String>(
-                      title: const Text('Dark Theme'),
-                      value: 'dark',
-                      activeColor: Theme.of(context).primaryColor,
-                    ),
-                  ],
-                ),
-              );
+          AppButton.destructive(
+            label: 'Sign Out',
+            onPressed: () {
+              Navigator.pop(context);
+              // Sign out logic
             },
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).primaryColor,
-              ),
-              child: const Text('CANCEL'),
-            ),
-            TextButton(
-              onPressed: () {
-                _changeTheme(selectedTheme);
-                Navigator.of(context).pop();
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).primaryColor,
-              ),
-              child: const Text('SAVE'),
-            ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
 
-  void _showBackupOptions() {
-    showModalBottomSheet(
+  void _showAboutDialog(BuildContext context) {
+    showAboutDialog(
       context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: Icon(
-                  Icons.share,
-                  color: Theme.of(context).primaryColor,
-                ),
-                title: const Text('Share Backup'),
-                subtitle: const Text('Share backup file with other apps'),
-                onTap: () {
-                  _performBackupAndShare(type: '.json');
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.save,
-                  color: Theme.of(context).primaryColor,
-                ),
-                title: const Text('Save to Downloads'),
-                subtitle: const Text('Save backup to Downloads folder'),
-                onTap: () {
-                  _performBackupToDownloads();
-                  Navigator.pop(context);
-                },
-              ),
-              const Divider(),
-              ListTile(
-                leading: Icon(Icons.close, color: Colors.red),
-                title: const Text('Cancel'),
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        );
-      },
+      applicationName: 'WiseSpends',
+      applicationVersion: '1.0.0',
+      applicationIcon: Container(
+        width: AppTouchTarget.min,
+        height: AppTouchTarget.min,
+        decoration: BoxDecoration(
+          color: AppColors.primary,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+        child: const Icon(Icons.account_balance_wallet, color: Colors.white),
+      ),
+      children: [
+        const Text('WiseSpends - Smart Budget Tracking'),
+        const SizedBox(height: AppSpacing.md),
+        const Text('© 2026 WiseSpends. All rights reserved.'),
+      ],
     );
-  }
-
-  void _performBackupAndShare({String type = '.json'}) async {
-    try {
-      final backupService = BackupService();
-      await backupService.backupAndShare(type: type);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Backup created and shared successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Backup failed: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  void _performBackupToDownloads() async {
-    try {
-      final backupService = BackupService();
-      final filePath = await backupService.backupToInternalStorageMedia();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Backup saved to $filePath successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Backup to downloads failed: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
-  void _restoreData() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirm Restore'),
-          content: const Text(
-            'Restoring data will replace your current data. Are you sure you want to continue?',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _performRestore();
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Restore'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _performRestore() async {
-    try {
-      final backupService = BackupService();
-      bool success = await backupService.restore();
-
-      if (success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Data restored successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        // Refresh the app to reflect restored changes
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            AppRoutes.savings,
-            (route) => false,
-          );
-        });
-      } else if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Restore was cancelled or failed'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Restore failed: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
   }
 }

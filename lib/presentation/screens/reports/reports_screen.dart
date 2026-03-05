@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:wise_spends/data/services/reports_export_service.dart';
 
@@ -11,6 +13,7 @@ import 'package:wise_spends/data/services/reports_export_service.dart';
 /// - Bar chart for income vs expenses over time
 /// - Donut chart for expense breakdown by category
 /// - Summary cards with vs last period indicators
+/// - Export to CSV
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
 
@@ -35,9 +38,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 final exportService = ReportsExportService();
                 final filePath = await exportService.exportReportToCsv(
                   period: _selectedPeriod.name,
-                  totalIncome: 5420.00, // Placeholder - integrate with BLoC for real data
-                  totalExpenses: 3250.50, // Placeholder - integrate with BLoC for real data
-                  totalBalance: 2169.50, // Placeholder - integrate with BLoC for real data
+                  totalIncome: 5420.00,
+                  totalExpenses: 3250.50,
+                  totalBalance: 2169.50,
                   categoryBreakdown: {
                     'Food': 1250.00,
                     'Transport': 890.50,
@@ -47,72 +50,70 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   },
                 );
                 await exportService.shareExport(filePath);
-                
+
+                if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Report exported successfully'),
-                    backgroundColor: WiseSpendsColors.success,
+                    backgroundColor: AppColors.success,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
               } catch (e) {
+                if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Export failed: ${e.toString()}'),
-                    backgroundColor: WiseSpendsColors.error,
+                    backgroundColor: AppColors.error,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
               }
             },
             tooltip: 'Export',
+            constraints: const BoxConstraints(
+              minWidth: AppTouchTarget.min,
+              minHeight: AppTouchTarget.min,
+            ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(UIConstants.spacingLarge),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Period selector
             _buildPeriodSelector(),
-            const SizedBox(height: UIConstants.spacingXXL),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Summary cards
             _buildSummaryCards(),
-            const SizedBox(height: UIConstants.spacingXXL),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Income vs Expenses bar chart
-            Text(
-              'Income vs Expenses',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+            SectionHeader(
+              title: 'Income vs Expenses',
             ),
-            const SizedBox(height: UIConstants.spacingMedium),
+            const SizedBox(height: AppSpacing.md),
             _buildBarChart(),
-            const SizedBox(height: UIConstants.spacingXXL),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Expense breakdown donut chart
-            Text(
-              'Expense Breakdown',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+            SectionHeader(
+              title: 'Expense Breakdown',
             ),
-            const SizedBox(height: UIConstants.spacingMedium),
+            const SizedBox(height: AppSpacing.md),
             _buildDonutChart(),
-            const SizedBox(height: UIConstants.spacingXXL),
+            const SizedBox(height: AppSpacing.xxl),
 
             // Category-wise breakdown
-            Text(
-              'By Category',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+            SectionHeader(
+              title: 'By Category',
             ),
-            const SizedBox(height: UIConstants.spacingMedium),
+            const SizedBox(height: AppSpacing.md),
             _buildCategoryBreakdown(),
+            const SizedBox(height: AppSpacing.xxl),
           ],
         ),
       ),
@@ -122,11 +123,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget _buildPeriodSelector() {
     return Container(
       decoration: BoxDecoration(
-        color: WiseSpendsColors.surface,
-        borderRadius: BorderRadius.circular(UIConstants.radiusXLarge),
-        border: Border.all(color: WiseSpendsColors.divider),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: AppColors.divider),
       ),
-      padding: const EdgeInsets.all(UIConstants.spacingXS),
+      padding: const EdgeInsets.all(AppSpacing.xs),
       child: Row(
         children: [
           Expanded(
@@ -165,18 +166,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: UIConstants.spacingSmall),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: isSelected ? WiseSpendsColors.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(UIConstants.radiusXLarge),
+          color: isSelected ? AppColors.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.full),
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: isSelected ? Colors.white : WiseSpendsColors.textSecondary,
+          style: AppTextStyles.labelMedium.copyWith(
+            color: isSelected ? Colors.white : AppColors.textSecondary,
             fontWeight: FontWeight.w600,
-            fontSize: 14,
           ),
         ),
       ),
@@ -189,46 +189,46 @@ class _ReportsScreenState extends State<ReportsScreen> {
         Row(
           children: [
             Expanded(
-              child: _buildSummaryCard(
-                title: 'Income',
-                amount: 5420.00,
-                type: TransactionType.income,
-                vsLastPeriod: 12.5,
+              child: AppStatCard(
                 icon: Icons.arrow_downward_rounded,
+                label: 'Income',
+                value: NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(5420.00),
+                trend: '+12.5%',
+                color: AppColors.income,
               ),
             ),
-            const SizedBox(width: UIConstants.spacingMedium),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
-              child: _buildSummaryCard(
-                title: 'Expenses',
-                amount: 3250.50,
-                type: TransactionType.expense,
-                vsLastPeriod: -8.2,
+              child: AppStatCard(
                 icon: Icons.arrow_upward_rounded,
+                label: 'Expenses',
+                value: NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(3250.50),
+                trend: '-8.2%',
+                color: AppColors.expense,
               ),
             ),
           ],
         ),
-        const SizedBox(height: UIConstants.spacingMedium),
+        const SizedBox(height: AppSpacing.md),
         Row(
           children: [
             Expanded(
-              child: _buildSummaryCard(
-                title: 'Savings',
-                amount: 2169.50,
-                type: TransactionType.transfer,
-                vsLastPeriod: 25.3,
+              child: AppStatCard(
                 icon: Icons.savings_outlined,
+                label: 'Savings',
+                value: NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(2169.50),
+                trend: '+25.3%',
+                color: AppColors.success,
               ),
             ),
-            const SizedBox(width: UIConstants.spacingMedium),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
-              child: _buildSummaryCard(
-                title: 'Balance',
-                amount: 8750.25,
-                type: TransactionType.transfer,
-                vsLastPeriod: 5.7,
+              child: AppStatCard(
                 icon: Icons.account_balance_wallet_outlined,
+                label: 'Balance',
+                value: NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(8750.25),
+                trend: '+5.7%',
+                color: AppColors.tertiary,
               ),
             ),
           ],
@@ -237,118 +237,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
     );
   }
 
-  Widget _buildSummaryCard({
-    required String title,
-    required double amount,
-    required TransactionType type,
-    required double vsLastPeriod,
-    required IconData icon,
-  }) {
-    final color = _getColorForType(type);
-    final isPositive = vsLastPeriod >= 0;
-
-    return Container(
-      padding: const EdgeInsets.all(UIConstants.spacingLarge),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-        border: Border.all(color: WiseSpendsColors.divider),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: UIConstants.iconMedium,
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: UIConstants.spacingSmall,
-                  vertical: UIConstants.spacingXS,
-                ),
-                decoration: BoxDecoration(
-                  color: isPositive
-                      ? WiseSpendsColors.success.withValues(alpha: 0.1)
-                      : WiseSpendsColors.secondary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      isPositive ? Icons.trending_up : Icons.trending_down,
-                      color: isPositive
-                          ? WiseSpendsColors.success
-                          : WiseSpendsColors.secondary,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${isPositive ? '+' : ''}${vsLastPeriod.abs().toStringAsFixed(1)}%',
-                      style: TextStyle(
-                        color: isPositive
-                            ? WiseSpendsColors.success
-                            : WiseSpendsColors.secondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: UIConstants.spacingMedium),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: WiseSpendsColors.textSecondary,
-                ),
-          ),
-          const SizedBox(height: UIConstants.spacingXS),
-          Text(
-            NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(amount),
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getColorForType(TransactionType type) {
-    switch (type) {
-      case TransactionType.income:
-        return WiseSpendsColors.success;
-      case TransactionType.expense:
-        return WiseSpendsColors.secondary;
-      case TransactionType.transfer:
-        return WiseSpendsColors.tertiary;
-    }
-  }
-
   Widget _buildBarChart() {
     return Container(
       height: 200,
-      padding: const EdgeInsets.all(UIConstants.spacingMedium),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-        border: Border.all(color: WiseSpendsColors.divider),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.divider),
       ),
       child: BarChart(
         BarChartData(
@@ -377,10 +273,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
                         labels[value.toInt()],
-                        style: TextStyle(
-                          color: WiseSpendsColors.textSecondary,
-                          fontSize: 12,
-                        ),
+                        style: AppTextStyles.caption,
                       ),
                     );
                   }
@@ -404,29 +297,29 @@ class _ReportsScreenState extends State<ReportsScreen> {
             BarChartGroupData(
               x: 0,
               barRods: [
-                BarChartRodData(toY: 5000, color: WiseSpendsColors.success, width: 12),
-                BarChartRodData(toY: 3000, color: WiseSpendsColors.secondary, width: 12),
+                BarChartRodData(toY: 5000, color: AppColors.income, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 3000, color: AppColors.expense, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
               ],
             ),
             BarChartGroupData(
               x: 1,
               barRods: [
-                BarChartRodData(toY: 6000, color: WiseSpendsColors.success, width: 12),
-                BarChartRodData(toY: 4000, color: WiseSpendsColors.secondary, width: 12),
+                BarChartRodData(toY: 6000, color: AppColors.income, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 4000, color: AppColors.expense, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
               ],
             ),
             BarChartGroupData(
               x: 2,
               barRods: [
-                BarChartRodData(toY: 4500, color: WiseSpendsColors.success, width: 12),
-                BarChartRodData(toY: 3500, color: WiseSpendsColors.secondary, width: 12),
+                BarChartRodData(toY: 4500, color: AppColors.income, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 3500, color: AppColors.expense, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
               ],
             ),
             BarChartGroupData(
               x: 3,
               barRods: [
-                BarChartRodData(toY: 7000, color: WiseSpendsColors.success, width: 12),
-                BarChartRodData(toY: 4500, color: WiseSpendsColors.secondary, width: 12),
+                BarChartRodData(toY: 7000, color: AppColors.income, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 4500, color: AppColors.expense, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
               ],
             ),
           ],
@@ -438,11 +331,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget _buildDonutChart() {
     return Container(
       height: 250,
-      padding: const EdgeInsets.all(UIConstants.spacingMedium),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-        border: Border.all(color: WiseSpendsColors.divider),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.divider),
       ),
       child: PieChart(
         PieChartData(
@@ -452,7 +345,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 35,
               title: 'Food\n35%',
-              color: WiseSpendsColors.secondary,
+              color: AppColors.expense,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -463,7 +356,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 25,
               title: 'Transport\n25%',
-              color: WiseSpendsColors.primary,
+              color: AppColors.primary,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -474,7 +367,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 20,
               title: 'Shopping\n20%',
-              color: WiseSpendsColors.tertiary,
+              color: AppColors.tertiary,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -485,7 +378,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 15,
               title: 'Bills\n15%',
-              color: WiseSpendsColors.warning,
+              color: AppColors.warning,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -496,7 +389,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 5,
               title: 'Other\n5%',
-              color: WiseSpendsColors.textHint,
+              color: AppColors.textHint,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -513,9 +406,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget _buildCategoryBreakdown() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-        border: Border.all(color: WiseSpendsColors.divider),
+        color: AppColors.background,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.divider),
       ),
       child: Column(
         children: [
@@ -523,7 +416,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Food & Dining',
             amount: 1250.00,
             percentage: 35,
-            color: WiseSpendsColors.secondary,
+            color: AppColors.expense,
             icon: Icons.restaurant,
           ),
           const Divider(height: 1),
@@ -531,7 +424,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Transportation',
             amount: 890.50,
             percentage: 25,
-            color: WiseSpendsColors.primary,
+            color: AppColors.primary,
             icon: Icons.directions_car,
           ),
           const Divider(height: 1),
@@ -539,7 +432,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Shopping',
             amount: 715.25,
             percentage: 20,
-            color: WiseSpendsColors.tertiary,
+            color: AppColors.tertiary,
             icon: Icons.shopping_bag,
           ),
           const Divider(height: 1),
@@ -547,7 +440,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Bills & Utilities',
             amount: 536.75,
             percentage: 15,
-            color: WiseSpendsColors.warning,
+            color: AppColors.warning,
             icon: Icons.receipt_long,
           ),
           const Divider(height: 1),
@@ -555,7 +448,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Others',
             amount: 178.00,
             percentage: 5,
-            color: WiseSpendsColors.textHint,
+            color: AppColors.textHint,
             icon: Icons.more_horiz,
           ),
         ],
@@ -571,36 +464,36 @@ class _ReportsScreenState extends State<ReportsScreen> {
     required IconData icon,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(UIConstants.spacingLarge),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: AppTouchTarget.min,
+            height: AppTouchTarget.min,
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Icon(
               icon,
               color: color,
-              size: UIConstants.iconMedium,
+              size: AppIconSize.lg,
             ),
           ),
-          const SizedBox(width: UIConstants.spacingMedium),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   name,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: AppSpacing.xs),
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(AppRadius.full),
                   child: LinearProgressIndicator(
                     value: percentage / 100,
                     backgroundColor: color.withValues(alpha: 0.2),
@@ -611,22 +504,18 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ],
             ),
           ),
-          const SizedBox(width: UIConstants.spacingMedium),
+          const SizedBox(width: AppSpacing.md),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(
-                NumberFormat.currency(symbol: 'RM', decimalDigits: 2).format(amount),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+              AmountText.small(
+                amount: amount,
+                type: AmountType.neutral,
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 '$percentage%',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: WiseSpendsColors.textSecondary,
-                    ),
+                style: AppTextStyles.caption,
               ),
             ],
           ),

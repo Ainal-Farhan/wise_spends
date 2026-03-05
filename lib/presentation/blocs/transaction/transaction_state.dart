@@ -35,6 +35,8 @@ class TransactionLoaded extends TransactionState {
   final double totalBalance;
   final DateTime? startDate;
   final DateTime? endDate;
+  final TransactionType? filterType;
+  final String? searchQuery;
 
   const TransactionLoaded({
     required this.transactions,
@@ -43,10 +45,12 @@ class TransactionLoaded extends TransactionState {
     this.totalBalance = 0,
     this.startDate,
     this.endDate,
+    this.filterType,
+    this.searchQuery,
   });
 
   @override
-  List<Object?> get props => [transactions, totalIncome, totalExpenses, totalBalance, startDate, endDate];
+  List<Object?> get props => [transactions, totalIncome, totalExpenses, totalBalance, startDate, endDate, filterType, searchQuery];
 
   TransactionLoaded copyWith({
     List<TransactionEntity>? transactions,
@@ -55,6 +59,8 @@ class TransactionLoaded extends TransactionState {
     double? totalBalance,
     DateTime? startDate,
     DateTime? endDate,
+    TransactionType? filterType,
+    String? searchQuery,
   }) {
     return TransactionLoaded(
       transactions: transactions ?? this.transactions,
@@ -63,6 +69,8 @@ class TransactionLoaded extends TransactionState {
       totalBalance: totalBalance ?? this.totalBalance,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
+      filterType: filterType ?? this.filterType,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 }
@@ -106,12 +114,12 @@ class TransactionsGroupedLoaded extends TransactionState {
 /// Transactions filtered by type
 class TransactionsFilteredLoaded extends TransactionState {
   final List<TransactionEntity> transactions;
-  final TransactionType filterType;
+  final TransactionType? filterType;
   final String? filterCategory;
 
   const TransactionsFilteredLoaded({
     required this.transactions,
-    required this.filterType,
+    this.filterType,
     this.filterCategory,
   });
 

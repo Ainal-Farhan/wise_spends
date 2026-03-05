@@ -22,6 +22,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<SearchTransactionsEvent>(_onSearchTransactions);
     on<ClearSearchEvent>(_onClearSearch);
     on<FilterTransactionsByCategoryEvent>(_onFilterByCategory);
+    on<FilterTransactionsByTypeEvent>(_onFilterByType);
     on<ClearFiltersEvent>(_onClearFilters);
     on<RefreshTransactionsEvent>(_onRefreshTransactions);
     on<ReloadTransactionsEvent>(_onReloadTransactions);
@@ -393,6 +394,31 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           transactions: filtered,
           filterType: TransactionType.expense, // Default, can be enhanced
           filterCategory: event.categoryId,
+        ),
+      );
+    } catch (e) {
+      emit(TransactionError('Failed to filter transactions: ${e.toString()}'));
+    }
+  }
+
+  /// Filter transactions by type
+  Future<void> _onFilterByType(
+    FilterTransactionsByTypeEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    try {
+      final transactions = await _repository.getAllTransactions();
+      final filtered = event.type == null
+          ? transactions
+          : transactions
+                .where((t) => t.type == event.type!)
+                .toList();
+
+      emit(
+        TransactionsFilteredLoaded(
+          transactions: filtered,
+          filterType: event.type,
+          filterCategory: null,
         ),
       );
     } catch (e) {

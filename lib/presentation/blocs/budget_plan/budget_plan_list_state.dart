@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_entity.dart';
+import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
 
 /// Budget Plan List BLoC States
@@ -21,25 +22,39 @@ class BudgetPlanListLoaded extends BudgetPlanListState {
   final List<BudgetPlanEntity> plans;
   final List<BudgetPlanEntity> filteredPlans;
   final BudgetPlanSummary summary;
+  final BudgetPlanStatus? filterStatus;
+  final BudgetPlanCategory? filterCategory;
 
   const BudgetPlanListLoaded({
     required this.plans,
     required this.filteredPlans,
     required this.summary,
+    this.filterStatus,
+    this.filterCategory,
   });
 
   @override
-  List<Object> get props => [plans, filteredPlans, summary];
+  List<Object?> get props => [
+    plans,
+    filteredPlans,
+    summary,
+    filterStatus,
+    filterCategory,
+  ];
 
   BudgetPlanListLoaded copyWith({
     List<BudgetPlanEntity>? plans,
     List<BudgetPlanEntity>? filteredPlans,
     BudgetPlanSummary? summary,
+    BudgetPlanStatus? filterStatus,
+    BudgetPlanCategory? filterCategory,
   }) {
     return BudgetPlanListLoaded(
       plans: plans ?? this.plans,
       filteredPlans: filteredPlans ?? this.filteredPlans,
       summary: summary ?? this.summary,
+      filterStatus: filterStatus ?? this.filterStatus,
+      filterCategory: filterCategory ?? this.filterCategory,
     );
   }
 }

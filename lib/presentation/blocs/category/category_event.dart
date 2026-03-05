@@ -77,3 +77,13 @@ class DeleteCategoryEvent extends CategoryEvent {
   @override
   List<Object> get props => [categoryId];
 }
+
+/// Change category filter type
+class ChangeCategoryFilterEvent extends CategoryEvent {
+  final String filterType;
+
+  const ChangeCategoryFilterEvent(this.filterType);
+
+  @override
+  List<Object> get props => [filterType];
+}

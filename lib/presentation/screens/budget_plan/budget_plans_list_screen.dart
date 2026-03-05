@@ -47,8 +47,6 @@ class _BudgetPlansListScreenContent extends StatefulWidget {
 
 class _BudgetPlansListScreenContentState
     extends State<_BudgetPlansListScreenContent> {
-  BudgetPlanStatus? _filterStatus;
-
   @override
   Widget build(BuildContext context) {
     final loc = LocalizationService();
@@ -300,21 +298,27 @@ class _BudgetPlansListScreenContentState
     required String label,
     BudgetPlanStatus? status,
   }) {
-    final isSelected = _filterStatus == status;
+    return BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
+      builder: (context, state) {
+        BudgetPlanStatus? currentStatus;
+        if (state is BudgetPlanListLoaded) {
+          currentStatus = state.filterStatus;
+        }
+        
+        final isSelected = currentStatus == status;
 
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (selected) {
-        setState(() {
-          _filterStatus = selected ? status : null;
-        });
-        context.read<BudgetPlanListBloc>().add(
-          FilterBudgetPlans(status: _filterStatus),
+        return FilterChip(
+          label: Text(label),
+          selected: isSelected,
+          onSelected: (selected) {
+            context.read<BudgetPlanListBloc>().add(
+              FilterBudgetPlans(status: selected ? status : null),
+            );
+          },
+          selectedColor: WiseSpendsColors.primary.withValues(alpha: 0.2),
+          checkmarkColor: WiseSpendsColors.primary,
         );
       },
-      selectedColor: WiseSpendsColors.primary.withValues(alpha: 0.2),
-      checkmarkColor: WiseSpendsColors.primary,
     );
   }
 
@@ -468,49 +472,56 @@ class _BudgetPlansListScreenContentState
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(loc.get('general.filter')),
-        content: RadioGroup<BudgetPlanStatus?>(
-          groupValue: _filterStatus,
-          onChanged: (value) {
-            setState(() => _filterStatus = value);
-            Navigator.pop(context);
-            context.read<BudgetPlanListBloc>().add(
-              FilterBudgetPlans(status: _filterStatus),
-            );
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              RadioListTile<BudgetPlanStatus?>(
-                title: Text(loc.get('budget_plans.filter_all')),
-                value: null,
+      builder: (dialogContext) => BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
+        builder: (context, state) {
+          BudgetPlanStatus? currentStatus;
+          if (state is BudgetPlanListLoaded) {
+            currentStatus = state.filterStatus;
+          }
+          
+          return AlertDialog(
+            title: Text(loc.get('general.filter')),
+            content: RadioGroup<BudgetPlanStatus?>(
+              groupValue: currentStatus,
+              onChanged: (value) {
+                Navigator.pop(dialogContext);
+                context.read<BudgetPlanListBloc>().add(
+                  FilterBudgetPlans(status: value),
+                );
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<BudgetPlanStatus?>(
+                    title: Text(loc.get('budget_plans.filter_all')),
+                    value: null,
+                  ),
+                  RadioListTile<BudgetPlanStatus?>(
+                    title: Text(loc.get('budget_plans.filter_active')),
+                    value: BudgetPlanStatus.active,
+                  ),
+                  RadioListTile<BudgetPlanStatus?>(
+                    title: Text(loc.get('budget_plans.filter_completed')),
+                    value: BudgetPlanStatus.completed,
+                  ),
+                ],
               ),
-              RadioListTile<BudgetPlanStatus?>(
-                title: Text(loc.get('budget_plans.filter_active')),
-                value: BudgetPlanStatus.active,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  context.read<BudgetPlanListBloc>().add(FilterBudgetPlans());
+                  Navigator.pop(dialogContext);
+                },
+                child: Text(loc.get('general.clear')),
               ),
-              RadioListTile<BudgetPlanStatus?>(
-                title: Text(loc.get('budget_plans.filter_completed')),
-                value: BudgetPlanStatus.completed,
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(loc.get('general.close')),
               ),
             ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() => _filterStatus = null);
-              context.read<BudgetPlanListBloc>().add(FilterBudgetPlans());
-              Navigator.pop(context);
-            },
-            child: Text(loc.get('general.clear')),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(loc.get('general.close')),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

@@ -7,21 +7,24 @@ import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart'
 import 'package:wise_spends/presentation/blocs/transaction/transaction_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_event.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_state.dart';
-import 'package:wise_spends/presentation/widgets/components/empty_state_widget.dart';
 import 'package:wise_spends/presentation/widgets/components/transaction_card.dart';
-import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/router/route_arguments.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 
 /// Enhanced Home/Dashboard Screen
 /// Features:
-/// - Time-based greeting
-/// - Balance overview cards (Total, Income, Expenses)
-/// - Recent transactions list with grouped dates
-/// - Quick action FAB with speed dial
+/// - Time-based greeting with emoji
+/// - Hero balance card with gradient
+/// - Income/Expense summary cards
+/// - Quick actions row (Add Income, Expense, Transfer)
+/// - Recent transactions list
 /// - Pull-to-refresh
+/// - Bottom navigation
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -48,42 +51,37 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
   bool _isNavigating = false;
 
   void _onItemTapped(int index) {
-    if (_isNavigating) return; // Prevent multiple taps
-    
-    setState(() {
-      _selectedIndex = index;
-    });
-    
+    if (_isNavigating) return;
+
+    setState(() => _selectedIndex = index);
     _isNavigating = true;
-    
-    // Use WidgetsBinding to ensure navigation happens after frame
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
         _isNavigating = false;
         return;
       }
-      
+
       switch (index) {
-        case 0: // Home
-          // Already on home
+        case 0:
           _isNavigating = false;
           break;
-        case 1: // Budget Plans
+        case 1:
           Navigator.pushNamed(context, AppRoutes.budgetList).then((_) {
             if (mounted) _isNavigating = false;
           });
           break;
-        case 2: // Savings
+        case 2:
           Navigator.pushNamed(context, AppRoutes.savings).then((_) {
             if (mounted) _isNavigating = false;
           });
           break;
-        case 3: // Money Storage
+        case 3:
           Navigator.pushNamed(context, AppRoutes.moneyStorage).then((_) {
             if (mounted) _isNavigating = false;
           });
           break;
-        case 4: // Settings
+        case 4:
           Navigator.pushNamed(context, AppRoutes.settings).then((_) {
             if (mounted) _isNavigating = false;
           });
@@ -104,22 +102,22 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             // App Bar with greeting
             SliverAppBar(
               floating: true,
-              backgroundColor: WiseSpendsColors.background,
+              backgroundColor: AppColors.background,
+              surfaceTintColor: Colors.transparent,
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     _getGreeting(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: WiseSpendsColors.textSecondary,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     'WiseSpends',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: WiseSpendsColors.textPrimary,
+                    style: AppTextStyles.h1.copyWith(
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ],
@@ -132,8 +130,8 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                   },
                   tooltip: 'Notifications',
                   constraints: const BoxConstraints(
-                    minWidth: UIConstants.touchTargetMin,
-                    minHeight: UIConstants.touchTargetMin,
+                    minWidth: AppTouchTarget.min,
+                    minHeight: AppTouchTarget.min,
                   ),
                 ),
               ],
@@ -142,42 +140,36 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             // Content
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(UIConstants.spacingLarge),
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Balance overview cards
                     _buildBalanceOverview(context),
-                    const SizedBox(height: UIConstants.spacingXXL),
+                    const SizedBox(height: AppSpacing.xxl),
+
+                    // Quick actions
+                    _buildQuickActions(context),
+                    const SizedBox(height: AppSpacing.xxl),
 
                     // Section header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Recent Transactions',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            AppRouter.navigateTo(
-                              context,
-                              AppRoutes.transactionHistory,
-                              arguments: const TransactionHistoryArgs(),
-                            );
-                          },
-                          child: const Text('See All'),
-                        ),
-                      ],
+                    SectionHeader(
+                      title: 'Recent Transactions',
+                      onSeeAll: () {
+                        AppRouter.navigateTo(
+                          context,
+                          AppRoutes.transactionHistory,
+                          arguments: const TransactionHistoryArgs(),
+                        );
+                      },
                     ),
-                    const SizedBox(height: UIConstants.spacingSmall),
+                    const SizedBox(height: AppSpacing.sm),
 
                     // Recent transactions list
                     BlocBuilder<TransactionBloc, TransactionState>(
                       builder: (context, state) {
                         if (state is TransactionLoading) {
-                          return const TransactionListShimmer(itemCount: 5);
+                          return const ShimmerTransactionList(itemCount: 5);
                         } else if (state is RecentTransactionsLoaded) {
                           if (state.recentTransactions.isEmpty) {
                             return NoTransactionsEmptyState(
@@ -210,33 +202,28 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           ],
         ),
       ),
-      floatingActionButton: _buildSpeedDialFAB(context),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showTransactionTypeDialog(context),
+        elevation: AppElevation.sm,
+        child: const Icon(Icons.add),
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
             icon: Icon(Icons.account_balance_wallet),
             label: 'Budgets',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.savings),
-            label: 'Savings',
-          ),
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(icon: Icon(Icons.savings), label: 'Savings'),
+          BottomNavigationBarItem(
             icon: Icon(Icons.account_balance),
             label: 'Money Storage',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: WiseSpendsColors.primary,
-        unselectedItemColor: WiseSpendsColors.textSecondary,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textHint,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),
@@ -246,11 +233,11 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) {
-      return 'Good morning';
+      return 'Good morning 👋';
     } else if (hour < 17) {
-      return 'Good afternoon';
+      return 'Good afternoon 👋';
     } else {
-      return 'Good evening';
+      return 'Good evening 👋';
     }
   }
 
@@ -268,76 +255,61 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
 
           return Column(
             children: [
-              // Main balance card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(UIConstants.spacingXXL),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      WiseSpendsColors.primary,
-                      WiseSpendsColors.primaryDark,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(UIConstants.radiusLarge),
-                  boxShadow: [
-                    BoxShadow(
-                      color: WiseSpendsColors.primary.withValues(alpha: 0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
+              // Main balance card (Hero)
+              AppCard.gradient(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.primary, AppColors.primaryDark],
                 ),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                padding: const EdgeInsets.all(AppSpacing.xxl),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Total Balance',
-                      style: TextStyle(
+                      style: AppTextStyles.bodyMedium.copyWith(
                         color: Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: UIConstants.spacingSmall),
+                    const SizedBox(height: AppSpacing.sm),
                     Text(
                       NumberFormat.currency(
                         symbol: 'RM ',
                         decimalDigits: 2,
                       ).format(totalBalance),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.balanceDisplay,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: UIConstants.spacingMedium),
+              const SizedBox(height: AppSpacing.md),
 
               // Income and Expense cards
               Row(
                 children: [
                   Expanded(
-                    child: _buildBalanceCard(
-                      context,
-                      title: 'Income',
-                      amount: totalIncome,
-                      type: TransactionType.income,
+                    child: AppStatCard(
                       icon: Icons.arrow_downward_rounded,
+                      label: 'Income',
+                      value: NumberFormat.currency(
+                        symbol: 'RM ',
+                        decimalDigits: 2,
+                      ).format(totalIncome),
+                      color: AppColors.income,
                     ),
                   ),
-                  const SizedBox(width: UIConstants.spacingMedium),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
-                    child: _buildBalanceCard(
-                      context,
-                      title: 'Expenses',
-                      amount: totalExpenses,
-                      type: TransactionType.expense,
+                    child: AppStatCard(
                       icon: Icons.arrow_upward_rounded,
+                      label: 'Expenses',
+                      value: NumberFormat.currency(
+                        symbol: 'RM ',
+                        decimalDigits: 2,
+                      ).format(totalExpenses),
+                      color: AppColors.expense,
                     ),
                   ),
                 ],
@@ -347,13 +319,13 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
         }
         return const Column(
           children: [
-            BalanceCardShimmer(),
-            SizedBox(height: UIConstants.spacingMedium),
+            ShimmerBalanceCard(isHero: true),
+            SizedBox(height: AppSpacing.md),
             Row(
               children: [
-                Expanded(child: BalanceCardShimmer()),
-                SizedBox(width: UIConstants.spacingMedium),
-                Expanded(child: BalanceCardShimmer()),
+                Expanded(child: ShimmerBalanceCard()),
+                SizedBox(width: AppSpacing.md),
+                Expanded(child: ShimmerBalanceCard()),
               ],
             ),
           ],
@@ -362,67 +334,103 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
     );
   }
 
-  Widget _buildBalanceCard(
-    BuildContext context, {
-    required String title,
-    required double amount,
-    required TransactionType type,
-    required IconData icon,
-  }) {
-    final color = type == TransactionType.income
-        ? WiseSpendsColors.success
-        : WiseSpendsColors.secondary;
-
-    return Container(
-      padding: const EdgeInsets.all(UIConstants.spacingLarge),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(UIConstants.radiusLarge),
-        border: Border.all(color: WiseSpendsColors.divider),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: UIConstants.touchTargetMin,
-                height: UIConstants.touchTargetMin,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
-                ),
-                child: Icon(icon, color: color, size: UIConstants.iconLarge),
+  Widget _buildQuickActions(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Actions',
+          style: AppTextStyles.h3,
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Row(
+          children: [
+            Expanded(
+              child: _buildQuickActionItem(
+                context,
+                icon: Icons.arrow_downward_rounded,
+                label: 'Income',
+                color: AppColors.income,
+                onTap: () => _navigateToAddTransaction(TransactionType.income),
               ),
-              const SizedBox(width: UIConstants.spacingSmall),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: WiseSpendsColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: UIConstants.spacingMedium),
-          Text(
-            NumberFormat.currency(
-              symbol: 'RM ',
-              decimalDigits: 2,
-            ).format(amount),
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
             ),
-          ),
-        ],
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: _buildQuickActionItem(
+                context,
+                icon: Icons.arrow_upward_rounded,
+                label: 'Expense',
+                color: AppColors.expense,
+                onTap: () => _navigateToAddTransaction(TransactionType.expense),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: _buildQuickActionItem(
+                context,
+                icon: Icons.swap_horiz_rounded,
+                label: 'Transfer',
+                color: AppColors.transfer,
+                onTap: () =>
+                    _navigateToAddTransaction(TransactionType.transfer),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionItem(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: AppTouchTarget.min,
+              height: AppTouchTarget.min,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: AppIconSize.lg,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              label,
+              style: AppTextStyles.labelMedium.copyWith(
+                color: color,
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  void _navigateToAddTransaction(TransactionType type) {
+    AppRouter.navigateTo(
+      context,
+      AppRoutes.addTransaction,
+      arguments: AddTransactionArgs(preselectedType: type),
     );
   }
 
@@ -435,7 +443,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: transactions.length,
       separatorBuilder: (context, index) =>
-          const SizedBox(height: UIConstants.spacingSmall),
+          const SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, index) {
         final transaction = transactions[index];
         return TransactionCard(
@@ -464,50 +472,38 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
 
   Widget _buildErrorState(BuildContext context, String message) {
     return Padding(
-      padding: const EdgeInsets.all(UIConstants.spacingXXXL),
+      padding: const EdgeInsets.all(AppSpacing.xxxl),
       child: Column(
         children: [
-          const Icon(
+          Icon(
             Icons.error_outline,
-            size: 64,
-            color: WiseSpendsColors.secondary,
+            size: AppIconSize.hero,
+            color: AppColors.secondary,
           ),
-          const SizedBox(height: UIConstants.spacingLarge),
+          const SizedBox(height: AppSpacing.xxl),
           Text(
             'Oops! Something went wrong',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: AppTextStyles.h3,
           ),
-          const SizedBox(height: UIConstants.spacingSmall),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             message,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: WiseSpendsColors.textSecondary,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: UIConstants.spacingLarge),
-          ElevatedButton(
+          const SizedBox(height: AppSpacing.lg),
+          AppButton.primary(
+            label: 'Retry',
             onPressed: () {
               context.read<TransactionBloc>().add(
                 LoadRecentTransactionsEvent(),
               );
             },
-            child: const Text('Retry'),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSpeedDialFAB(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        _showTransactionTypeDialog(context);
-      },
-      elevation: 4,
-      child: const Icon(Icons.add),
     );
   }
 
@@ -517,12 +513,12 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: const BoxDecoration(
-          color: WiseSpendsColors.background,
+          color: AppColors.background,
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(UIConstants.radiusXXLarge),
+            top: Radius.circular(AppRadius.xxl),
           ),
         ),
-        padding: const EdgeInsets.all(UIConstants.spacingXXL),
+        padding: const EdgeInsets.all(AppSpacing.xxl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -532,26 +528,24 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: WiseSpendsColors.divider,
+                  color: AppColors.divider,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
-            const SizedBox(height: UIConstants.spacingXXL),
+            const SizedBox(height: AppSpacing.xxl),
             Text(
               'Add Transaction',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+              style: AppTextStyles.h2,
             ),
-            const SizedBox(height: UIConstants.spacingLarge),
+            const SizedBox(height: AppSpacing.lg),
             _buildTransactionTypeOption(
               context,
               type: TransactionType.income,
               title: 'Income',
               subtitle: 'Add money received',
               icon: Icons.arrow_downward_rounded,
-              color: WiseSpendsColors.success,
+              color: AppColors.income,
             ),
             _buildTransactionTypeOption(
               context,
@@ -559,7 +553,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               title: 'Expense',
               subtitle: 'Add money spent',
               icon: Icons.arrow_upward_rounded,
-              color: WiseSpendsColors.secondary,
+              color: AppColors.expense,
             ),
             _buildTransactionTypeOption(
               context,
@@ -567,9 +561,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               title: 'Transfer',
               subtitle: 'Move money between accounts',
               icon: Icons.swap_horiz_rounded,
-              color: WiseSpendsColors.tertiary,
+              color: AppColors.transfer,
             ),
-            const SizedBox(height: UIConstants.spacingLarge),
+            const SizedBox(height: AppSpacing.lg),
           ],
         ),
       ),
@@ -585,21 +579,21 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
     required Color color,
   }) {
     return ListTile(
-      minLeadingWidth: UIConstants.touchTargetMin,
+      minLeadingWidth: AppTouchTarget.min,
       leading: Container(
-        width: UIConstants.touchTargetMin,
-        height: UIConstants.touchTargetMin,
+        width: AppTouchTarget.min,
+        height: AppTouchTarget.min,
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Icon(icon, color: color),
       ),
       title: Text(
         title,
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        style: AppTextStyles.bodyMedium.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
       ),
       subtitle: Text(subtitle),
       trailing: const Icon(Icons.chevron_right),

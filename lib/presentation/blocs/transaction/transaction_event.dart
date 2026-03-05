@@ -158,6 +158,16 @@ class FilterTransactionsByCategoryEvent extends TransactionEvent {
   List<Object?> get props => [categoryId];
 }
 
+/// Filter transactions by type
+class FilterTransactionsByTypeEvent extends TransactionEvent {
+  final TransactionType? type;
+
+  const FilterTransactionsByTypeEvent(this.type);
+
+  @override
+  List<Object?> get props => [type];
+}
+
 /// Clear all filters
 class ClearFiltersEvent extends TransactionEvent {}
 

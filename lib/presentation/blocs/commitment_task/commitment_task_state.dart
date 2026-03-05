@@ -14,11 +14,22 @@ class CommitmentTaskLoading extends CommitmentTaskState {}
 
 class CommitmentTaskLoaded extends CommitmentTaskState {
   final List<CommitmentTaskVO> tasks;
+  final String filterStatus;
 
-  const CommitmentTaskLoaded(this.tasks);
+  const CommitmentTaskLoaded(this.tasks, {this.filterStatus = 'all'});
 
   @override
-  List<Object> get props => [tasks];
+  List<Object?> get props => [tasks, filterStatus];
+
+  CommitmentTaskLoaded copyWith({
+    List<CommitmentTaskVO>? tasks,
+    String? filterStatus,
+  }) {
+    return CommitmentTaskLoaded(
+      tasks ?? this.tasks,
+      filterStatus: filterStatus ?? this.filterStatus,
+    );
+  }
 }
 
 class CommitmentTaskUpdated extends CommitmentTaskState {

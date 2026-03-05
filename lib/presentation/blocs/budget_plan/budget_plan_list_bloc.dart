@@ -8,8 +8,6 @@ import 'budget_plan_list_state.dart';
 /// Budget Plan List BLoC - manages list of budget plans
 class BudgetPlanListBloc extends Bloc<BudgetPlanListEvent, BudgetPlanListState> {
   final IBudgetPlanRepository _repository;
-  BudgetPlanStatus? _filterStatus;
-  BudgetPlanCategory? _filterCategory;
 
   BudgetPlanListBloc(this._repository) : super(BudgetPlanListInitial()) {
     on<LoadBudgetPlans>(_onLoadBudgetPlans);
@@ -35,7 +33,7 @@ class BudgetPlanListBloc extends Bloc<BudgetPlanListEvent, BudgetPlanListState> 
           ),
         );
       } else {
-        final filtered = _applyFilters(plans);
+        final filtered = _applyFilters(plans, null, null);
         emit(
           BudgetPlanListLoaded(
             plans: plans,
@@ -54,13 +52,18 @@ class BudgetPlanListBloc extends Bloc<BudgetPlanListEvent, BudgetPlanListState> 
     FilterBudgetPlans event,
     Emitter<BudgetPlanListState> emit,
   ) async {
-    _filterStatus = event.status;
-    _filterCategory = event.category;
-
     if (state is BudgetPlanListLoaded) {
       final currentState = state as BudgetPlanListLoaded;
-      final filtered = _applyFilters(currentState.plans);
-      emit(currentState.copyWith(filteredPlans: filtered));
+      final filtered = _applyFilters(
+        currentState.plans,
+        event.status,
+        event.category,
+      );
+      emit(currentState.copyWith(
+        filteredPlans: filtered,
+        filterStatus: event.status,
+        filterCategory: event.category,
+      ));
     }
   }
 
@@ -87,24 +90,21 @@ class BudgetPlanListBloc extends Bloc<BudgetPlanListEvent, BudgetPlanListState> 
   }
 
   /// Apply filters to plans
-  List<BudgetPlanEntity> _applyFilters(List<BudgetPlanEntity> plans) {
+  List<BudgetPlanEntity> _applyFilters(
+    List<BudgetPlanEntity> plans,
+    BudgetPlanStatus? status,
+    BudgetPlanCategory? category,
+  ) {
     var filtered = plans;
 
-    if (_filterStatus != null) {
-      filtered = filtered.where((p) => p.status == _filterStatus).toList();
+    if (status != null) {
+      filtered = filtered.where((p) => p.status == status).toList();
     }
 
-    if (_filterCategory != null) {
-      filtered = filtered.where((p) => p.category == _filterCategory).toList();
+    if (category != null) {
+      filtered = filtered.where((p) => p.category == category).toList();
     }
 
     return filtered;
-  }
-
-  /// Clear filters
-  void clearFilters() {
-    _filterStatus = null;
-    _filterCategory = null;
-    add(LoadBudgetPlans());
   }
 }

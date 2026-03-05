@@ -12,6 +12,7 @@ class CommitmentTaskBloc
   CommitmentTaskBloc(this._repository) : super(CommitmentTaskInitial()) {
     on<LoadCommitmentTasksEvent>(_onLoadCommitmentTasks);
     on<UpdateStatusCommitmentTaskEvent>(_onUpdateStatusCommitmentTask);
+    on<FilterCommitmentTasksEvent>(_onFilterCommitmentTasks);
   }
 
   Future<void> _onLoadCommitmentTasks(
@@ -44,6 +45,16 @@ class CommitmentTaskBloc
       add(LoadCommitmentTasksEvent());
     } catch (e) {
       emit(CommitmentTaskError(e.toString()));
+    }
+  }
+
+  Future<void> _onFilterCommitmentTasks(
+    FilterCommitmentTasksEvent event,
+    Emitter<CommitmentTaskState> emit,
+  ) async {
+    if (state is CommitmentTaskLoaded) {
+      final currentState = state as CommitmentTaskLoaded;
+      emit(currentState.copyWith(filterStatus: event.filterStatus));
     }
   }
 }

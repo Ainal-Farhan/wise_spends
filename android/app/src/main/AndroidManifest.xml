@@ -1,6 +1,6 @@
 <manifest
   xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.example.wise_spends"
+  package="com.my.aftechlabs.wise.spends"
 >
   <application android:label="Wise Spends" android:icon="@mipmap/launcher_icon">
     <activity

@@ -16,6 +16,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     on<CreateCategoryEvent>(_onCreateCategory);
     on<UpdateCategoryEvent>(_onUpdateCategory);
     on<DeleteCategoryEvent>(_onDeleteCategory);
+    on<ChangeCategoryFilterEvent>(_onChangeCategoryFilter);
   }
 
   /// Load all categories
@@ -134,6 +135,19 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       add(LoadCategoriesEvent());
     } catch (e) {
       emit(CategoryError(e.toString()));
+    }
+  }
+
+  /// Change category filter
+  void _onChangeCategoryFilter(
+    ChangeCategoryFilterEvent event,
+    Emitter<CategoryState> emit,
+  ) {
+    // Get current state
+    final currentState = state;
+    if (currentState is CategoryLoaded) {
+      // Emit same categories with new filter
+      emit(CategoryLoaded(currentState.categories, filterType: event.filterType));
     }
   }
 }

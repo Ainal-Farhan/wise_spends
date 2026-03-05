@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
 
 /// Budget BLoC events
 abstract class BudgetEvent extends Equatable {
@@ -122,3 +123,16 @@ class RefreshBudgetsEvent extends BudgetEvent {}
 
 /// Reload budgets
 class ReloadBudgetsEvent extends BudgetEvent {}
+
+/// Filter budgets by period
+class FilterBudgetsByPeriodEvent extends BudgetEvent {
+  final BudgetPeriod? period;
+
+  const FilterBudgetsByPeriodEvent(this.period);
+
+  @override
+  List<Object?> get props => [period];
+}
+
+/// Clear budget filters
+class ClearBudgetFiltersEvent extends BudgetEvent {}

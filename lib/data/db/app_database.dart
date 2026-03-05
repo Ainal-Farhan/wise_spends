@@ -86,14 +86,16 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<Directory> getAppMediaDirectory() async {
-    // Example: /storage/emulated/0/Android/media/com.example.wise_spends/
     final Directory? baseDir = await getExternalStorageDirectory();
     if (baseDir == null) {
       throw Exception("External storage not available");
     }
 
     final mediaDir = Directory(
-      path.join('/storage/emulated/0/Android/media', 'com.example.wise_spends'),
+      path.join(
+        '/storage/emulated/0/Android/media',
+        'com.my.aftechlabs.wise.spends',
+      ),
     );
 
     if (!(await mediaDir.exists())) {

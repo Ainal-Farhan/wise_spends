@@ -19,3 +19,12 @@ class UpdateStatusCommitmentTaskEvent extends CommitmentTaskEvent {
   @override
   List<Object> get props => [isDone, taskVO];
 }
+
+class FilterCommitmentTasksEvent extends CommitmentTaskEvent {
+  final String filterStatus;
+
+  const FilterCommitmentTasksEvent(this.filterStatus);
+
+  @override
+  List<Object> get props => [filterStatus];
+}

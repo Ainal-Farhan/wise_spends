@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
 
 /// Budget BLoC states
 abstract class BudgetState extends Equatable {
@@ -27,15 +28,17 @@ class BudgetsLoaded extends BudgetState {
   final List<dynamic> budgets; // Using dynamic to avoid circular dependency
   final int activeCount;
   final int onTrackCount;
+  final BudgetPeriod? filterPeriod;
 
   const BudgetsLoaded({
     required this.budgets,
     this.activeCount = 0,
     this.onTrackCount = 0,
+    this.filterPeriod,
   });
 
   @override
-  List<Object?> get props => [budgets, activeCount, onTrackCount];
+  List<Object?> get props => [budgets, activeCount, onTrackCount, filterPeriod];
 }
 
 /// Single budget loaded

@@ -8,23 +8,25 @@ class CommitmentVO extends IVO {
   String? name;
   String? description;
   double? totalAmount;
+  String? frequency;
   SavingVO? referredSavingVO;
   List<CommitmentDetailVO> commitmentDetailVOList = [];
 
   CommitmentVO();
 
-  CommitmentVO.fromExpnsCommitment(ExpnsCommitment commitment,
-      Map<ExpnsCommitmentDetail, SvngSaving> commitmentDetailMap) {
+  CommitmentVO.fromExpnsCommitment(
+    ExpnsCommitment commitment,
+    Map<ExpnsCommitmentDetail, SvngSaving> commitmentDetailMap,
+  ) {
     commitmentId = commitment.id;
     name = commitment.name;
     description = commitment.description;
-    totalAmount = .0;
-    for (MapEntry<ExpnsCommitmentDetail, SvngSaving> entry
-        in commitmentDetailMap.entries) {
+    totalAmount = 0.0;
+    for (final entry in commitmentDetailMap.entries) {
       totalAmount = totalAmount! + entry.key.amount;
-
       commitmentDetailVOList.add(
-          CommitmentDetailVO.fromExpnsCommitmentDetail(entry.key, entry.value));
+        CommitmentDetailVO.fromExpnsCommitmentDetail(entry.key, entry.value),
+      );
     }
   }
 
@@ -32,10 +34,19 @@ class CommitmentVO extends IVO {
     commitmentId = json['commitmentId'];
     name = json['name'];
     description = json['description'];
-    totalAmount = json['totalAmount'];
-    referredSavingVO = SavingVO.fromJson(json['referredSavingVO']);
-    commitmentDetailVOList = (json['commitmentDetailVOList'] as List)
-        .map((detail) => CommitmentDetailVO.fromJson(detail))
+    // FIX: Read as double, not String
+    totalAmount = json['totalAmount'] as double?;
+    frequency = json['frequency'];
+    // FIX: Null-guard before parsing referredSavingVO
+    referredSavingVO = json['referredSavingVO'] != null
+        ? SavingVO.fromJson(json['referredSavingVO'] as Map<String, dynamic>)
+        : null;
+    // FIX: Null-safe cast with fallback to empty list
+    commitmentDetailVOList = (json['commitmentDetailVOList'] as List? ?? [])
+        .map(
+          (detail) =>
+              CommitmentDetailVO.fromJson(detail as Map<String, dynamic>),
+        )
         .toList();
   }
 
@@ -43,12 +54,17 @@ class CommitmentVO extends IVO {
   Map<String, dynamic> toJson() {
     return {
       'commitmentId': commitmentId,
-      'name': '$name',
-      'description': '$description',
-      'totalAmount': '$totalAmount',
-      'referredSavingVO': referredSavingVO?.toJson() ?? {},
-      'commitmentDetailVOList':
-          commitmentDetailVOList.map((detail) => detail.toJson()).toList,
+      // FIX: Keep native types, don't stringify with '$'
+      'name': name,
+      'description': description,
+      'totalAmount': totalAmount,
+      'frequency': frequency,
+      // FIX: Emit null instead of {} when absent
+      'referredSavingVO': referredSavingVO?.toJson(),
+      // FIX: Added () to actually call toList
+      'commitmentDetailVOList': commitmentDetailVOList
+          .map((detail) => detail.toJson())
+          .toList(),
     };
   }
 }
