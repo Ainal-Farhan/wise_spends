@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
+import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_event.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_state.dart';
@@ -16,79 +17,29 @@ import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 
-/// Enhanced Home/Dashboard Screen
-/// Features:
-/// - Time-based greeting with emoji
-/// - Hero balance card with gradient
-/// - Income/Expense summary cards
-/// - Quick actions row (Add Income, Expense, Transfer)
-/// - Recent transactions list
-/// - Pull-to-refresh
-/// - Bottom navigation
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          TransactionBloc(context.read<ITransactionRepository>())
-            ..add(LoadRecentTransactionsEvent(limit: 10)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              TransactionBloc(context.read<ITransactionRepository>())
+                ..add(LoadRecentTransactionsEvent(limit: 10)),
+        ),
+        // NavigationBloc is scoped to HomeScreen so it is created and
+        // disposed with this screen automatically.
+        BlocProvider(create: (_) => NavigationBloc()),
+      ],
       child: const _HomeScreenContent(),
     );
   }
 }
 
-class _HomeScreenContent extends StatefulWidget {
+class _HomeScreenContent extends StatelessWidget {
   const _HomeScreenContent();
-
-  @override
-  State<_HomeScreenContent> createState() => _HomeScreenContentState();
-}
-
-class _HomeScreenContentState extends State<_HomeScreenContent> {
-  int _selectedIndex = 0;
-  bool _isNavigating = false;
-
-  void _onItemTapped(int index) {
-    if (_isNavigating) return;
-
-    setState(() => _selectedIndex = index);
-    _isNavigating = true;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        _isNavigating = false;
-        return;
-      }
-
-      switch (index) {
-        case 0:
-          _isNavigating = false;
-          break;
-        case 1:
-          Navigator.pushNamed(context, AppRoutes.budgetList).then((_) {
-            if (mounted) _isNavigating = false;
-          });
-          break;
-        case 2:
-          Navigator.pushNamed(context, AppRoutes.savings).then((_) {
-            if (mounted) _isNavigating = false;
-          });
-          break;
-        case 3:
-          Navigator.pushNamed(context, AppRoutes.moneyStorage).then((_) {
-            if (mounted) _isNavigating = false;
-          });
-          break;
-        case 4:
-          Navigator.pushNamed(context, AppRoutes.settings).then((_) {
-            if (mounted) _isNavigating = false;
-          });
-          break;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,15 +95,10 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Balance overview cards
                     _buildBalanceOverview(context),
                     const SizedBox(height: AppSpacing.xxl),
-
-                    // Quick actions
                     _buildQuickActions(context),
                     const SizedBox(height: AppSpacing.xxl),
-
-                    // Section header
                     SectionHeader(
                       title: 'Recent Transactions',
                       onSeeAll: () {
@@ -164,8 +110,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                       },
                     ),
                     const SizedBox(height: AppSpacing.sm),
-
-                    // Recent transactions list
                     BlocBuilder<TransactionBloc, TransactionState>(
                       builder: (context, state) {
                         if (state is TransactionLoading) {
@@ -197,7 +141,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               ),
             ),
 
-            // Bottom padding for FAB
             const SliverToBoxAdapter(child: SizedBox(height: 80)),
           ],
         ),
@@ -207,38 +150,50 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
         elevation: AppElevation.sm,
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Budgets',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.savings), label: 'Savings'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance),
-            label: 'Money Storage',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textHint,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
+      // BlocBuilder drives selectedIndex and disabled state from NavigationBloc
+      bottomNavigationBar: BlocBuilder<NavigationBloc, NavigationState>(
+        builder: (context, navState) {
+          return BottomNavigationBar(
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_balance_wallet),
+                label: 'Budgets',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.savings),
+                label: 'Savings',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.account_balance),
+                label: 'Money Storage',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'Settings',
+              ),
+            ],
+            currentIndex: navState.selectedIndex,
+            selectedItemColor: AppColors.primary,
+            unselectedItemColor: AppColors.textHint,
+            type: BottomNavigationBarType.fixed,
+            onTap: (index) {
+              // Pass context so the bloc can call Navigator.pushNamed
+              context.read<NavigationBloc>().add(
+                NavigationTabTapped(index: index, context: context),
+              );
+            },
+          );
+        },
       ),
     );
   }
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) {
-      return 'Good morning 👋';
-    } else if (hour < 17) {
-      return 'Good afternoon 👋';
-    } else {
-      return 'Good evening 👋';
-    }
+    if (hour < 12) return 'Good morning 👋';
+    if (hour < 17) return 'Good afternoon 👋';
+    return 'Good evening 👋';
   }
 
   Widget _buildBalanceOverview(BuildContext context) {
@@ -255,7 +210,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
 
           return Column(
             children: [
-              // Main balance card (Hero)
               AppCard.gradient(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -285,8 +239,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
-
-              // Income and Expense cards
               Row(
                 children: [
                   Expanded(
@@ -338,10 +290,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Quick Actions',
-          style: AppTextStyles.h3,
-        ),
+        Text('Quick Actions', style: AppTextStyles.h3),
         const SizedBox(height: AppSpacing.md),
         Row(
           children: [
@@ -351,7 +300,8 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 icon: Icons.arrow_downward_rounded,
                 label: 'Income',
                 color: AppColors.income,
-                onTap: () => _navigateToAddTransaction(TransactionType.income),
+                onTap: () =>
+                    _navigateToAddTransaction(context, TransactionType.income),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -361,7 +311,8 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 icon: Icons.arrow_upward_rounded,
                 label: 'Expense',
                 color: AppColors.expense,
-                onTap: () => _navigateToAddTransaction(TransactionType.expense),
+                onTap: () =>
+                    _navigateToAddTransaction(context, TransactionType.expense),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -371,8 +322,10 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 icon: Icons.swap_horiz_rounded,
                 label: 'Transfer',
                 color: AppColors.transfer,
-                onTap: () =>
-                    _navigateToAddTransaction(TransactionType.transfer),
+                onTap: () => _navigateToAddTransaction(
+                  context,
+                  TransactionType.transfer,
+                ),
               ),
             ),
           ],
@@ -403,22 +356,13 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             Container(
               width: AppTouchTarget.min,
               height: AppTouchTarget.min,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: AppIconSize.lg,
-              ),
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              child: Icon(icon, color: Colors.white, size: AppIconSize.lg),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               label,
-              style: AppTextStyles.labelMedium.copyWith(
-                color: color,
-              ),
+              style: AppTextStyles.labelMedium.copyWith(color: color),
             ),
           ],
         ),
@@ -426,7 +370,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
     );
   }
 
-  void _navigateToAddTransaction(TransactionType type) {
+  void _navigateToAddTransaction(BuildContext context, TransactionType type) {
     AppRouter.navigateTo(
       context,
       AppRoutes.addTransaction,
@@ -442,8 +386,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: transactions.length,
-      separatorBuilder: (context, index) =>
-          const SizedBox(height: AppSpacing.sm),
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
       itemBuilder: (context, index) {
         final transaction = transactions[index];
         return TransactionCard(
@@ -481,10 +424,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             color: AppColors.secondary,
           ),
           const SizedBox(height: AppSpacing.xxl),
-          Text(
-            'Oops! Something went wrong',
-            style: AppTextStyles.h3,
-          ),
+          Text('Oops! Something went wrong', style: AppTextStyles.h3),
           const SizedBox(height: AppSpacing.sm),
           Text(
             message,
@@ -534,10 +474,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               ),
             ),
             const SizedBox(height: AppSpacing.xxl),
-            Text(
-              'Add Transaction',
-              style: AppTextStyles.h2,
-            ),
+            Text('Add Transaction', style: AppTextStyles.h2),
             const SizedBox(height: AppSpacing.lg),
             _buildTransactionTypeOption(
               context,
@@ -591,9 +528,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
       ),
       title: Text(
         title,
-        style: AppTextStyles.bodyMedium.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
       ),
       subtitle: Text(subtitle),
       trailing: const Icon(Icons.chevron_right),
