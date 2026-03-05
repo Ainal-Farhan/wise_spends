@@ -15,11 +15,10 @@ class BackupService {
     try {
       // Export data to a temporary file
       filePath = await _database.exportInto(type);
-      
+
       // Share the file using share_plus
-      await Share.shareXFiles(
-        [XFile(filePath)],
-        text: 'Wise Spends Backup File',
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(filePath)], text: 'Wise Spends Backup File'),
       );
     } catch (e) {
       throw Exception('Backup failed: $e');

@@ -26,7 +26,7 @@ class LoadCommitmentFormEvent extends CommitmentEvent {
   const LoadCommitmentFormEvent({this.commitmentVO});
 
   @override
-  List<Object> get props => [if (commitmentVO != null) commitmentVO!];
+  List<Object> get props => [?commitmentVO];
 }
 
 class LoadCommitmentDetailFormEvent extends CommitmentEvent {
@@ -39,10 +39,7 @@ class LoadCommitmentDetailFormEvent extends CommitmentEvent {
   });
 
   @override
-  List<Object> get props => [
-    if (commitmentDetailVO != null) commitmentDetailVO!,
-    commitmentId,
-  ];
+  List<Object> get props => [?commitmentDetailVO, commitmentId];
 }
 
 class SaveCommitmentEvent extends CommitmentEvent {
@@ -80,7 +77,10 @@ class DeleteCommitmentDetailEvent extends CommitmentEvent {
   final String commitmentId;
   final String commitmentDetailId;
 
-  const DeleteCommitmentDetailEvent(this.commitmentDetailId, {required this.commitmentId});
+  const DeleteCommitmentDetailEvent(
+    this.commitmentDetailId, {
+    required this.commitmentId,
+  });
 
   @override
   List<Object> get props => [commitmentDetailId];
