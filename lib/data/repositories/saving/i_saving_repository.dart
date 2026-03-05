@@ -3,6 +3,7 @@ import 'package:wise_spends/data/db/composite/saving_with_money_storage.dart';
 import 'package:wise_spends/data/db/domain/saving/saving_table.dart';
 import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 abstract class ISavingRepository
     extends
@@ -57,7 +58,7 @@ abstract class ISavingRepository
     required String sourceSavingId,
     String? destinationSavingId,
     required double amount,
-    required String transactionType,
+    required TransactionType transactionType,
     String? reference,
   });
 }

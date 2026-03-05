@@ -4,36 +4,50 @@ import 'package:wise_spends/domain/repositories/category_repository.dart';
 import 'category_event.dart';
 import 'category_state.dart';
 
-/// Category BLoC - manages category state and business logic
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final ICategoryRepository _repository;
+  List<CategoryEntity> _allCategories = [];
 
   CategoryBloc(this._repository) : super(CategoryInitial()) {
     on<LoadCategoriesEvent>(_onLoadCategories);
     on<LoadIncomeCategoriesEvent>(_onLoadIncomeCategories);
     on<LoadExpenseCategoriesEvent>(_onLoadExpenseCategories);
-    on<LoadCategoriesForTransactionTypeEvent>(_onLoadCategoriesForTransactionType);
+    on<LoadCategoriesForTransactionTypeEvent>(
+      _onLoadCategoriesForTransactionType,
+    );
     on<CreateCategoryEvent>(_onCreateCategory);
     on<UpdateCategoryEvent>(_onUpdateCategory);
     on<DeleteCategoryEvent>(_onDeleteCategory);
     on<ChangeCategoryFilterEvent>(_onChangeCategoryFilter);
   }
 
-  /// Load all categories
+  String get _currentFilterType {
+    final s = state;
+    return s is CategoryLoaded ? (s.filterType ?? 'all') : 'all';
+  }
+
+  void _emitLoaded(Emitter<CategoryState> emit, {String? filterType}) {
+    emit(
+      CategoryLoaded(
+        List<CategoryEntity>.from(_allCategories),
+        filterType: filterType ?? _currentFilterType,
+      ),
+    );
+  }
+
   Future<void> _onLoadCategories(
     LoadCategoriesEvent event,
     Emitter<CategoryState> emit,
   ) async {
     emit(CategoryLoading());
     try {
-      final categories = await _repository.getAllCategories();
-      emit(CategoryLoaded(categories));
+      _allCategories = await _repository.getAllCategories();
+      _emitLoaded(emit);
     } catch (e) {
       emit(CategoryError(e.toString()));
     }
   }
 
-  /// Load income categories
   Future<void> _onLoadIncomeCategories(
     LoadIncomeCategoriesEvent event,
     Emitter<CategoryState> emit,
@@ -47,7 +61,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     }
   }
 
-  /// Load expense categories
   Future<void> _onLoadExpenseCategories(
     LoadExpenseCategoriesEvent event,
     Emitter<CategoryState> emit,
@@ -61,7 +74,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     }
   }
 
-  /// Load categories for transaction type
   Future<void> _onLoadCategoriesForTransactionType(
     LoadCategoriesForTransactionTypeEvent event,
     Emitter<CategoryState> emit,
@@ -77,7 +89,6 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     }
   }
 
-  /// Create a new category
   Future<void> _onCreateCategory(
     CreateCategoryEvent event,
     Emitter<CategoryState> emit,
@@ -85,7 +96,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     emit(CategoryLoading());
     try {
       final category = CategoryEntity(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        id: '',
         name: event.name,
         iconCodePoint: event.iconCodePoint,
         iconFontFamily: event.iconFontFamily,
@@ -96,16 +107,15 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       );
 
       final created = await _repository.createCategory(category);
-      emit(CategoryCreated(created));
+      _allCategories = [..._allCategories, created];
 
-      // Reload categories after creation
-      add(LoadCategoriesEvent());
+      emit(CategoryCreated(created));
+      _emitLoaded(emit);
     } catch (e) {
       emit(CategoryError(e.toString()));
     }
   }
 
-  /// Update an existing category
   Future<void> _onUpdateCategory(
     UpdateCategoryEvent event,
     Emitter<CategoryState> emit,
@@ -113,41 +123,41 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     emit(CategoryLoading());
     try {
       final updated = await _repository.updateCategory(event.category);
-      emit(CategoryUpdated(updated));
 
-      // Reload categories after update
-      add(LoadCategoriesEvent());
+      _allCategories = _allCategories
+          .map((c) => c.id == updated.id ? updated : c)
+          .toList();
+
+      emit(CategoryUpdated(updated));
+      _emitLoaded(emit);
     } catch (e) {
       emit(CategoryError(e.toString()));
     }
   }
 
-  /// Delete a category
   Future<void> _onDeleteCategory(
     DeleteCategoryEvent event,
     Emitter<CategoryState> emit,
   ) async {
+    emit(CategoryLoading());
     try {
       await _repository.deleteCategory(event.categoryId);
-      emit(CategoryDeleted(event.categoryId));
 
-      // Reload categories after deletion
-      add(LoadCategoriesEvent());
+      _allCategories = _allCategories
+          .where((c) => c.id != event.categoryId)
+          .toList();
+
+      emit(CategoryDeleted(event.categoryId));
+      _emitLoaded(emit);
     } catch (e) {
       emit(CategoryError(e.toString()));
     }
   }
 
-  /// Change category filter
   void _onChangeCategoryFilter(
     ChangeCategoryFilterEvent event,
     Emitter<CategoryState> emit,
   ) {
-    // Get current state
-    final currentState = state;
-    if (currentState is CategoryLoaded) {
-      // Emit same categories with new filter
-      emit(CategoryLoaded(currentState.categories, filterType: event.filterType));
-    }
+    _emitLoaded(emit, filterType: event.filterType);
   }
 }

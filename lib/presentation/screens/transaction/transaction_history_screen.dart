@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_bloc.dart';
@@ -30,9 +31,10 @@ class TransactionHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          TransactionBloc(context.read<ITransactionRepository>())
-            ..add(LoadTransactionsEvent()),
+      create: (context) => TransactionBloc(
+        context.read<ITransactionRepository>(),
+        context.read<ISavingRepository>(),
+      )..add(LoadTransactionsEvent()),
       child: const _TransactionHistoryScreenContent(),
     );
   }
@@ -91,14 +93,10 @@ class _TransactionHistoryScreenContentState
         child: CustomScrollView(
           slivers: [
             // Filter chips
-            SliverToBoxAdapter(
-              child: _buildFilterChips(),
-            ),
+            SliverToBoxAdapter(child: _buildFilterChips()),
 
             // Search query indicator
-            SliverToBoxAdapter(
-              child: _buildSearchIndicator(),
-            ),
+            SliverToBoxAdapter(child: _buildSearchIndicator()),
 
             // Transaction list
             SliverPadding(
@@ -132,7 +130,47 @@ class _TransactionHistoryScreenContentState
                     }
 
                     // Apply filters
-                    var filtered = _applyFilters(transactions, filterType, searchQuery);
+                    var filtered = _applyFilters(
+                      transactions,
+                      filterType,
+                      searchQuery,
+                    );
+
+                    if (filtered.isEmpty) {
+                      return const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.all(AppSpacing.xxxl),
+                          child: NoSearchResultsEmptyState(),
+                        ),
+                      );
+                    }
+
+                    // Group by date
+                    return _buildGroupedList(filtered);
+                  } else if (state is TransactionsFilteredLoaded) {
+                    final transactions = state.transactions;
+                    final filterType = state.filterType;
+
+                    if (transactions.isEmpty) {
+                      return SliverToBoxAdapter(
+                        child: NoTransactionsEmptyState(
+                          onAddTransaction: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.addTransaction,
+                              arguments: AddTransactionArgs(),
+                            );
+                          },
+                        ),
+                      );
+                    }
+
+                    // Apply filters
+                    var filtered = _applyFilters(
+                      transactions,
+                      filterType,
+                      null,
+                    );
 
                     if (filtered.isEmpty) {
                       return const SliverToBoxAdapter(
@@ -236,7 +274,7 @@ class _TransactionHistoryScreenContentState
         } else if (state is TransactionsFilteredLoaded) {
           currentFilterType = state.filterType;
         }
-        
+
         final isSelected = currentFilterType == type;
         final color = _getColorForType(type);
 
@@ -244,7 +282,11 @@ class _TransactionHistoryScreenContentState
           label: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: AppIconSize.xs, color: isSelected ? Colors.white : color),
+              Icon(
+                icon,
+                size: AppIconSize.xs,
+                color: isSelected ? Colors.white : color,
+              ),
               const SizedBox(width: AppSpacing.xs),
               Text(label),
             ],
@@ -289,7 +331,7 @@ class _TransactionHistoryScreenContentState
         if (state is TransactionLoaded) {
           searchQuery = state.searchQuery;
         }
-        
+
         if (searchQuery == null || searchQuery.isEmpty) {
           return const SizedBox.shrink();
         }
@@ -306,7 +348,11 @@ class _TransactionHistoryScreenContentState
           ),
           child: Row(
             children: [
-              const Icon(Icons.search, size: AppIconSize.sm, color: AppColors.primary),
+              const Icon(
+                Icons.search,
+                size: AppIconSize.sm,
+                color: AppColors.primary,
+              ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
@@ -341,7 +387,6 @@ class _TransactionHistoryScreenContentState
     String? searchQuery,
   ) {
     var filtered = transactions;
-
     if (filterType != null) {
       filtered = filtered.where((t) => t.type == filterType).toList();
     }
@@ -379,48 +424,45 @@ class _TransactionHistoryScreenContentState
     final sortedDates = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final date = sortedDates[index];
-          final transactionsForDate = grouped[date]!;
+      delegate: SliverChildBuilderDelegate((context, index) {
+        final date = sortedDates[index];
+        final transactionsForDate = grouped[date]!;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Date header with running total
-              _buildDateHeader(date, transactionsForDate),
-              const SizedBox(height: AppSpacing.sm),
-              // Transactions for this date
-              ...transactionsForDate.map(
-                (transaction) => SwipeableTransactionCard(
-                  title: transaction.title,
-                  amount: transaction.amount,
-                  type: transaction.type,
-                  icon: CategoryIconMapper.getIconForCategory(
-                    transaction.categoryId,
-                  ),
-                  date: transaction.date,
-                  note: transaction.note,
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.transactionDetail,
-                      arguments: TransactionDetailArgs(transaction.id),
-                    );
-                  },
-                  onDelete: () {
-                    context.read<TransactionBloc>().add(
-                      DeleteTransactionEvent(transaction.id),
-                    );
-                  },
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Date header with running total
+            _buildDateHeader(date, transactionsForDate),
+            const SizedBox(height: AppSpacing.sm),
+            // Transactions for this date
+            ...transactionsForDate.map(
+              (transaction) => SwipeableTransactionCard(
+                title: transaction.title,
+                amount: transaction.amount,
+                type: transaction.type,
+                icon: CategoryIconMapper.getIconForCategory(
+                  transaction.categoryId,
                 ),
+                date: transaction.date,
+                note: transaction.note,
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.transactionDetail,
+                    arguments: TransactionDetailArgs(transaction.id),
+                  );
+                },
+                onDelete: () {
+                  context.read<TransactionBloc>().add(
+                    DeleteTransactionEvent(transaction.id),
+                  );
+                },
               ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-          );
-        },
-        childCount: sortedDates.length,
-      ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+        );
+      }, childCount: sortedDates.length),
     );
   }
 
@@ -446,10 +488,7 @@ class _TransactionHistoryScreenContentState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _formatDateHeader(date),
-                  style: AppTextStyles.h3,
-                ),
+                Text(_formatDateHeader(date), style: AppTextStyles.h3),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   '${transactions.length} ${transactions.length == 1 ? 'transaction' : 'transactions'}',
@@ -462,7 +501,10 @@ class _TransactionHistoryScreenContentState
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                NumberFormat.currency(symbol: 'RM', decimalDigits: 2).format(netAmount),
+                NumberFormat.currency(
+                  symbol: 'RM',
+                  decimalDigits: 2,
+                ).format(netAmount),
                 style: AppTextStyles.amountSmall.copyWith(
                   color: netAmount >= 0 ? AppColors.income : AppColors.expense,
                 ),
@@ -524,10 +566,7 @@ class _TransactionHistoryScreenContentState
               ),
             ),
             const SizedBox(height: AppSpacing.xxl),
-            Text(
-              'Filter Transactions',
-              style: AppTextStyles.h2,
-            ),
+            Text('Filter Transactions', style: AppTextStyles.h2),
             const SizedBox(height: AppSpacing.lg),
             _buildFilterOption(
               context,
@@ -586,8 +625,14 @@ class _TransactionHistoryScreenContentState
         TransactionType? currentFilterType;
         if (state is TransactionLoaded) {
           currentFilterType = state.filterType;
+        } else if (state is TransactionsFilteredLoaded) {
+          currentFilterType = state.filterType;
         }
-        
+
+        if (state is TransactionsFilteredLoaded) {
+          currentFilterType = state.filterType;
+        }
+
         final isSelected = currentFilterType == type;
 
         return ListTile(
@@ -653,10 +698,7 @@ class _TransactionHistoryScreenContentState
               ),
             ),
             const SizedBox(height: AppSpacing.xxl),
-            Text(
-              'Search Transactions',
-              style: AppTextStyles.h2,
-            ),
+            Text('Search Transactions', style: AppTextStyles.h2),
             const SizedBox(height: AppSpacing.lg),
             AppTextField(
               controller: _searchController,

@@ -30,11 +30,9 @@ class CommitmentDetailVO extends IVO {
   CommitmentDetailVO.fromJson(Map<String, dynamic> json) {
     commitmentDetailId = json['commitmentDetailId'];
     description = json['description'];
-    // FIX: Read as double, not dynamic
     amount = json['amount'] as double?;
     type = json['type'];
     savingId = json['savingId'];
-    // FIX: Null-guard before parsing referredSavingVO
     referredSavingVO = json['referredSavingVO'] != null
         ? SavingVO.fromJson(json['referredSavingVO'] as Map<String, dynamic>)
         : null;
@@ -47,7 +45,6 @@ class CommitmentDetailVO extends IVO {
     'amount': amount,
     'type': type,
     'savingId': savingId,
-    // FIX: Emit null instead of {} when referredSavingVO is absent
     'referredSavingVO': referredSavingVO?.toJson(),
   };
 }

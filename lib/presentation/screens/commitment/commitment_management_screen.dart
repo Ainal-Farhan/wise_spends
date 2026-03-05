@@ -11,9 +11,7 @@ class CommitmentManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Commitments'),
-      ),
+      appBar: AppBar(title: const Text('Commitments')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -61,10 +59,7 @@ class CommitmentManagementScreen extends StatelessWidget {
                   SizedBox(height: 8),
                   Text(
                     'Track bills, subscriptions, and regular payments',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ],
               ),
@@ -76,10 +71,7 @@ class CommitmentManagementScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'What are Commitments?',
-                    style: AppTextStyles.h3,
-                  ),
+                  Text('What are Commitments?', style: AppTextStyles.h3),
                   const SizedBox(height: 12),
                   Text(
                     'Commitments are recurring expenses that you pay regularly, such as:',
@@ -88,7 +80,9 @@ class CommitmentManagementScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildBulletPoint('Rent or mortgage payments'),
                   _buildBulletPoint('Car insurance'),
-                  _buildBulletPoint('Streaming subscriptions (Netflix, Spotify)'),
+                  _buildBulletPoint(
+                    'Streaming subscriptions (Netflix, Spotify)',
+                  ),
                   _buildBulletPoint('Utility bills'),
                   _buildBulletPoint('Loan payments'),
                   const SizedBox(height: 20),
@@ -121,23 +115,6 @@ class CommitmentManagementScreen extends StatelessWidget {
                 size: AppButtonSize.large,
               ),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: AppButton.secondary(
-                label: 'Add New Commitment',
-                icon: Icons.add,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CommitmentListScreen(),
-                    ),
-                  );
-                },
-                size: AppButtonSize.large,
-              ),
-            ),
             const SizedBox(height: 32),
           ],
         ),
@@ -152,12 +129,7 @@ class CommitmentManagementScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('• ', style: TextStyle(fontSize: 16)),
-          Expanded(
-            child: Text(
-              text,
-              style: AppTextStyles.bodyMedium,
-            ),
-          ),
+          Expanded(child: Text(text, style: AppTextStyles.bodyMedium)),
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
@@ -25,9 +26,10 @@ class HomeScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) =>
-              TransactionBloc(context.read<ITransactionRepository>())
-                ..add(LoadRecentTransactionsEvent(limit: 10)),
+          create: (context) => TransactionBloc(
+            context.read<ITransactionRepository>(),
+            context.read<ISavingRepository>(),
+          )..add(LoadRecentTransactionsEvent(limit: 10)),
         ),
         // NavigationBloc is scoped to HomeScreen so it is created and
         // disposed with this screen automatically.
@@ -47,6 +49,9 @@ class _HomeScreenContent extends StatelessWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           context.read<TransactionBloc>().add(RefreshTransactionsEvent());
+          context.read<TransactionBloc>().add(
+            LoadRecentTransactionsEvent(limit: 10),
+          );
         },
         child: CustomScrollView(
           slivers: [
@@ -210,34 +215,7 @@ class _HomeScreenContent extends StatelessWidget {
 
           return Column(
             children: [
-              AppCard.gradient(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [AppColors.primary, AppColors.primaryDark],
-                ),
-                borderRadius: BorderRadius.circular(AppRadius.lg),
-                padding: const EdgeInsets.all(AppSpacing.xxl),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Total Balance',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      NumberFormat.currency(
-                        symbol: 'RM ',
-                        decimalDigits: 2,
-                      ).format(totalBalance),
-                      style: AppTextStyles.balanceDisplay,
-                    ),
-                  ],
-                ),
-              ),
+              _buildTotalBalanceCard(context, totalBalance),
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
@@ -283,6 +261,49 @@ class _HomeScreenContent extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildTotalBalanceCard(BuildContext context, double totalBalance) {
+    return AppCard.gradient(
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [AppColors.primary, AppColors.primaryDark],
+      ),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      padding: const EdgeInsets.all(AppSpacing.xxl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(
+                Icons.account_balance,
+                color: Colors.white70,
+                size: AppIconSize.lg,
+              ),
+              SizedBox(width: AppSpacing.sm),
+              Text(
+                'Total Balance',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            NumberFormat.currency(
+              symbol: 'RM ',
+              decimalDigits: 2,
+            ).format(totalBalance),
+            style: AppTextStyles.balanceDisplay,
+          ),
+        ],
+      ),
     );
   }
 

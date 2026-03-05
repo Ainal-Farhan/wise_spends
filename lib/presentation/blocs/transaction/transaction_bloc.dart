@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'transaction_event.dart';
@@ -8,8 +9,10 @@ import 'transaction_state.dart';
 /// Follows strict BLoC pattern: Event → BLoC → State → UI
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final ITransactionRepository _repository;
+  final ISavingRepository _savingRepository;
 
-  TransactionBloc(this._repository) : super(TransactionInitial()) {
+  TransactionBloc(this._repository, this._savingRepository)
+    : super(TransactionInitial()) {
     on<LoadTransactionsEvent>(_onLoadTransactions);
     on<LoadRecentTransactionsEvent>(_onLoadRecentTransactions);
     on<LoadTransactionsByDateRangeEvent>(_onLoadTransactionsByDateRange);
@@ -255,6 +258,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         updatedAt: DateTime.now(),
       );
 
+      await _savingRepository.makeTransaction(
+        sourceSavingId: event.sourceAccountId!,
+        destinationSavingId: event.destinationAccountId,
+        amount: event.amount,
+        transactionType: event.type,
+        reference: event.title,
+      );
+
       final created = await _repository.createTransaction(transaction);
       emit(TransactionCreated(created));
 
@@ -300,7 +311,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       // Store deleted transaction for potential undo (in memory)
       _deletedTransactionBuffer[event.transactionId] = deletedTransaction;
-      
+
       // Auto-clear buffer after 5 seconds
       Future.delayed(const Duration(seconds: 5), () {
         _deletedTransactionBuffer.remove(event.transactionId);
@@ -410,10 +421,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       final transactions = await _repository.getAllTransactions();
       final filtered = event.type == null
           ? transactions
-          : transactions
-                .where((t) => t.type == event.type!)
-                .toList();
-
+          : transactions.where((t) => t.type == event.type!).toList();
+      print(filtered);
       emit(
         TransactionsFilteredLoaded(
           transactions: filtered,

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/core/constants/constant/enum/category_enum.dart';
 
-/// Add Category Form Events
 abstract class AddCategoryFormEvent extends Equatable {
   const AddCategoryFormEvent();
 
@@ -8,12 +8,10 @@ abstract class AddCategoryFormEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Initialize form
 class InitializeAddCategoryForm extends AddCategoryFormEvent {
   const InitializeAddCategoryForm();
 }
 
-/// Change category name
 class AddCategoryChangeName extends AddCategoryFormEvent {
   final String name;
 
@@ -23,9 +21,8 @@ class AddCategoryChangeName extends AddCategoryFormEvent {
   List<Object> get props => [name];
 }
 
-/// Change category type
 class AddCategoryChangeType extends AddCategoryFormEvent {
-  final String type;
+  final CategoryType type;
 
   const AddCategoryChangeType(this.type);
 
@@ -33,7 +30,6 @@ class AddCategoryChangeType extends AddCategoryFormEvent {
   List<Object> get props => [type];
 }
 
-/// Select icon
 class AddCategorySelectIcon extends AddCategoryFormEvent {
   final int iconCodePoint;
 
@@ -43,5 +39,6 @@ class AddCategorySelectIcon extends AddCategoryFormEvent {
   List<Object> get props => [iconCodePoint];
 }
 
-/// Clear form
-class ClearAddCategoryForm extends AddCategoryFormEvent {}
+class ClearAddCategoryForm extends AddCategoryFormEvent {
+  const ClearAddCategoryForm();
+}

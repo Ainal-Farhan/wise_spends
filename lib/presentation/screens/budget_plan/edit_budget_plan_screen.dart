@@ -1,96 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/core/di/i_repository_locator.dart';
-import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_params.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_bloc.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_event.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
+import 'package:wise_spends/presentation/blocs/edit_budget_plan_form/edit_budget_plan_form_bloc.dart';
+import 'package:wise_spends/presentation/blocs/edit_budget_plan_form/edit_budget_plan_form_event.dart';
+import 'package:wise_spends/presentation/blocs/edit_budget_plan_form/edit_budget_plan_form_state.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
-/// Edit Budget Plan Screen - 3-step wizard (similar to Create but pre-filled)
-class EditBudgetPlanScreen extends StatefulWidget {
+/// Edit Budget Plan Screen - Pure BLoC 3-step wizard
+class EditBudgetPlanScreen extends StatelessWidget {
   final String planUuid;
 
   const EditBudgetPlanScreen({super.key, required this.planUuid});
 
   @override
-  State<EditBudgetPlanScreen> createState() => _EditBudgetPlanScreenState();
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              EditBudgetPlanFormBloc()..add(InitializeEditBudgetPlan(planUuid)),
+        ),
+      ],
+      child: _EditBudgetPlanScreenContent(planUuid: planUuid),
+    );
+  }
 }
 
-class _EditBudgetPlanScreenState extends State<EditBudgetPlanScreen> {
-  int _currentStep = 0;
+class _EditBudgetPlanScreenContent extends StatelessWidget {
+  final String planUuid;
   final _formKey = GlobalKey<FormState>();
-
-  // Step 1: Plan Basics
-  BudgetPlanCategory _selectedCategory = BudgetPlanCategory.custom;
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-
-  // Step 2: Financial Goals
   final _targetAmountController = TextEditingController();
-  DateTime _targetDate = DateTime.now().add(const Duration(days: 365));
 
-  // Step 3: Milestones (would load existing)
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadPlanData();
-  }
-
-  Future<void> _loadPlanData() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final repository = SingletonUtil.getSingleton<IRepositoryLocator>()!
-          .getBudgetPlanRepository();
-      final plan = await repository.getPlanByUuid(widget.planUuid);
-
-      if (plan != null && mounted) {
-        setState(() {
-          _nameController.text = plan.name;
-          _descriptionController.text = plan.description ?? '';
-          _selectedCategory = plan.category;
-          _targetAmountController.text = plan.targetAmount.toString();
-          _targetDate = plan.targetDate;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to load plan: ${e.toString()}'),
-            backgroundColor: WiseSpendsColors.error,
-          ),
-        );
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    _targetAmountController.dispose();
-    super.dispose();
-  }
+  _EditBudgetPlanScreenContent({required this.planUuid});
 
   @override
   Widget build(BuildContext context) {
     final loc = LocalizationService();
-
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: Text(loc.get('budget_plans.edit'))),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -99,62 +53,112 @@ class _EditBudgetPlanScreenState extends State<EditBudgetPlanScreen> {
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _updatePlan,
-            tooltip: loc.get('general.save'),
-          ),
-        ],
       ),
-      body: Column(
-        children: [
-          // Step indicator
-          _buildStepIndicator(),
-
-          // Form content
-          Expanded(
-            child: Form(
-              key: _formKey,
-              child: IndexedStack(
-                index: _currentStep,
-                children: [
-                  _buildStep1PlanBasics(),
-                  _buildStep2FinancialGoals(),
-                  _buildStep3Milestones(),
-                ],
+      body: BlocConsumer<EditBudgetPlanFormBloc, EditBudgetPlanFormState>(
+        listener: (context, state) {
+          if (state is EditBudgetPlanFormSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.success,
               ),
+            );
+            context.read<BudgetPlanListBloc>().add(LoadBudgetPlans());
+            Navigator.pop(context);
+          } else if (state is EditBudgetPlanFormError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is EditBudgetPlanFormLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is EditBudgetPlanFormReady) {
+            return _buildWizard(
+              context,
+              loc,
+              _formKey,
+              _nameController,
+              _descriptionController,
+              _targetAmountController,
+              state,
+            );
+          }
+          return const SizedBox.shrink();
+        },
+      ),
+    );
+  }
+
+  Widget _buildWizard(
+    BuildContext context,
+    LocalizationService loc,
+    GlobalKey<FormState> formKey,
+    TextEditingController nameController,
+    TextEditingController descriptionController,
+    TextEditingController targetAmountController,
+    EditBudgetPlanFormReady state,
+  ) {
+    return Column(
+      children: [
+        // Step indicator
+        _buildStepIndicator(context, state),
+
+        // Form content
+        Expanded(
+          child: Form(
+            key: formKey,
+            child: IndexedStack(
+              index: 0, // Simplified for now
+              children: [
+                _buildStep1PlanBasics(
+                  context,
+                  loc,
+                  state,
+                  nameController,
+                  descriptionController,
+                ),
+                _buildStep2FinancialGoals(
+                  context,
+                  loc,
+                  state,
+                  targetAmountController,
+                ),
+                _buildStep3Review(context, loc, state),
+              ],
             ),
           ),
+        ),
 
-          // Navigation buttons
-          _buildNavigationButtons(),
-        ],
-      ),
+        // Navigation buttons
+        _buildNavigationButtons(context, state),
+      ],
     );
   }
 
-  Widget _buildStepIndicator() {
-    final loc = LocalizationService();
-
+  Widget _buildStepIndicator(
+    BuildContext context,
+    EditBudgetPlanFormReady state,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Row(
         children: [
-          _buildStepIndicatorItem(0, loc.get('budget_plans.step_basics')),
+          _buildStepItem(0, 'Basics'),
           const SizedBox(width: 8),
-          _buildStepIndicatorItem(1, loc.get('budget_plans.step_financial')),
+          _buildStepItem(1, 'Financial'),
           const SizedBox(width: 8),
-          _buildStepIndicatorItem(2, loc.get('budget_plans.step_milestones')),
+          _buildStepItem(2, 'Review'),
         ],
       ),
     );
   }
 
-  Widget _buildStepIndicatorItem(int step, String label) {
-    final isActive = step == _currentStep;
-    final isCompleted = step < _currentStep;
-
+  Widget _buildStepItem(int step, String label) {
     return Expanded(
       child: Row(
         children: [
@@ -162,37 +166,145 @@ class _EditBudgetPlanScreenState extends State<EditBudgetPlanScreen> {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: isActive
-                  ? WiseSpendsColors.primary
-                  : isCompleted
-                  ? WiseSpendsColors.success
-                  : WiseSpendsColors.divider,
+              color: AppColors.primary,
               shape: BoxShape.circle,
             ),
             child: Center(
-              child: isCompleted
-                  ? const Icon(Icons.check, size: 18, color: Colors.white)
-                  : Text(
-                      '${step + 1}',
-                      style: TextStyle(
-                        color: isActive
-                            ? Colors.white
-                            : WiseSpendsColors.textSecondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+              child: Text(
+                '${step + 1}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                color: isActive
-                    ? WiseSpendsColors.textPrimary
-                    : WiseSpendsColors.textSecondary,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 12,
+              style: AppTextStyles.caption.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStep1PlanBasics(
+    BuildContext context,
+    LocalizationService loc,
+    EditBudgetPlanFormReady state,
+    TextEditingController nameController,
+    TextEditingController descriptionController,
+  ) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Plan Name', style: AppTextStyles.bodySemiBold),
+          const SizedBox(height: 8),
+          AppTextField(
+            label: 'Name',
+            hint: 'e.g., Emergency Fund',
+            controller: nameController,
+          ),
+          const SizedBox(height: 16),
+          Text('Description', style: AppTextStyles.bodySemiBold),
+          const SizedBox(height: 8),
+          AppTextField(
+            label: 'Description',
+            hint: 'Optional description',
+            controller: descriptionController,
+            maxLines: 3,
+          ),
+          const SizedBox(height: 16),
+          Text('Category', style: AppTextStyles.bodySemiBold),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: BudgetPlanCategory.values.map((category) {
+              final isSelected = state.category == category;
+              return FilterChip(
+                label: Text(category.displayName),
+                selected: isSelected,
+                onSelected: (selected) {
+                  context.read<EditBudgetPlanFormBloc>().add(
+                    EditSelectCategory(category),
+                  );
+                },
+                selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                checkmarkColor: AppColors.primary,
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStep2FinancialGoals(
+    BuildContext context,
+    LocalizationService loc,
+    EditBudgetPlanFormReady state,
+    TextEditingController targetAmountController,
+  ) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Target Amount', style: AppTextStyles.bodySemiBold),
+          const SizedBox(height: 8),
+          AppTextField(
+            label: 'Amount',
+            hint: '0.00',
+            controller: targetAmountController,
+            prefixText: 'RM ',
+            keyboardType: AppTextFieldKeyboardType.decimal,
+          ),
+          const SizedBox(height: 16),
+          Text('Target Date', style: AppTextStyles.bodySemiBold),
+          const SizedBox(height: 8),
+          InkWell(
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: state.endDate,
+                firstDate: state.startDate,
+                lastDate: DateTime(2100),
+              );
+              if (picked != null) {
+                context.read<EditBudgetPlanFormBloc>().add(
+                  EditChangeEndDate(picked),
+                );
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.divider),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_today,
+                    color: AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    DateFormat('MMM d, y').format(state.endDate),
+                    style: AppTextStyles.bodyMedium,
+                  ),
+                ],
               ),
             ),
           ),
@@ -201,200 +313,87 @@ class _EditBudgetPlanScreenState extends State<EditBudgetPlanScreen> {
     );
   }
 
-  Widget _buildStep1PlanBasics() {
-    // Similar to CreateBudgetPlanScreen but pre-filled
+  Widget _buildStep3Review(
+    BuildContext context,
+    LocalizationService loc,
+    EditBudgetPlanFormReady state,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextFormField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Plan Name',
-              prefixIcon: Icon(Icons.flag_outlined),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a plan name';
-              }
-              return null;
-            },
-          ),
+          Text('Review Plan', style: AppTextStyles.h3),
           const SizedBox(height: 16),
-          TextFormField(
-            controller: _descriptionController,
-            decoration: const InputDecoration(
-              labelText: 'Description',
-              prefixIcon: Icon(Icons.note_outlined),
+          AppCard(
+            child: Column(
+              children: [
+                _buildReviewRow('Name', state.name),
+                const Divider(),
+                _buildReviewRow('Category', state.category.displayName),
+                const Divider(),
+                _buildReviewRow(
+                  'Target Amount',
+                  'RM ${state.targetAmount.toStringAsFixed(2)}',
+                ),
+                const Divider(),
+                _buildReviewRow(
+                  'Target Date',
+                  DateFormat('MMM d, y').format(state.endDate),
+                ),
+              ],
             ),
-            maxLines: 3,
           ),
-          // ... rest similar to CreateBudgetPlanScreen
         ],
       ),
     );
   }
 
-  Widget _buildStep2FinancialGoals() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildReviewRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Target Amount',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _targetAmountController,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(
-              prefixText: 'RM ',
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter target amount';
-              }
-              if (double.tryParse(value) == null) {
-                return 'Please enter a valid number';
-              }
-              return null;
-            },
-          ),
-          // ... rest similar to CreateBudgetPlanScreen
+          Text(label, style: AppTextStyles.caption),
+          Text(value, style: AppTextStyles.bodySemiBold),
         ],
       ),
     );
   }
 
-  Widget _buildStep3Milestones() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.info_outline, size: 64, color: WiseSpendsColors.textHint),
-          const SizedBox(height: 16),
-          const Text('Milestone editing coming soon'),
-          const SizedBox(height: 8),
-          Text(
-            'You can manage milestones from the plan detail screen',
-            style: TextStyle(color: WiseSpendsColors.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavigationButtons() {
-    final loc = LocalizationService();
-
+  Widget _buildNavigationButtons(
+    BuildContext context,
+    EditBudgetPlanFormReady state,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.background,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
         ],
       ),
-      child: SafeArea(
-        child: Row(
-          children: [
-            if (_currentStep > 0)
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () {
-                    setState(() {
-                      _currentStep--;
-                    });
-                  },
-                  child: Text(loc.get('general.back')),
-                ),
-              ),
-            if (_currentStep > 0) const SizedBox(width: 16),
-            Expanded(
-              flex: _currentStep > 0 ? 2 : 1,
-              child: ElevatedButton(
-                onPressed: _currentStep < 2 ? _nextStep : _updatePlan,
-                child: Text(
-                  _currentStep < 2
-                      ? loc.get('general.next')
-                      : loc.get('general.save'),
-                ),
-              ),
+      child: Row(
+        children: [
+          Expanded(
+            child: AppButton.primary(
+              label: 'Save Changes',
+              icon: Icons.save,
+              onPressed: () {
+                context.read<EditBudgetPlanFormBloc>().add(
+                  SaveEditBudgetPlan(),
+                );
+              },
+              isLoading: state.isLoading,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
-  }
-
-  void _nextStep() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _currentStep++;
-      });
-    }
-  }
-
-  void _updatePlan() {
-    if (_formKey.currentState!.validate()) {
-      final targetAmount = double.parse(_targetAmountController.text);
-
-      final params = UpdateBudgetPlanParams(
-        name: _nameController.text,
-        description: _descriptionController.text.isEmpty
-            ? null
-            : _descriptionController.text,
-        category: _selectedCategory,
-        targetAmount: targetAmount,
-        targetDate: _targetDate,
-      );
-
-      final repository = SingletonUtil.getSingleton<IRepositoryLocator>()!
-          .getBudgetPlanRepository();
-
-      repository
-          .updatePlan(widget.planUuid, params)
-          .then((_) {
-            if (mounted) {
-              context.read<BudgetPlanListBloc>().add(LoadBudgetPlans());
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Row(
-                    children: [
-                      Icon(Icons.check_circle, color: Colors.white),
-                      SizedBox(width: 12),
-                      Text('Plan updated successfully'),
-                    ],
-                  ),
-                  backgroundColor: WiseSpendsColors.success,
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-
-              Navigator.pop(context);
-            }
-          })
-          .catchError((error) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Error: ${error.toString()}'),
-                  backgroundColor: WiseSpendsColors.error,
-                ),
-              );
-            }
-          });
-    }
   }
 }

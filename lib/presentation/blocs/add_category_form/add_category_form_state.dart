@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/core/constants/constant/enum/category_enum.dart';
 
-/// Add Category Form States
 abstract class AddCategoryFormState extends Equatable {
   const AddCategoryFormState();
 
@@ -8,22 +8,19 @@ abstract class AddCategoryFormState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Initial state
 class AddCategoryFormInitial extends AddCategoryFormState {}
 
-/// Loading state
 class AddCategoryFormLoading extends AddCategoryFormState {}
 
-/// Form ready state
 class AddCategoryFormReady extends AddCategoryFormState {
   final String name;
-  final String type;
+  final CategoryType type;
   final int iconCodePoint;
 
   const AddCategoryFormReady({
     this.name = '',
-    this.type = 'expense',
-    this.iconCodePoint = 0xE8B0, // Default category icon
+    this.type = CategoryType.expense,
+    this.iconCodePoint = 0xE8B0, // Default: Icons.category
   });
 
   @override
@@ -31,7 +28,7 @@ class AddCategoryFormReady extends AddCategoryFormState {
 
   AddCategoryFormReady copyWith({
     String? name,
-    String? type,
+    CategoryType? type,
     int? iconCodePoint,
   }) {
     return AddCategoryFormReady(
@@ -42,7 +39,6 @@ class AddCategoryFormReady extends AddCategoryFormState {
   }
 }
 
-/// Form error state
 class AddCategoryFormError extends AddCategoryFormState {
   final String message;
 

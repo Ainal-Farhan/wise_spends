@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
@@ -48,8 +49,10 @@ class AddTransactionScreen extends StatelessWidget {
                 ..add(LoadCategoriesEvent()),
         ),
         BlocProvider(
-          create: (context) =>
-              TransactionBloc(context.read<ITransactionRepository>()),
+          create: (context) => TransactionBloc(
+            context.read<ITransactionRepository>(),
+            context.read<ISavingRepository>(),
+          ),
         ),
         BlocProvider(
           create: (context) =>
@@ -105,7 +108,11 @@ class _AddTransactionScreenContent extends StatelessWidget {
                 ),
               ),
             );
-            Navigator.pop(context);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.homeLoggedIn,
+              (context) => false,
+            );
           } else if (state is TransactionError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -152,7 +159,8 @@ class _AddTransactionScreenContent extends StatelessWidget {
                     // Category Grid
                     if (formState.transactionType != TransactionType.transfer)
                       _buildCategoryGrid(context, formState),
-
+                    if (formState.transactionType != TransactionType.transfer)
+                      const SizedBox(height: 16),
                     // Date Picker
                     _buildDatePicker(context, formState),
                     const SizedBox(height: 16),

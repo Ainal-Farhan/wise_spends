@@ -7,6 +7,7 @@ import 'package:wise_spends/data/db/composite/saving_with_money_storage.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/domain/entities/impl/saving/edit_saving_form_vo.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 class SavingRepository extends ISavingRepository {
   SavingRepository() : super(AppDatabase());
@@ -203,7 +204,7 @@ class SavingRepository extends ISavingRepository {
     required String sourceSavingId,
     String? destinationSavingId,
     required double amount,
-    required String transactionType,
+    required TransactionType transactionType,
     String? reference,
   }) async {
     try {
@@ -211,12 +212,14 @@ class SavingRepository extends ISavingRepository {
       String transactionTypeFormatted = '';
       double transactionAmount = amount;
 
-      if (transactionType == 'out' ||
-          (transactionType == 'transfer' && destinationSavingId == null)) {
+      if (transactionType == TransactionType.expense ||
+          (transactionType == TransactionType.transfer &&
+              destinationSavingId == null)) {
         transactionTypeFormatted = 'withdrawal';
-      } else if (transactionType == 'in') {
+      } else if (transactionType == TransactionType.income) {
         transactionTypeFormatted = 'deposit';
-      } else if (transactionType == 'transfer' && destinationSavingId != null) {
+      } else if (transactionType == TransactionType.transfer &&
+          destinationSavingId != null) {
         // Handle transfer - subtract from source, add to destination
         transactionTypeFormatted = 'transfer_out';
 

@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'add_category_form_event.dart';
 import 'add_category_form_state.dart';
 
-/// Add Category Form BLoC
 class AddCategoryFormBloc
     extends Bloc<AddCategoryFormEvent, AddCategoryFormState> {
   AddCategoryFormBloc() : super(const AddCategoryFormReady()) {
@@ -43,9 +42,11 @@ class AddCategoryFormBloc
     Emitter<AddCategoryFormState> emit,
   ) {
     if (state is AddCategoryFormReady) {
-      emit((state as AddCategoryFormReady).copyWith(
-        iconCodePoint: event.iconCodePoint,
-      ));
+      emit(
+        (state as AddCategoryFormReady).copyWith(
+          iconCodePoint: event.iconCodePoint,
+        ),
+      );
     }
   }
 

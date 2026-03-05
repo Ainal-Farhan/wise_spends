@@ -1,44 +1,39 @@
 import 'package:drift/drift.dart';
+import 'package:uuid/uuid.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
 import 'package:wise_spends/domain/repositories/category_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
-/// Category Repository Implementation
-/// Handles all database operations for categories
 class CategoryRepository extends ICategoryRepository {
   final AppDatabase _db = AppDatabase();
+  static const _uuid = Uuid();
 
   @override
-  void dispose() {
-    // No resources to dispose
-  }
+  void dispose() {}
 
   @override
   Future<List<CategoryEntity>> getAllCategories() async {
-    final query = _db.select(_db.categories);
-    final rows = await query.get();
-
+    final rows = await _db.select(_db.categories).get();
     return rows.map(_mapToEntity).toList();
   }
 
   @override
   Future<List<CategoryEntity>> getIncomeCategories() async {
-    final allCategories = await getAllCategories();
-    return allCategories.where((c) => c.isIncome).toList();
+    final all = await getAllCategories();
+    return all.where((c) => c.isIncome).toList();
   }
 
   @override
   Future<List<CategoryEntity>> getExpenseCategories() async {
-    final allCategories = await getAllCategories();
-    return allCategories.where((c) => c.isExpense).toList();
+    final all = await getAllCategories();
+    return all.where((c) => c.isExpense).toList();
   }
 
   @override
   Future<CategoryEntity?> getCategoryById(String id) async {
     final query = _db.select(_db.categories)..where((tbl) => tbl.id.equals(id));
     final rows = await query.get();
-
     if (rows.isEmpty) return null;
     return _mapToEntity(rows.first);
   }
@@ -48,15 +43,16 @@ class CategoryRepository extends ICategoryRepository {
     final query = _db.select(_db.categories)
       ..where((tbl) => tbl.name.equals(name));
     final rows = await query.get();
-
     if (rows.isEmpty) return null;
     return _mapToEntity(rows.first);
   }
 
   @override
   Future<CategoryEntity> createCategory(CategoryEntity category) async {
+    final id = category.id.isEmpty ? _uuid.v4() : category.id;
+
     final companion = CategoriesCompanion.insert(
-      id: category.id,
+      id: id,
       name: category.name,
       iconCodePoint: category.iconCodePoint,
       iconFontFamily: Value(category.iconFontFamily),
@@ -68,7 +64,9 @@ class CategoryRepository extends ICategoryRepository {
     );
 
     await _db.into(_db.categories).insert(companion);
-    return category;
+
+    // Return the entity with the assigned ID so the BLoC can cache it correctly
+    return category.copyWith(id: id);
   }
 
   @override
@@ -101,23 +99,21 @@ class CategoryRepository extends ICategoryRepository {
   Future<List<CategoryEntity>> getCategoriesForTransactionType(
     TransactionType type,
   ) async {
-    final allCategories = await getAllCategories();
-
+    final all = await getAllCategories();
     switch (type) {
       case TransactionType.income:
-        return allCategories
+        return all
             .where((c) => c.isIncome || (!c.isIncome && !c.isExpense))
             .toList();
       case TransactionType.expense:
-        return allCategories
+        return all
             .where((c) => c.isExpense || (!c.isIncome && !c.isExpense))
             .toList();
       case TransactionType.transfer:
-        return []; // Transfers don't need categories
+        return [];
     }
   }
 
-  /// Map database row to entity
   CategoryEntity _mapToEntity(Category row) {
     return CategoryEntity(
       id: row.id,

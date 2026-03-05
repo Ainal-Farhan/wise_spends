@@ -31,13 +31,13 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
       );
 
       await _repository.deleteSaving(event.id);
-      
+
       // Store for potential undo
       _deletedSavingBuffer[event.id] = deletedSaving;
       Future.delayed(const Duration(seconds: 5), () {
         _deletedSavingBuffer.remove(event.id);
       });
-      
+
       emit(SavingsSuccess('Saving deleted'));
       add(LoadSavingsListEvent());
     } catch (e) {

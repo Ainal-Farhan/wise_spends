@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
@@ -13,9 +14,9 @@ class LoadTransactionFormEvent extends HomeEvent {}
 
 class MakeTransactionEvent extends HomeEvent {
   final String sourceSavingId;
-  final String? destinationSavingId; 
+  final String? destinationSavingId;
   final double amount;
-  final String transactionType; // 'in', 'out', 'transfer'
+  final TransactionType transactionType;
   final String? reference;
 
   const MakeTransactionEvent({
@@ -29,11 +30,11 @@ class MakeTransactionEvent extends HomeEvent {
   @override
   List<Object> get props {
     return [
-      sourceSavingId, 
-      destinationSavingId ?? '', 
-      amount, 
+      sourceSavingId,
+      destinationSavingId ?? '',
+      amount,
       transactionType,
-      reference ?? ''
+      reference ?? '',
     ];
   }
 }

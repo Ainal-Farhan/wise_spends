@@ -113,10 +113,6 @@ class _AppTextFieldState extends State<AppTextField> {
     super.initState();
     _obscureText = widget.obscureText;
 
-    // FIX #1: Never pass both controller and initialValue to TextFormField.
-    // If a controller is provided, use it directly.
-    // If only initialValue is provided, seed a new internal controller with it.
-    // If neither, create an empty internal controller.
     if (widget.controller != null) {
       _controller = widget.controller!;
     } else {
@@ -174,8 +170,6 @@ class _AppTextFieldState extends State<AppTextField> {
           const SizedBox(height: AppSpacing.xs),
         ],
         TextFormField(
-          // FIX #1: Pass controller only — never initialValue.
-          // initialValue is handled in initState by seeding the controller.
           controller: _controller,
           focusNode: widget.focusNode,
           decoration: _buildDecoration(),
@@ -219,10 +213,6 @@ class _AppTextFieldState extends State<AppTextField> {
     return InputDecoration(
       hintText: widget.hint,
       hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textHint),
-      // FIX #2: Removed labelText, labelStyle, floatingLabelBehavior, and
-      // floatingLabelStyle — the label is already rendered manually above
-      // the field in build(). Keeping labelText here caused a duplicate
-      // label: one static Text widget above and one floating inside the field.
       prefixText: widget.prefixText,
       prefixStyle: AppTextStyles.bodyMedium.copyWith(
         color: AppColors.textSecondary,
