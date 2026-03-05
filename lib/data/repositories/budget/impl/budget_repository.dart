@@ -68,8 +68,6 @@ class BudgetRepository extends IBudgetRepository {
       id: budget.id,
       name: budget.name,
       categoryId: budget.categoryId,
-      categoryName: Value(budget.categoryName),
-      categoryIcon: Value(budget.categoryIcon),
       limitAmount: budget.limitAmount,
       spentAmount: Value(budget.spentAmount),
       period: budget.period.name,
@@ -89,8 +87,6 @@ class BudgetRepository extends IBudgetRepository {
     final updating = BudgetsCompanion(
       name: Value(budget.name),
       categoryId: Value(budget.categoryId),
-      categoryName: Value(budget.categoryName),
-      categoryIcon: Value(budget.categoryIcon),
       limitAmount: Value(budget.limitAmount),
       spentAmount: Value(budget.spentAmount),
       period: Value(budget.period.name),
@@ -158,8 +154,6 @@ class BudgetRepository extends IBudgetRepository {
       id: row.id,
       name: row.name,
       categoryId: row.categoryId,
-      categoryName: row.categoryName,
-      categoryIcon: row.categoryIcon,
       limitAmount: row.limitAmount,
       spentAmount: row.spentAmount,
       period: BudgetPeriod.values.firstWhere(

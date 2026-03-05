@@ -282,10 +282,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         type: event.type,
         categoryId: event.categoryId,
         date: transactionDateTime,
-        time: event.time,
         note: event.note,
         sourceAccountId: event.sourceAccountId,
-        destinationAccountId: event.destinationAccountId,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

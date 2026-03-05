@@ -11,12 +11,12 @@ abstract class BudgetPlanDetailEvent extends Equatable {
 
 /// Load plan detail
 class LoadPlanDetail extends BudgetPlanDetailEvent {
-  final String uuid;
+  final String id;
 
-  const LoadPlanDetail(this.uuid);
+  const LoadPlanDetail(this.id);
 
   @override
-  List<Object> get props => [uuid];
+  List<Object> get props => [id];
 }
 
 /// Add deposit to plan
@@ -25,7 +25,7 @@ class AddDeposit extends BudgetPlanDetailEvent {
   final String? note;
   final String source;
   final DateTime depositDate;
-  final int? linkedAccountId;
+  final String? linkedAccountId;
 
   const AddDeposit({
     required this.amount,
@@ -83,7 +83,7 @@ class AddMilestoneEvent extends BudgetPlanDetailEvent {
 
 /// Complete milestone
 class CompleteMilestoneEvent extends BudgetPlanDetailEvent {
-  final int milestoneId;
+  final String milestoneId;
 
   const CompleteMilestoneEvent(this.milestoneId);
 
@@ -93,7 +93,7 @@ class CompleteMilestoneEvent extends BudgetPlanDetailEvent {
 
 /// Delete milestone
 class DeleteMilestoneEvent extends BudgetPlanDetailEvent {
-  final int milestoneId;
+  final String milestoneId;
 
   const DeleteMilestoneEvent(this.milestoneId);
 
@@ -103,7 +103,7 @@ class DeleteMilestoneEvent extends BudgetPlanDetailEvent {
 
 /// Unlink account from plan
 class UnlinkAccountEvent extends BudgetPlanDetailEvent {
-  final int accountId;
+  final String accountId;
 
   const UnlinkAccountEvent(this.accountId);
 
@@ -123,12 +123,12 @@ class UpdatePlanStatusEvent extends BudgetPlanDetailEvent {
 
 /// Delete plan
 class DeletePlanEvent extends BudgetPlanDetailEvent {
-  final String uuid;
+  final String id;
 
-  const DeletePlanEvent(this.uuid);
+  const DeletePlanEvent(this.id);
 
   @override
-  List<Object> get props => [uuid];
+  List<Object> get props => [id];
 }
 
 /// Refresh plan data

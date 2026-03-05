@@ -13,8 +13,6 @@ class BudgetEntity extends Equatable {
   final String id;
   final String name;
   final String categoryId;
-  final String? categoryName;
-  final String? categoryIcon;
   final double limitAmount;
   final double spentAmount;
   final BudgetPeriod period;
@@ -28,8 +26,6 @@ class BudgetEntity extends Equatable {
     required this.id,
     required this.name,
     required this.categoryId,
-    this.categoryName,
-    this.categoryIcon,
     required this.limitAmount,
     this.spentAmount = 0,
     required this.period,
@@ -45,8 +41,6 @@ class BudgetEntity extends Equatable {
         id,
         name,
         categoryId,
-        categoryName,
-        categoryIcon,
         limitAmount,
         spentAmount,
         period,
@@ -78,8 +72,6 @@ class BudgetEntity extends Equatable {
     String? id,
     String? name,
     String? categoryId,
-    String? categoryName,
-    String? categoryIcon,
     double? limitAmount,
     double? spentAmount,
     BudgetPeriod? period,
@@ -93,8 +85,6 @@ class BudgetEntity extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       categoryId: categoryId ?? this.categoryId,
-      categoryName: categoryName ?? this.categoryName,
-      categoryIcon: categoryIcon ?? this.categoryIcon,
       limitAmount: limitAmount ?? this.limitAmount,
       spentAmount: spentAmount ?? this.spentAmount,
       period: period ?? this.period,

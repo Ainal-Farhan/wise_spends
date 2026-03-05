@@ -96,13 +96,13 @@ abstract class IBudgetPlanRepository implements ISingleton {
 
   /// Link an account to a plan
   Future<void> linkAccount(
-    String planUuid,
-    int accountId, {
+    String planId,
+    String accountId, {
     double? allocatedPercentage,
   });
 
   /// Unlink an account from a plan
-  Future<void> unlinkAccount(String planUuid, int accountId);
+  Future<void> unlinkAccount(String planId, String accountId);
 
   // ============================================================================
   // Milestone Operations
@@ -123,10 +123,10 @@ abstract class IBudgetPlanRepository implements ISingleton {
   );
 
   /// Complete a milestone
-  Future<void> completeMilestone(int milestoneId);
+  Future<void> completeMilestone(String milestoneId);
 
   /// Delete a milestone
-  Future<void> deleteMilestone(int milestoneId);
+  Future<void> deleteMilestone(String milestoneId);
 
   // ============================================================================
   // Analytics Operations

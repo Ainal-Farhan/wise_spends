@@ -27,7 +27,7 @@ class _AddDepositBottomSheetState extends State<AddDepositBottomSheet> {
 
   String _selectedSource = 'manual';
   DateTime _selectedDate = DateTime.now();
-  int? _selectedAccountId;
+  String? _selectedAccountId;
 
   @override
   void initState() {
@@ -247,14 +247,14 @@ class _AddDepositBottomSheetState extends State<AddDepositBottomSheet> {
           );
         }
 
-        return DropdownButtonFormField<int>(
+        return DropdownButtonFormField<String>(
           decoration: const InputDecoration(
             labelText: 'Select Account',
             prefixIcon: Icon(Icons.account_balance),
           ),
           initialValue: _selectedAccountId,
           items: accounts.map((account) {
-            return DropdownMenuItem(
+            return DropdownMenuItem<String>(
               value: account.accountId,
               child: Text(
                 '${account.accountName} - RM ${(account.allocatedAmount).toStringAsFixed(2)}',

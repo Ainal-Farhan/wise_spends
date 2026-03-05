@@ -39,11 +39,9 @@ class TransactionFormBloc
         transactionType: event.transaction.type,
         selectedCategory: event.category,
         selectedDate: event.transaction.date,
-        selectedTime: event.transaction.time,
         showNoteField: event.transaction.note != null &&
             event.transaction.note!.isNotEmpty,
         selectedSourceAccount: event.transaction.sourceAccountId,
-        selectedDestinationAccount: event.transaction.destinationAccountId,
         title: event.transaction.title,
         amount: event.transaction.amount.toString(),
         note: event.transaction.note,

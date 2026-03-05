@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 
 /// Budget Plan Milestone Entity - sub-goal within a plan
 class BudgetPlanMilestoneEntity extends Equatable {
-  final int? id;
-  final int planId;
+  final String id;
+  final String planId;
   final String title;
   final double targetAmount;
   final bool isCompleted;
@@ -11,7 +11,7 @@ class BudgetPlanMilestoneEntity extends Equatable {
   final DateTime? completedAt;
 
   const BudgetPlanMilestoneEntity({
-    this.id,
+    required this.id,
     required this.planId,
     required this.title,
     required this.targetAmount,
@@ -32,8 +32,8 @@ class BudgetPlanMilestoneEntity extends Equatable {
       ];
 
   BudgetPlanMilestoneEntity copyWith({
-    int? id,
-    int? planId,
+    String? id,
+    String? planId,
     String? title,
     double? targetAmount,
     bool? isCompleted,

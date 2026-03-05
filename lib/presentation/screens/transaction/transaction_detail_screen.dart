@@ -278,7 +278,9 @@ class _TransactionDetailScreenContent extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
-                      transaction.categoryName ?? 'Uncategorized',
+                      transaction.categoryId == 'uncategorized' 
+                          ? 'Uncategorized' 
+                          : 'Category: ${transaction.categoryId}',
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -314,20 +316,14 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           _buildDetailRow(
             icon: Icons.calendar_today_rounded,
-            label: 'Date & Time',
-            value: _formatDateTime(transaction.date, transaction.time, context),
+            label: 'Date',
+            value: _formatDate(transaction.date),
           ),
           _buildDetailRow(
             icon: Icons.account_balance_rounded,
             label: 'Account',
             value: transaction.sourceAccountId ?? 'N/A',
           ),
-          if (transaction.destinationAccountId != null)
-            _buildDetailRow(
-              icon: Icons.account_balance_wallet_rounded,
-              label: 'Destination Account',
-              value: transaction.destinationAccountId!,
-            ),
           if (transaction.note != null && transaction.note!.isNotEmpty)
             _buildDetailRow(
               icon: Icons.note_rounded,
@@ -487,11 +483,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
     return CategoryIconMapper.getIconForCategory(categoryId ?? 'uncategorized');
   }
 
-  String _formatDateTime(DateTime date, TimeOfDay? time, BuildContext context) {
-    final dateStr = DateFormat('EEEE, MMMM d, y').format(date);
-    if (time != null) {
-      return '$dateStr at ${time.format(context)}';
-    }
-    return dateStr;
+  String _formatDate(DateTime date) {
+    return DateFormat('EEEE, MMMM d, y').format(date);
   }
 }

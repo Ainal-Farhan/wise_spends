@@ -30,24 +30,24 @@ class BudgetPlanDetailBloc
   ) async {
     emit(BudgetPlanDetailLoading());
     try {
-      final plan = await _repository.getPlanByUuid(event.uuid);
+      final plan = await _repository.getPlanByUuid(event.id);
 
       if (plan == null) {
         emit(BudgetPlanNotFound());
         return;
       }
 
-      final deposits = await _repository.getDeposits(event.uuid);
-      final transactions = await _repository.getPlanTransactions(event.uuid);
-      final milestones = await _repository.getMilestones(event.uuid);
+      final deposits = await _repository.getDeposits(event.id);
+      final transactions = await _repository.getPlanTransactions(event.id);
+      final milestones = await _repository.getMilestones(event.id);
       final linkedAccounts = await _repository
-          .watchLinkedAccounts(event.uuid)
+          .watchLinkedAccounts(event.id)
           .first;
 
       // Get analytics data
       PlanAnalyticsData? analytics;
       try {
-        analytics = await _repository.getPlanAnalytics(event.uuid);
+        analytics = await _repository.getPlanAnalytics(event.id);
       } catch (_) {
         // Analytics is optional
       }
@@ -78,7 +78,7 @@ class BudgetPlanDetailBloc
 
     try {
       final deposit = await _repository.addDeposit(
-        currentState.plan.uuid,
+        currentState.plan.id,
         AddDepositParams(
           amount: event.amount,
           note: event.note,
@@ -91,7 +91,7 @@ class BudgetPlanDetailBloc
       emit(DepositAdded(deposit));
 
       // Reload plan detail to get updated amounts
-      add(LoadPlanDetail(currentState.plan.uuid));
+      add(LoadPlanDetail(currentState.plan.id));
     } catch (e) {
       emit(BudgetPlanDetailError('Failed to add deposit: ${e.toString()}'));
     }
@@ -108,7 +108,7 @@ class BudgetPlanDetailBloc
 
     try {
       final transaction = await _repository.addPlanTransaction(
-        currentState.plan.uuid,
+        currentState.plan.id,
         AddPlanTransactionParams(
           amount: event.amount,
           description: event.description,
@@ -121,7 +121,7 @@ class BudgetPlanDetailBloc
       emit(SpendingAdded(transaction));
 
       // Reload plan detail to get updated amounts
-      add(LoadPlanDetail(currentState.plan.uuid));
+      add(LoadPlanDetail(currentState.plan.id));
     } catch (e) {
       emit(BudgetPlanDetailError('Failed to add spending: ${e.toString()}'));
     }
@@ -138,7 +138,7 @@ class BudgetPlanDetailBloc
 
     try {
       final milestone = await _repository.addMilestone(
-        currentState.plan.uuid,
+        currentState.plan.id,
         event.title,
         event.targetAmount,
         event.dueDate,
@@ -147,7 +147,7 @@ class BudgetPlanDetailBloc
       emit(MilestoneAdded(milestone));
 
       // Reload plan detail
-      add(LoadPlanDetail(currentState.plan.uuid));
+      add(LoadPlanDetail(currentState.plan.id));
     } catch (e) {
       emit(BudgetPlanDetailError('Failed to add milestone: ${e.toString()}'));
     }
@@ -166,7 +166,7 @@ class BudgetPlanDetailBloc
       await _repository.completeMilestone(event.milestoneId);
 
       // Reload plan detail
-      add(LoadPlanDetail(currentState.plan.uuid));
+      add(LoadPlanDetail(currentState.plan.id));
     } catch (e) {
       emit(
         BudgetPlanDetailError('Failed to complete milestone: ${e.toString()}'),
@@ -187,7 +187,7 @@ class BudgetPlanDetailBloc
       await _repository.deleteMilestone(event.milestoneId);
 
       // Reload plan detail
-      add(LoadPlanDetail(currentState.plan.uuid));
+      add(LoadPlanDetail(currentState.plan.id));
     } catch (e) {
       emit(
         BudgetPlanDetailError('Failed to delete milestone: ${e.toString()}'),
@@ -205,10 +205,10 @@ class BudgetPlanDetailBloc
     final currentState = state as BudgetPlanDetailLoaded;
 
     try {
-      await _repository.unlinkAccount(currentState.plan.uuid, event.accountId);
+      await _repository.unlinkAccount(currentState.plan.id, event.accountId);
 
       // Reload plan detail
-      add(LoadPlanDetail(currentState.plan.uuid));
+      add(LoadPlanDetail(currentState.plan.id));
     } catch (e) {
       emit(
         BudgetPlanDetailError('Failed to unlink account: ${e.toString()}'),
@@ -226,10 +226,10 @@ class BudgetPlanDetailBloc
     final currentState = state as BudgetPlanDetailLoaded;
 
     try {
-      await _repository.updatePlanStatus(currentState.plan.uuid, event.status);
+      await _repository.updatePlanStatus(currentState.plan.id, event.status);
 
       // Reload plan detail
-      add(LoadPlanDetail(currentState.plan.uuid));
+      add(LoadPlanDetail(currentState.plan.id));
     } catch (e) {
       emit(
         BudgetPlanDetailError('Failed to update plan status: ${e.toString()}'),
@@ -243,8 +243,8 @@ class BudgetPlanDetailBloc
     Emitter<BudgetPlanDetailState> emit,
   ) async {
     try {
-      await _repository.deletePlan(event.uuid);
-      emit(PlanDeleted(event.uuid));
+      await _repository.deletePlan(event.id);
+      emit(PlanDeleted(event.id));
     } catch (e) {
       emit(BudgetPlanDetailError('Failed to delete plan: ${e.toString()}'));
     }
@@ -258,6 +258,6 @@ class BudgetPlanDetailBloc
     if (state is! BudgetPlanDetailLoaded) return;
 
     final currentState = state as BudgetPlanDetailLoaded;
-    add(LoadPlanDetail(currentState.plan.uuid));
+    add(LoadPlanDetail(currentState.plan.id));
   }
 }

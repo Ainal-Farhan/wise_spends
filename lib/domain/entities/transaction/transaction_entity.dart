@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 /// Transaction type enum
 enum TransactionType {
@@ -15,13 +14,9 @@ class TransactionEntity extends Equatable {
   final double amount;
   final TransactionType type;
   final String categoryId;
-  final String? categoryName;
-  final String? categoryIcon;
   final DateTime date;
-  final TimeOfDay? time;
   final String? note;
   final String? sourceAccountId;
-  final String? destinationAccountId;
   final String? receiptImagePath;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -32,13 +27,9 @@ class TransactionEntity extends Equatable {
     required this.amount,
     required this.type,
     required this.categoryId,
-    this.categoryName,
-    this.categoryIcon,
     required this.date,
-    this.time,
     this.note,
     this.sourceAccountId,
-    this.destinationAccountId,
     this.receiptImagePath,
     required this.createdAt,
     required this.updatedAt,
@@ -51,13 +42,9 @@ class TransactionEntity extends Equatable {
         amount,
         type,
         categoryId,
-        categoryName,
-        categoryIcon,
         date,
-        time,
         note,
         sourceAccountId,
-        destinationAccountId,
         receiptImagePath,
         createdAt,
         updatedAt,
@@ -69,13 +56,9 @@ class TransactionEntity extends Equatable {
     double? amount,
     TransactionType? type,
     String? categoryId,
-    String? categoryName,
-    String? categoryIcon,
     DateTime? date,
-    TimeOfDay? time,
     String? note,
     String? sourceAccountId,
-    String? destinationAccountId,
     String? receiptImagePath,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -86,14 +69,9 @@ class TransactionEntity extends Equatable {
       amount: amount ?? this.amount,
       type: type ?? this.type,
       categoryId: categoryId ?? this.categoryId,
-      categoryName: categoryName ?? this.categoryName,
-      categoryIcon: categoryIcon ?? this.categoryIcon,
       date: date ?? this.date,
-      time: time ?? this.time,
       note: note ?? this.note,
       sourceAccountId: sourceAccountId ?? this.sourceAccountId,
-      destinationAccountId:
-          destinationAccountId ?? this.destinationAccountId,
       receiptImagePath: receiptImagePath ?? this.receiptImagePath,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

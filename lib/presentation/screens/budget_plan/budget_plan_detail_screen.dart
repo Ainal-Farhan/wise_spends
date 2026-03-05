@@ -193,13 +193,13 @@ class _BudgetPlanDetailScreenContentState
           const SizedBox(height: 24),
 
           // Milestones
-          _buildMilestonesSection(state.milestones, state.plan.uuid, context),
+          _buildMilestonesSection(state.milestones, state.plan.id, context),
           const SizedBox(height: 24),
 
           // Linked Accounts
           _buildLinkedAccountsSection(
             state.linkedAccounts,
-            state.plan.uuid,
+            state.plan.id,
             context,
           ),
         ],
@@ -847,7 +847,7 @@ class _BudgetPlanDetailScreenContentState
         );
         break;
       case 'delete':
-        _confirmDelete(state.plan.uuid);
+        _confirmDelete(state.plan.id);
         break;
     }
   }
@@ -981,8 +981,8 @@ class _BudgetPlanDetailScreenContentState
 
   void _confirmCompleteMilestone(
     BuildContext context,
-    int milestoneId,
-    String planUuid,
+    String milestoneId,
+    String planId,
   ) {
     showDialog(
       context: context,
@@ -1013,8 +1013,8 @@ class _BudgetPlanDetailScreenContentState
 
   void _confirmUnlinkAccount(
     BuildContext context,
-    int accountId,
-    String planUuid,
+    String accountId,
+    String planId,
   ) {
     showDialog(
       context: context,

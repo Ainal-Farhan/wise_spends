@@ -973,13 +973,8 @@ class _AddTransactionScreenContentState
         type: formState.transactionType,
         categoryId: formState.selectedCategory?.id ?? 'uncategorized',
         date: formState.selectedDate,
-        time: formState.selectedTime,
         note: noteController.text.isEmpty ? null : noteController.text,
         sourceAccountId: formState.selectedSourceAccount,
-        destinationAccountId:
-            formState.transactionType == TransactionType.transfer
-                ? formState.selectedDestinationAccount
-                : null,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );

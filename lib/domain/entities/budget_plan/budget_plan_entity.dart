@@ -6,8 +6,7 @@ import 'budget_plan_milestone_entity.dart';
 
 /// Budget Plan Entity - represents a financial goal
 class BudgetPlanEntity extends Equatable {
-  final int? id;
-  final String uuid;
+  final String id;
   final String name;
   final String? description;
   final BudgetPlanCategory category;
@@ -28,8 +27,7 @@ class BudgetPlanEntity extends Equatable {
   final DateTime updatedAt;
 
   const BudgetPlanEntity({
-    this.id,
-    required this.uuid,
+    required this.id,
     required this.name,
     this.description,
     required this.category,
@@ -69,7 +67,8 @@ class BudgetPlanEntity extends Equatable {
   }
 
   /// Computed: Whether target date has passed
-  bool get isOverdue => DateTime.now().isAfter(targetDate) && currentAmount < targetAmount;
+  bool get isOverdue =>
+      DateTime.now().isAfter(targetDate) && currentAmount < targetAmount;
 
   /// Computed: Total duration in days
   int get totalDuration => targetDate.difference(startDate).inDays;
@@ -91,16 +90,16 @@ class BudgetPlanEntity extends Equatable {
   BudgetHealthStatus get healthStatus {
     if (progressPercentage >= 1.0) return BudgetHealthStatus.completed;
     if (isOverBudget) return BudgetHealthStatus.overBudget;
-    
+
     // Check if on track: current savings pace vs required
     final totalMonths = totalDuration / 30;
     final elapsedMonths = elapsedDuration / 30;
-    
+
     if (totalMonths <= 0) return BudgetHealthStatus.atRisk;
-    
+
     final expectedProgress = elapsedMonths / totalMonths;
     final actualProgress = progressPercentage;
-    
+
     if (actualProgress >= expectedProgress * 0.9) {
       return BudgetHealthStatus.onTrack;
     } else if (actualProgress >= expectedProgress * 0.7) {
@@ -113,7 +112,8 @@ class BudgetPlanEntity extends Equatable {
   /// Computed: Projected completion date in months
   double get projectedCompletionMonths {
     if (totalDeposited <= 0) return -1;
-    final monthlyRate = totalDeposited / (elapsedDuration / 30).clamp(1, double.infinity);
+    final monthlyRate =
+        totalDeposited / (elapsedDuration / 30).clamp(1, double.infinity);
     if (monthlyRate <= 0) return -1;
     return remainingAmount / monthlyRate;
   }
@@ -122,10 +122,12 @@ class BudgetPlanEntity extends Equatable {
   String get projectedCompletionLabel {
     final months = projectedCompletionMonths;
     if (months < 0) return 'Insufficient data';
-    
-    final projectedDate = DateTime.now().add(Duration(days: (months * 30).round()));
+
+    final projectedDate = DateTime.now().add(
+      Duration(days: (months * 30).round()),
+    );
     final monthsUntil = projectedDate.difference(DateTime.now()).inDays ~/ 30;
-    
+
     if (monthsUntil <= 0) return 'On track for this month';
     if (monthsUntil == 1) return 'On track for next month';
     return 'On track for ${_getMonthName(projectedDate.month)} ${projectedDate.year}';
@@ -133,39 +135,47 @@ class BudgetPlanEntity extends Equatable {
 
   String _getMonthName(int month) {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return months[month - 1];
   }
 
   @override
   List<Object?> get props => [
-        id,
-        uuid,
-        name,
-        description,
-        category,
-        targetAmount,
-        currentAmount,
-        totalSpent,
-        totalDeposited,
-        currency,
-        startDate,
-        targetDate,
-        status,
-        iconCode,
-        colorHex,
-        milestones,
-        recentDeposits,
-        recentTransactions,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    name,
+    description,
+    category,
+    targetAmount,
+    currentAmount,
+    totalSpent,
+    totalDeposited,
+    currency,
+    startDate,
+    targetDate,
+    status,
+    iconCode,
+    colorHex,
+    milestones,
+    recentDeposits,
+    recentTransactions,
+    createdAt,
+    updatedAt,
+  ];
 
   BudgetPlanEntity copyWith({
-    int? id,
-    String? uuid,
+    String? id,
     String? name,
     String? description,
     BudgetPlanCategory? category,
@@ -187,7 +197,6 @@ class BudgetPlanEntity extends Equatable {
   }) {
     return BudgetPlanEntity(
       id: id ?? this.id,
-      uuid: uuid ?? this.uuid,
       name: name ?? this.name,
       description: description ?? this.description,
       category: category ?? this.category,

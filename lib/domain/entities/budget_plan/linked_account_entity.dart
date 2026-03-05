@@ -2,9 +2,9 @@ import 'package:equatable/equatable.dart';
 
 /// Linked Account Summary Entity - summary of an account linked to a plan
 class LinkedAccountSummaryEntity extends Equatable {
-  final int id;
-  final int planId;
-  final int accountId;
+  final String id;
+  final String planId;
+  final String accountId;
   final String accountName;
   final String accountType;
   final double accountBalance;
@@ -38,9 +38,9 @@ class LinkedAccountSummaryEntity extends Equatable {
       ];
 
   LinkedAccountSummaryEntity copyWith({
-    int? id,
-    int? planId,
-    int? accountId,
+    String? id,
+    String? planId,
+    String? accountId,
     String? accountName,
     String? accountType,
     double? accountBalance,
@@ -64,14 +64,14 @@ class LinkedAccountSummaryEntity extends Equatable {
 
 /// Budget Plan Linked Account Entity
 class BudgetPlanLinkedAccountEntity extends Equatable {
-  final int? id;
-  final int planId;
-  final int accountId;
+  final String id;
+  final String planId;
+  final String accountId;
   final double? allocatedPercentage;
   final DateTime linkedAt;
 
   const BudgetPlanLinkedAccountEntity({
-    this.id,
+    required this.id,
     required this.planId,
     required this.accountId,
     this.allocatedPercentage,
@@ -88,9 +88,9 @@ class BudgetPlanLinkedAccountEntity extends Equatable {
       ];
 
   BudgetPlanLinkedAccountEntity copyWith({
-    int? id,
-    int? planId,
-    int? accountId,
+    String? id,
+    String? planId,
+    String? accountId,
     double? allocatedPercentage,
     DateTime? linkedAt,
   }) {

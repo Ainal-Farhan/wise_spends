@@ -2,19 +2,17 @@ import 'package:equatable/equatable.dart';
 
 /// Budget Plan Deposit Entity - money saved toward a goal
 class BudgetPlanDepositEntity extends Equatable {
-  final int? id;
-  final String uuid;
-  final int planId;
+  final String id;
+  final String planId;
   final double amount;
   final String? note;
   final String source; // manual, linked_account, salary, bonus, other
   final DateTime depositDate;
-  final int? linkedAccountId;
+  final String? linkedAccountId;
   final DateTime createdAt;
 
   const BudgetPlanDepositEntity({
-    this.id,
-    required this.uuid,
+    required this.id,
     required this.planId,
     required this.amount,
     this.note,
@@ -45,7 +43,6 @@ class BudgetPlanDepositEntity extends Equatable {
   @override
   List<Object?> get props => [
         id,
-        uuid,
         planId,
         amount,
         note,
@@ -56,19 +53,17 @@ class BudgetPlanDepositEntity extends Equatable {
       ];
 
   BudgetPlanDepositEntity copyWith({
-    int? id,
-    String? uuid,
-    int? planId,
+    String? id,
+    String? planId,
     double? amount,
     String? note,
     String? source,
     DateTime? depositDate,
-    int? linkedAccountId,
+    String? linkedAccountId,
     DateTime? createdAt,
   }) {
     return BudgetPlanDepositEntity(
       id: id ?? this.id,
-      uuid: uuid ?? this.uuid,
       planId: planId ?? this.planId,
       amount: amount ?? this.amount,
       note: note ?? this.note,

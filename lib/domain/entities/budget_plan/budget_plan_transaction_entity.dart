@@ -2,10 +2,9 @@ import 'package:equatable/equatable.dart';
 
 /// Budget Plan Transaction Entity - money spent from a goal
 class BudgetPlanTransactionEntity extends Equatable {
-  final int? id;
-  final String uuid;
-  final int planId;
-  final int? transactionId;
+  final String id;
+  final String planId;
+  final String? transactionId;
   final double amount;
   final String? description;
   final String? vendor;
@@ -14,8 +13,7 @@ class BudgetPlanTransactionEntity extends Equatable {
   final DateTime createdAt;
 
   const BudgetPlanTransactionEntity({
-    this.id,
-    required this.uuid,
+    required this.id,
     required this.planId,
     this.transactionId,
     required this.amount,
@@ -29,7 +27,6 @@ class BudgetPlanTransactionEntity extends Equatable {
   @override
   List<Object?> get props => [
         id,
-        uuid,
         planId,
         transactionId,
         amount,
@@ -41,10 +38,9 @@ class BudgetPlanTransactionEntity extends Equatable {
       ];
 
   BudgetPlanTransactionEntity copyWith({
-    int? id,
-    String? uuid,
-    int? planId,
-    int? transactionId,
+    String? id,
+    String? planId,
+    String? transactionId,
     double? amount,
     String? description,
     String? vendor,
@@ -54,7 +50,6 @@ class BudgetPlanTransactionEntity extends Equatable {
   }) {
     return BudgetPlanTransactionEntity(
       id: id ?? this.id,
-      uuid: uuid ?? this.uuid,
       planId: planId ?? this.planId,
       transactionId: transactionId ?? this.transactionId,
       amount: amount ?? this.amount,

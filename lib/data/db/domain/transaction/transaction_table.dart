@@ -12,12 +12,11 @@ class TransactionTable extends BaseEntityTable {
   RealColumn get amount =>
       real().customConstraint('CHECK (amount > 0) NOT NULL')();
   TextColumn get savingId => text().references(SavingTable, #id)();
-  BoolColumn get isExpense => boolean().withDefault(const Constant(false))();
   TextColumn get expenseId => text().nullable().references(ExpenseTable, #id)();
-  IntColumn get transactionHour => integer().nullable()();
-  IntColumn get transactionMinute => integer().nullable()();
+  DateTimeColumn get transactionDateTime => dateTime().nullable()();
+  TextColumn get transferGroupId => text().nullable()();
+  TextColumn get transferType => text().nullable()(); // 'debit' | 'credit'
   TextColumn get note => text().nullable()();
-  TextColumn get destinationAccountId => text().nullable()();
 
   @override
   Map<String, dynamic> toMapFromSubClass() {
@@ -26,12 +25,11 @@ class TransactionTable extends BaseEntityTable {
       'description': description.toString(),
       'amount': amount.toString(),
       'savingId': savingId.toString(),
-      'isExpense': isExpense.toString(),
       'expenseId': expenseId.toString(),
-      'transactionHour': transactionHour.toString(),
-      'transactionMinute': transactionMinute.toString(),
+      'transactionDateTime': transactionDateTime.toString(),
+      'transferGroupId': transferGroupId.toString(),
+      'transferType': transferType.toString(),
       'note': note.toString(),
-      'destinationAccountId': destinationAccountId.toString(),
     };
   }
 }

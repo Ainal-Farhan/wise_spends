@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/utils/app_path.dart';
@@ -48,7 +49,16 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+    );
+  }
 
   Future<String> exportInto(final String type) async {
     final isJson = type != '.sqlite';

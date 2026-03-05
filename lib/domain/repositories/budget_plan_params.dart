@@ -80,7 +80,7 @@ class AddDepositParams extends Equatable {
   final String? note;
   final String source;
   final DateTime depositDate;
-  final int? linkedAccountId;
+  final String? linkedAccountId;
 
   const AddDepositParams({
     required this.amount,

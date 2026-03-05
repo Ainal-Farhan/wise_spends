@@ -7,6 +7,7 @@ import 'package:wise_spends/data/db/domain/saving/money_storage_table.dart';
 @DataClassName("${DomainTableConstant.savingTablePrefix}Saving")
 class SavingTable extends BaseEntityTable {
   TextColumn get name => text().nullable()();
+  TextColumn get currency => text().withDefault(const Constant('MYR'))();
   BoolColumn get isPublic => boolean().withDefault(const Constant(false))();
   BoolColumn get isHasGoal => boolean().withDefault(const Constant(false))();
   RealColumn get goal => real().withDefault(const Constant(.0))();
@@ -34,6 +35,7 @@ class SavingTable extends BaseEntityTable {
   Map<String, dynamic> toMapFromSubClass() {
     return {
       'name': name.toString(),
+      'currency': currency.toString(),
       'isPublic': isPublic.toString(),
       'isHasGoal': isHasGoal.toString(),
       'goal': goal.toString(),
