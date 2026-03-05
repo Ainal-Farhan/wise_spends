@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/presentation/screens/login/ui/login_screen.dart';
-import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
-  static const String routeName = AppRouter.loginPageRoute;
+  static const String routeName = AppRoutes.login;
 
   @override
   State<LoginPage> createState() => _LoginPageState();

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/configuration/i_configuration_manager.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
-import 'package:wise_spends/main.dart';
-import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/data/services/backup_service.dart';
 import 'package:wise_spends/shared/theme/i_theme_manager.dart';
 import 'package:wise_spends/shared/theme/widgets/components/templates/th_logged_in_main_template.dart';
@@ -45,18 +44,14 @@ class _SettingsPageState extends State<SettingsPage> {
       await _configurationManager.update(theme: theme);
       await _themeManager.refresh();
 
-      // Refresh the theme in the app by updating the theme provider
+      // Refresh the theme in the app by restarting
       if (mounted) {
-        // Find the ThemeProvider and update the theme
-        final themeProvider = ThemeProvider.of(context);
-        if (themeProvider != null) {
-          themeProvider.updateTheme();
-        }
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Theme changed to ${_getThemeDisplayName(theme)}'),
-            duration: const Duration(seconds: 1),
+            content: Text(
+              'Theme changed to ${_getThemeDisplayName(theme)}. Please restart the app for changes to take full effect.',
+            ),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -66,7 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return ThLoggedInMainTemplate(
-      pageRoute: AppRouter.settingsPageRoute,
+      pageRoute: AppRoutes.settings,
       showBottomNavBar: false,
       screen: ListView(
         children: [
@@ -384,7 +379,7 @@ class _SettingsPageState extends State<SettingsPage> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pushNamedAndRemoveUntil(
             context,
-            AppRouter.savingsPageRoute,
+            AppRoutes.savings,
             (route) => false,
           );
         });

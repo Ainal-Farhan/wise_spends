@@ -8,9 +8,11 @@ import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_group_reference_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_reference_repository.dart';
 import 'package:wise_spends/data/repositories/saving/i_money_storage_repository.dart';
-
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
+import 'package:wise_spends/domain/repositories/category_repository.dart';
+import 'package:wise_spends/domain/repositories/budget_repository.dart';
+import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
 
 abstract class IRepositoryLocator extends ILocator {
   List<ICrudRepository> retrieveAllRepository();
@@ -25,4 +27,13 @@ abstract class IRepositoryLocator extends ILocator {
   ICommitmentRepository getCommitmentRepository();
   ICommitmentDetailRepository getCommitmentDetailRepository();
   ICommitmentTaskRepository getCommitmentTaskRepository();
+
+  // Category Repository
+  ICategoryRepository getCategoryRepository();
+  
+  // Budget Repository
+  IBudgetRepository getBudgetRepository();
+  
+  // Budget Plan Repository
+  IBudgetPlanRepository getBudgetPlanRepository();
 }

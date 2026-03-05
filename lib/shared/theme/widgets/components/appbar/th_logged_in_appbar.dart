@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 
 class ThLoggedInAppbar extends StatelessWidget {
   final String loggedInUserName;
@@ -99,7 +99,7 @@ class ThLoggedInAppbar extends StatelessWidget {
                 icon: const CircleAvatar(child: Icon(Icons.person)),
                 onPressed: () => Navigator.pushNamedAndRemoveUntil(
                   context,
-                  AppRouter.profilePageRoute,
+                  AppRoutes.profile,
                   (context) => false,
                 ),
               ),

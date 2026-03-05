@@ -10,11 +10,11 @@ import 'package:wise_spends/shared/components/forms/commitment_form.dart';
 import 'package:wise_spends/shared/resources/ui/alert_dialog/confirm_dialog.dart';
 import 'package:wise_spends/shared/resources/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/shared/resources/ui/snack_bar/message.dart';
-import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/shared/theme/widgets/components/templates/th_logged_in_main_template.dart';
 
 class CommitmentPage extends StatefulWidget {
-  static const String routeName = AppRouter.commitmentPageRoute;
+  static const String routeName = AppRoutes.commitment;
 
   const CommitmentPage({super.key});
 
@@ -40,7 +40,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
   @override
   Widget build(BuildContext context) {
     return ThLoggedInMainTemplate(
-      pageRoute: AppRouter.commitmentPageRoute,
+      pageRoute: AppRoutes.commitment,
       screen: BlocProvider.value(
         value: bloc..add(const LoadCommitmentsEvent()),
         child: BlocConsumer<CommitmentBloc, CommitmentState>(

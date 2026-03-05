@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 
 class ThLoggedInBottomNavbar extends StatelessWidget {
   final String pageRoute;
@@ -17,13 +17,10 @@ class ThLoggedInBottomNavbar extends StatelessWidget {
     final activeColor = Colors.grey;
 
     final menuList = [
-      {'route': AppRouter.homeLoggedInPageRoute, 'icon': Icons.home},
-      {'route': AppRouter.savingsPageRoute, 'icon': Icons.money},
-      {
-        'route': AppRouter.viewListMoneyStoragePageRoute,
-        'icon': Icons.account_balance,
-      },
-      {'route': AppRouter.commitmentPageRoute, 'icon': Icons.assignment},
+      {'route': AppRoutes.homeLoggedIn, 'icon': Icons.home},
+      {'route': AppRoutes.savings, 'icon': Icons.money},
+      {'route': AppRoutes.moneyStorage, 'icon': Icons.account_balance},
+      {'route': AppRoutes.commitment, 'icon': Icons.assignment},
     ];
 
     final List<Widget> widgetList = [];

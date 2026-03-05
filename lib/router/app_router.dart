@@ -1,63 +1,208 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
-import 'package:wise_spends/presentation/blocs/commitment/commitment_page.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/presentation/screens/home/home_screen.dart';
 import 'package:wise_spends/presentation/screens/login/ui/login_page.dart';
 import 'package:wise_spends/presentation/screens/settings/ui/settings_page.dart';
-import 'package:wise_spends/presentation/pages/home/home_page.dart';
-import 'package:wise_spends/presentation/pages/money_storage/money_storage_page.dart';
-import 'package:wise_spends/presentation/pages/commitment_task/commitment_task_page.dart';
-import 'package:wise_spends/presentation/pages/profile/profile_page.dart';
-import 'package:wise_spends/presentation/pages/savings/savings_page.dart';
+import 'package:wise_spends/presentation/screens/transaction/add_transaction_screen.dart'
+    as transaction_screen;
+import 'package:wise_spends/presentation/screens/budget/budget_list_screen.dart'
+    as budget_screen;
+import 'package:wise_spends/presentation/screens/reports/reports_screen.dart'
+    as reports_screen;
+import 'package:wise_spends/presentation/screens/savings/savings_screen.dart'
+    as savings_screen;
+import 'package:wise_spends/presentation/screens/money_storage/money_storage_screen.dart'
+    as money_storage_screen;
+import 'package:wise_spends/presentation/screens/budget_plan/budget_plans_list_screen.dart'
+    as budget_plan_screen;
+import 'package:wise_spends/presentation/screens/budget_plan/create_budget_plan_screen.dart'
+    as create_budget_plan_screen;
+import 'package:wise_spends/presentation/screens/budget_plan/budget_plan_detail_screen.dart'
+    as budget_plan_detail_screen;
+import 'package:wise_spends/presentation/screens/budget_plan/edit_budget_plan_screen.dart'
+    as edit_budget_plan_screen;
+import 'package:wise_spends/presentation/screens/notifications/notifications_screen.dart'
+    as notifications_screen;
+import 'package:wise_spends/router/route_arguments.dart';
 
+/// Enhanced App Router with typed arguments
+/// Uses MaterialPageRoute for now, consider migrating to go_router for production
 abstract class AppRouter {
-  static const String rootRoute = "/";
-  static const String loginPageRoute = "/login";
-  static const String homeLoggedInPageRoute = "/home";
-  static const String savingsPageRoute = "/savings";
-  static const String commitmentPageRoute = "/commitment";
-  static const String transactionPageRoute = "/transaction";
-  static const String commitmentTaskPageRoute = "/commitment_task";
-  static const String viewListMoneyStoragePageRoute = "/money_storage";
-  static const String settingsPageRoute = "/settings";
-  static const String profilePageRoute = "/profile";
-
+  /// Generate route with typed arguments
   static Route<dynamic> generateRoute(RouteSettings settings) {
+    // Extract typed arguments
+    final args = settings.arguments;
+
     switch (settings.name) {
-      // case rootRoute:
-      case loginPageRoute:
-        return getMaterialPageRoute(const LoginPage());
-      case rootRoute:
-      case homeLoggedInPageRoute:
-        return getMaterialPageRoute(const HomePage());
-      case savingsPageRoute:
-        return getMaterialPageRoute(const SavingsPage());
-      case viewListMoneyStoragePageRoute:
-        return getMaterialPageRoute(const MoneyStoragePage());
-      case commitmentPageRoute:
-        return getMaterialPageRoute(const CommitmentPage());
-      case commitmentTaskPageRoute:
-        return getMaterialPageRoute(const CommitmentTaskPage());
-      case settingsPageRoute:
-        return getMaterialPageRoute(const SettingsPage());
-      case profilePageRoute:
-        return getMaterialPageRoute(const ProfilePage());
-      default:
-        return getMaterialPageRoute(
-          Scaffold(
-            body: Center(child: Text('No route defined for ${settings.name}')),
+      // Auth routes
+      case AppRoutes.login:
+        return _createRoute(const LoginPage(), settings);
+
+      // Main routes
+      case AppRoutes.home:
+      case AppRoutes.homeLoggedIn:
+        return _createRoute(const HomeScreen(), settings);
+
+      // Transaction routes
+      case AppRoutes.addTransaction:
+        return _createRoute(
+          transaction_screen.AddTransactionScreen(
+            args: args is AddTransactionArgs
+                ? transaction_screen.AddTransactionScreenArgs(
+                    preselectedType: args.preselectedType,
+                  )
+                : const transaction_screen.AddTransactionScreenArgs(),
           ),
+          settings,
+        );
+
+      // Budget routes
+      case AppRoutes.budgetList:
+        return _createRoute(const budget_screen.BudgetListScreen(), settings);
+
+      // Budget Plan routes
+      case AppRoutes.budgetPlansList:
+        return _createRoute(const budget_plan_screen.BudgetPlansListScreen(), settings);
+      
+      case AppRoutes.createBudgetPlan:
+        return _createRoute(const create_budget_plan_screen.CreateBudgetPlanScreen(), settings);
+      
+      case AppRoutes.budgetPlanDetail:
+        final args = settings.arguments as String;
+        return _createRoute(
+          budget_plan_detail_screen.BudgetPlanDetailScreen(planUuid: args),
+          settings,
+        );
+
+      case AppRoutes.editBudgetPlan:
+        final args = settings.arguments as String;
+        return _createRoute(
+          edit_budget_plan_screen.EditBudgetPlanScreen(planUuid: args),
+          settings,
+        );
+
+      // Savings routes
+      case AppRoutes.savings:
+        return _createRoute(const savings_screen.SavingsScreen(), settings);
+
+      // Money Storage routes
+      case AppRoutes.moneyStorage:
+        return _createRoute(const money_storage_screen.MoneyStorageScreen(), settings);
+
+      // Reports routes
+      case AppRoutes.reports:
+      case AppRoutes.analytics:
+        return _createRoute(const reports_screen.ReportsScreen(), settings);
+
+      // Settings routes
+      case AppRoutes.settings:
+        return _createRoute(const SettingsPage(), settings);
+
+      // Notifications routes
+      case AppRoutes.notifications:
+        return _createRoute(const notifications_screen.NotificationsScreen(), settings);
+
+      // Default: Show error screen
+      default:
+        return _createRoute(
+          _ErrorScreen(message: 'No route defined for ${settings.name}'),
+          settings,
         );
     }
   }
 
-  static MaterialPageRoute getMaterialPageRoute(Widget widget) =>
-      MaterialPageRoute(
-        builder: (context) {
-          BlocProvider.of<ActionButtonBloc>(
-            context,
-          ).add(OnUpdateActionButtonEvent(context: context));
-          return widget;
-        },
-      );
+  /// Create a material page route with proper transitions
+  static MaterialPageRoute _createRoute(Widget widget, RouteSettings settings) {
+    return MaterialPageRoute(
+      settings: settings,
+      builder: (context) => widget,
+    );
+  }
+
+  /// Navigate to a named route with typed arguments
+  static Future<T?> navigateTo<T>(
+    BuildContext context,
+    String routeName, {
+    RouteArguments? arguments,
+  }) {
+    return Navigator.pushNamed(
+      context,
+      routeName,
+      arguments: arguments,
+    );
+  }
+
+  /// Navigate and replace current route
+  static void navigateAndReplace(
+    BuildContext context,
+    String routeName, {
+    RouteArguments? arguments,
+  }) {
+    Navigator.pushReplacementNamed(
+      context,
+      routeName,
+      arguments: arguments,
+    );
+  }
+
+  /// Navigate and clear all previous routes
+  static void navigateAndClearStack(
+    BuildContext context,
+    String routeName, {
+    RouteArguments? arguments,
+  }) {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      routeName,
+      (route) => false,
+      arguments: arguments,
+    );
+  }
+
+  /// Pop the current route
+  static void goBack(BuildContext context, {dynamic result}) {
+    Navigator.pop(context, result);
+  }
+}
+
+/// Error screen for undefined routes
+class _ErrorScreen extends StatelessWidget {
+  final String message;
+
+  const _ErrorScreen({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Error'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Colors.red,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                message,
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Go Back'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

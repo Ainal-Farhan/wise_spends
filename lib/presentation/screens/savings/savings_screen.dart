@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/core/constants/constant/enum/action_button_enum.dart';
 import 'package:wise_spends/data/db/app_database.dart';
-import 'package:wise_spends/data/repositories/saving/impl/saving_repository.dart';
+import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_bloc.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_event.dart';
@@ -18,7 +18,8 @@ class SavingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          SavingsBloc(SavingRepository())..add(LoadSavingsListEvent()),
+          SavingsBloc(context.read<ISavingRepository>())
+            ..add(LoadSavingsListEvent()),
       child: BlocConsumer<SavingsBloc, SavingsState>(
         listener: (context, state) {
           if (state is SavingsSuccess) {

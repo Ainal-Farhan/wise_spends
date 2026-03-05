@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/shared/resources/ui/snack_bar/message.dart';
-import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 
 class ThLoggedInDrawer extends StatelessWidget {
   final String userName;
@@ -35,7 +35,7 @@ class ThLoggedInDrawer extends StatelessWidget {
             title: Text('Home'),
             onTap: () => Navigator.pushNamedAndRemoveUntil(
               context,
-              AppRouter.homeLoggedInPageRoute,
+              AppRoutes.homeLoggedIn,
               (context) => false,
             ),
           ),
@@ -44,7 +44,7 @@ class ThLoggedInDrawer extends StatelessWidget {
             title: Text('Settings'),
             onTap: () => Navigator.pushNamedAndRemoveUntil(
               context,
-              AppRouter.settingsPageRoute,
+              AppRoutes.settings,
               (context) => false,
             ),
           ),

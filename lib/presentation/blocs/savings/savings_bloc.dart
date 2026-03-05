@@ -1,14 +1,10 @@
 import 'package:bloc/bloc.dart';
-import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
-import 'package:wise_spends/domain/usecases/i_saving_manager.dart';
 import 'savings_event.dart';
 import 'savings_state.dart';
 
 class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
   final ISavingRepository _repository;
-  final ISavingManager _savingManager =
-      SingletonUtil.getSingleton<ISavingManager>()!;
 
   SavingsBloc(this._repository) : super(SavingsInitial()) {
     on<LoadSavingsListEvent>(_onLoadSavingsList);
@@ -27,17 +23,38 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
     emit(SavingsLoading());
 
     try {
-      bool successDelete = await _savingManager.deleteSelectedSaving(event.id);
-      if (successDelete) {
-        emit(SavingsSuccess('Successfully delete saving'));
-        add(LoadSavingsListEvent());
-      } else {
-        emit(SavingsError('Failed to delete saving'));
-      }
+      // Store for undo
+      final allSavings = await _repository.getSavingsList();
+      final deletedSaving = allSavings.firstWhere(
+        (s) => s.saving.id == event.id,
+        orElse: () => throw Exception('Saving not found'),
+      );
+
+      await _repository.deleteSaving(event.id);
+      
+      // Store for potential undo
+      _deletedSavingBuffer[event.id] = deletedSaving;
+      Future.delayed(const Duration(seconds: 5), () {
+        _deletedSavingBuffer.remove(event.id);
+      });
+      
+      emit(SavingsSuccess('Saving deleted'));
+      add(LoadSavingsListEvent());
     } catch (e) {
-      emit(SavingsError(e.toString()));
+      emit(SavingsError('Failed to delete: ${e.toString()}'));
     }
   }
+
+  /// Undo delete
+  Future<void> undoDelete(String id) async {
+    final saving = _deletedSavingBuffer.remove(id);
+    if (saving != null) {
+      // Would need to re-insert - for now just reload
+      add(LoadSavingsListEvent());
+    }
+  }
+
+  final Map<String, dynamic> _deletedSavingBuffer = {};
 
   Future<void> _onLoadSavingsList(
     LoadSavingsListEvent event,

@@ -17,11 +17,21 @@ import 'package:wise_spends/data/db/domain/expense/index.dart';
 import 'package:wise_spends/data/db/domain/masterdata/index.dart';
 import 'package:wise_spends/data/db/domain/saving/index.dart';
 import 'package:wise_spends/data/db/domain/transaction/index.dart';
+import 'package:wise_spends/data/db/tables/category_table.dart';
+import 'package:wise_spends/data/db/tables/budget_table.dart';
+import 'package:wise_spends/data/db/tables/budget_plan_tables.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
+    Categories,
+    Budgets,
+    BudgetPlans,
+    BudgetPlanDeposits,
+    BudgetPlanTransactions,
+    BudgetPlanLinkedAccounts,
+    BudgetPlanMilestones,
     ...Common.tableList,
     ...MasterData.tableList,
     ...Saving.tableList,

@@ -10,7 +10,7 @@ import 'package:wise_spends/domain/usecases/i_commitment_manager.dart';
 import 'package:wise_spends/domain/usecases/i_startup_manager.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/shared/resources/notifiers/bottom_nav_bar_notifier.dart';
-import 'package:wise_spends/router/app_router.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/shared/theme/widgets/components/appbar/th_logged_in_appbar.dart';
 import 'package:wise_spends/shared/theme/widgets/components/drawer/th_logged_in_drawer.dart';
@@ -184,7 +184,7 @@ class _ThLoggedInMainTemplateState extends State<ThLoggedInMainTemplate>
                 loggedInUserName: widget.startupManager.currentUser.name,
                 onPressedTaskIcon: () => Navigator.pushReplacementNamed(
                   context,
-                  AppRouter.commitmentTaskPageRoute,
+                  AppRoutes.commitmentTask,
                 ),
                 totalTask: snapshot.data ?? 0,
               ),

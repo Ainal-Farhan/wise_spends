@@ -21,6 +21,12 @@ import 'package:wise_spends/data/repositories/saving/impl/money_storage_reposito
 import 'package:wise_spends/data/repositories/saving/impl/saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/impl/transaction_repository.dart';
+import 'package:wise_spends/data/repositories/category/impl/category_repository.dart';
+import 'package:wise_spends/data/repositories/budget/impl/budget_repository.dart';
+import 'package:wise_spends/data/repositories/budget_plan/impl/budget_plan_repository.dart';
+import 'package:wise_spends/domain/repositories/category_repository.dart';
+import 'package:wise_spends/domain/repositories/budget_repository.dart';
+import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
 
 class RepositoryLocator extends IRepositoryLocator {
   @override
@@ -172,5 +178,45 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<ICommitmentTaskRepository>()!;
+  }
+
+  @override
+  ICategoryRepository getCategoryRepository() {
+    ICategoryRepository? repository =
+        SingletonUtil.getSingleton<ICategoryRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ICategoryRepository>(
+        CategoryRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ICategoryRepository>()!;
+  }
+
+  @override
+  IBudgetRepository getBudgetRepository() {
+    IBudgetRepository? repository =
+        SingletonUtil.getSingleton<IBudgetRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<IBudgetRepository>(BudgetRepository());
+    }
+
+    return SingletonUtil.getSingleton<IBudgetRepository>()!;
+  }
+
+  @override
+  IBudgetPlanRepository getBudgetPlanRepository() {
+    IBudgetPlanRepository? repository =
+        SingletonUtil.getSingleton<IBudgetPlanRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<IBudgetPlanRepository>(
+        BudgetPlanRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<IBudgetPlanRepository>()!;
   }
 }
