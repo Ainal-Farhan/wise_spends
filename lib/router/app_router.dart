@@ -5,6 +5,8 @@ import 'package:wise_spends/presentation/screens/login/ui/login_page.dart';
 import 'package:wise_spends/presentation/screens/settings/ui/settings_page.dart';
 import 'package:wise_spends/presentation/screens/transaction/add_transaction_screen.dart'
     as transaction_screen;
+import 'package:wise_spends/presentation/screens/transaction/transaction_history_screen.dart'
+    as transaction_history_screen;
 import 'package:wise_spends/presentation/screens/budget/budget_list_screen.dart'
     as budget_screen;
 import 'package:wise_spends/presentation/screens/reports/reports_screen.dart'
@@ -53,6 +55,12 @@ abstract class AppRouter {
                   )
                 : const transaction_screen.AddTransactionScreenArgs(),
           ),
+          settings,
+        );
+
+      case AppRoutes.transactionHistory:
+        return _createRoute(
+          const transaction_history_screen.TransactionHistoryScreen(),
           settings,
         );
 

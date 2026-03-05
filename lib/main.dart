@@ -10,6 +10,7 @@ import 'package:wise_spends/core/di/impl/service_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart'
     as data_transaction;
+import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
@@ -50,14 +51,17 @@ class WiseSpendsApp extends StatelessWidget {
               .getSavingRepository(),
         ),
       ],
-      child: MaterialApp(
-        title: 'WiseSpends',
-        debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.light,
-        theme: getLightTheme(),
-        darkTheme: getDarkTheme(),
-        initialRoute: AppRoutes.home,
-        onGenerateRoute: AppRouter.generateRoute,
+      child: MultiBlocProvider(
+        providers: [BlocProvider(create: (context) => ActionButtonBloc())],
+        child: MaterialApp(
+          title: 'WiseSpends',
+          debugShowCheckedModeBanner: false,
+          themeMode: ThemeMode.light,
+          theme: getLightTheme(),
+          darkTheme: getDarkTheme(),
+          initialRoute: AppRoutes.home,
+          onGenerateRoute: AppRouter.generateRoute,
+        ),
       ),
     );
   }
