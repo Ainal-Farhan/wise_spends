@@ -20,6 +20,7 @@ import 'package:wise_spends/data/db/domain/transaction/index.dart';
 import 'package:wise_spends/data/db/tables/category_table.dart';
 import 'package:wise_spends/data/db/tables/budget_table.dart';
 import 'package:wise_spends/data/db/tables/budget_plan_tables.dart';
+import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 part 'app_database.g.dart';
 

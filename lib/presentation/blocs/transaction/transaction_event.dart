@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 /// Transaction BLoC events
@@ -62,6 +63,16 @@ class LoadGroupedTransactionsEvent extends TransactionEvent {
   List<Object?> get props => [startDate, endDate];
 }
 
+/// Load transaction by ID
+class LoadTransactionByIdEvent extends TransactionEvent {
+  final String transactionId;
+
+  const LoadTransactionByIdEvent(this.transactionId);
+
+  @override
+  List<Object> get props => [transactionId];
+}
+
 // ============================================================================
 // CREATE/UPDATE/DELETE EVENTS
 // ============================================================================
@@ -73,6 +84,7 @@ class CreateTransactionEvent extends TransactionEvent {
   final TransactionType type;
   final String categoryId;
   final DateTime date;
+  final TimeOfDay? time;
   final String? note;
   final String? sourceAccountId;
   final String? destinationAccountId;
@@ -83,6 +95,7 @@ class CreateTransactionEvent extends TransactionEvent {
     required this.type,
     required this.categoryId,
     required this.date,
+    this.time,
     this.note,
     this.sourceAccountId,
     this.destinationAccountId,
@@ -90,15 +103,16 @@ class CreateTransactionEvent extends TransactionEvent {
 
   @override
   List<Object?> get props => [
-        title,
-        amount,
-        type,
-        categoryId,
-        date,
-        note,
-        sourceAccountId,
-        destinationAccountId,
-      ];
+    title,
+    amount,
+    type,
+    categoryId,
+    date,
+    time,
+    note,
+    sourceAccountId,
+    destinationAccountId,
+  ];
 }
 
 /// Update an existing transaction

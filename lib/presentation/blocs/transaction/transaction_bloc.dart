@@ -18,6 +18,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<LoadTransactionsByDateRangeEvent>(_onLoadTransactionsByDateRange);
     on<LoadTransactionsByTypeEvent>(_onLoadTransactionsByType);
     on<LoadGroupedTransactionsEvent>(_onLoadGroupedTransactions);
+    on<LoadTransactionByIdEvent>(_onLoadTransactionById);
     on<CreateTransactionEvent>(_onCreateTransaction);
     on<UpdateTransactionEvent>(_onUpdateTransaction);
     on<DeleteTransactionEvent>(_onDeleteTransaction);
@@ -34,6 +35,24 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   // ============================================================================
   // LOAD HANDLERS
   // ============================================================================
+
+  /// Load transaction by ID
+  Future<void> _onLoadTransactionById(
+    LoadTransactionByIdEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(TransactionLoading());
+    try {
+      final transaction = await _repository.getTransactionById(event.transactionId);
+      if (transaction == null) {
+        emit(const TransactionError('Transaction not found'));
+      } else {
+        emit(TransactionLoadedById(transaction));
+      }
+    } catch (e) {
+      emit(TransactionError('Failed to load transaction: ${e.toString()}'));
+    }
+  }
 
   /// Load all transactions
   Future<void> _onLoadTransactions(
@@ -244,13 +263,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     emit(TransactionLoading());
     try {
+      // Combine date and time if time is provided
+      DateTime transactionDateTime = event.date;
+      if (event.time != null) {
+        transactionDateTime = DateTime(
+          event.date.year,
+          event.date.month,
+          event.date.day,
+          event.time!.hour,
+          event.time!.minute,
+        );
+      }
+
       final transaction = TransactionEntity(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: event.title,
         amount: event.amount,
         type: event.type,
         categoryId: event.categoryId,
-        date: event.date,
+        date: transactionDateTime,
+        time: event.time,
         note: event.note,
         sourceAccountId: event.sourceAccountId,
         destinationAccountId: event.destinationAccountId,
@@ -422,7 +454,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       final filtered = event.type == null
           ? transactions
           : transactions.where((t) => t.type == event.type!).toList();
-      print(filtered);
       emit(
         TransactionsFilteredLoaded(
           transactions: filtered,

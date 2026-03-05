@@ -29,8 +29,9 @@ import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 /// Arguments for AddTransactionScreen
 class AddTransactionScreenArgs {
   final TransactionType? preselectedType;
+  final String? editingTransactionId;
 
-  const AddTransactionScreenArgs({this.preselectedType});
+  const AddTransactionScreenArgs({this.preselectedType, this.editingTransactionId});
 }
 
 /// Enhanced Add Transaction Screen - Pure BLoC
@@ -66,13 +67,31 @@ class AddTransactionScreen extends StatelessWidget {
             ),
         ),
       ],
-      child: const _AddTransactionScreenContent(),
+      child: _AddTransactionScreenContent(args: args),
     );
   }
 }
 
-class _AddTransactionScreenContent extends StatelessWidget {
-  const _AddTransactionScreenContent();
+class _AddTransactionScreenContent extends StatefulWidget {
+  final AddTransactionScreenArgs? args;
+
+  const _AddTransactionScreenContent({this.args});
+
+  @override
+  State<_AddTransactionScreenContent> createState() =>
+      _AddTransactionScreenContentState();
+}
+
+class _AddTransactionScreenContentState
+    extends State<_AddTransactionScreenContent> {
+  @override
+  void initState() {
+    super.initState();
+    // Handle edit mode initialization if needed
+    if (widget.args?.editingTransactionId != null) {
+      // Will be handled by listening to transaction load
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +182,10 @@ class _AddTransactionScreenContent extends StatelessWidget {
                       const SizedBox(height: 16),
                     // Date Picker
                     _buildDatePicker(context, formState),
+                    const SizedBox(height: 16),
+
+                    // Time Picker
+                    _buildTimePicker(context, formState),
                     const SizedBox(height: 16),
 
                     // Note Field
@@ -750,6 +773,62 @@ class _AddTransactionScreenContent extends StatelessWidget {
     );
   }
 
+  Widget _buildTimePicker(
+    BuildContext context,
+    TransactionFormReady formState,
+  ) {
+    return InkWell(
+      onTap: () async {
+        final picked = await showTimePicker(
+          context: context,
+          initialTime: formState.selectedTime ?? TimeOfDay.now(),
+        );
+        if (picked != null) {
+          context.read<TransactionFormBloc>().add(
+            ChangeTransactionTime(picked),
+          );
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.divider),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.access_time_rounded,
+              color: AppColors.textSecondary,
+            ),
+            const SizedBox(width: 16),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Time',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textHint,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  formState.selectedTime?.format(context) ?? 'Select time',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+
   String _formatDateDisplay(DateTime date) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -798,9 +877,12 @@ class _AddTransactionScreenContent extends StatelessWidget {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         final isLoading = state is TransactionLoading;
+        final label = formState.isEditMode
+            ? (isLoading ? 'Updating...' : 'Update Transaction')
+            : (isLoading ? 'Saving...' : 'Save Transaction');
 
         return AppButton.primary(
-          label: isLoading ? 'Saving...' : 'Save Transaction',
+          label: label,
           onPressed: isLoading
               ? null
               : () => _submitTransaction(
@@ -882,20 +964,47 @@ class _AddTransactionScreenContent extends StatelessWidget {
 
     final amount = double.parse(amountController.text);
 
-    context.read<TransactionBloc>().add(
-      CreateTransactionEvent(
+    if (formState.isEditMode && formState.editingTransactionId != null) {
+      // Update existing transaction
+      final transaction = TransactionEntity(
+        id: formState.editingTransactionId!,
         title: titleController.text,
         amount: amount,
         type: formState.transactionType,
         categoryId: formState.selectedCategory?.id ?? 'uncategorized',
         date: formState.selectedDate,
+        time: formState.selectedTime,
         note: noteController.text.isEmpty ? null : noteController.text,
         sourceAccountId: formState.selectedSourceAccount,
         destinationAccountId:
             formState.transactionType == TransactionType.transfer
-            ? formState.selectedDestinationAccount
-            : null,
-      ),
-    );
+                ? formState.selectedDestinationAccount
+                : null,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      context.read<TransactionBloc>().add(
+        UpdateTransactionEvent(transaction),
+      );
+    } else {
+      // Create new transaction
+      context.read<TransactionBloc>().add(
+        CreateTransactionEvent(
+          title: titleController.text,
+          amount: amount,
+          type: formState.transactionType,
+          categoryId: formState.selectedCategory?.id ?? 'uncategorized',
+          date: formState.selectedDate,
+          time: formState.selectedTime,
+          note: noteController.text.isEmpty ? null : noteController.text,
+          sourceAccountId: formState.selectedSourceAccount,
+          destinationAccountId:
+              formState.transactionType == TransactionType.transfer
+                  ? formState.selectedDestinationAccount
+                  : null,
+        ),
+      );
+    }
   }
 }

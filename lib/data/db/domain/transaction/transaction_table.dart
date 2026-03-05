@@ -3,18 +3,21 @@ import 'package:wise_spends/core/constants/constant/domain/domain_table_constant
 import 'package:wise_spends/data/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/data/db/domain/expense/expense_table.dart';
 import 'package:wise_spends/data/db/domain/saving/saving_table.dart';
+import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 @DataClassName("${DomainTableConstant.transactionTablePrefix}Transaction")
 class TransactionTable extends BaseEntityTable {
-  // TextColumn get type =>
-  //     text().check(type.isIn(DomainTableConstant.transactionTableTypeList))();
-  TextColumn get type => text()();
+  TextColumn get type => textEnum<TransactionType>()();
   TextColumn get description => text().withDefault(const Constant(''))();
   RealColumn get amount =>
       real().customConstraint('CHECK (amount > 0) NOT NULL')();
   TextColumn get savingId => text().references(SavingTable, #id)();
   BoolColumn get isExpense => boolean().withDefault(const Constant(false))();
   TextColumn get expenseId => text().nullable().references(ExpenseTable, #id)();
+  IntColumn get transactionHour => integer().nullable()();
+  IntColumn get transactionMinute => integer().nullable()();
+  TextColumn get note => text().nullable()();
+  TextColumn get destinationAccountId => text().nullable()();
 
   @override
   Map<String, dynamic> toMapFromSubClass() {
@@ -24,7 +27,11 @@ class TransactionTable extends BaseEntityTable {
       'amount': amount.toString(),
       'savingId': savingId.toString(),
       'isExpense': isExpense.toString(),
-      'expenseId': expenseId.toString()
+      'expenseId': expenseId.toString(),
+      'transactionHour': transactionHour.toString(),
+      'transactionMinute': transactionMinute.toString(),
+      'note': note.toString(),
+      'destinationAccountId': destinationAccountId.toString(),
     };
   }
 }

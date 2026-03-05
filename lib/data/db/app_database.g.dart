@@ -11355,15 +11355,15 @@ class $TransactionTableTable extends TransactionTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-    'type',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<TransactionType, String> type =
+      GeneratedColumn<String>(
+        'type',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<TransactionType>($TransactionTableTable.$convertertype);
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
     'description',
   );
@@ -11429,6 +11429,48 @@ class $TransactionTableTable extends TransactionTable
       'REFERENCES expense_table (id)',
     ),
   );
+  static const VerificationMeta _transactionHourMeta = const VerificationMeta(
+    'transactionHour',
+  );
+  @override
+  late final GeneratedColumn<int> transactionHour = GeneratedColumn<int>(
+    'transaction_hour',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _transactionMinuteMeta = const VerificationMeta(
+    'transactionMinute',
+  );
+  @override
+  late final GeneratedColumn<int> transactionMinute = GeneratedColumn<int>(
+    'transaction_minute',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _destinationAccountIdMeta =
+      const VerificationMeta('destinationAccountId');
+  @override
+  late final GeneratedColumn<String> destinationAccountId =
+      GeneratedColumn<String>(
+        'destination_account_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -11442,6 +11484,10 @@ class $TransactionTableTable extends TransactionTable
     savingId,
     isExpense,
     expenseId,
+    transactionHour,
+    transactionMinute,
+    note,
+    destinationAccountId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -11497,14 +11543,6 @@ class $TransactionTableTable extends TransactionTable
     } else if (isInserting) {
       context.missing(_lastModifiedByMeta);
     }
-    if (data.containsKey('type')) {
-      context.handle(
-        _typeMeta,
-        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_typeMeta);
-    }
     if (data.containsKey('description')) {
       context.handle(
         _descriptionMeta,
@@ -11542,6 +11580,39 @@ class $TransactionTableTable extends TransactionTable
         expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta),
       );
     }
+    if (data.containsKey('transaction_hour')) {
+      context.handle(
+        _transactionHourMeta,
+        transactionHour.isAcceptableOrUnknown(
+          data['transaction_hour']!,
+          _transactionHourMeta,
+        ),
+      );
+    }
+    if (data.containsKey('transaction_minute')) {
+      context.handle(
+        _transactionMinuteMeta,
+        transactionMinute.isAcceptableOrUnknown(
+          data['transaction_minute']!,
+          _transactionMinuteMeta,
+        ),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('destination_account_id')) {
+      context.handle(
+        _destinationAccountIdMeta,
+        destinationAccountId.isAcceptableOrUnknown(
+          data['destination_account_id']!,
+          _destinationAccountIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -11571,10 +11642,12 @@ class $TransactionTableTable extends TransactionTable
         DriftSqlType.string,
         data['${effectivePrefix}last_modified_by'],
       )!,
-      type: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}type'],
-      )!,
+      type: $TransactionTableTable.$convertertype.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}type'],
+        )!,
+      ),
       description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}description'],
@@ -11595,6 +11668,22 @@ class $TransactionTableTable extends TransactionTable
         DriftSqlType.string,
         data['${effectivePrefix}expense_id'],
       ),
+      transactionHour: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}transaction_hour'],
+      ),
+      transactionMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}transaction_minute'],
+      ),
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      destinationAccountId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}destination_account_id'],
+      ),
     );
   }
 
@@ -11602,6 +11691,9 @@ class $TransactionTableTable extends TransactionTable
   $TransactionTableTable createAlias(String alias) {
     return $TransactionTableTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<TransactionType, String, String> $convertertype =
+      const EnumNameConverter<TransactionType>(TransactionType.values);
 }
 
 class TrnsctnTransaction extends DataClass
@@ -11611,12 +11703,16 @@ class TrnsctnTransaction extends DataClass
   final DateTime dateCreated;
   final DateTime dateUpdated;
   final String lastModifiedBy;
-  final String type;
+  final TransactionType type;
   final String description;
   final double amount;
   final String savingId;
   final bool isExpense;
   final String? expenseId;
+  final int? transactionHour;
+  final int? transactionMinute;
+  final String? note;
+  final String? destinationAccountId;
   const TrnsctnTransaction({
     required this.id,
     required this.createdBy,
@@ -11629,6 +11725,10 @@ class TrnsctnTransaction extends DataClass
     required this.savingId,
     required this.isExpense,
     this.expenseId,
+    this.transactionHour,
+    this.transactionMinute,
+    this.note,
+    this.destinationAccountId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -11638,13 +11738,29 @@ class TrnsctnTransaction extends DataClass
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
     map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['type'] = Variable<String>(type);
+    {
+      map['type'] = Variable<String>(
+        $TransactionTableTable.$convertertype.toSql(type),
+      );
+    }
     map['description'] = Variable<String>(description);
     map['amount'] = Variable<double>(amount);
     map['saving_id'] = Variable<String>(savingId);
     map['is_expense'] = Variable<bool>(isExpense);
     if (!nullToAbsent || expenseId != null) {
       map['expense_id'] = Variable<String>(expenseId);
+    }
+    if (!nullToAbsent || transactionHour != null) {
+      map['transaction_hour'] = Variable<int>(transactionHour);
+    }
+    if (!nullToAbsent || transactionMinute != null) {
+      map['transaction_minute'] = Variable<int>(transactionMinute);
+    }
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    if (!nullToAbsent || destinationAccountId != null) {
+      map['destination_account_id'] = Variable<String>(destinationAccountId);
     }
     return map;
   }
@@ -11664,6 +11780,16 @@ class TrnsctnTransaction extends DataClass
       expenseId: expenseId == null && nullToAbsent
           ? const Value.absent()
           : Value(expenseId),
+      transactionHour: transactionHour == null && nullToAbsent
+          ? const Value.absent()
+          : Value(transactionHour),
+      transactionMinute: transactionMinute == null && nullToAbsent
+          ? const Value.absent()
+          : Value(transactionMinute),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      destinationAccountId: destinationAccountId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(destinationAccountId),
     );
   }
 
@@ -11678,12 +11804,20 @@ class TrnsctnTransaction extends DataClass
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
       lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      type: serializer.fromJson<String>(json['type']),
+      type: $TransactionTableTable.$convertertype.fromJson(
+        serializer.fromJson<String>(json['type']),
+      ),
       description: serializer.fromJson<String>(json['description']),
       amount: serializer.fromJson<double>(json['amount']),
       savingId: serializer.fromJson<String>(json['savingId']),
       isExpense: serializer.fromJson<bool>(json['isExpense']),
       expenseId: serializer.fromJson<String?>(json['expenseId']),
+      transactionHour: serializer.fromJson<int?>(json['transactionHour']),
+      transactionMinute: serializer.fromJson<int?>(json['transactionMinute']),
+      note: serializer.fromJson<String?>(json['note']),
+      destinationAccountId: serializer.fromJson<String?>(
+        json['destinationAccountId'],
+      ),
     );
   }
   @override
@@ -11695,12 +11829,18 @@ class TrnsctnTransaction extends DataClass
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
       'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'type': serializer.toJson<String>(type),
+      'type': serializer.toJson<String>(
+        $TransactionTableTable.$convertertype.toJson(type),
+      ),
       'description': serializer.toJson<String>(description),
       'amount': serializer.toJson<double>(amount),
       'savingId': serializer.toJson<String>(savingId),
       'isExpense': serializer.toJson<bool>(isExpense),
       'expenseId': serializer.toJson<String?>(expenseId),
+      'transactionHour': serializer.toJson<int?>(transactionHour),
+      'transactionMinute': serializer.toJson<int?>(transactionMinute),
+      'note': serializer.toJson<String?>(note),
+      'destinationAccountId': serializer.toJson<String?>(destinationAccountId),
     };
   }
 
@@ -11710,12 +11850,16 @@ class TrnsctnTransaction extends DataClass
     DateTime? dateCreated,
     DateTime? dateUpdated,
     String? lastModifiedBy,
-    String? type,
+    TransactionType? type,
     String? description,
     double? amount,
     String? savingId,
     bool? isExpense,
     Value<String?> expenseId = const Value.absent(),
+    Value<int?> transactionHour = const Value.absent(),
+    Value<int?> transactionMinute = const Value.absent(),
+    Value<String?> note = const Value.absent(),
+    Value<String?> destinationAccountId = const Value.absent(),
   }) => TrnsctnTransaction(
     id: id ?? this.id,
     createdBy: createdBy ?? this.createdBy,
@@ -11728,6 +11872,16 @@ class TrnsctnTransaction extends DataClass
     savingId: savingId ?? this.savingId,
     isExpense: isExpense ?? this.isExpense,
     expenseId: expenseId.present ? expenseId.value : this.expenseId,
+    transactionHour: transactionHour.present
+        ? transactionHour.value
+        : this.transactionHour,
+    transactionMinute: transactionMinute.present
+        ? transactionMinute.value
+        : this.transactionMinute,
+    note: note.present ? note.value : this.note,
+    destinationAccountId: destinationAccountId.present
+        ? destinationAccountId.value
+        : this.destinationAccountId,
   );
   TrnsctnTransaction copyWithCompanion(TransactionTableCompanion data) {
     return TrnsctnTransaction(
@@ -11750,6 +11904,16 @@ class TrnsctnTransaction extends DataClass
       savingId: data.savingId.present ? data.savingId.value : this.savingId,
       isExpense: data.isExpense.present ? data.isExpense.value : this.isExpense,
       expenseId: data.expenseId.present ? data.expenseId.value : this.expenseId,
+      transactionHour: data.transactionHour.present
+          ? data.transactionHour.value
+          : this.transactionHour,
+      transactionMinute: data.transactionMinute.present
+          ? data.transactionMinute.value
+          : this.transactionMinute,
+      note: data.note.present ? data.note.value : this.note,
+      destinationAccountId: data.destinationAccountId.present
+          ? data.destinationAccountId.value
+          : this.destinationAccountId,
     );
   }
 
@@ -11766,7 +11930,11 @@ class TrnsctnTransaction extends DataClass
           ..write('amount: $amount, ')
           ..write('savingId: $savingId, ')
           ..write('isExpense: $isExpense, ')
-          ..write('expenseId: $expenseId')
+          ..write('expenseId: $expenseId, ')
+          ..write('transactionHour: $transactionHour, ')
+          ..write('transactionMinute: $transactionMinute, ')
+          ..write('note: $note, ')
+          ..write('destinationAccountId: $destinationAccountId')
           ..write(')'))
         .toString();
   }
@@ -11784,6 +11952,10 @@ class TrnsctnTransaction extends DataClass
     savingId,
     isExpense,
     expenseId,
+    transactionHour,
+    transactionMinute,
+    note,
+    destinationAccountId,
   );
   @override
   bool operator ==(Object other) =>
@@ -11799,7 +11971,11 @@ class TrnsctnTransaction extends DataClass
           other.amount == this.amount &&
           other.savingId == this.savingId &&
           other.isExpense == this.isExpense &&
-          other.expenseId == this.expenseId);
+          other.expenseId == this.expenseId &&
+          other.transactionHour == this.transactionHour &&
+          other.transactionMinute == this.transactionMinute &&
+          other.note == this.note &&
+          other.destinationAccountId == this.destinationAccountId);
 }
 
 class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
@@ -11808,12 +11984,16 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
   final Value<String> lastModifiedBy;
-  final Value<String> type;
+  final Value<TransactionType> type;
   final Value<String> description;
   final Value<double> amount;
   final Value<String> savingId;
   final Value<bool> isExpense;
   final Value<String?> expenseId;
+  final Value<int?> transactionHour;
+  final Value<int?> transactionMinute;
+  final Value<String?> note;
+  final Value<String?> destinationAccountId;
   final Value<int> rowid;
   const TransactionTableCompanion({
     this.id = const Value.absent(),
@@ -11827,6 +12007,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.savingId = const Value.absent(),
     this.isExpense = const Value.absent(),
     this.expenseId = const Value.absent(),
+    this.transactionHour = const Value.absent(),
+    this.transactionMinute = const Value.absent(),
+    this.note = const Value.absent(),
+    this.destinationAccountId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TransactionTableCompanion.insert({
@@ -11835,12 +12019,16 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
     required String lastModifiedBy,
-    required String type,
+    required TransactionType type,
     this.description = const Value.absent(),
     required double amount,
     required String savingId,
     this.isExpense = const Value.absent(),
     this.expenseId = const Value.absent(),
+    this.transactionHour = const Value.absent(),
+    this.transactionMinute = const Value.absent(),
+    this.note = const Value.absent(),
+    this.destinationAccountId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdBy = Value(createdBy),
        dateUpdated = Value(dateUpdated),
@@ -11860,6 +12048,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     Expression<String>? savingId,
     Expression<bool>? isExpense,
     Expression<String>? expenseId,
+    Expression<int>? transactionHour,
+    Expression<int>? transactionMinute,
+    Expression<String>? note,
+    Expression<String>? destinationAccountId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -11874,6 +12066,11 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       if (savingId != null) 'saving_id': savingId,
       if (isExpense != null) 'is_expense': isExpense,
       if (expenseId != null) 'expense_id': expenseId,
+      if (transactionHour != null) 'transaction_hour': transactionHour,
+      if (transactionMinute != null) 'transaction_minute': transactionMinute,
+      if (note != null) 'note': note,
+      if (destinationAccountId != null)
+        'destination_account_id': destinationAccountId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -11884,12 +12081,16 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     Value<DateTime>? dateCreated,
     Value<DateTime>? dateUpdated,
     Value<String>? lastModifiedBy,
-    Value<String>? type,
+    Value<TransactionType>? type,
     Value<String>? description,
     Value<double>? amount,
     Value<String>? savingId,
     Value<bool>? isExpense,
     Value<String?>? expenseId,
+    Value<int?>? transactionHour,
+    Value<int?>? transactionMinute,
+    Value<String?>? note,
+    Value<String?>? destinationAccountId,
     Value<int>? rowid,
   }) {
     return TransactionTableCompanion(
@@ -11904,6 +12105,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       savingId: savingId ?? this.savingId,
       isExpense: isExpense ?? this.isExpense,
       expenseId: expenseId ?? this.expenseId,
+      transactionHour: transactionHour ?? this.transactionHour,
+      transactionMinute: transactionMinute ?? this.transactionMinute,
+      note: note ?? this.note,
+      destinationAccountId: destinationAccountId ?? this.destinationAccountId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -11927,7 +12132,9 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
     if (type.present) {
-      map['type'] = Variable<String>(type.value);
+      map['type'] = Variable<String>(
+        $TransactionTableTable.$convertertype.toSql(type.value),
+      );
     }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
@@ -11943,6 +12150,20 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     }
     if (expenseId.present) {
       map['expense_id'] = Variable<String>(expenseId.value);
+    }
+    if (transactionHour.present) {
+      map['transaction_hour'] = Variable<int>(transactionHour.value);
+    }
+    if (transactionMinute.present) {
+      map['transaction_minute'] = Variable<int>(transactionMinute.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (destinationAccountId.present) {
+      map['destination_account_id'] = Variable<String>(
+        destinationAccountId.value,
+      );
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -11964,6 +12185,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
           ..write('savingId: $savingId, ')
           ..write('isExpense: $isExpense, ')
           ..write('expenseId: $expenseId, ')
+          ..write('transactionHour: $transactionHour, ')
+          ..write('transactionMinute: $transactionMinute, ')
+          ..write('note: $note, ')
+          ..write('destinationAccountId: $destinationAccountId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -21606,12 +21831,16 @@ typedef $$TransactionTableTableCreateCompanionBuilder =
       Value<DateTime> dateCreated,
       required DateTime dateUpdated,
       required String lastModifiedBy,
-      required String type,
+      required TransactionType type,
       Value<String> description,
       required double amount,
       required String savingId,
       Value<bool> isExpense,
       Value<String?> expenseId,
+      Value<int?> transactionHour,
+      Value<int?> transactionMinute,
+      Value<String?> note,
+      Value<String?> destinationAccountId,
       Value<int> rowid,
     });
 typedef $$TransactionTableTableUpdateCompanionBuilder =
@@ -21621,12 +21850,16 @@ typedef $$TransactionTableTableUpdateCompanionBuilder =
       Value<DateTime> dateCreated,
       Value<DateTime> dateUpdated,
       Value<String> lastModifiedBy,
-      Value<String> type,
+      Value<TransactionType> type,
       Value<String> description,
       Value<double> amount,
       Value<String> savingId,
       Value<bool> isExpense,
       Value<String?> expenseId,
+      Value<int?> transactionHour,
+      Value<int?> transactionMinute,
+      Value<String?> note,
+      Value<String?> destinationAccountId,
       Value<int> rowid,
     });
 
@@ -21716,9 +21949,10 @@ class $$TransactionTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get type => $composableBuilder(
+  ColumnWithTypeConverterFilters<TransactionType, TransactionType, String>
+  get type => $composableBuilder(
     column: $table.type,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<String> get description => $composableBuilder(
@@ -21733,6 +21967,26 @@ class $$TransactionTableTableFilterComposer
 
   ColumnFilters<bool> get isExpense => $composableBuilder(
     column: $table.isExpense,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get transactionHour => $composableBuilder(
+    column: $table.transactionHour,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get transactionMinute => $composableBuilder(
+    column: $table.transactionMinute,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get destinationAccountId => $composableBuilder(
+    column: $table.destinationAccountId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21837,6 +22091,26 @@ class $$TransactionTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get transactionHour => $composableBuilder(
+    column: $table.transactionHour,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get transactionMinute => $composableBuilder(
+    column: $table.transactionMinute,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get destinationAccountId => $composableBuilder(
+    column: $table.destinationAccountId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$SavingTableTableOrderingComposer get savingId {
     final $$SavingTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -21914,7 +22188,7 @@ class $$TransactionTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get type =>
+  GeneratedColumnWithTypeConverter<TransactionType, String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
   GeneratedColumn<String> get description => $composableBuilder(
@@ -21927,6 +22201,24 @@ class $$TransactionTableTableAnnotationComposer
 
   GeneratedColumn<bool> get isExpense =>
       $composableBuilder(column: $table.isExpense, builder: (column) => column);
+
+  GeneratedColumn<int> get transactionHour => $composableBuilder(
+    column: $table.transactionHour,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get transactionMinute => $composableBuilder(
+    column: $table.transactionMinute,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<String> get destinationAccountId => $composableBuilder(
+    column: $table.destinationAccountId,
+    builder: (column) => column,
+  );
 
   $$SavingTableTableAnnotationComposer get savingId {
     final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
@@ -22010,12 +22302,16 @@ class $$TransactionTableTableTableManager
                 Value<DateTime> dateCreated = const Value.absent(),
                 Value<DateTime> dateUpdated = const Value.absent(),
                 Value<String> lastModifiedBy = const Value.absent(),
-                Value<String> type = const Value.absent(),
+                Value<TransactionType> type = const Value.absent(),
                 Value<String> description = const Value.absent(),
                 Value<double> amount = const Value.absent(),
                 Value<String> savingId = const Value.absent(),
                 Value<bool> isExpense = const Value.absent(),
                 Value<String?> expenseId = const Value.absent(),
+                Value<int?> transactionHour = const Value.absent(),
+                Value<int?> transactionMinute = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<String?> destinationAccountId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TransactionTableCompanion(
                 id: id,
@@ -22029,6 +22325,10 @@ class $$TransactionTableTableTableManager
                 savingId: savingId,
                 isExpense: isExpense,
                 expenseId: expenseId,
+                transactionHour: transactionHour,
+                transactionMinute: transactionMinute,
+                note: note,
+                destinationAccountId: destinationAccountId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -22038,12 +22338,16 @@ class $$TransactionTableTableTableManager
                 Value<DateTime> dateCreated = const Value.absent(),
                 required DateTime dateUpdated,
                 required String lastModifiedBy,
-                required String type,
+                required TransactionType type,
                 Value<String> description = const Value.absent(),
                 required double amount,
                 required String savingId,
                 Value<bool> isExpense = const Value.absent(),
                 Value<String?> expenseId = const Value.absent(),
+                Value<int?> transactionHour = const Value.absent(),
+                Value<int?> transactionMinute = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<String?> destinationAccountId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TransactionTableCompanion.insert(
                 id: id,
@@ -22057,6 +22361,10 @@ class $$TransactionTableTableTableManager
                 savingId: savingId,
                 isExpense: isExpense,
                 expenseId: expenseId,
+                transactionHour: transactionHour,
+                transactionMinute: transactionMinute,
+                note: note,
+                destinationAccountId: destinationAccountId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

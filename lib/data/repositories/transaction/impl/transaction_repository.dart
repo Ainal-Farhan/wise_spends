@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:flutter/material.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
@@ -126,14 +127,26 @@ class TransactionRepository extends ITransactionRepository {
   Future<TransactionEntity> createTransaction(
     TransactionEntity transaction,
   ) async {
+    // Extract hour and minute from time if available
+    int? hour;
+    int? minute;
+    if (transaction.time != null) {
+      hour = transaction.time!.hour;
+      minute = transaction.time!.minute;
+    }
+
     final companion = TransactionTableCompanion.insert(
       id: Value(transaction.id),
-      type: transaction.type.name,
+      type: transaction.type,
       description: Value(transaction.title),
       amount: transaction.amount,
       savingId: transaction.sourceAccountId ?? '',
       isExpense: Value(transaction.type == TransactionType.expense),
       expenseId: Value(transaction.categoryId),
+      transactionHour: Value(hour),
+      transactionMinute: Value(minute),
+      note: Value(transaction.note),
+      destinationAccountId: Value(transaction.destinationAccountId),
       createdBy: 'system',
       dateCreated: Value(transaction.createdAt),
       dateUpdated: transaction.updatedAt,
@@ -148,13 +161,25 @@ class TransactionRepository extends ITransactionRepository {
   Future<TransactionEntity> updateTransaction(
     TransactionEntity transaction,
   ) async {
+    // Extract hour and minute from time if available
+    int? hour;
+    int? minute;
+    if (transaction.time != null) {
+      hour = transaction.time!.hour;
+      minute = transaction.time!.minute;
+    }
+
     final companion = TransactionTableCompanion(
-      type: Value(transaction.type.name),
+      type: Value(transaction.type),
       description: Value(transaction.title),
       amount: Value(transaction.amount),
       savingId: Value(transaction.sourceAccountId ?? ''),
       isExpense: Value(transaction.type == TransactionType.expense),
       expenseId: Value(transaction.categoryId),
+      transactionHour: Value(hour),
+      transactionMinute: Value(minute),
+      note: Value(transaction.note),
+      destinationAccountId: Value(transaction.destinationAccountId),
       dateUpdated: Value(transaction.updatedAt),
       lastModifiedBy: const Value('system'),
     );
@@ -190,29 +215,31 @@ class TransactionRepository extends ITransactionRepository {
 
   /// Helper method to map database row to domain entity
   TransactionEntity _mapToEntity(TrnsctnTransaction row) {
+    // Reconstruct TimeOfDay from hour and minute columns
+    TimeOfDay? time;
+    if (row.transactionHour != null && row.transactionMinute != null) {
+      time = TimeOfDay(
+        hour: row.transactionHour!,
+        minute: row.transactionMinute!,
+      );
+    }
+
     return TransactionEntity(
       id: row.id,
       title: row.description,
       amount: row.amount,
-      type: _mapToTransactionType(row.isExpense, row.type),
+      type: row.type,
       categoryId: row.expenseId ?? 'uncategorized',
       categoryName: null, // Would need join with expense table
       categoryIcon: null,
       date: row.dateCreated,
-      note: null, // Would need additional field in schema
+      time: time,
+      note: row.note,
       sourceAccountId: row.savingId,
-      destinationAccountId: null, // Would need additional field for transfers
+      destinationAccountId: row.destinationAccountId,
       createdAt: row.dateCreated,
       updatedAt: row.dateUpdated,
     );
-  }
-
-  /// Helper method to determine transaction type
-  TransactionType _mapToTransactionType(bool isExpense, String typeString) {
-    if (typeString == 'transfer') {
-      return TransactionType.transfer;
-    }
-    return isExpense ? TransactionType.expense : TransactionType.income;
   }
 
   /// Helper method to convert TransactionType to isExpense boolean

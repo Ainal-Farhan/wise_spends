@@ -111,6 +111,16 @@ class TransactionsGroupedLoaded extends TransactionState {
   List<Object> get props => [groupedTransactions, totalIncome, totalExpenses, totalBalance];
 }
 
+/// Single transaction loaded by ID
+class TransactionLoadedById extends TransactionState {
+  final TransactionEntity transaction;
+
+  const TransactionLoadedById(this.transaction);
+
+  @override
+  List<Object> get props => [transaction];
+}
+
 /// Transactions filtered by type
 class TransactionsFilteredLoaded extends TransactionState {
   final List<TransactionEntity> transactions;

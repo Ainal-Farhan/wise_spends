@@ -3,14 +3,16 @@ import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart'
 import 'transaction_form_event.dart';
 import 'transaction_form_state.dart';
 
-/// Transaction Form BLoC - manages add transaction form state
+/// Transaction Form BLoC - manages add/edit transaction form state
 class TransactionFormBloc
     extends Bloc<TransactionFormEvent, TransactionFormState> {
   TransactionFormBloc() : super(TransactionFormInitial()) {
     on<InitializeTransactionForm>(_onInitialize);
+    on<InitializeTransactionFormForEdit>(_onInitializeForEdit);
     on<ChangeTransactionType>(_onChangeType);
     on<SelectCategory>(_onSelectCategory);
     on<ChangeTransactionDate>(_onChangeDate);
+    on<ChangeTransactionTime>(_onChangeTime);
     on<ToggleNoteField>(_onToggleNoteField);
     on<SelectSourceAccount>(_onSelectSourceAccount);
     on<SelectDestinationAccount>(_onSelectDestinationAccount);
@@ -24,6 +26,29 @@ class TransactionFormBloc
     emit(
       TransactionFormReady(
         transactionType: event.preselectedType ?? TransactionType.expense,
+      ),
+    );
+  }
+
+  void _onInitializeForEdit(
+    InitializeTransactionFormForEdit event,
+    Emitter<TransactionFormState> emit,
+  ) {
+    emit(
+      TransactionFormReady(
+        transactionType: event.transaction.type,
+        selectedCategory: event.category,
+        selectedDate: event.transaction.date,
+        selectedTime: event.transaction.time,
+        showNoteField: event.transaction.note != null &&
+            event.transaction.note!.isNotEmpty,
+        selectedSourceAccount: event.transaction.sourceAccountId,
+        selectedDestinationAccount: event.transaction.destinationAccountId,
+        title: event.transaction.title,
+        amount: event.transaction.amount.toString(),
+        note: event.transaction.note,
+        isEditMode: true,
+        editingTransactionId: event.transaction.id,
       ),
     );
   }
@@ -60,6 +85,16 @@ class TransactionFormBloc
     if (state is TransactionFormReady) {
       final currentState = state as TransactionFormReady;
       emit(currentState.copyWith(selectedDate: event.date));
+    }
+  }
+
+  void _onChangeTime(
+    ChangeTransactionTime event,
+    Emitter<TransactionFormState> emit,
+  ) {
+    if (state is TransactionFormReady) {
+      final currentState = state as TransactionFormReady;
+      emit(currentState.copyWith(selectedTime: event.time));
     }
   }
 

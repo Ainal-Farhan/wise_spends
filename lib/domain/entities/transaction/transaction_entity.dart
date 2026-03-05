@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 /// Transaction type enum
 enum TransactionType {
@@ -17,6 +18,7 @@ class TransactionEntity extends Equatable {
   final String? categoryName;
   final String? categoryIcon;
   final DateTime date;
+  final TimeOfDay? time;
   final String? note;
   final String? sourceAccountId;
   final String? destinationAccountId;
@@ -33,6 +35,7 @@ class TransactionEntity extends Equatable {
     this.categoryName,
     this.categoryIcon,
     required this.date,
+    this.time,
     this.note,
     this.sourceAccountId,
     this.destinationAccountId,
@@ -51,6 +54,7 @@ class TransactionEntity extends Equatable {
         categoryName,
         categoryIcon,
         date,
+        time,
         note,
         sourceAccountId,
         destinationAccountId,
@@ -68,6 +72,7 @@ class TransactionEntity extends Equatable {
     String? categoryName,
     String? categoryIcon,
     DateTime? date,
+    TimeOfDay? time,
     String? note,
     String? sourceAccountId,
     String? destinationAccountId,
@@ -84,6 +89,7 @@ class TransactionEntity extends Equatable {
       categoryName: categoryName ?? this.categoryName,
       categoryIcon: categoryIcon ?? this.categoryIcon,
       date: date ?? this.date,
+      time: time ?? this.time,
       note: note ?? this.note,
       sourceAccountId: sourceAccountId ?? this.sourceAccountId,
       destinationAccountId:

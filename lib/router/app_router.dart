@@ -7,6 +7,10 @@ import 'package:wise_spends/presentation/screens/transaction/add_transaction_scr
     as transaction_screen;
 import 'package:wise_spends/presentation/screens/transaction/transaction_history_screen.dart'
     as transaction_history_screen;
+import 'package:wise_spends/presentation/screens/transaction/transaction_detail_screen.dart'
+    as transaction_detail_screen;
+import 'package:wise_spends/presentation/screens/transaction/edit_transaction_screen.dart'
+    as edit_transaction_screen;
 import 'package:wise_spends/presentation/screens/budget/budget_list_screen.dart'
     as budget_screen;
 import 'package:wise_spends/presentation/screens/reports/reports_screen.dart'
@@ -55,6 +59,34 @@ abstract class AppRouter {
                   )
                 : const transaction_screen.AddTransactionScreenArgs(),
           ),
+          settings,
+        );
+
+      case AppRoutes.transactionDetail:
+        if (args is TransactionDetailArgs) {
+          return _createRoute(
+            transaction_detail_screen.TransactionDetailScreen(
+              transactionId: args.transactionId,
+            ),
+            settings,
+          );
+        }
+        return _createRoute(
+          _ErrorScreen(message: 'Invalid transaction details arguments'),
+          settings,
+        );
+
+      case AppRoutes.editTransaction:
+        if (args is EditTransactionArgs) {
+          return _createRoute(
+            edit_transaction_screen.EditTransactionScreen(
+              transactionId: args.transactionId,
+            ),
+            settings,
+          );
+        }
+        return _createRoute(
+          _ErrorScreen(message: 'Invalid edit transaction arguments'),
           settings,
         );
 

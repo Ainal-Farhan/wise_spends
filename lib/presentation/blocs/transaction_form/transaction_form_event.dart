@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
@@ -18,6 +19,20 @@ class InitializeTransactionForm extends TransactionFormEvent {
 
   @override
   List<Object?> get props => [preselectedType];
+}
+
+/// Initialize form for editing existing transaction
+class InitializeTransactionFormForEdit extends TransactionFormEvent {
+  final TransactionEntity transaction;
+  final CategoryEntity? category;
+
+  const InitializeTransactionFormForEdit({
+    required this.transaction,
+    this.category,
+  });
+
+  @override
+  List<Object?> get props => [transaction, category];
 }
 
 /// Change transaction type
@@ -48,6 +63,16 @@ class ChangeTransactionDate extends TransactionFormEvent {
 
   @override
   List<Object?> get props => [date];
+}
+
+/// Change time
+class ChangeTransactionTime extends TransactionFormEvent {
+  final TimeOfDay time;
+
+  const ChangeTransactionTime(this.time);
+
+  @override
+  List<Object?> get props => [time];
 }
 
 /// Toggle note field visibility
