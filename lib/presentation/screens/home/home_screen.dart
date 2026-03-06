@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
+import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_bloc.dart';
@@ -40,8 +41,33 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _HomeScreenContent extends StatelessWidget {
+class _HomeScreenContent extends StatefulWidget {
   const _HomeScreenContent();
+
+  @override
+  State<_HomeScreenContent> createState() => _HomeScreenContentState();
+}
+
+class _HomeScreenContentState extends State<_HomeScreenContent> {
+  int _pendingTaskCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPendingTasks();
+  }
+
+  Future<void> _loadPendingTasks() async {
+    try {
+      final repository = CommitmentTaskRepository();
+      final tasks = await repository.getCommitmentTasks();
+      setState(() {
+        _pendingTaskCount = tasks.length;
+      });
+    } catch (e) {
+      // Ignore errors, badge will show 0
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +105,48 @@ class _HomeScreenContent extends StatelessWidget {
                 ],
               ),
               actions: [
+                // Commitment Tasks Icon with Badge
+                Stack(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.task_alt),
+                      onPressed: () {
+                        // Navigate to Commitment Task screen
+                        Navigator.pushNamed(context, AppRoutes.commitmentTask);
+                      },
+                      tooltip: 'Commitment Tasks',
+                      constraints: const BoxConstraints(
+                        minWidth: AppTouchTarget.min,
+                        minHeight: AppTouchTarget.min,
+                      ),
+                    ),
+                    if (_pendingTaskCount > 0)
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppColors.error,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            _pendingTaskCount > 99 ? '99+' : '$_pendingTaskCount',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
                 IconButton(
                   icon: const Icon(Icons.notifications_outlined),
                   onPressed: () {

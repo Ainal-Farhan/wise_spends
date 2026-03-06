@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
 
 /// Add Commitment Form Events
 abstract class AddCommitmentFormEvent extends Equatable {
@@ -11,6 +12,16 @@ abstract class AddCommitmentFormEvent extends Equatable {
 /// Initialize form
 class InitializeAddCommitmentForm extends AddCommitmentFormEvent {
   const InitializeAddCommitmentForm();
+}
+
+/// Initialize edit form with existing commitment
+class InitializeEditCommitmentFormEvent extends AddCommitmentFormEvent {
+  final CommitmentVO commitment;
+
+  const InitializeEditCommitmentFormEvent(this.commitment);
+
+  @override
+  List<Object?> get props => [commitment];
 }
 
 /// Change commitment name

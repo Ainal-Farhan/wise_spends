@@ -49,3 +49,16 @@ class CommitmentTaskError extends CommitmentTaskState {
   @override
   List<Object> get props => [message];
 }
+
+class CommitmentTaskFormReady extends CommitmentTaskState {
+  final CommitmentTaskVO? taskVO;
+
+  const CommitmentTaskFormReady({this.taskVO});
+
+  @override
+  List<Object?> get props => [taskVO];
+
+  CommitmentTaskFormReady copyWith({CommitmentTaskVO? taskVO}) {
+    return CommitmentTaskFormReady(taskVO: taskVO ?? this.taskVO);
+  }
+}

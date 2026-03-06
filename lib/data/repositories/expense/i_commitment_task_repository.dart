@@ -18,4 +18,10 @@ abstract class ICommitmentTaskRepository
   Future<List<CommitmentTaskVO>> getCommitmentTasks();
 
   Future<void> updateTaskStatus(bool isDone, CommitmentTaskVO taskVO);
+
+  Future<void> addCommitmentTask(CommitmentTaskVO taskVO);
+
+  Future<void> editCommitmentTask(CommitmentTaskVO taskVO);
+
+  Future<void> deleteCommitmentTask(CommitmentTaskVO taskVO);
 }

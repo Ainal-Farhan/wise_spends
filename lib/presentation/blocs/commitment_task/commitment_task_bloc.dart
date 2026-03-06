@@ -13,6 +13,9 @@ class CommitmentTaskBloc
     on<LoadCommitmentTasksEvent>(_onLoadCommitmentTasks);
     on<UpdateStatusCommitmentTaskEvent>(_onUpdateStatusCommitmentTask);
     on<FilterCommitmentTasksEvent>(_onFilterCommitmentTasks);
+    on<AddCommitmentTaskEvent>(_onAddCommitmentTask);
+    on<EditCommitmentTaskEvent>(_onEditCommitmentTask);
+    on<DeleteCommitmentTaskEvent>(_onDeleteCommitmentTask);
   }
 
   Future<void> _onLoadCommitmentTasks(
@@ -55,6 +58,63 @@ class CommitmentTaskBloc
     if (state is CommitmentTaskLoaded) {
       final currentState = state as CommitmentTaskLoaded;
       emit(currentState.copyWith(filterStatus: event.filterStatus));
+    }
+  }
+
+  Future<void> _onAddCommitmentTask(
+    AddCommitmentTaskEvent event,
+    Emitter<CommitmentTaskState> emit,
+  ) async {
+    emit(CommitmentTaskLoading());
+    try {
+      await _repository.addCommitmentTask(event.taskVO);
+
+      if (updateAppBar != null) {
+        updateAppBar!();
+      }
+
+      emit(CommitmentTaskUpdated('Successfully added task'));
+      add(LoadCommitmentTasksEvent());
+    } catch (e) {
+      emit(CommitmentTaskError(e.toString()));
+    }
+  }
+
+  Future<void> _onEditCommitmentTask(
+    EditCommitmentTaskEvent event,
+    Emitter<CommitmentTaskState> emit,
+  ) async {
+    emit(CommitmentTaskLoading());
+    try {
+      await _repository.editCommitmentTask(event.taskVO);
+
+      if (updateAppBar != null) {
+        updateAppBar!();
+      }
+
+      emit(CommitmentTaskUpdated('Successfully edited task'));
+      add(LoadCommitmentTasksEvent());
+    } catch (e) {
+      emit(CommitmentTaskError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteCommitmentTask(
+    DeleteCommitmentTaskEvent event,
+    Emitter<CommitmentTaskState> emit,
+  ) async {
+    emit(CommitmentTaskLoading());
+    try {
+      await _repository.deleteCommitmentTask(event.taskVO);
+
+      if (updateAppBar != null) {
+        updateAppBar!();
+      }
+
+      emit(CommitmentTaskUpdated('Successfully deleted task'));
+      add(LoadCommitmentTasksEvent());
+    } catch (e) {
+      emit(CommitmentTaskError(e.toString()));
     }
   }
 }

@@ -1,15 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/components/forms/commitment_form.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/presentation/blocs/commitment/commitment_bloc.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
 import '../commitment_task/commitment_task_screen.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 
-/// Commitment Detail Screen - Manage commitment details and tasks
 class CommitmentDetailScreen extends StatelessWidget {
   final String commitmentId;
   final String commitmentName;
@@ -24,7 +28,7 @@ class CommitmentDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          CommitmentBloc()..add(LoadCommitmentDetailEvent(commitmentId)),
+          CommitmentBloc()..add(LoadDetailScreenEvent(commitmentId)),
       child: _CommitmentDetailScreenContent(
         commitmentId: commitmentId,
         commitmentName: commitmentName,
@@ -57,17 +61,17 @@ class _CommitmentDetailScreenContentState
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _showAddDetailDialog(context),
+            onPressed: _openAddDetailDialog,
             tooltip: 'Add Task',
           ),
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'edit') {
-                // Edit commitment
+                _openEditCommitmentScreen();
               } else if (value == 'distribute') {
-                _confirmDistributeCommitment(context);
+                _confirmDistributeCommitment();
               } else if (value == 'delete') {
-                _confirmDeleteCommitment(context);
+                _confirmDeleteCommitment();
               }
             },
             itemBuilder: (context) => const [
@@ -110,7 +114,9 @@ class _CommitmentDetailScreenContentState
       ),
       body: BlocConsumer<CommitmentBloc, CommitmentState>(
         listener: (context, state) {
-          if (state is CommitmentStateSuccess) {
+          // Handle distribution success - navigate to Commitment Task screen
+          if (state is CommitmentStateDistributionSuccess) {
+            // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
@@ -127,57 +133,127 @@ class _CommitmentDetailScreenContentState
                 ),
               ),
             );
+            // Navigate to Commitment Task screen, clearing the navigation stack
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                builder: (context) => CommitmentTaskScreen(
+                  bloc: CommitmentTaskBloc(CommitmentTaskRepository()),
+                  commitmentId: state.commitmentId,
+                ),
+              ),
+              (route) => route.isFirst, // Keep only the first route (home)
+            );
+          }
 
+          if (state is CommitmentStateSuccess) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(state.message),
+                    ],
+                  ),
+                  backgroundColor: AppColors.success,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
             context.read<CommitmentBloc>().add(state.nextEvent);
           } else if (state is CommitmentStateError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-              ),
-            );
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.error,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
           }
         },
         builder: (context, state) {
           if (state is CommitmentStateLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is CommitmentStateCommitmentDetailLoaded) {
-            final details = state.commitmentDetails;
+          }
 
-            if (details.isEmpty) {
-              return _buildEmptyState(context);
-            }
+          if (state is CommitmentStateDetailScreenReady) {
+            final details = state.commitmentDetails;
+            if (details.isEmpty) return _buildEmptyState(context);
 
             return RefreshIndicator(
-              onRefresh: () async {
-                context.read<CommitmentBloc>().add(
-                  LoadCommitmentDetailEvent(widget.commitmentId),
-                );
-              },
+              onRefresh: () async => context.read<CommitmentBloc>().add(
+                LoadDetailScreenEvent(widget.commitmentId),
+              ),
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: details.length,
-                itemBuilder: (context, index) {
-                  final detail = details[index];
-                  return _buildDetailCard(context, detail);
-                },
+                itemBuilder: (context, index) =>
+                    _buildDetailCard(context, details[index]),
               ),
             );
-          } else if (state is CommitmentStateError) {
+          }
+
+          if (state is CommitmentStateError) {
             return ErrorStateWidget(
               message: state.message,
-              onAction: () {
-                context.read<CommitmentBloc>().add(
-                  LoadCommitmentDetailEvent(widget.commitmentId),
-                );
-              },
+              onAction: () => context.read<CommitmentBloc>().add(
+                LoadDetailScreenEvent(widget.commitmentId),
+              ),
             );
           }
+
           return const SizedBox.shrink();
         },
       ),
     );
   }
+
+  // ---------------------------------------------------------------------------
+  // State helpers
+  // ---------------------------------------------------------------------------
+
+  List<ListSavingVO> _getSavingsFromState() {
+    final state = context.read<CommitmentBloc>().state;
+    if (state is CommitmentStateDetailScreenReady) return state.savingVOList;
+    return [];
+  }
+
+  CommitmentVO _buildCommitmentVO() {
+    final state = context.read<CommitmentBloc>().state;
+
+    // Try to get full commitment VO from state (includes referredSavingVO)
+    if (state is CommitmentStateDetailScreenReady &&
+        state.commitmentVO != null) {
+      return state.commitmentVO!;
+    }
+
+    // Try form state
+    if (state is CommitmentStateCommitmentFormLoaded) {
+      return state.commitmentVO;
+    }
+
+    // Fallback: build from available data (won't have referredSavingVO)
+    final vo = CommitmentVO()
+      ..commitmentId = widget.commitmentId
+      ..name = widget.commitmentName;
+    if (state is CommitmentStateDetailScreenReady) {
+      vo.commitmentDetailVOList = state.commitmentDetails;
+    }
+    return vo;
+  }
+
+  // ---------------------------------------------------------------------------
+  // UI builders
+  // ---------------------------------------------------------------------------
 
   Widget _buildEmptyState(BuildContext context) {
     return Center(
@@ -203,7 +279,7 @@ class _CommitmentDetailScreenContentState
               child: AppButton.primary(
                 label: 'Add Task',
                 icon: Icons.add,
-                onPressed: () => _showAddDetailDialog(context),
+                onPressed: _openAddDetailDialog,
               ),
             ),
           ],
@@ -217,20 +293,9 @@ class _CommitmentDetailScreenContentState
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      onTap: () {
-        // Navigate to CommitmentTaskScreen to manage actual tasks
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CommitmentTaskScreen(
-              bloc: CommitmentTaskBloc(CommitmentTaskRepository()),
-            ),
-          ),
-        );
-      },
+      onTap: null,
       child: Row(
         children: [
-          // Icon
           Container(
             width: 48,
             height: 48,
@@ -245,8 +310,6 @@ class _CommitmentDetailScreenContentState
             ),
           ),
           const SizedBox(width: 16),
-
-          // Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,38 +328,30 @@ class _CommitmentDetailScreenContentState
                     fontSize: 14,
                   ),
                 ),
+                if (detail.referredSavingVO?.savingName != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    detail.referredSavingVO!.savingName!,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
-
-          // Actions
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               if (value == 'edit') {
-                _showEditDetailDialog(context, detail);
+                _openEditDetailDialog(detail);
               } else if (value == 'delete') {
-                _confirmDeleteDetail(context, detail);
-              } else if (value == 'mark_paid') {
-                _confirmMarkAsPaid(context, detail);
+                _confirmDeleteDetail(detail);
               }
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'mark_paid',
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle,
-                      size: 18,
-                      color: AppColors.success,
-                    ),
-                    SizedBox(width: 8),
-                    Text('Mark as Paid'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
+            itemBuilder: (context) => const [
+              PopupMenuItem(
                 value: 'edit',
                 child: Row(
                   children: [
@@ -306,7 +361,7 @@ class _CommitmentDetailScreenContentState
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: Row(
                   children: [
@@ -326,234 +381,258 @@ class _CommitmentDetailScreenContentState
     );
   }
 
-  void _showAddDetailDialog(BuildContext context) {
-    final amountController = TextEditingController();
-    final descriptionController = TextEditingController();
-    String frequency = 'monthly';
+  // ---------------------------------------------------------------------------
+  // Actions
+  // ---------------------------------------------------------------------------
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Task'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppTextField(
-                label: 'Amount (RM)',
-                controller: amountController,
-                prefixText: 'RM ',
-                keyboardType: AppTextFieldKeyboardType.decimal,
+  /// Fires EditCommitmentEvent and listens for the form state, then pushes
+  /// the edit screen. Subscription is cancelled after the first match.
+  void _openEditCommitmentScreen() {
+    final bloc = context.read<CommitmentBloc>();
+    bloc.add(EditCommitmentEvent(_buildCommitmentVO()));
+
+    late final StreamSubscription<CommitmentState> sub;
+    sub = bloc.stream.listen((state) {
+      if (state is CommitmentStateCommitmentFormLoaded) {
+        sub.cancel();
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: bloc,
+              child: _CommitmentEditFormScreen(
+                commitmentVO: state.commitmentVO,
+                savingVOList: state.savingVOList,
               ),
-              const SizedBox(height: 16),
-              AppTextField(
-                label: 'Description (Optional)',
-                controller: descriptionController,
-                hint: 'e.g., January payment',
-                maxLines: 2,
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: frequency,
-                decoration: const InputDecoration(
-                  labelText: 'Frequency',
-                  prefixIcon: Icon(Icons.calendar_today),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'monthly', child: Text('Monthly')),
-                  DropdownMenuItem(
-                    value: 'quarterly',
-                    child: Text('Quarterly'),
-                  ),
-                  DropdownMenuItem(value: 'yearly', child: Text('Yearly')),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    frequency = value;
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final amount = double.tryParse(amountController.text) ?? 0.0;
-              if (amount <= 0) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a valid amount'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-                return;
-              }
-
-              final detailVO = CommitmentDetailVO();
-              detailVO.amount = amount;
-              detailVO.description = descriptionController.text.isEmpty
-                  ? null
-                  : descriptionController.text;
-
-              context.read<CommitmentBloc>().add(
-                SaveCommitmentDetailEvent(
-                  commitmentId: widget.commitmentId,
-                  commitmentDetailVO: detailVO,
-                ),
-              );
-
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
             ),
-            child: const Text('Add'),
           ),
-        ],
-      ),
+        );
+      }
+    });
+  }
+
+  void _openAddDetailDialog() {
+    _showDetailDialog(
+      title: 'Add Task',
+      confirmLabel: 'Add',
+      savings: _getSavingsFromState(),
+      onConfirm:
+          ({
+            required double amount,
+            required String? description,
+            required String savingId,
+          }) {
+            final detailVO = CommitmentDetailVO()
+              ..amount = amount
+              ..description = description
+              ..savingId = savingId;
+            context.read<CommitmentBloc>().add(
+              SaveCommitmentDetailEvent(
+                commitmentId: widget.commitmentId,
+                commitmentDetailVO: detailVO,
+              ),
+            );
+          },
     );
   }
 
-  void _showEditDetailDialog(BuildContext context, CommitmentDetailVO detail) {
+  void _openEditDetailDialog(CommitmentDetailVO detail) {
+    _showDetailDialog(
+      title: 'Edit Task',
+      confirmLabel: 'Update',
+      savings: _getSavingsFromState(),
+      initialAmount: detail.amount,
+      initialDescription: detail.description,
+      initialSavingId: detail.savingId ?? detail.referredSavingVO?.savingId,
+      onConfirm:
+          ({
+            required double amount,
+            required String? description,
+            required String savingId,
+          }) {
+            detail
+              ..amount = amount
+              ..description = description
+              ..savingId = savingId;
+            context.read<CommitmentBloc>().add(
+              SaveCommitmentDetailEvent(
+                commitmentId: widget.commitmentId,
+                commitmentDetailVO: detail,
+              ),
+            );
+          },
+    );
+  }
+
+  void _showDetailDialog({
+    required String title,
+    required String confirmLabel,
+    required List<ListSavingVO> savings,
+    double? initialAmount,
+    String? initialDescription,
+    String? initialSavingId,
+    required void Function({
+      required double amount,
+      required String? description,
+      required String savingId,
+    })
+    onConfirm,
+  }) {
     final amountController = TextEditingController(
-      text: (detail.amount ?? 0.0).toStringAsFixed(2),
+      text: initialAmount != null ? initialAmount.toStringAsFixed(2) : '',
     );
     final descriptionController = TextEditingController(
-      text: detail.description ?? '',
+      text: initialDescription ?? '',
     );
-    String frequency = 'monthly';
+    String? selectedSavingId = initialSavingId;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Task'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppTextField(
-                label: 'Amount (RM)',
-                controller: amountController,
-                prefixText: 'RM ',
-                keyboardType: AppTextFieldKeyboardType.decimal,
-              ),
-              const SizedBox(height: 16),
-              AppTextField(
-                label: 'Description',
-                controller: descriptionController,
-                maxLines: 2,
-              ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: frequency,
-                decoration: const InputDecoration(labelText: 'Frequency'),
-                items: const [
-                  DropdownMenuItem(value: 'monthly', child: Text('Monthly')),
-                  DropdownMenuItem(
-                    value: 'quarterly',
-                    child: Text('Quarterly'),
-                  ),
-                  DropdownMenuItem(value: 'yearly', child: Text('Yearly')),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    frequency = value;
-                  }
-                },
-              ),
-            ],
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.surface,
+          title: Text(
+            title,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final amount = double.tryParse(amountController.text) ?? 0.0;
-
-              detail.amount = amount;
-              detail.description = descriptionController.text.isEmpty
-                  ? null
-                  : descriptionController.text;
-
-              context.read<CommitmentBloc>().add(
-                SaveCommitmentDetailEvent(
-                  commitmentId: widget.commitmentId,
-                  commitmentDetailVO: detail,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppTextField(
+                  label: 'Amount (RM)',
+                  controller: amountController,
+                  prefixText: 'RM ',
+                  keyboardType: AppTextFieldKeyboardType.decimal,
                 ),
-              );
-
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
+                const SizedBox(height: 16),
+                AppTextField(
+                  label: 'Description (Optional)',
+                  controller: descriptionController,
+                  hint: 'e.g., January payment',
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  initialValue: selectedSavingId,
+                  decoration: const InputDecoration(
+                    labelText: 'Savings Account',
+                    prefixIcon: Icon(Icons.savings),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                  hint: savings.isEmpty
+                      ? const Text('No savings accounts found')
+                      : const Text('Select savings account'),
+                  items: savings
+                      .map(
+                        (s) => DropdownMenuItem<String>(
+                          value: s.saving.id,
+                          child: Text(s.saving.name ?? 'Unnamed'),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: savings.isEmpty
+                      ? null
+                      : (value) =>
+                            setDialogState(() => selectedSavingId = value),
+                ),
+              ],
             ),
-            child: const Text('Update'),
           ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmMarkAsPaid(BuildContext context, CommitmentDetailVO detail) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Mark as Paid?'),
-        content: const Text(
-          'Mark this task as paid? This will record the payment.',
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final amount = double.tryParse(amountController.text) ?? 0.0;
+                if (amount <= 0) {
+                  _showInlineError('Please enter a valid amount');
+                  return;
+                }
+                if (selectedSavingId == null) {
+                  _showInlineError('Please select a savings account');
+                  return;
+                }
+                Navigator.pop(dialogContext);
+                onConfirm(
+                  amount: amount,
+                  description: descriptionController.text.isEmpty
+                      ? null
+                      : descriptionController.text,
+                  savingId: selectedSavingId!,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(confirmLabel),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.success,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }
 
-  void _confirmDeleteDetail(BuildContext context, CommitmentDetailVO detail) {
+  void _showInlineError(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+  }
+
+  void _confirmDeleteDetail(CommitmentDetailVO detail) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Task?'),
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text(
+          'Delete Task?',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         content: const Text(
           'Are you sure you want to delete this task? This cannot be undone.',
+          style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
+              Navigator.pop(dialogContext);
               context.read<CommitmentBloc>().add(
                 DeleteCommitmentDetailEvent(
                   detail.commitmentDetailId!,
                   commitmentId: widget.commitmentId,
                 ),
               );
-              Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondary,
@@ -566,23 +645,62 @@ class _CommitmentDetailScreenContentState
     );
   }
 
-  void _confirmDistributeCommitment(BuildContext context) {
+  void _confirmDistributeCommitment() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Distribute Commitment?'),
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text(
+          'Distribute Commitment?',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         content: const Text(
           'This will distribute the commitment across months based on the frequency. Continue?',
+          style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
-              // Trigger distribution
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
+
+              // Get current state
+              final state = context.read<CommitmentBloc>().state;
+
+              // If we have DetailScreenReady state with commitmentVO, distribute immediately
+              if (state is CommitmentStateDetailScreenReady &&
+                  state.commitmentVO != null) {
+                final commitmentVO = state.commitmentVO!;
+                commitmentVO.commitmentId = widget.commitmentId;
+                // Include current commitment details
+                commitmentVO.commitmentDetailVOList = state.commitmentDetails;
+                context.read<CommitmentBloc>().add(
+                  StartDistributeCommitmentEvent(commitmentVO),
+                );
+              } else {
+                // Need to load form first to get savings info
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Loading commitment details...'),
+                    backgroundColor: AppColors.primary,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+                context.read<CommitmentBloc>().add(LoadCommitmentFormEvent());
+                // Distribution will happen after form loads via BlocListener
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -595,26 +713,36 @@ class _CommitmentDetailScreenContentState
     );
   }
 
-  void _confirmDeleteCommitment(BuildContext context) {
+  void _confirmDeleteCommitment() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Commitment?'),
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text(
+          'Delete Commitment?',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         content: const Text(
           'Are you sure you want to delete this commitment? All tasks will be deleted. This cannot be undone.',
+          style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
+              Navigator.pop(dialogContext);
               context.read<CommitmentBloc>().add(
                 DeleteCommitmentEvent(widget.commitmentId),
               );
-              Navigator.pop(context);
-              // Navigate back to list
               Navigator.pop(context);
             },
             style: ElevatedButton.styleFrom(
@@ -624,6 +752,30 @@ class _CommitmentDetailScreenContentState
             child: const Text('Delete'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CommitmentEditFormScreen extends StatelessWidget {
+  final CommitmentVO commitmentVO;
+  final List<ListSavingVO> savingVOList;
+
+  const _CommitmentEditFormScreen({
+    required this.commitmentVO,
+    required this.savingVOList,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Edit Commitment')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: CommitmentForm(
+          commitmentVO: commitmentVO,
+          savingVOList: savingVOList,
+        ),
       ),
     );
   }

@@ -7,6 +7,7 @@ class AddCommitmentFormBloc
     extends Bloc<AddCommitmentFormEvent, AddCommitmentFormState> {
   AddCommitmentFormBloc() : super(const AddCommitmentFormReady()) {
     on<InitializeAddCommitmentForm>(_onInitialize);
+    on<InitializeEditCommitmentFormEvent>(_onInitializeEdit);
     on<AddCommitmentChangeName>(_onChangeName);
     on<AddCommitmentChangeFrequency>(_onChangeFrequency);
     on<ClearAddCommitmentForm>(_onClear);
@@ -18,6 +19,17 @@ class AddCommitmentFormBloc
     Emitter<AddCommitmentFormState> emit,
   ) {
     emit(const AddCommitmentFormReady());
+  }
+
+  void _onInitializeEdit(
+    InitializeEditCommitmentFormEvent event,
+    Emitter<AddCommitmentFormState> emit,
+  ) {
+    emit(AddCommitmentFormReady(
+      name: event.commitment.name ?? '',
+      frequency: event.commitment.frequency ?? 'monthly',
+      selectedSavingId: event.commitment.referredSavingVO?.savingId,
+    ));
   }
 
   void _onChangeName(

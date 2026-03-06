@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -12,30 +13,53 @@ import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.d
 /// Enhanced Commitment Task Screen - Pure BLoC
 class CommitmentTaskScreen extends StatelessWidget {
   final CommitmentTaskBloc bloc;
+  final String? commitmentId;
 
-  const CommitmentTaskScreen({super.key, required this.bloc});
+  const CommitmentTaskScreen({
+    super.key,
+    required this.bloc,
+    this.commitmentId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => bloc..add(LoadCommitmentTasksEvent()),
-      child: const _CommitmentTaskScreenContent(),
+      child: _CommitmentTaskScreenContent(commitmentId: commitmentId),
     );
   }
 }
 
-class _CommitmentTaskScreenContent extends StatelessWidget {
-  const _CommitmentTaskScreenContent();
+class _CommitmentTaskScreenContent extends StatefulWidget {
+  final String? commitmentId;
 
+  const _CommitmentTaskScreenContent({required this.commitmentId});
+
+  @override
+  State<_CommitmentTaskScreenContent> createState() =>
+      _CommitmentTaskScreenContentState();
+}
+
+class _CommitmentTaskScreenContentState
+    extends State<_CommitmentTaskScreenContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Commitment Tasks'),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          onPressed: () {
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
+          },
+          tooltip: 'Home',
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
-            onPressed: () => _showInfoDialog(context),
+            onPressed: () => _showInfoDialog(),
             tooltip: 'Info',
           ),
         ],
@@ -153,6 +177,10 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
           }
           return const Center(child: CircularProgressIndicator());
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddTaskDialog(),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -274,7 +302,7 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
     final isDone = task.isDone == true;
 
     return AppCard(
-      onTap: () => _showTaskDetailDialog(context, task),
+      onTap: () => _showTaskDetailDialog(task),
       child: Row(
         children: [
           // Status Indicator
@@ -346,13 +374,25 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
-              if (value == 'complete') {
-                _confirmCompleteTask(context, task);
-              } else if (value == 'remove') {
-                _confirmRemoveTask(context, task);
+              if (value == 'edit') {
+                _showEditTaskDialog(task);
+              } else if (value == 'delete') {
+                _confirmDeleteTask(task);
+              } else if (value == 'complete') {
+                _confirmCompleteTask(task);
               }
             },
             itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, size: 18),
+                    SizedBox(width: 8),
+                    Text('Edit'),
+                  ],
+                ),
+              ),
               if (!isDone)
                 const PopupMenuItem(
                   value: 'complete',
@@ -369,13 +409,13 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
                   ),
                 ),
               const PopupMenuItem(
-                value: 'remove',
+                value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.cancel, size: 18, color: AppColors.secondary),
+                    Icon(Icons.delete, size: 18, color: AppColors.secondary),
                     SizedBox(width: 8),
                     Text(
-                      'Remove',
+                      'Delete',
                       style: TextStyle(color: AppColors.secondary),
                     ),
                   ],
@@ -388,13 +428,14 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
     );
   }
 
-  void _showTaskDetailDialog(BuildContext context, CommitmentTaskVO task) {
+  void _showTaskDetailDialog(CommitmentTaskVO task) {
     final amount = task.amount ?? 0.0;
     final isDone = task.isDone == true;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
         title: Text(
           task.name ?? 'Unnamed Task',
           style: const TextStyle(
@@ -423,7 +464,7 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text(
               'Close',
               style: TextStyle(color: AppColors.textSecondary),
@@ -432,8 +473,8 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
           if (!isDone)
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
-                _confirmCompleteTask(context, task);
+                Navigator.pop(dialogContext);
+                _confirmCompleteTask(task);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.success,
@@ -441,6 +482,191 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
               ),
               child: const Text('Mark Complete'),
             ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddTaskDialog() {
+    final nameController = TextEditingController();
+    final amountController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text(
+          'Add Task',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppTextField(
+                label: 'Task Name',
+                controller: nameController,
+                hint: 'e.g., Monthly payment',
+                prefixIcon: Icons.label_outline,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                label: 'Amount (RM)',
+                controller: amountController,
+                prefixText: 'RM ',
+                keyboardType: AppTextFieldKeyboardType.decimal,
+                prefixIcon: Icons.attach_money,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final name = nameController.text.trim();
+              final amount = double.tryParse(amountController.text.trim());
+
+              if (name.isEmpty) {
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please enter a task name'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+                return;
+              }
+
+              if (amount == null || amount <= 0) {
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please enter a valid amount'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+                return;
+              }
+
+              final taskVO = CommitmentTaskVO()
+                ..name = name
+                ..amount = amount
+                ..isDone = false;
+
+              context.read<CommitmentTaskBloc>().add(
+                AddCommitmentTaskEvent(taskVO),
+              );
+
+              Navigator.pop(dialogContext);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditTaskDialog(CommitmentTaskVO task) {
+    final nameController = TextEditingController(text: task.name ?? '');
+    final amountController = TextEditingController(
+      text: (task.amount ?? 0.0).toStringAsFixed(2),
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text(
+          'Edit Task',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppTextField(
+                label: 'Task Name',
+                controller: nameController,
+                prefixIcon: Icons.label_outline,
+              ),
+              const SizedBox(height: 16),
+              AppTextField(
+                label: 'Amount (RM)',
+                controller: amountController,
+                prefixText: 'RM ',
+                keyboardType: AppTextFieldKeyboardType.decimal,
+                prefixIcon: Icons.attach_money,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final name = nameController.text.trim();
+              final amount = double.tryParse(amountController.text.trim());
+
+              if (name.isEmpty) {
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please enter a task name'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+                return;
+              }
+
+              if (amount == null || amount <= 0) {
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please enter a valid amount'),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+                return;
+              }
+
+              task.name = name;
+              task.amount = amount;
+
+              context.read<CommitmentTaskBloc>().add(
+                EditCommitmentTaskEvent(task),
+              );
+
+              Navigator.pop(dialogContext);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Update'),
+          ),
         ],
       ),
     );
@@ -474,10 +700,11 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
     );
   }
 
-  void _confirmCompleteTask(BuildContext context, CommitmentTaskVO task) {
+  void _confirmCompleteTask(CommitmentTaskVO task) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
         title: const Text(
           'Complete Task?',
           style: TextStyle(
@@ -491,7 +718,7 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text(
               'Cancel',
               style: TextStyle(color: AppColors.textSecondary),
@@ -499,7 +726,7 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               context.read<CommitmentTaskBloc>().add(
                 UpdateStatusCommitmentTaskEvent(true, task),
               );
@@ -515,24 +742,25 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
     );
   }
 
-  void _confirmRemoveTask(BuildContext context, CommitmentTaskVO task) {
+  void _confirmDeleteTask(CommitmentTaskVO task) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
         title: const Text(
-          'Remove Task?',
+          'Delete Task?',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
         content: const Text(
-          'Remove this task without marking it as completed?',
+          'Are you sure you want to delete this task? This cannot be undone.',
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text(
               'Cancel',
               style: TextStyle(color: AppColors.textSecondary),
@@ -540,26 +768,27 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               context.read<CommitmentTaskBloc>().add(
-                UpdateStatusCommitmentTaskEvent(false, task),
+                DeleteCommitmentTaskEvent(task),
               );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.secondary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Remove'),
+            child: const Text('Delete'),
           ),
         ],
       ),
     );
   }
 
-  void _showInfoDialog(BuildContext context) {
+  void _showInfoDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
         title: const Text(
           'About Commitment Tasks',
           style: TextStyle(
@@ -573,7 +802,7 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text(
               'Got it',
               style: TextStyle(color: AppColors.primary),

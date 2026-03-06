@@ -395,4 +395,72 @@ class CommitmentManager extends ICommitmentManager {
 
     await commitmentTaskRepo.deleteById(id: taskVO.commitmentTaskId!);
   }
+
+  @override
+  Future<void> addCommitmentTask(CommitmentTaskVO taskVO) async {
+    final IStartupManager startupManager =
+        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+
+    ICommitmentTaskRepository commitmentTaskRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentTaskRepository();
+
+    final CommitmentTaskTableCompanion tableCompanion =
+        CommitmentTaskTableCompanion.insert(
+          id: taskVO.commitmentTaskId == null
+              ? const Value.absent()
+              : Value(taskVO.commitmentTaskId!),
+          createdBy: startupManager.currentUser.name,
+          dateUpdated: DateTime.now(),
+          lastModifiedBy: startupManager.currentUser.name,
+          name: taskVO.name ?? 'Commitment Task',
+          amount: taskVO.amount ?? 0.0,
+          isDone: Value(taskVO.isDone ?? false),
+          referredSavingId: taskVO.referredSavingVO?.savingId ?? '',
+        );
+
+    await commitmentTaskRepo.insertOne(tableCompanion);
+  }
+
+  @override
+  Future<void> editCommitmentTask(CommitmentTaskVO taskVO) async {
+    final IStartupManager startupManager =
+        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+
+    ICommitmentTaskRepository commitmentTaskRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentTaskRepository();
+
+    final CommitmentTaskTableCompanion tableCompanion =
+        CommitmentTaskTableCompanion.insert(
+          id: taskVO.commitmentTaskId == null
+              ? const Value.absent()
+              : Value(taskVO.commitmentTaskId!),
+          createdBy: startupManager.currentUser.name,
+          dateUpdated: DateTime.now(),
+          lastModifiedBy: startupManager.currentUser.name,
+          name: taskVO.name ?? 'Commitment Task',
+          amount: taskVO.amount ?? 0.0,
+          isDone: Value(taskVO.isDone ?? false),
+          referredSavingId: taskVO.referredSavingVO?.savingId ?? '',
+        );
+
+    if (taskVO.commitmentTaskId != null) {
+      await commitmentTaskRepo.updatePart(
+        tableCompanion: tableCompanion,
+        id: taskVO.commitmentTaskId!,
+      );
+    }
+  }
+
+  @override
+  Future<void> deleteCommitmentTask(CommitmentTaskVO taskVO) async {
+    ICommitmentTaskRepository commitmentTaskRepo =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getCommitmentTaskRepository();
+
+    if (taskVO.commitmentTaskId == null) return;
+
+    await commitmentTaskRepo.deleteById(id: taskVO.commitmentTaskId!);
+  }
 }

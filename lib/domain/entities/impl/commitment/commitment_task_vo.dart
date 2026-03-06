@@ -10,11 +10,14 @@ class CommitmentTaskVO extends IVO {
   SavingVO? referredSavingVO;
   SvngMoneyStorage? moneyStorage;
 
+  CommitmentTaskVO();
+
   CommitmentTaskVO.fromExpnsCommitmentTask(ExpnsCommitmentTask task,
       SvngSaving saving, SvngMoneyStorage? svngMoneyStorage) {
     commitmentTaskId = task.id;
     name = task.name;
     amount = task.amount;
+    isDone = task.isDone;
     referredSavingVO = SavingVO.fromSvngSaving(saving);
     moneyStorage = svngMoneyStorage;
   }

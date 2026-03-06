@@ -38,4 +38,37 @@ class CommitmentTaskRepository extends ICommitmentTaskRepository {
       throw Exception('Failed to update task status: $e');
     }
   }
+
+  @override
+  Future<void> addCommitmentTask(CommitmentTaskVO taskVO) async {
+    try {
+      await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getCommitmentManager()
+          .addCommitmentTask(taskVO);
+    } catch (e) {
+      throw Exception('Failed to add commitment task: $e');
+    }
+  }
+
+  @override
+  Future<void> editCommitmentTask(CommitmentTaskVO taskVO) async {
+    try {
+      await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getCommitmentManager()
+          .editCommitmentTask(taskVO);
+    } catch (e) {
+      throw Exception('Failed to edit commitment task: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteCommitmentTask(CommitmentTaskVO taskVO) async {
+    try {
+      await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getCommitmentManager()
+          .deleteCommitmentTask(taskVO);
+    } catch (e) {
+      throw Exception('Failed to delete commitment task: $e');
+    }
+  }
 }

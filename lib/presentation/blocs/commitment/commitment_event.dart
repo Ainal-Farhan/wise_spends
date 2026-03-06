@@ -1,45 +1,39 @@
 part of 'commitment_bloc.dart';
 
-sealed class CommitmentEvent extends Equatable {
+abstract class CommitmentEvent extends Equatable {
   const CommitmentEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadCommitmentsEvent extends CommitmentEvent {
   const LoadCommitmentsEvent();
 }
 
-class LoadCommitmentDetailEvent extends CommitmentEvent {
-  final String? commitmentId;
+/// Unified event that replaces the two-event pattern:
+///   add(LoadCommitmentFormEvent())       // loaded savings → state A
+///   add(LoadCommitmentDetailEvent(...))  // loaded details → state B (state A lost!)
+///
+/// Now a single event fetches both in parallel and emits one combined state,
+/// so there is no window where one overwrites the other.
+class LoadDetailScreenEvent extends CommitmentEvent {
+  final String commitmentId;
 
-  const LoadCommitmentDetailEvent(this.commitmentId);
+  const LoadDetailScreenEvent(this.commitmentId);
 
   @override
-  List<Object> get props => [commitmentId ?? ''];
+  List<Object?> get props => [commitmentId];
 }
 
+/// Kept for the add/edit commitment form (not the detail screen).
 class LoadCommitmentFormEvent extends CommitmentEvent {
   final CommitmentVO? commitmentVO;
 
   const LoadCommitmentFormEvent({this.commitmentVO});
 
   @override
-  List<Object> get props => [?commitmentVO];
-}
-
-class LoadCommitmentDetailFormEvent extends CommitmentEvent {
-  final CommitmentDetailVO? commitmentDetailVO;
-  final String commitmentId;
-
-  const LoadCommitmentDetailFormEvent({
-    this.commitmentDetailVO,
-    required this.commitmentId,
-  });
-
-  @override
-  List<Object> get props => [?commitmentDetailVO, commitmentId];
+  List<Object?> get props => [commitmentVO];
 }
 
 class SaveCommitmentEvent extends CommitmentEvent {
@@ -48,7 +42,7 @@ class SaveCommitmentEvent extends CommitmentEvent {
   const SaveCommitmentEvent(this.commitmentVO);
 
   @override
-  List<Object> get props => [commitmentVO];
+  List<Object?> get props => [commitmentVO];
 }
 
 class SaveCommitmentDetailEvent extends CommitmentEvent {
@@ -61,7 +55,7 @@ class SaveCommitmentDetailEvent extends CommitmentEvent {
   });
 
   @override
-  List<Object> get props => [commitmentId, commitmentDetailVO];
+  List<Object?> get props => [commitmentId, commitmentDetailVO];
 }
 
 class DeleteCommitmentEvent extends CommitmentEvent {
@@ -70,12 +64,12 @@ class DeleteCommitmentEvent extends CommitmentEvent {
   const DeleteCommitmentEvent(this.commitmentId);
 
   @override
-  List<Object> get props => [commitmentId];
+  List<Object?> get props => [commitmentId];
 }
 
 class DeleteCommitmentDetailEvent extends CommitmentEvent {
-  final String commitmentId;
   final String commitmentDetailId;
+  final String commitmentId;
 
   const DeleteCommitmentDetailEvent(
     this.commitmentDetailId, {
@@ -83,7 +77,7 @@ class DeleteCommitmentDetailEvent extends CommitmentEvent {
   });
 
   @override
-  List<Object> get props => [commitmentDetailId];
+  List<Object?> get props => [commitmentDetailId, commitmentId];
 }
 
 class EditCommitmentEvent extends CommitmentEvent {
@@ -92,20 +86,7 @@ class EditCommitmentEvent extends CommitmentEvent {
   const EditCommitmentEvent(this.commitmentVO);
 
   @override
-  List<Object> get props => [commitmentVO];
-}
-
-class EditCommitmentDetailEvent extends CommitmentEvent {
-  final CommitmentDetailVO commitmentDetailVO;
-  final String commitmentId;
-
-  const EditCommitmentDetailEvent({
-    required this.commitmentDetailVO,
-    required this.commitmentId,
-  });
-
-  @override
-  List<Object> get props => [commitmentDetailVO, commitmentId];
+  List<Object?> get props => [commitmentVO];
 }
 
 class StartDistributeCommitmentEvent extends CommitmentEvent {
@@ -114,5 +95,5 @@ class StartDistributeCommitmentEvent extends CommitmentEvent {
   const StartDistributeCommitmentEvent(this.commitment);
 
   @override
-  List<Object> get props => [commitment];
+  List<Object?> get props => [commitment];
 }

@@ -29,15 +29,13 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
            SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager(),
        super(CommitmentStateX.initial()) {
     on<LoadCommitmentsEvent>(_onLoadCommitments);
-    on<LoadCommitmentDetailEvent>(_onLoadCommitmentDetail);
+    on<LoadDetailScreenEvent>(_onLoadDetailScreen);
     on<LoadCommitmentFormEvent>(_onLoadCommitmentForm);
-    on<LoadCommitmentDetailFormEvent>(_onLoadCommitmentDetailForm);
     on<SaveCommitmentEvent>(_onSaveCommitment);
     on<SaveCommitmentDetailEvent>(_onSaveCommitmentDetail);
     on<DeleteCommitmentEvent>(_onDeleteCommitment);
     on<DeleteCommitmentDetailEvent>(_onDeleteCommitmentDetail);
     on<EditCommitmentEvent>(_onEditCommitment);
-    on<EditCommitmentDetailEvent>(_onEditCommitmentDetail);
     on<StartDistributeCommitmentEvent>(_onStartDistributeCommitment);
   }
 
@@ -55,23 +53,32 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     }
   }
 
-  Future<void> _onLoadCommitmentDetail(
-    LoadCommitmentDetailEvent event,
+  /// Replaces the two-event pattern that caused the race condition.
+  /// Both the savings list and the commitment details are fetched in parallel,
+  /// then emitted together as CommitmentStateDetailScreenReady.
+  Future<void> _onLoadDetailScreen(
+    LoadDetailScreenEvent event,
     Emitter<CommitmentState> emit,
   ) async {
     emit(CommitmentStateX.loading());
     try {
-      if (event.commitmentId == null) {
-        emit(CommitmentStateX.error('Commitment ID is required'));
-        return;
-      }
+      final results = await Future.wait([
+        _savingManager.loadListSavingVOList(),
+        _commitmentManager.retrieveCommitmentVOBasedOnCommitmentId(
+          event.commitmentId,
+        ),
+      ]);
 
-      final commitment = await _commitmentManager
-          .retrieveCommitmentVOBasedOnCommitmentId(event.commitmentId!);
+      final savings = results[0] as List<ListSavingVO>;
+      final commitment = results[1] as CommitmentVO?;
+
+      // Emit combined state with both details and full commitment VO (with referredSavingVO)
       emit(
-        CommitmentStateX.commitmentDetailLoaded(
-          commitment!.commitmentDetailVOList,
-          event.commitmentId!,
+        CommitmentStateX.detailScreenReady(
+          details: commitment?.commitmentDetailVOList ?? [],
+          savings: savings,
+          commitmentId: event.commitmentId,
+          commitmentVO: commitment, // Include full commitment VO for distribution
         ),
       );
     } catch (e) {
@@ -87,26 +94,6 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       final savingVOList = await _savingManager.loadListSavingVOList();
       final commitmentVO = event.commitmentVO ?? CommitmentVO();
       emit(CommitmentStateX.commitmentFormLoaded(commitmentVO, savingVOList));
-    } catch (e) {
-      emit(CommitmentStateX.error(e.toString()));
-    }
-  }
-
-  Future<void> _onLoadCommitmentDetailForm(
-    LoadCommitmentDetailFormEvent event,
-    Emitter<CommitmentState> emit,
-  ) async {
-    try {
-      final savingVOList = await _savingManager.loadListSavingVOList();
-      final commitmentDetailVO =
-          event.commitmentDetailVO ?? CommitmentDetailVO();
-      emit(
-        CommitmentStateX.commitmentDetailFormLoaded(
-          commitmentDetailVO,
-          savingVOList,
-          event.commitmentId,
-        ),
-      );
     } catch (e) {
       emit(CommitmentStateX.error(e.toString()));
     }
@@ -143,7 +130,8 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       emit(
         CommitmentStateX.success(
           'Successfully saved commitment detail',
-          LoadCommitmentDetailEvent(event.commitmentId),
+          // Reload using the unified event so savings list is preserved
+          LoadDetailScreenEvent(event.commitmentId),
         ),
       );
     } catch (e) {
@@ -181,7 +169,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       emit(
         CommitmentStateX.success(
           'Successfully deleted commitment detail',
-          LoadCommitmentDetailEvent(event.commitmentId),
+          LoadDetailScreenEvent(event.commitmentId),
         ),
       );
     } catch (e) {
@@ -194,18 +182,6 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     Emitter<CommitmentState> emit,
   ) async {
     add(LoadCommitmentFormEvent(commitmentVO: event.commitmentVO));
-  }
-
-  Future<void> _onEditCommitmentDetail(
-    EditCommitmentDetailEvent event,
-    Emitter<CommitmentState> emit,
-  ) async {
-    add(
-      LoadCommitmentDetailFormEvent(
-        commitmentDetailVO: event.commitmentDetailVO,
-        commitmentId: event.commitmentId,
-      ),
-    );
   }
 
   Future<void> _onStartDistributeCommitment(
@@ -222,7 +198,11 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
         updateAppBar!();
       }
 
-      emit(CommitmentStateX.success(message, const LoadCommitmentsEvent()));
+      // Emit success state with navigation flag
+      emit(CommitmentStateX.distributionSuccess(
+        message,
+        event.commitment.commitmentId ?? '',
+      ));
     } catch (e) {
       emit(CommitmentStateX.error(e.toString()));
     }

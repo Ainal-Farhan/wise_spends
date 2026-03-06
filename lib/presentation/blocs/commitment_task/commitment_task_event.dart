@@ -28,3 +28,30 @@ class FilterCommitmentTasksEvent extends CommitmentTaskEvent {
   @override
   List<Object> get props => [filterStatus];
 }
+
+class AddCommitmentTaskEvent extends CommitmentTaskEvent {
+  final CommitmentTaskVO taskVO;
+
+  const AddCommitmentTaskEvent(this.taskVO);
+
+  @override
+  List<Object> get props => [taskVO];
+}
+
+class EditCommitmentTaskEvent extends CommitmentTaskEvent {
+  final CommitmentTaskVO taskVO;
+
+  const EditCommitmentTaskEvent(this.taskVO);
+
+  @override
+  List<Object> get props => [taskVO];
+}
+
+class DeleteCommitmentTaskEvent extends CommitmentTaskEvent {
+  final CommitmentTaskVO taskVO;
+
+  const DeleteCommitmentTaskEvent(this.taskVO);
+
+  @override
+  List<Object> get props => [taskVO];
+}

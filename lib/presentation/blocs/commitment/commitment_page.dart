@@ -47,8 +47,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
           listener: (context, state) {
             if (state is CommitmentStateSuccess) {
               showSnackBarMessage(context, state.message);
-
-              // Add a small delay before navigating back to show success message
               Timer(const Duration(milliseconds: 500), () {
                 bloc.add(state.nextEvent);
               });
@@ -57,25 +55,25 @@ class _CommitmentPageState extends State<CommitmentPage> {
           builder: (context, state) {
             final double screenHeight = MediaQuery.of(context).size.height;
 
-            // Helper to wrap content so it has bounded constraints inside the parent's Stack
             Widget bounded(Widget child) => SizedBox.expand(child: child);
 
+            // ---------------------------------------------------------------------------
+            // FAB map — updated to use new state/event names
+            // ---------------------------------------------------------------------------
             Map<ActionButtonEnum, VoidCallback?> floatingActionButtonMap = {};
+
             if (state is CommitmentStateCommitmentsLoaded) {
               floatingActionButtonMap[ActionButtonEnum.displayCommitment] =
-                  () => BlocProvider.of<CommitmentBloc>(
-                    context,
-                  ).add(const LoadCommitmentFormEvent());
-            } else if (state is CommitmentStateCommitmentDetailLoaded) {
-              floatingActionButtonMap[ActionButtonEnum
-                  .addCommitmentDetail] = () => bloc.add(
-                LoadCommitmentDetailFormEvent(commitmentId: state.commitmentId),
-              );
+                  () => bloc.add(const LoadCommitmentFormEvent());
+            } else if (state is CommitmentStateDetailScreenReady) {
+              // "Add detail" opens the detail form by loading form data.
+              // We use LoadCommitmentFormEvent with no commitmentVO so only
+              // the savings list is fetched, then CommitmentDetailForm handles
+              // the rest. If you have a dedicated detail-form event, swap it here.
+              floatingActionButtonMap[ActionButtonEnum.addCommitmentDetail] =
+                  () => bloc.add(LoadDetailScreenEvent(state.commitmentId));
               floatingActionButtonMap[ActionButtonEnum.backToCommitments] =
                   () => bloc.add(const LoadCommitmentsEvent());
-            } else if (state is CommitmentStateCommitmentDetailFormLoaded) {
-              floatingActionButtonMap[ActionButtonEnum.backButton] = () =>
-                  bloc.add(LoadCommitmentDetailEvent(state.commitmentId));
             } else if (state is CommitmentStateCommitmentFormLoaded) {
               floatingActionButtonMap[ActionButtonEnum.backButton] = () =>
                   bloc.add(const LoadCommitmentsEvent());
@@ -88,32 +86,56 @@ class _CommitmentPageState extends State<CommitmentPage> {
               ),
             );
 
-            if (state is CommitmentStateCommitmentDetailFormLoaded) {
+            // ---------------------------------------------------------------------------
+            // Loading
+            // ---------------------------------------------------------------------------
+            if (state is CommitmentStateLoading) {
+              return bounded(const Center(child: CircularProgressIndicator()));
+            }
+
+            // ---------------------------------------------------------------------------
+            // Error
+            // ---------------------------------------------------------------------------
+            if (state is CommitmentStateError) {
               return bounded(
-                SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Center(
-                        child: SizedBox(
-                          height: screenHeight * .7,
-                          child: CommitmentDetailForm(
-                            commitmentDetailVO: state.commitmentDetailVO,
-                            savingVOList: state.savingVOList,
-                            commitmentId: state.commitmentId!,
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 80,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(height: 16.0),
+                        Text(
+                          'Error: ${state.message}',
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8.0),
+                        ElevatedButton(
+                          onPressed: () =>
+                              bloc.add(const LoadCommitmentsEvent()),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
             }
 
+            // ---------------------------------------------------------------------------
+            // Commitment list
+            // ---------------------------------------------------------------------------
             if (state is CommitmentStateCommitmentsLoaded) {
               final commitments = state.commitments;
               return bounded(
-                // Use Column with Expanded here — now it's safe because bounded provides constraints
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Column(
@@ -137,7 +159,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                 itemCount: commitments.length,
                                 itemBuilder: (context, index) {
                                   final commitment = commitments[index];
-
                                   return Card(
                                     margin: const EdgeInsets.symmetric(
                                       horizontal: 16.0,
@@ -235,10 +256,11 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                                             .spaceEvenly,
                                                     children: [
                                                       ElevatedButton.icon(
+                                                        // Updated: LoadDetailScreenEvent replaces LoadCommitmentDetailEvent
                                                         onPressed: () => bloc.add(
-                                                          LoadCommitmentDetailEvent(
+                                                          LoadDetailScreenEvent(
                                                             commitment
-                                                                .commitmentId,
+                                                                .commitmentId!,
                                                           ),
                                                         ),
                                                         icon: const Icon(
@@ -262,7 +284,7 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                                         onPressed: () => showConfirmDialog(
                                                           context: context,
                                                           message:
-                                                              "Distribute Commitment?",
+                                                              'Distribute Commitment?',
                                                           onConfirm: () async {
                                                             bloc.add(
                                                               StartDistributeCommitmentEvent(
@@ -373,12 +395,15 @@ class _CommitmentPageState extends State<CommitmentPage> {
               );
             }
 
+            // ---------------------------------------------------------------------------
+            // Add / edit commitment form
+            // ---------------------------------------------------------------------------
             if (state is CommitmentStateCommitmentFormLoaded) {
               return bounded(
                 SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
+                    children: [
                       Center(
                         child: SizedBox(
                           height: screenHeight * .7,
@@ -394,43 +419,16 @@ class _CommitmentPageState extends State<CommitmentPage> {
               );
             }
 
-            if (state is CommitmentStateLoading) {
-              return bounded(const Center(child: CircularProgressIndicator()));
-            }
-
-            if (state is CommitmentStateError) {
-              return bounded(
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.error_outline, size: 80, color: Colors.red),
-                        const SizedBox(height: 16.0),
-                        Text(
-                          'Error: ${state.message}',
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        ElevatedButton(
-                          onPressed: () =>
-                              bloc.add(const LoadCommitmentsEvent()),
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }
-
-            if (state is CommitmentStateCommitmentDetailLoaded) {
+            // ---------------------------------------------------------------------------
+            // Detail screen — replaces old CommitmentStateCommitmentDetailLoaded
+            // and CommitmentStateCommitmentDetailFormLoaded.
+            //
+            // CommitmentStateDetailScreenReady carries BOTH the detail list AND
+            // the savings list, so the detail form can be shown inline here without
+            // needing a second state type.
+            // ---------------------------------------------------------------------------
+            if (state is CommitmentStateDetailScreenReady) {
               final commitmentDetails = state.commitmentDetails;
-
               return bounded(
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -455,7 +453,6 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                 itemCount: commitmentDetails.length,
                                 itemBuilder: (context, index) {
                                   final detail = commitmentDetails[index];
-
                                   return Card(
                                     margin: const EdgeInsets.symmetric(
                                       horizontal: 16.0,
@@ -567,15 +564,16 @@ class _CommitmentPageState extends State<CommitmentPage> {
                                                         MainAxisAlignment
                                                             .spaceEvenly,
                                                     children: [
+                                                      // Edit: show the detail form inline using CommitmentDetailForm.
+                                                      // state.savingVOList is already loaded — no extra event needed.
                                                       IconButton(
-                                                        onPressed: () => bloc.add(
-                                                          EditCommitmentDetailEvent(
-                                                            commitmentDetailVO:
-                                                                detail,
-                                                            commitmentId: state
-                                                                .commitmentId,
-                                                          ),
-                                                        ),
+                                                        onPressed: () =>
+                                                            _showEditDetailForm(
+                                                              context,
+                                                              state,
+                                                              detail,
+                                                              screenHeight,
+                                                            ),
                                                         icon: const Icon(
                                                           Icons.edit,
                                                         ),
@@ -665,6 +663,48 @@ class _CommitmentPageState extends State<CommitmentPage> {
       ),
       showBottomNavBar: true,
       bloc: bloc,
+    );
+  }
+
+  /// Shows the commitment detail edit form in a bottom sheet, using the savings
+  /// list already present in [state] — no extra event or state transition needed.
+  void _showEditDetailForm(
+    BuildContext context,
+    CommitmentStateDetailScreenReady state,
+    dynamic detail,
+    double screenHeight,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => BlocProvider.value(
+        value: bloc,
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          maxChildSize: 0.95,
+          minChildSize: 0.5,
+          builder: (_, scrollController) => Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: SingleChildScrollView(
+              controller: scrollController,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: CommitmentDetailForm(
+                  commitmentDetailVO: detail,
+                  savingVOList: state.savingVOList,
+                  commitmentId: state.commitmentId,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

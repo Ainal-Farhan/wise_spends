@@ -11,9 +11,11 @@ import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
 import 'package:wise_spends/domain/entities/impl/saving/saving_vo.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
-/// Add Commitment Screen - Pure BLoC, no setState
-class AddCommitmentScreen extends StatelessWidget {
-  const AddCommitmentScreen({super.key});
+/// Edit Commitment Screen - Edit existing commitment
+class EditCommitmentScreen extends StatelessWidget {
+  final CommitmentVO commitment;
+
+  const EditCommitmentScreen({super.key, required this.commitment});
 
   @override
   Widget build(BuildContext context) {
@@ -21,31 +23,44 @@ class AddCommitmentScreen extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) =>
-              CommitmentBloc()..add(const LoadCommitmentFormEvent()),
+              CommitmentBloc()
+                ..add(LoadCommitmentFormEvent(commitmentVO: commitment)),
         ),
-        BlocProvider(create: (context) => AddCommitmentFormBloc()),
+        BlocProvider(
+          create: (context) =>
+              AddCommitmentFormBloc()
+                ..add(InitializeEditCommitmentFormEvent(commitment)),
+        ),
       ],
-      child: const _AddCommitmentScreenContent(),
+      child: _EditCommitmentScreenContent(commitment: commitment),
     );
   }
 }
 
-// StatefulWidget kept only for TextEditingControllers — they require
-// initState/dispose and have no BLoC equivalent for raw text input.
-// All selection state (frequency, savingId) lives in AddCommitmentFormBloc.
-class _AddCommitmentScreenContent extends StatefulWidget {
-  const _AddCommitmentScreenContent();
+class _EditCommitmentScreenContent extends StatefulWidget {
+  final CommitmentVO commitment;
+
+  const _EditCommitmentScreenContent({required this.commitment});
 
   @override
-  State<_AddCommitmentScreenContent> createState() =>
-      _AddCommitmentScreenContentState();
+  State<_EditCommitmentScreenContent> createState() =>
+      _EditCommitmentScreenContentState();
 }
 
-class _AddCommitmentScreenContentState
-    extends State<_AddCommitmentScreenContent> {
+class _EditCommitmentScreenContentState
+    extends State<_EditCommitmentScreenContent> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  late TextEditingController _nameController;
+  late TextEditingController _descriptionController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.commitment.name ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.commitment.description ?? '',
+    );
+  }
 
   @override
   void dispose() {
@@ -57,7 +72,7 @@ class _AddCommitmentScreenContentState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Commitment')),
+      appBar: AppBar(title: const Text('Edit Commitment')),
       body: BlocConsumer<CommitmentBloc, CommitmentState>(
         listener: (context, state) {
           if (state is CommitmentStateSuccess) {
@@ -104,7 +119,7 @@ class _AddCommitmentScreenContentState
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
-                      Icons.calendar_month,
+                      Icons.edit,
                       color: AppColors.tertiary,
                       size: 24,
                     ),
@@ -115,12 +130,12 @@ class _AddCommitmentScreenContentState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'What is a Commitment?',
+                          'Edit Commitment',
                           style: AppTextStyles.bodySemiBold,
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Recurring expenses like rent, insurance, or subscriptions',
+                          'Update your recurring expense details',
                           style: AppTextStyles.caption,
                         ),
                       ],
@@ -148,7 +163,7 @@ class _AddCommitmentScreenContentState
 
             // Description
             AppTextField(
-              label: 'Description (Optional)',
+              label: 'Description',
               controller: _descriptionController,
               hint: 'Additional details about this commitment',
               prefixIcon: Icons.description_outlined,
@@ -188,7 +203,7 @@ class _AddCommitmentScreenContentState
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Add tasks below to define payment amounts. Total will be calculated automatically.',
+                              'Total is calculated from all commitment tasks. Add or edit tasks to update the total.',
                               style: AppTextStyles.caption.copyWith(
                                 color: AppColors.textSecondary,
                               ),
@@ -203,14 +218,14 @@ class _AddCommitmentScreenContentState
             ),
             const SizedBox(height: 24),
 
-            // Frequency — value driven by AddCommitmentFormBloc, no setState
+            // Frequency
             Text('Frequency', style: AppTextStyles.bodySemiBold),
             const SizedBox(height: 8),
             BlocBuilder<AddCommitmentFormBloc, AddCommitmentFormState>(
               builder: (context, formState) {
                 final selectedFrequency = formState is AddCommitmentFormReady
                     ? formState.frequency
-                    : 'monthly';
+                    : widget.commitment.frequency ?? 'monthly';
 
                 return Container(
                   decoration: BoxDecoration(
@@ -246,7 +261,6 @@ class _AddCommitmentScreenContentState
                     ],
                     onChanged: (value) {
                       if (value != null) {
-                        // Dispatch to BLoC only — no setState
                         context.read<AddCommitmentFormBloc>().add(
                           AddCommitmentChangeFrequency(value),
                         );
@@ -258,14 +272,17 @@ class _AddCommitmentScreenContentState
             ),
             const SizedBox(height: 16),
 
-            // Linked Savings — value driven by AddCommitmentFormBloc, no setState
-            Text('Link to Savings', style: AppTextStyles.bodySemiBold),
+            // Linked Savings
+            Text(
+              'Link to Savings (Optional)',
+              style: AppTextStyles.bodySemiBold,
+            ),
             const SizedBox(height: 8),
             BlocBuilder<AddCommitmentFormBloc, AddCommitmentFormState>(
               builder: (context, formState) {
                 final selectedSavingId = formState is AddCommitmentFormReady
                     ? formState.selectedSavingId
-                    : null;
+                    : widget.commitment.referredSavingVO?.savingId;
 
                 return DropdownButtonFormField<String>(
                   initialValue: selectedSavingId,
@@ -287,7 +304,6 @@ class _AddCommitmentScreenContentState
                     }),
                   ],
                   onChanged: (value) {
-                    // Dispatch to BLoC only — no setState
                     context.read<AddCommitmentFormBloc>().add(
                       AddCommitmentSelectSaving(value),
                     );
@@ -297,7 +313,7 @@ class _AddCommitmentScreenContentState
             ),
             const SizedBox(height: 32),
 
-            // Create Button
+            // Update Button
             BlocBuilder<CommitmentBloc, CommitmentState>(
               builder: (context, state) {
                 final isSaving = state is CommitmentStateLoading;
@@ -305,8 +321,8 @@ class _AddCommitmentScreenContentState
                 return SizedBox(
                   width: double.infinity,
                   child: AppButton.primary(
-                    label: isSaving ? 'Creating...' : 'Create Commitment',
-                    icon: Icons.add,
+                    label: isSaving ? 'Updating...' : 'Update Commitment',
+                    icon: Icons.edit,
                     onPressed: isSaving ? null : () => _submitForm(context),
                     size: AppButtonSize.large,
                   ),
@@ -331,14 +347,13 @@ class _AddCommitmentScreenContentState
   void _submitForm(BuildContext context) {
     if (!_formKey.currentState!.validate()) return;
 
-    // Read frequency and savingId from BLoC
     final formState = context.read<AddCommitmentFormBloc>().state;
     final frequency = formState is AddCommitmentFormReady
         ? formState.frequency
-        : 'monthly';
+        : widget.commitment.frequency ?? 'monthly';
     final selectedSavingId = formState is AddCommitmentFormReady
         ? formState.selectedSavingId
-        : null;
+        : widget.commitment.referredSavingVO?.savingId;
 
     // Validate savings account is selected
     if (selectedSavingId == null) {
@@ -362,22 +377,33 @@ class _AddCommitmentScreenContentState
       savingVOList = commitmentState.savingVOList;
     }
 
-    // Find the selected savings VO
-    final selectedSavingVO = savingVOList.firstWhere(
-      (s) => s.saving.id == selectedSavingId,
-      orElse: () => throw Exception('Selected savings not found'),
-    );
+    // Find the selected savings VO (or use existing if not changed)
+    SavingVO? selectedSavingVO;
+    if (selectedSavingId != widget.commitment.referredSavingVO?.savingId) {
+      // Savings changed, find the new one
+      final selectedListSaving = savingVOList.firstWhere(
+        (s) => s.saving.id == selectedSavingId,
+        orElse: () => savingVOList.first,
+      );
+      selectedSavingVO = SavingVO.fromSvngSaving(selectedListSaving.saving);
+    } else {
+      // Savings unchanged, use existing
+      selectedSavingVO = widget.commitment.referredSavingVO;
+    }
 
-    // Create commitment with the selected savings account
+    // Update commitment without changing total - total is calculated from tasks
     final commitmentVO = CommitmentVO()
+      ..commitmentId = widget.commitment.commitmentId
       ..name = _nameController.text.trim()
       ..description = _descriptionController.text.trim().isEmpty
           ? null
           : _descriptionController.text.trim()
-      ..totalAmount =
-          0.0 // Will be calculated from tasks
+      ..totalAmount = widget
+          .commitment
+          .totalAmount // Keep existing total
       ..frequency = frequency
-      ..referredSavingVO = SavingVO.fromSvngSaving(selectedSavingVO.saving);
+      ..referredSavingVO = selectedSavingVO
+      ..commitmentDetailVOList = widget.commitment.commitmentDetailVOList;
 
     context.read<CommitmentBloc>().add(SaveCommitmentEvent(commitmentVO));
   }

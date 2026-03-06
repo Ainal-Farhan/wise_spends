@@ -8,6 +8,7 @@ import 'package:wise_spends/presentation/blocs/commitment/commitment_bloc.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
 import 'commitment_detail_screen.dart';
 import 'add_commitment_screen.dart';
+import 'edit_commitment_screen.dart';
 
 /// Commitment List Screen - Main screen to view and manage all commitments
 class CommitmentListScreen extends StatelessWidget {
@@ -223,7 +224,41 @@ class _CommitmentListScreenContentState
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    _navigateToEditCommitment(context, commitment);
+                  } else if (value == 'delete') {
+                    _confirmDeleteCommitment(context, commitment);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(Icons.edit, size: 18),
+                        SizedBox(width: 8),
+                        Text('Edit'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        Icon(Icons.delete, size: 18, color: AppColors.secondary),
+                        SizedBox(width: 8),
+                        Text(
+                          'Delete',
+                          style: TextStyle(color: AppColors.secondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -276,5 +311,60 @@ class _CommitmentListScreenContentState
       // Reload commitments when returning
       context.read<CommitmentBloc>().add(const LoadCommitmentsEvent());
     });
+  }
+
+  void _navigateToEditCommitment(BuildContext context, CommitmentVO commitment) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditCommitmentScreen(commitment: commitment),
+      ),
+    ).then((_) {
+      // Reload commitments when returning
+      context.read<CommitmentBloc>().add(const LoadCommitmentsEvent());
+    });
+  }
+
+  void _confirmDeleteCommitment(BuildContext context, CommitmentVO commitment) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        title: const Text(
+          'Delete Commitment?',
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: const Text(
+          'Are you sure you want to delete this commitment? All associated tasks will be deleted. This cannot be undone.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              // Use the original context (from State) to access the provider
+              context.read<CommitmentBloc>().add(
+                DeleteCommitmentEvent(commitment.commitmentId!),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.secondary,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 }

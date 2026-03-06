@@ -7,7 +7,8 @@ abstract class ICommitmentManager extends IManager {
   Future<List<CommitmentVO>> retrieveListOfCommitmentOfCurrentUser();
 
   Future<CommitmentVO?> retrieveCommitmentVOBasedOnCommitmentId(
-      String commitmentId);
+    String commitmentId,
+  );
 
   Future<void> saveCommitmentVO(CommitmentVO commitmentVO);
 
@@ -16,7 +17,9 @@ abstract class ICommitmentManager extends IManager {
   Future<void> deleteCommitmentDetailVO(String commitmentDetailId);
 
   Future<void> saveCommitmentDetailVO(
-      String commitmentId, List<CommitmentDetailVO> commitmentDetailVOList);
+    String commitmentId,
+    List<CommitmentDetailVO> commitmentDetailVOList,
+  );
 
   Stream<int> retrieveTotalCommitmentTask();
 
@@ -25,4 +28,10 @@ abstract class ICommitmentManager extends IManager {
   Future<List<CommitmentTaskVO>> retrieveListOfCommitmentTask(bool isDone);
 
   Future<void> updateStatusCommitmentTask(bool isDone, CommitmentTaskVO taskVO);
+
+  Future<void> addCommitmentTask(CommitmentTaskVO taskVO);
+
+  Future<void> editCommitmentTask(CommitmentTaskVO taskVO);
+
+  Future<void> deleteCommitmentTask(CommitmentTaskVO taskVO);
 }
