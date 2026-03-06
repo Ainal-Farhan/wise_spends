@@ -29,6 +29,9 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
            SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager(),
        super(CommitmentStateX.initial()) {
     on<LoadCommitmentsEvent>(_onLoadCommitments);
+    // Single event replaces the two racing events (LoadCommitmentFormEvent +
+    // LoadCommitmentDetailEvent). Both async calls run in parallel via
+    // Future.wait, then emit one combined state.
     on<LoadDetailScreenEvent>(_onLoadDetailScreen);
     on<LoadCommitmentFormEvent>(_onLoadCommitmentForm);
     on<SaveCommitmentEvent>(_onSaveCommitment);
@@ -72,13 +75,12 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       final savings = results[0] as List<ListSavingVO>;
       final commitment = results[1] as CommitmentVO?;
 
-      // Emit combined state with both details and full commitment VO (with referredSavingVO)
       emit(
         CommitmentStateX.detailScreenReady(
           details: commitment?.commitmentDetailVOList ?? [],
           savings: savings,
           commitmentId: event.commitmentId,
-          commitmentVO: commitment, // Include full commitment VO for distribution
+          commitmentVO: commitment, // carries referredSavingVO for distribution
         ),
       );
     } catch (e) {
@@ -194,15 +196,14 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
         event.commitment,
       );
 
-      if (updateAppBar != null) {
-        updateAppBar!();
-      }
+      if (updateAppBar != null) updateAppBar!();
 
-      // Emit success state with navigation flag
-      emit(CommitmentStateX.distributionSuccess(
-        message,
-        event.commitment.commitmentId ?? '',
-      ));
+      emit(
+        CommitmentStateX.distributionSuccess(
+          message,
+          event.commitment.commitmentId ?? '',
+        ),
+      );
     } catch (e) {
       emit(CommitmentStateX.error(e.toString()));
     }

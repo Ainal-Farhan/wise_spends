@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
 
 /// Shimmer loading effect for transaction list items
 /// Matches the shape of real transaction cards
@@ -79,10 +79,7 @@ class ShimmerTransactionItem extends StatelessWidget {
 class ShimmerTransactionList extends StatelessWidget {
   final int itemCount;
 
-  const ShimmerTransactionList({
-    super.key,
-    this.itemCount = 5,
-  });
+  const ShimmerTransactionList({super.key, this.itemCount = 5});
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +97,7 @@ class ShimmerTransactionList extends StatelessWidget {
 class ShimmerBalanceCard extends StatelessWidget {
   final bool isHero;
 
-  const ShimmerBalanceCard({
-    super.key,
-    this.isHero = false,
-  });
+  const ShimmerBalanceCard({super.key, this.isHero = false});
 
   @override
   Widget build(BuildContext context) {
@@ -283,10 +277,7 @@ class ShimmerDashboard extends StatelessWidget {
 class ShimmerCategoryGrid extends StatelessWidget {
   final int itemCount;
 
-  const ShimmerCategoryGrid({
-    super.key,
-    this.itemCount = 8,
-  });
+  const ShimmerCategoryGrid({super.key, this.itemCount = 8});
 
   @override
   Widget build(BuildContext context) {
@@ -420,10 +411,7 @@ class ShimmerCard extends StatelessWidget {
 class ShimmerChart extends StatelessWidget {
   final double height;
 
-  const ShimmerChart({
-    super.key,
-    this.height = 200,
-  });
+  const ShimmerChart({super.key, this.height = 200});
 
   @override
   Widget build(BuildContext context) {
@@ -472,10 +460,7 @@ class ShimmerStatCards extends StatelessWidget {
 class ShimmerFullPage extends StatelessWidget {
   final Widget child;
 
-  const ShimmerFullPage({
-    super.key,
-    required this.child,
-  });
+  const ShimmerFullPage({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

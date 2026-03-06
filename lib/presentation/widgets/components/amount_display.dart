@@ -49,6 +49,7 @@ class AmountDisplay extends StatelessWidget {
       case TransactionType.expense:
         return WiseSpendsColors.secondary;
       case TransactionType.transfer:
+      case TransactionType.commitment:
         return WiseSpendsColors.tertiary;
     }
   }
@@ -61,6 +62,8 @@ class AmountDisplay extends StatelessWidget {
         return '−'; // Unicode minus sign for better typography
       case TransactionType.transfer:
         return '↔ ';
+      case TransactionType.commitment:
+        return '';
     }
   }
 }

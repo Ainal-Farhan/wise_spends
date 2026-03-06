@@ -162,6 +162,11 @@ class TransactionCard extends StatelessWidget {
         defaultIcon = Icons.swap_horiz_rounded;
         iconColor = WiseSpendsColors.tertiaryDark;
         break;
+      case TransactionType.commitment:
+        backgroundColor = WiseSpendsColors.tertiaryContainer;
+        defaultIcon = Icons.task_alt;
+        iconColor = WiseSpendsColors.tertiaryDark;
+        break;
     }
 
     return Container(

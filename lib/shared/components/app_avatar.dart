@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
 
 /// Size options for AppAvatar
 enum AppAvatarSize {
@@ -186,10 +186,7 @@ class AppAvatar extends StatelessWidget {
     final avatar = _buildAvatar();
 
     if (semanticLabel != null) {
-      return Semantics(
-        label: semanticLabel,
-        child: avatar,
-      );
+      return Semantics(label: semanticLabel, child: avatar);
     }
 
     return avatar;

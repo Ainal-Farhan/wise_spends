@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text_styles.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'app_button.dart';
 
 /// Empty state types for different scenarios
@@ -126,7 +126,8 @@ class EmptyStateWidget extends StatelessWidget {
         return EmptyStateWidget(
           icon: Icons.receipt_long_outlined,
           title: 'No transactions yet',
-          subtitle: 'Start tracking your finances by adding your first transaction',
+          subtitle:
+              'Start tracking your finances by adding your first transaction',
           actionLabel: 'Add Transaction',
           onAction: onAction,
           iconColor: AppColors.primary,
@@ -201,7 +202,8 @@ class EmptyStateWidget extends StatelessWidget {
         return EmptyStateWidget(
           icon: Icons.cloud_off_outlined,
           title: 'You\'re offline',
-          subtitle: 'Some features may be limited. Check your internet connection.',
+          subtitle:
+              'Some features may be limited. Check your internet connection.',
           actionLabel: 'Retry',
           onAction: onAction,
           iconColor: AppColors.textHint,
@@ -215,8 +217,7 @@ class EmptyStateWidget extends StatelessWidget {
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth ?? 320),
         child: Padding(
-          padding: padding ??
-              const EdgeInsets.all(AppSpacing.xxxl),
+          padding: padding ?? const EdgeInsets.all(AppSpacing.xxxl),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -229,8 +230,9 @@ class EmptyStateWidget extends StatelessWidget {
                   width: iconSize ?? 120,
                   height: iconSize ?? 120,
                   decoration: BoxDecoration(
-                    color: (iconColor ?? AppColors.textHint)
-                        .withValues(alpha: 0.1),
+                    color: (iconColor ?? AppColors.textHint).withValues(
+                      alpha: 0.1,
+                    ),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -299,10 +301,7 @@ class EmptyStateWidget extends StatelessWidget {
 class NoTransactionsEmptyState extends StatelessWidget {
   final VoidCallback? onAddTransaction;
 
-  const NoTransactionsEmptyState({
-    super.key,
-    this.onAddTransaction,
-  });
+  const NoTransactionsEmptyState({super.key, this.onAddTransaction});
 
   @override
   Widget build(BuildContext context) {
@@ -321,10 +320,7 @@ class NoTransactionsEmptyState extends StatelessWidget {
 class NoBudgetsEmptyState extends StatelessWidget {
   final VoidCallback? onAddBudget;
 
-  const NoBudgetsEmptyState({
-    super.key,
-    this.onAddBudget,
-  });
+  const NoBudgetsEmptyState({super.key, this.onAddBudget});
 
   @override
   Widget build(BuildContext context) {
@@ -343,10 +339,7 @@ class NoBudgetsEmptyState extends StatelessWidget {
 class NoBudgetPlansEmptyState extends StatelessWidget {
   final VoidCallback? onCreatePlan;
 
-  const NoBudgetPlansEmptyState({
-    super.key,
-    this.onCreatePlan,
-  });
+  const NoBudgetPlansEmptyState({super.key, this.onCreatePlan});
 
   @override
   Widget build(BuildContext context) {

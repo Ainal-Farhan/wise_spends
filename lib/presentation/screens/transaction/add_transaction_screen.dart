@@ -368,6 +368,7 @@ class _AddTransactionScreenContentState
       case TransactionType.expense:
         return AppColors.expense;
       case TransactionType.transfer:
+      case TransactionType.commitment:
         return AppColors.transfer;
     }
   }
@@ -695,6 +696,7 @@ class _AddTransactionScreenContentState
         return category.isExpense ||
             (!category.isIncome && !category.isExpense);
       case TransactionType.transfer:
+      case TransactionType.commitment:
         return false;
     }
   }
@@ -706,6 +708,7 @@ class _AddTransactionScreenContentState
       case TransactionType.expense:
         return AppColors.expense;
       case TransactionType.transfer:
+      case TransactionType.commitment:
         return AppColors.transfer;
     }
   }

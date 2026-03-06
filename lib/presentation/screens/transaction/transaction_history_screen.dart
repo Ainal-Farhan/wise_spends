@@ -318,6 +318,7 @@ class _TransactionHistoryScreenContentState
       case TransactionType.expense:
         return AppColors.expense;
       case TransactionType.transfer:
+      case TransactionType.commitment:
         return AppColors.transfer;
       case null:
         return AppColors.textSecondary;

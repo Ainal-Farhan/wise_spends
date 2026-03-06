@@ -46,5 +46,6 @@ abstract class AppRoutes {
   static const String savings = '/savings';
   static const String commitment = '/commitment';
   static const String commitmentTask = '/commitment_task';
+  static const String payeeManagement = '/payee_management';
   static const String moneyStorage = '/money-storage';
 }

@@ -6,10 +6,12 @@ import 'package:wise_spends/data/repositories/expense/i_commitment_detail_reposi
 import 'package:wise_spends/data/repositories/expense/i_commitment_repository.dart';
 import 'package:wise_spends/data/repositories/expense/i_commitment_task_repository.dart';
 import 'package:wise_spends/data/repositories/expense/i_expense_repository.dart';
+import 'package:wise_spends/data/repositories/expense/i_payee_repository.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_detail_repository.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_repository.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/data/repositories/expense/impl/expense_repository.dart';
+import 'package:wise_spends/data/repositories/expense/impl/payee_repository.dart';
 import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_group_reference_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_reference_repository.dart';
@@ -218,5 +220,17 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<IBudgetPlanRepository>()!;
+  }
+
+  @override
+  IPayeeRepository getPayeeRepository() {
+    IPayeeRepository? repository =
+        SingletonUtil.getSingleton<IPayeeRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<IPayeeRepository>(PayeeRepository());
+    }
+
+    return SingletonUtil.getSingleton<IPayeeRepository>()!;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -9,31 +10,25 @@ import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_b
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_event.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_state.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 
-/// Enhanced Commitment Task Screen - Pure BLoC
 class CommitmentTaskScreen extends StatelessWidget {
   final CommitmentTaskBloc bloc;
-  final String? commitmentId;
 
-  const CommitmentTaskScreen({
-    super.key,
-    required this.bloc,
-    this.commitmentId,
-  });
+  const CommitmentTaskScreen({super.key, required this.bloc});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => bloc..add(LoadCommitmentTasksEvent()),
-      child: _CommitmentTaskScreenContent(commitmentId: commitmentId),
+      child: const _CommitmentTaskScreenContent(),
     );
   }
 }
 
 class _CommitmentTaskScreenContent extends StatefulWidget {
-  final String? commitmentId;
-
-  const _CommitmentTaskScreenContent({required this.commitmentId});
+  const _CommitmentTaskScreenContent();
 
   @override
   State<_CommitmentTaskScreenContent> createState() =>
@@ -49,17 +44,15 @@ class _CommitmentTaskScreenContentState
         title: const Text('Commitment Tasks'),
         leading: IconButton(
           icon: const Icon(Icons.home),
-          onPressed: () {
-            Navigator.of(
-              context,
-            ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
-          },
+          onPressed: () => Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false),
           tooltip: 'Home',
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
-            onPressed: () => _showInfoDialog(),
+            onPressed: _showInfoDialog,
             tooltip: 'Info',
           ),
         ],
@@ -67,123 +60,143 @@ class _CommitmentTaskScreenContentState
       body: BlocConsumer<CommitmentTaskBloc, CommitmentTaskState>(
         listener: (context, state) {
           if (state is CommitmentTaskUpdated) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(state.message),
-                  ],
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(state.message),
+                    ],
+                  ),
+                  backgroundColor: AppColors.success,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                backgroundColor: AppColors.success,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            );
+              );
           } else if (state is CommitmentTaskError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.error_outline, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(state.message),
-                  ],
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(state.message),
+                    ],
+                  ),
+                  backgroundColor: AppColors.error,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                backgroundColor: AppColors.error,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            );
+              );
           }
         },
         builder: (context, state) {
           if (state is CommitmentTaskLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is CommitmentTaskLoaded) {
-            final tasks = state.tasks;
-            final filterStatus = state.filterStatus;
-            final filteredTasks = _filterTasks(tasks, filterStatus);
+          }
 
+          if (state is CommitmentTaskLoaded) {
+            final filtered = _filterTasks(state.tasks, state.filterStatus);
             return RefreshIndicator(
-              onRefresh: () async {
-                context.read<CommitmentTaskBloc>().add(
-                  LoadCommitmentTasksEvent(),
-                );
-              },
+              onRefresh: () async => context.read<CommitmentTaskBloc>().add(
+                LoadCommitmentTasksEvent(),
+              ),
               child: Column(
                 children: [
-                  // Filter Chips
                   _buildFilterChips(),
-
-                  // Task List
                   Expanded(
-                    child: filteredTasks.isEmpty
-                        ? _buildEmptyState(context, filterStatus)
+                    child: filtered.isEmpty
+                        ? _buildEmptyState(context, state.filterStatus)
                         : ListView.separated(
                             padding: const EdgeInsets.all(16),
-                            itemCount: filteredTasks.length,
-                            separatorBuilder: (context, index) =>
+                            itemCount: filtered.length,
+                            separatorBuilder: (_, _) =>
                                 const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final task = filteredTasks[index];
-                              return _buildTaskCard(context, task);
-                            },
+                            itemBuilder: (context, index) =>
+                                _buildTaskCard(context, filtered[index]),
                           ),
                   ),
                 ],
               ),
             );
-          } else if (state is CommitmentTaskError) {
+          }
+
+          if (state is CommitmentTaskError) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: AppColors.secondary,
-                  ),
-                  const SizedBox(height: 16),
-                  Text('Oops! Something went wrong', style: AppTextStyles.h3),
-                  const SizedBox(height: 8),
-                  Text(
-                    state.message,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: AppColors.secondary,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: 200,
-                    child: AppButton.primary(
-                      label: 'Retry',
-                      onPressed: () {
-                        context.read<CommitmentTaskBloc>().add(
+                    const SizedBox(height: 16),
+                    Text('Oops! Something went wrong', style: AppTextStyles.h3),
+                    const SizedBox(height: 8),
+                    Text(
+                      state.message,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: 200,
+                      child: AppButton.primary(
+                        label: 'Retry',
+                        onPressed: () => context.read<CommitmentTaskBloc>().add(
                           LoadCommitmentTasksEvent(),
-                        );
-                      },
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }
+
           return const Center(child: CircularProgressIndicator());
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddTaskDialog(),
+        onPressed: _showAddTaskDialog,
         child: const Icon(Icons.add),
       ),
     );
   }
+
+  // ---------------------------------------------------------------------------
+  // Helpers from state
+  // ---------------------------------------------------------------------------
+
+  List<ListSavingVO> _getSavingsFromState() {
+    final state = context.read<CommitmentTaskBloc>().state;
+    if (state is CommitmentTaskLoaded) return state.savingVOList;
+    return [];
+  }
+
+  List<PayeeVO> _getPayeesFromState() {
+    final state = context.read<CommitmentTaskBloc>().state;
+    if (state is CommitmentTaskLoaded) return state.payeeVOList;
+    return [];
+  }
+
+  // ---------------------------------------------------------------------------
+  // Filter
+  // ---------------------------------------------------------------------------
 
   Widget _buildFilterChips() {
     return Container(
@@ -206,11 +219,9 @@ class _CommitmentTaskScreenContentState
   Widget _buildFilterChip(String label, IconData icon) {
     return BlocBuilder<CommitmentTaskBloc, CommitmentTaskState>(
       builder: (context, state) {
-        String filterStatus = 'all';
-        if (state is CommitmentTaskLoaded) {
-          filterStatus = state.filterStatus;
-        }
-
+        final filterStatus = state is CommitmentTaskLoaded
+            ? state.filterStatus
+            : 'all';
         final isSelected = filterStatus == label.toLowerCase();
 
         return FilterChip(
@@ -227,13 +238,9 @@ class _CommitmentTaskScreenContentState
             ],
           ),
           selected: isSelected,
-          onSelected: (selected) {
-            context.read<CommitmentTaskBloc>().add(
-              FilterCommitmentTasksEvent(
-                selected ? label.toLowerCase() : 'all',
-              ),
-            );
-          },
+          onSelected: (selected) => context.read<CommitmentTaskBloc>().add(
+            FilterCommitmentTasksEvent(selected ? label.toLowerCase() : 'all'),
+          ),
           selectedColor: AppColors.tertiary,
           checkmarkColor: Colors.white,
           labelStyle: AppTextStyles.labelMedium.copyWith(
@@ -253,11 +260,14 @@ class _CommitmentTaskScreenContentState
         return tasks.where((t) => t.isDone != true).toList();
       case 'completed':
         return tasks.where((t) => t.isDone == true).toList();
-      case 'all':
       default:
         return tasks;
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Empty state
+  // ---------------------------------------------------------------------------
 
   Widget _buildEmptyState(BuildContext context, String filterStatus) {
     return Center(
@@ -272,7 +282,7 @@ class _CommitmentTaskScreenContentState
             const SizedBox(height: 8),
             Text(
               filterStatus == 'all'
-                  ? 'Your commitment tasks will appear here'
+                  ? 'Tasks will appear here after you distribute a commitment'
                   : 'No $filterStatus tasks',
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
@@ -285,11 +295,9 @@ class _CommitmentTaskScreenContentState
               child: AppButton.primary(
                 label: 'Refresh',
                 icon: Icons.refresh,
-                onPressed: () {
-                  context.read<CommitmentTaskBloc>().add(
-                    LoadCommitmentTasksEvent(),
-                  );
-                },
+                onPressed: () => context.read<CommitmentTaskBloc>().add(
+                  LoadCommitmentTasksEvent(),
+                ),
               ),
             ),
           ],
@@ -298,6 +306,10 @@ class _CommitmentTaskScreenContentState
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Task card
+  // ---------------------------------------------------------------------------
+
   Widget _buildTaskCard(BuildContext context, CommitmentTaskVO task) {
     final isDone = task.isDone == true;
 
@@ -305,7 +317,6 @@ class _CommitmentTaskScreenContentState
       onTap: () => _showTaskDetailDialog(task),
       child: Row(
         children: [
-          // Status Indicator
           Container(
             width: 4,
             height: 60,
@@ -315,8 +326,6 @@ class _CommitmentTaskScreenContentState
             ),
           ),
           const SizedBox(width: 16),
-
-          // Icon
           Container(
             width: 48,
             height: 48,
@@ -327,14 +336,12 @@ class _CommitmentTaskScreenContentState
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              isDone ? Icons.check_circle : Icons.schedule,
+              _iconForType(task.type),
               color: isDone ? AppColors.success : AppColors.tertiary,
               size: 24,
             ),
           ),
           const SizedBox(width: 16),
-
-          // Task Info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,30 +364,25 @@ class _CommitmentTaskScreenContentState
                     fontSize: 14,
                   ),
                 ),
-                if (task.referredSavingVO?.savingName != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    task.referredSavingVO!.savingName!,
-                    style: AppTextStyles.caption.copyWith(fontSize: 12),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                const SizedBox(height: 2),
+                Text(
+                  _subtitleForTask(task),
+                  style: AppTextStyles.caption.copyWith(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
                   ),
-                ],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
-
-          // Actions
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
-              if (value == 'edit') {
-                _showEditTaskDialog(task);
-              } else if (value == 'delete') {
-                _confirmDeleteTask(task);
-              } else if (value == 'complete') {
-                _confirmCompleteTask(task);
-              }
+              if (value == 'edit') _showEditTaskDialog(task);
+              if (value == 'delete') _confirmDeleteTask(task);
+              if (value == 'complete') _confirmCompleteTask(task);
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
@@ -428,8 +430,50 @@ class _CommitmentTaskScreenContentState
     );
   }
 
+  IconData _iconForType(CommitmentTaskType? type) {
+    switch (type) {
+      case CommitmentTaskType.internalTransfer:
+        return Icons.swap_horiz;
+      case CommitmentTaskType.thirdPartyPayment:
+        return Icons.send;
+      case CommitmentTaskType.cash:
+        return Icons.payments_outlined;
+      case null:
+        return Icons.schedule;
+    }
+  }
+
+  String _subtitleForTask(CommitmentTaskVO task) {
+    switch (task.type) {
+      case CommitmentTaskType.internalTransfer:
+        return '${task.sourceSavingName} → ${task.targetSavingName}';
+      case CommitmentTaskType.thirdPartyPayment:
+        return '${task.sourceSavingName} → ${task.payeeName}';
+      case CommitmentTaskType.cash:
+        return 'Cash payment';
+      case null:
+        return '';
+    }
+  }
+
+  String _labelForType(CommitmentTaskType? type) {
+    switch (type) {
+      case CommitmentTaskType.internalTransfer:
+        return 'Internal Transfer';
+      case CommitmentTaskType.thirdPartyPayment:
+        return 'Third-Party Payment';
+      case CommitmentTaskType.cash:
+        return 'Cash';
+      case null:
+        return '—';
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Task detail dialog
+  // ---------------------------------------------------------------------------
+
   void _showTaskDetailDialog(CommitmentTaskVO task) {
-    final amount = task.amount ?? 0.0;
     final isDone = task.isDone == true;
 
     showDialog(
@@ -449,17 +493,31 @@ class _CommitmentTaskScreenContentState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildDetailRow(
-              'Amount:',
+              'Amount',
               NumberFormat.currency(
                 symbol: 'RM ',
                 decimalDigits: 2,
-              ).format(amount),
+              ).format(task.amount ?? 0.0),
             ),
-            _buildDetailRow('Status:', isDone ? 'Completed' : 'Pending'),
-            if (task.referredSavingVO?.savingName != null)
-              _buildDetailRow('Savings:', task.referredSavingVO!.savingName!),
-            if (task.moneyStorage?.shortName != null)
-              _buildDetailRow('Money Storage:', task.moneyStorage!.shortName),
+            _buildDetailRow('Status', isDone ? 'Completed' : 'Pending'),
+            _buildDetailRow('Type', _labelForType(task.type)),
+            if (task.type == CommitmentTaskType.internalTransfer) ...[
+              _buildDetailRow('From', task.sourceSavingName),
+              _buildDetailRow('To', task.targetSavingName),
+            ] else if (task.type == CommitmentTaskType.thirdPartyPayment) ...[
+              _buildDetailRow('From', task.sourceSavingName),
+              _buildDetailRow('Payee', task.payeeName),
+              if (task.payeeVO?.bankName != null)
+                _buildDetailRow('Bank', task.payeeVO!.bankName!),
+              if (task.payeeVO?.accountNumber != null)
+                _buildDetailRow('Account', task.payeeVO!.accountNumber!),
+            ] else if (task.type == CommitmentTaskType.cash) ...[
+              _buildDetailRow('Method', 'Cash'),
+            ],
+            if (task.note?.isNotEmpty == true)
+              _buildDetailRow('Note', task.note!),
+            if (task.paymentReference?.isNotEmpty == true)
+              _buildDetailRow('Reference', task.paymentReference!),
           ],
         ),
         actions: [
@@ -487,218 +545,363 @@ class _CommitmentTaskScreenContentState
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Add / Edit task dialogs
+  // ---------------------------------------------------------------------------
+
   void _showAddTaskDialog() {
-    final nameController = TextEditingController();
-    final amountController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text(
-          'Add Task',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppTextField(
-                label: 'Task Name',
-                controller: nameController,
-                hint: 'e.g., Monthly payment',
-                prefixIcon: Icons.label_outline,
-              ),
-              const SizedBox(height: 16),
-              AppTextField(
-                label: 'Amount (RM)',
-                controller: amountController,
-                prefixText: 'RM ',
-                keyboardType: AppTextFieldKeyboardType.decimal,
-                prefixIcon: Icons.attach_money,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final name = nameController.text.trim();
-              final amount = double.tryParse(amountController.text.trim());
-
-              if (name.isEmpty) {
-                Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a task name'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-                return;
-              }
-
-              if (amount == null || amount <= 0) {
-                Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a valid amount'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-                return;
-              }
-
-              final taskVO = CommitmentTaskVO()
-                ..name = name
-                ..amount = amount
-                ..isDone = false;
-
-              context.read<CommitmentTaskBloc>().add(
-                AddCommitmentTaskEvent(taskVO),
-              );
-
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Add'),
-          ),
-        ],
-      ),
+    _showTaskDialog(
+      title: 'Add Task',
+      confirmLabel: 'Add',
+      onConfirm: (task) =>
+          context.read<CommitmentTaskBloc>().add(AddCommitmentTaskEvent(task)),
     );
   }
 
   void _showEditTaskDialog(CommitmentTaskVO task) {
-    final nameController = TextEditingController(text: task.name ?? '');
-    final amountController = TextEditingController(
-      text: (task.amount ?? 0.0).toStringAsFixed(2),
+    _showTaskDialog(
+      title: 'Edit Task',
+      confirmLabel: 'Update',
+      initial: task,
+      onConfirm: (updated) => context.read<CommitmentTaskBloc>().add(
+        EditCommitmentTaskEvent(updated),
+      ),
     );
+  }
+
+  /// Unified add/edit dialog with type-aware savings and payee pickers.
+  /// Fields shown adapt to the selected [CommitmentTaskType]:
+  ///   internalTransfer  → source saving + target saving
+  ///   thirdPartyPayment → source saving + payee picker
+  ///   cash              → no savings fields
+  void _showTaskDialog({
+    required String title,
+    required String confirmLabel,
+    CommitmentTaskVO? initial,
+    required void Function(CommitmentTaskVO) onConfirm,
+  }) {
+    final savings = _getSavingsFromState();
+    final payees = _getPayeesFromState();
+
+    final nameController = TextEditingController(text: initial?.name ?? '');
+    final amountController = TextEditingController(
+      text: initial?.amount != null ? initial!.amount!.toStringAsFixed(2) : '',
+    );
+    final noteController = TextEditingController(text: initial?.note ?? '');
+    final referenceController = TextEditingController(
+      text: initial?.paymentReference ?? '',
+    );
+
+    CommitmentTaskType selectedType =
+        initial?.type ?? CommitmentTaskType.internalTransfer;
+    String? selectedSourceId = initial?.sourceSavingId;
+    String? selectedTargetId = initial?.targetSavingId;
+    String? selectedPayeeId = initial?.payeeId;
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text(
-          'Edit Task',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppTextField(
-                label: 'Task Name',
-                controller: nameController,
-                prefixIcon: Icons.label_outline,
-              ),
-              const SizedBox(height: 16),
-              AppTextField(
-                label: 'Amount (RM)',
-                controller: amountController,
-                prefixText: 'RM ',
-                keyboardType: AppTextFieldKeyboardType.decimal,
-                prefixIcon: Icons.attach_money,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final name = nameController.text.trim();
-              final amount = double.tryParse(amountController.text.trim());
-
-              if (name.isEmpty) {
-                Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a task name'),
-                    backgroundColor: AppColors.error,
-                  ),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          // Rebuild type-specific fields on type change
+          Widget typeSpecificFields() {
+            switch (selectedType) {
+              case CommitmentTaskType.internalTransfer:
+                return Column(
+                  children: [
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedSourceId,
+                      decoration: const InputDecoration(
+                        labelText: 'Source Savings (From)',
+                        prefixIcon: Icon(Icons.arrow_upward),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                      ),
+                      hint: const Text('Select source account'),
+                      items: savings
+                          .map(
+                            (s) => DropdownMenuItem(
+                              value: s.saving.id,
+                              child: Text(s.saving.name ?? 'Unnamed'),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) =>
+                          setDialogState(() => selectedSourceId = v),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedTargetId,
+                      decoration: const InputDecoration(
+                        labelText: 'Target Savings (To)',
+                        prefixIcon: Icon(Icons.arrow_downward),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                      ),
+                      hint: const Text('Select target account'),
+                      items: savings
+                          .map(
+                            (s) => DropdownMenuItem(
+                              value: s.saving.id,
+                              child: Text(s.saving.name ?? 'Unnamed'),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) =>
+                          setDialogState(() => selectedTargetId = v),
+                    ),
+                  ],
                 );
-                return;
-              }
 
-              if (amount == null || amount <= 0) {
-                Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a valid amount'),
-                    backgroundColor: AppColors.error,
-                  ),
+              case CommitmentTaskType.thirdPartyPayment:
+                return Column(
+                  children: [
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedSourceId,
+                      decoration: const InputDecoration(
+                        labelText: 'Source Savings (From)',
+                        prefixIcon: Icon(Icons.arrow_upward),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                      ),
+                      hint: const Text('Select source account'),
+                      items: savings
+                          .map(
+                            (s) => DropdownMenuItem(
+                              value: s.saving.id,
+                              child: Text(s.saving.name ?? 'Unnamed'),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) =>
+                          setDialogState(() => selectedSourceId = v),
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedPayeeId,
+                      decoration: const InputDecoration(
+                        labelText: 'Payee',
+                        prefixIcon: Icon(Icons.person_outline),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                      ),
+                      hint: payees.isEmpty
+                          ? const Text('No payees found')
+                          : const Text('Select payee'),
+                      items: payees
+                          .map(
+                            (p) => DropdownMenuItem(
+                              value: p.id,
+                              child: Text(p.name ?? 'Unnamed Payee'),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: payees.isEmpty
+                          ? null
+                          : (v) => setDialogState(() => selectedPayeeId = v),
+                    ),
+                  ],
                 );
-                return;
-              }
 
-              task.name = name;
-              task.amount = amount;
+              case CommitmentTaskType.cash:
+                // No savings or payee needed
+                return const SizedBox.shrink();
+            }
+          }
 
-              context.read<CommitmentTaskBloc>().add(
-                EditCommitmentTaskEvent(task),
-              );
-
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Update'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: AppTextStyles.bodyMedium.copyWith(
+          return AlertDialog(
+            backgroundColor: AppColors.surface,
+            title: Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
             ),
-          ),
-        ],
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AppTextField(
+                    label: 'Task Name',
+                    controller: nameController,
+                    hint: 'e.g., Monthly rent — March 2026',
+                    prefixIcon: Icons.label_outline,
+                  ),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    label: 'Amount (RM)',
+                    controller: amountController,
+                    prefixText: 'RM ',
+                    keyboardType: AppTextFieldKeyboardType.decimal,
+                    prefixIcon: Icons.attach_money,
+                  ),
+                  const SizedBox(height: 16),
+                  // Payment type — drives which extra fields are shown
+                  DropdownButtonFormField<CommitmentTaskType>(
+                    initialValue: selectedType,
+                    decoration: const InputDecoration(
+                      labelText: 'Payment Type',
+                      prefixIcon: Icon(Icons.category_outlined),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
+                    ),
+                    items: CommitmentTaskType.values
+                        .map(
+                          (t) => DropdownMenuItem(
+                            value: t,
+                            child: Text(_labelForType(t)),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setDialogState(() {
+                          selectedType = value;
+                          // Clear irrelevant fields when type changes
+                          selectedSourceId = null;
+                          selectedTargetId = null;
+                          selectedPayeeId = null;
+                        });
+                      }
+                    },
+                  ),
+                  // Type-specific pickers rendered inline
+                  typeSpecificFields(),
+                  const SizedBox(height: 16),
+                  AppTextField(
+                    label: 'Note (Optional)',
+                    controller: noteController,
+                    hint: 'Any additional info',
+                    maxLines: 2,
+                  ),
+                  if (initial != null) ...[
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      label: 'Payment Reference (Optional)',
+                      controller: referenceController,
+                      hint: 'Receipt no., FPX ref., etc.',
+                      prefixIcon: Icons.receipt_outlined,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final name = nameController.text.trim();
+                  final amount = double.tryParse(amountController.text.trim());
+
+                  if (name.isEmpty) {
+                    _showInlineError('Please enter a task name');
+                    return;
+                  }
+                  if (amount == null || amount <= 0) {
+                    _showInlineError('Please enter a valid amount');
+                    return;
+                  }
+                  if (selectedType == CommitmentTaskType.internalTransfer) {
+                    if (selectedSourceId == null) {
+                      _showInlineError(
+                        'Please select a source savings account',
+                      );
+                      return;
+                    }
+                    if (selectedTargetId == null) {
+                      _showInlineError(
+                        'Please select a target savings account',
+                      );
+                      return;
+                    }
+                    if (selectedSourceId == selectedTargetId) {
+                      _showInlineError(
+                        'Source and target savings must be different',
+                      );
+                      return;
+                    }
+                  }
+                  if (selectedType == CommitmentTaskType.thirdPartyPayment) {
+                    if (selectedSourceId == null) {
+                      _showInlineError(
+                        'Please select a source savings account',
+                      );
+                      return;
+                    }
+                    if (selectedPayeeId == null) {
+                      _showInlineError('Please select a payee');
+                      return;
+                    }
+                  }
+
+                  Navigator.pop(dialogContext);
+
+                  final taskVO = (initial ?? CommitmentTaskVO())
+                    ..name = name
+                    ..amount = amount
+                    ..type = selectedType
+                    ..isDone = initial?.isDone ?? false
+                    ..sourceSavingId = selectedSourceId
+                    ..targetSavingId = selectedTargetId
+                    ..payeeId = selectedPayeeId
+                    ..note = noteController.text.trim().isEmpty
+                        ? null
+                        : noteController.text.trim()
+                    ..paymentReference = referenceController.text.trim().isEmpty
+                        ? null
+                        : referenceController.text.trim();
+
+                  // Attach VO objects so the card subtitle renders immediately
+                  // without waiting for a reload
+                  if (selectedSourceId != null) {
+                    taskVO.sourceSavingVO = savings
+                        .where((s) => s.saving.id == selectedSourceId)
+                        .map((s) => s.savingVO)
+                        .firstOrNull;
+                  }
+                  if (selectedTargetId != null) {
+                    taskVO.targetSavingVO = savings
+                        .where((s) => s.saving.id == selectedTargetId)
+                        .map((s) => s.savingVO)
+                        .firstOrNull;
+                  }
+                  if (selectedPayeeId != null) {
+                    taskVO.payeeVO = payees
+                        .where((p) => p.id == selectedPayeeId)
+                        .firstOrNull;
+                  }
+
+                  onConfirm(taskVO);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text(confirmLabel),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
+
+  // ---------------------------------------------------------------------------
+  // Confirm dialogs
+  // ---------------------------------------------------------------------------
 
   void _confirmCompleteTask(CommitmentTaskVO task) {
     showDialog(
@@ -712,9 +915,26 @@ class _CommitmentTaskScreenContentState
             fontWeight: FontWeight.w600,
           ),
         ),
-        content: const Text(
-          'Mark this task as completed? This will record the payment.',
-          style: TextStyle(color: AppColors.textSecondary),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Mark this task as completed? This will update your savings balance.',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 12),
+            _buildDetailRow('Type', _labelForType(task.type)),
+            if (task.type == CommitmentTaskType.internalTransfer) ...[
+              _buildDetailRow('From', task.sourceSavingName),
+              _buildDetailRow('To', task.targetSavingName),
+            ] else if (task.type == CommitmentTaskType.thirdPartyPayment) ...[
+              _buildDetailRow('From', task.sourceSavingName),
+              _buildDetailRow('Payee', task.payeeName),
+            ] else if (task.type == CommitmentTaskType.cash) ...[
+              _buildDetailRow('Method', 'Cash — no account affected'),
+            ],
+          ],
         ),
         actions: [
           TextButton(
@@ -784,6 +1004,53 @@ class _CommitmentTaskScreenContentState
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  void _showInlineError(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 90,
+            child: Text(
+              label,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showInfoDialog() {
     showDialog(
       context: context,
@@ -797,7 +1064,10 @@ class _CommitmentTaskScreenContentState
           ),
         ),
         content: const Text(
-          'Commitment Tasks are recurring payment obligations linked to your savings goals. Complete tasks to track your payments and stay on top of your financial commitments.',
+          'Commitment Tasks are generated when you distribute a commitment. '
+          'Each task represents one payment — internal transfer between your savings, '
+          'a payment to an external party, or a cash payment. '
+          'Mark tasks complete to update your savings balance.',
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [

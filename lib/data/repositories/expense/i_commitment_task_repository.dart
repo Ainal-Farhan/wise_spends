@@ -24,4 +24,16 @@ abstract class ICommitmentTaskRepository
   Future<void> editCommitmentTask(CommitmentTaskVO taskVO);
 
   Future<void> deleteCommitmentTask(CommitmentTaskVO taskVO);
+
+  /// Watch all tasks belonging to a specific commitment detail.
+  Stream<List<ExpnsCommitmentTask>> watchAllByCommitmentDetail(
+    String commitmentDetailId,
+  );
+
+  /// Delete all tasks linked to a specific [commitmentDetailId].
+  /// Called when a CommitmentDetail is deleted to avoid orphaned tasks.
+  Future<void> deleteByCommitmentDetailId(String commitmentDetailId);
+
+  /// Delete all tasks linked to a specific [commitmentId].
+  Future<void> deleteByCommitmentId(String commitmentId);
 }

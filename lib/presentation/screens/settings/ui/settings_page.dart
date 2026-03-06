@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/presentation/screens/commitment/commitment_management_screen.dart';
+import 'package:wise_spends/presentation/screens/payee/payee_management_screen.dart';
+import 'package:wise_spends/presentation/screens/settings/category_management_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import '../category_management_screen.dart';
-import '../../commitment/commitment_management_screen.dart';
 
 /// Settings Screen
 /// Features:
@@ -74,6 +75,21 @@ class SettingsPage extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) =>
                             const CommitmentManagementScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.people_outline,
+                  title: 'Manage Payees',
+                  subtitle:
+                      'Manage payment recipients for third-party payments',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PayeeManagementScreen(),
                       ),
                     );
                   },

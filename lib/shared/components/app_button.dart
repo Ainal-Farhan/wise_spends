@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text_styles.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 /// Button variants for different use cases
 enum AppButtonVariant {
@@ -269,10 +269,7 @@ class AppButton extends StatelessWidget {
     final button = _buildButton(context);
 
     if (tooltip != null) {
-      return Tooltip(
-        message: tooltip!,
-        child: button,
-      );
+      return Tooltip(message: tooltip!, child: button);
     }
 
     return button;
@@ -330,9 +327,7 @@ class AppButton extends StatelessWidget {
             height: AppIconSize.sm,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                _getLoadingColor(),
-              ),
+              valueColor: AlwaysStoppedAnimation<Color>(_getLoadingColor()),
             ),
           ),
           if (label.isNotEmpty) ...[

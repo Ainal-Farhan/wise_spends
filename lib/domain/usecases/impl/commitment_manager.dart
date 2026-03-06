@@ -5,76 +5,64 @@ import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/di/i_service_locator.dart';
+import 'package:wise_spends/core/constants/constant/enum/expense/commitment_detail_type.dart';
+import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
 import 'package:wise_spends/domain/usecases/i_commitment_manager.dart';
-import 'package:wise_spends/domain/usecases/i_saving_manager.dart';
-import 'package:wise_spends/domain/usecases/i_startup_manager.dart';
-import 'package:wise_spends/data/repositories/expense/i_commitment_detail_repository.dart';
-import 'package:wise_spends/data/repositories/expense/i_commitment_repository.dart';
-import 'package:wise_spends/data/repositories/expense/i_commitment_task_repository.dart';
-import 'package:wise_spends/data/services/local/saving/i_money_storage_service.dart';
-import 'package:wise_spends/data/services/local/saving/i_saving_service.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
 import 'package:wise_spends/domain/entities/impl/saving/saving_vo.dart';
 
 class CommitmentManager extends ICommitmentManager {
+  // ---------------------------------------------------------------------------
+  // Commitment CRUD
+  // ---------------------------------------------------------------------------
+
   @override
   Future<List<CommitmentVO>> retrieveListOfCommitmentOfCurrentUser() async {
-    List<CommitmentVO> commitmentList = [];
+    final startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getStartupManager();
+    final commitmentRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentRepository();
 
-    IStartupManager startupManager =
-        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
-
-    ICommitmentRepository commitmentRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentRepository();
-
-    List<ExpnsCommitment> commitmentTableDataList = await commitmentRepo
+    final List<ExpnsCommitment> rows = await commitmentRepo
         .watchAllByUser(startupManager.currentUser)
         .first;
 
-    for (ExpnsCommitment commitment in commitmentTableDataList) {
-      commitmentList.add(
-        (await retrieveCommitmentVOBasedOnCommitmentId(commitment.id))!,
-      );
+    final List<CommitmentVO> result = [];
+    for (final row in rows) {
+      final vo = await retrieveCommitmentVOBasedOnCommitmentId(row.id);
+      if (vo != null) result.add(vo);
     }
-
-    return commitmentList;
+    return result;
   }
 
   @override
   Future<void> saveCommitmentVO(CommitmentVO commitmentVO) async {
-    final IStartupManager startupManager =
-        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+    final startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getStartupManager();
+    final commitmentRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentRepository();
+    final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
+        .getSavingService();
 
-    ICommitmentRepository commitmentRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentRepository();
-
-    ISavingService savingService =
-        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
-
+    // Resolve the referred saving ID — prefer explicit VO, fall back to first detail
     String? resolvedReferredSavingId = commitmentVO.referredSavingVO?.savingId;
-
-    if (resolvedReferredSavingId == null) {
-      final firstDetailSavingId = commitmentVO.commitmentDetailVOList.isNotEmpty
-          ? commitmentVO.commitmentDetailVOList.first.savingId
-          : null;
-      resolvedReferredSavingId = firstDetailSavingId;
+    if (resolvedReferredSavingId == null &&
+        commitmentVO.commitmentDetailVOList.isNotEmpty) {
+      resolvedReferredSavingId =
+          commitmentVO.commitmentDetailVOList.first.savingId;
     }
 
-    // If still no saving ID, we cannot proceed — surface a clear error
     if (resolvedReferredSavingId == null) {
       throw Exception(
         'Please select a savings account before creating a commitment.',
       );
     }
 
-    // Ensure referredSavingVO is populated on the VO so downstream
-    // operations (e.g. startDistributeCommitment) can use it safely
+    // Ensure referredSavingVO is populated so downstream operations can use it
     if (commitmentVO.referredSavingVO == null) {
-      final SvngSaving? saving = await savingService
+      final saving = await savingService
           .watchSavingById(resolvedReferredSavingId)
           .first;
       if (saving != null) {
@@ -82,34 +70,31 @@ class CommitmentManager extends ICommitmentManager {
       }
     }
 
-    final CommitmentTableCompanion commitmentTableCompanion =
-        CommitmentTableCompanion.insert(
-          id: commitmentVO.commitmentId != null
-              ? Value(commitmentVO.commitmentId!)
-              : const Value.absent(),
-          createdBy: startupManager.currentUser.name,
-          dateUpdated: DateTime.now(),
-          lastModifiedBy: startupManager.currentUser.name,
-          name: commitmentVO.name!,
-          description: commitmentVO.description != null
-              ? Value(commitmentVO.description!)
-              : const Value.absent(),
-          referredSavingId: resolvedReferredSavingId,
-          userId: startupManager.currentUser.id,
-        );
+    final companion = CommitmentTableCompanion.insert(
+      id: commitmentVO.commitmentId != null
+          ? Value(commitmentVO.commitmentId!)
+          : const Value.absent(),
+      createdBy: startupManager.currentUser.name,
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: startupManager.currentUser.name,
+      name: commitmentVO.name!,
+      description: commitmentVO.description != null
+          ? Value(commitmentVO.description!)
+          : const Value.absent(),
+      referredSavingId: resolvedReferredSavingId,
+      userId: startupManager.currentUser.id,
+    );
 
-    String commitmentId = '';
+    String commitmentId;
     if (commitmentVO.commitmentId != null) {
       commitmentId = commitmentVO.commitmentId!;
       await commitmentRepo.updatePart(
-        tableCompanion: commitmentTableCompanion,
-        id: commitmentVO.commitmentId!,
+        tableCompanion: companion,
+        id: commitmentId,
       );
     } else {
-      ExpnsCommitment commitment = await commitmentRepo.insertOne(
-        commitmentTableCompanion,
-      );
-      commitmentId = commitment.id;
+      final inserted = await commitmentRepo.insertOne(companion);
+      commitmentId = inserted.id;
     }
 
     await saveCommitmentDetailVO(
@@ -125,17 +110,15 @@ class CommitmentManager extends ICommitmentManager {
   ) async {
     if (commitmentDetailVOList.isEmpty) return;
 
-    final IStartupManager startupManager =
-        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
-
-    ICommitmentDetailRepository commitmentDetailRepo =
+    final startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getStartupManager();
+    final commitmentDetailRepo =
         SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getCommitmentDetailRepository();
+    final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
+        .getSavingService();
 
-    ISavingService savingService =
-        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
-
-    for (CommitmentDetailVO vo in commitmentDetailVOList) {
+    for (final vo in commitmentDetailVOList) {
       final String? resolvedSavingId =
           vo.referredSavingVO?.savingId ?? vo.savingId;
 
@@ -143,9 +126,8 @@ class CommitmentManager extends ICommitmentManager {
         throw Exception('Commitment detail is missing a savings account.');
       }
 
-      // Populate referredSavingVO if missing so the type field can be resolved
       if (vo.referredSavingVO == null) {
-        final SvngSaving? saving = await savingService
+        final saving = await savingService
             .watchSavingById(resolvedSavingId)
             .first;
         if (saving != null) {
@@ -153,61 +135,71 @@ class CommitmentManager extends ICommitmentManager {
         }
       }
 
-      final String resolvedType =
-          vo.type ?? vo.referredSavingVO?.savingTableType?.value ?? '';
-
-      CommitmentDetailTableCompanion tableCompanion =
-          CommitmentDetailTableCompanion.insert(
-            id: vo.commitmentDetailId == null
-                ? const Value.absent()
-                : Value(vo.commitmentDetailId!),
-            createdBy: startupManager.currentUser.name,
-            dateUpdated: DateTime.now(),
-            lastModifiedBy: startupManager.currentUser.name,
-            amount: vo.amount ?? 0.0,
-            description: vo.description ?? '-',
-            type: resolvedType,
-            savingId: resolvedSavingId,
-            commitmentId: commitmentId,
+      // Resolve to CommitmentDetailType enum — companion expects the enum
+      // directly since the column is now intEnum<CommitmentDetailType>().
+      // Fall back to monthly if nothing is set.
+      final CommitmentDetailType resolvedType =
+          vo.type ??
+          _commitmentDetailTypeFromSavingType(
+            vo.referredSavingVO?.savingTableType?.value,
           );
+
+      final companion = CommitmentDetailTableCompanion.insert(
+        id: vo.commitmentDetailId == null
+            ? const Value.absent()
+            : Value(vo.commitmentDetailId!),
+        createdBy: startupManager.currentUser.name,
+        dateUpdated: DateTime.now(),
+        lastModifiedBy: startupManager.currentUser.name,
+        amount: vo.amount ?? 0.0,
+        description: vo.description ?? '-',
+        type: resolvedType,
+        savingId: resolvedSavingId,
+        commitmentId: commitmentId,
+      );
 
       if (vo.commitmentDetailId != null) {
         await commitmentDetailRepo.updatePart(
-          tableCompanion: tableCompanion,
+          tableCompanion: companion,
           id: vo.commitmentDetailId!,
         );
       } else {
-        await commitmentDetailRepo.insertOne(tableCompanion);
+        await commitmentDetailRepo.insertOne(companion);
       }
     }
   }
 
   @override
   Future<void> deleteCommitmentVO(String commitmentId) async {
-    ICommitmentRepository commitmentRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentRepository();
-
-    ExpnsCommitment? commitment = await commitmentRepo.findById(
-      id: commitmentId,
-    );
-
+    final commitmentRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentRepository();
+    final commitment = await commitmentRepo.findById(id: commitmentId);
     if (commitment == null) return;
 
-    ICommitmentDetailRepository commitmentDetailRepo =
+    final commitmentDetailRepo =
         SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getCommitmentDetailRepository();
 
+    // Delete tasks for this commitment, then details, then commitment itself
+    final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository();
+
+    await commitmentTaskRepo.deleteByCommitmentId(commitment.id);
     await commitmentDetailRepo.deleteByCommitmentId(commitment.id);
     await commitmentRepo.delete(commitment);
   }
 
   @override
   Future<void> deleteCommitmentDetailVO(String commitmentDetailId) async {
-    ICommitmentDetailRepository commitmentDetailRepo =
+    final commitmentDetailRepo =
         SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getCommitmentDetailRepository();
 
+    // Delete tasks linked to this detail, then the detail itself
+    final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository();
+
+    await commitmentTaskRepo.deleteByCommitmentDetailId(commitmentDetailId);
     await commitmentDetailRepo.deleteById(id: commitmentDetailId);
   }
 
@@ -215,42 +207,33 @@ class CommitmentManager extends ICommitmentManager {
   Future<CommitmentVO?> retrieveCommitmentVOBasedOnCommitmentId(
     String commitmentId,
   ) async {
-    ICommitmentRepository commitmentRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentRepository();
-    ExpnsCommitment? commitment = await commitmentRepo.findById(
-      id: commitmentId,
-    );
-
+    final commitmentRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentRepository();
+    final commitment = await commitmentRepo.findById(id: commitmentId);
     if (commitment == null) return null;
 
-    ICommitmentDetailRepository commitmentDetailRepo =
+    final commitmentDetailRepo =
         SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getCommitmentDetailRepository();
-    ISavingService savingService =
-        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
+    final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
+        .getSavingService();
 
-    List<ExpnsCommitmentDetail> detailsList = await commitmentDetailRepo
+    final details = await commitmentDetailRepo
         .watchAllByCommitment(commitment)
         .first;
-    Map<ExpnsCommitmentDetail, SvngSaving> commitmentDetailMap = {};
-    for (ExpnsCommitmentDetail commitmentDetail in detailsList) {
-      SvngSaving? saving = await savingService
-          .watchSavingById(commitmentDetail.savingId)
-          .first;
+
+    final Map<ExpnsCommitmentDetail, SvngSaving> detailMap = {};
+    for (final detail in details) {
+      final saving = await savingService.watchSavingById(detail.savingId).first;
       if (saving == null) continue;
-      commitmentDetailMap[commitmentDetail] = saving;
+      detailMap[detail] = saving;
     }
 
-    CommitmentVO vo = CommitmentVO.fromExpnsCommitment(
-      commitment,
-      commitmentDetailMap,
-    );
+    final vo = CommitmentVO.fromExpnsCommitment(commitment, detailMap);
 
-    SvngSaving? saving = await savingService
+    final saving = await savingService
         .watchSavingById(commitment.referredSavingId)
         .first;
-
     if (saving != null) {
       vo.referredSavingVO = SavingVO.fromSvngSaving(saving);
     }
@@ -258,209 +241,333 @@ class CommitmentManager extends ICommitmentManager {
     return vo;
   }
 
+  // ---------------------------------------------------------------------------
+  // Commitment task — count / list
+  // ---------------------------------------------------------------------------
+
   @override
   Stream<int> retrieveTotalCommitmentTask() async* {
     yield 0;
-
-    ICommitmentTaskRepository commitmentTaskRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentTaskRepository();
-
+    final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository();
     yield (await commitmentTaskRepo.watchAll(false).first).length;
-  }
-
-  @override
-  Future<String> startDistributeCommitment(CommitmentVO vo) async {
-    if (vo.commitmentDetailVOList.isEmpty) {
-      return 'No Commitment Details found for this commitment!';
-    }
-
-    if (vo.referredSavingVO == null || vo.referredSavingVO!.savingId == null) {
-      return 'No Saving found from the commitment';
-    }
-
-    ISavingService savingService =
-        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
-
-    SvngSaving? savingToBeExtracted = await savingService
-        .watchSavingById(vo.referredSavingVO!.savingId!)
-        .first;
-
-    if (savingToBeExtracted == null) {
-      return 'No Saving found from the commitment';
-    }
-
-    if (savingToBeExtracted.currentAmount < vo.totalAmount!) {
-      return 'Balance in Saving (${savingToBeExtracted.name}) is not enough!';
-    }
-
-    final IStartupManager startupManager =
-        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
-
-    ICommitmentTaskRepository commitmentTaskRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentTaskRepository();
-
-    List<CommitmentTaskTableCompanion> tasks = [];
-    {
-      CommitmentTaskTableCompanion task = CommitmentTaskTableCompanion.insert(
-        createdBy: startupManager.currentUser.name,
-        dateUpdated: DateTime.now(),
-        lastModifiedBy: startupManager.currentUser.name,
-        name: 'Distributing commitment',
-        amount: -vo.totalAmount!,
-        referredSavingId: savingToBeExtracted.id,
-      );
-      tasks.add(task);
-    }
-
-    for (CommitmentDetailVO detail in vo.commitmentDetailVOList) {
-      CommitmentTaskTableCompanion task = CommitmentTaskTableCompanion.insert(
-        createdBy: startupManager.currentUser.name,
-        dateUpdated: DateTime.now(),
-        lastModifiedBy: startupManager.currentUser.name,
-        name: detail.description!,
-        amount: detail.amount!,
-        referredSavingId: detail.referredSavingVO!.savingId!,
-      );
-      tasks.add(task);
-    }
-
-    await commitmentTaskRepo.saveAllFromTableCompanion(tasks);
-
-    return 'Successfully distribute the commitment';
   }
 
   @override
   Future<List<CommitmentTaskVO>> retrieveListOfCommitmentTask(
     bool isDone,
   ) async {
-    ICommitmentTaskRepository commitmentTaskRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentTaskRepository();
+    final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository();
+    final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
+        .getSavingService();
 
-    ISavingService savingService =
-        SingletonUtil.getSingleton<IServiceLocator>()!.getSavingService();
-    IMoneyStorageService moneyStorageService =
-        SingletonUtil.getSingleton<IServiceLocator>()!.getMoneyStorageService();
-
-    List<ExpnsCommitmentTask> tasks = await commitmentTaskRepo
+    final List<ExpnsCommitmentTask> tasks = await commitmentTaskRepo
         .watchAll(isDone)
         .first;
 
-    List<CommitmentTaskVO> taskVOs = [];
-    for (ExpnsCommitmentTask task in tasks) {
-      SvngSaving? saving = await savingService
-          .watchSavingById(task.referredSavingId)
-          .first;
-      if (saving != null) {
-        SvngMoneyStorage? moneyStorage;
-        if (saving.moneyStorageId != null) {
-          moneyStorage = await moneyStorageService
-              .watchMoneyStorageById(saving.moneyStorageId!)
-              .first;
-        }
-        taskVOs.add(
-          CommitmentTaskVO.fromExpnsCommitmentTask(task, saving, moneyStorage),
-        );
+    final List<CommitmentTaskVO> result = [];
+    for (final task in tasks) {
+      // Resolve source saving
+      SvngSaving? sourceSaving;
+      if (task.sourceSavingId != null) {
+        sourceSaving = await savingService
+            .watchSavingById(task.sourceSavingId!)
+            .first;
       }
+
+      // Resolve target saving (internal transfers only)
+      SvngSaving? targetSaving;
+      if (task.targetSavingId != null) {
+        targetSaving = await savingService
+            .watchSavingById(task.targetSavingId!)
+            .first;
+      }
+
+      // Resolve payee (third-party payments only)
+      ExpnsPayee? payee;
+      if (task.payeeId != null) {
+        final payeeRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getPayeeRepository();
+        payee = await payeeRepo.findById(id: task.payeeId!);
+      }
+      result.add(
+        CommitmentTaskVO.fromExpnsCommitmentTask(
+          task,
+          sourceSaving: sourceSaving,
+          targetSaving: targetSaving,
+          payee: payee,
+        ),
+      );
     }
 
-    return taskVOs;
+    return result;
   }
+
+  // ---------------------------------------------------------------------------
+  // Distribute
+  // ---------------------------------------------------------------------------
+
+  @override
+  Future<String> startDistributeCommitment(CommitmentVO vo) async {
+    if (vo.commitmentDetailVOList.isEmpty) {
+      return 'No commitment details found for this commitment.';
+    }
+
+    if (vo.referredSavingVO == null || vo.referredSavingVO!.savingId == null) {
+      return 'No savings account found for this commitment.';
+    }
+
+    final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
+        .getSavingService();
+
+    final SvngSaving? sourceSaving = await savingService
+        .watchSavingById(vo.referredSavingVO!.savingId!)
+        .first;
+
+    if (sourceSaving == null) {
+      return 'Savings account not found.';
+    }
+
+    if (sourceSaving.currentAmount < (vo.totalAmount ?? 0.0)) {
+      return 'Insufficient balance in ${sourceSaving.name}.';
+    }
+
+    final startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getStartupManager();
+    final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository();
+
+    final List<CommitmentTaskTableCompanion> companions = [];
+
+    for (final detail in vo.commitmentDetailVOList) {
+      if (detail.commitmentDetailId == null) continue;
+
+      final String? detailSavingId =
+          detail.referredSavingVO?.savingId ?? detail.savingId;
+
+      if (detailSavingId == null) continue;
+
+      // Each detail generates one task:
+      //   sourceSavingId = commitment's referred saving (money leaves here)
+      //   targetSavingId = detail's saving (money arrives here)
+      //   type           = internalTransfer
+      // Amount is always positive — direction is implied by source → target.
+      companions.add(
+        CommitmentTaskTableCompanion.insert(
+          createdBy: startupManager.currentUser.name,
+          dateUpdated: DateTime.now(),
+          lastModifiedBy: startupManager.currentUser.name,
+          name: detail.description ?? 'Commitment Task',
+          amount: detail.amount ?? 0.0,
+          isDone: const Value(false),
+          commitmentId: vo.commitmentId!,
+          commitmentDetailId: detail.commitmentDetailId!,
+          type: CommitmentTaskType.internalTransfer,
+          sourceSavingId: Value(sourceSaving.id),
+          targetSavingId: Value(detailSavingId),
+        ),
+      );
+    }
+
+    if (companions.isEmpty) {
+      return 'No valid commitment details to distribute.';
+    }
+
+    await commitmentTaskRepo.saveAllFromTableCompanion(companions);
+    return 'Successfully distributed the commitment.';
+  }
+
+  // ---------------------------------------------------------------------------
+  // Commitment task — status update
+  // ---------------------------------------------------------------------------
 
   @override
   Future<void> updateStatusCommitmentTask(
     bool isDone,
     CommitmentTaskVO taskVO,
   ) async {
-    ICommitmentTaskRepository commitmentTaskRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentTaskRepository();
-
-    if (isDone) {
-      ISavingManager savingManager =
-          SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager();
-
-      savingManager.updateSavingCurrentAmount(
-        savingId: taskVO.referredSavingVO!.savingId!,
-        transactionType: taskVO.amount! < 0
-            ? SavingConstant.savingTransactionOut
-            : SavingConstant.savingTransactionIn,
-        transactionAmount: taskVO.amount!.abs(),
-      );
-    }
-
     if (taskVO.commitmentTaskId == null) return;
 
-    await commitmentTaskRepo.deleteById(id: taskVO.commitmentTaskId!);
+    if (isDone) {
+      final savingManager = SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingManager();
+
+      switch (taskVO.type) {
+        case CommitmentTaskType.internalTransfer:
+          // Debit source, credit target
+          if (taskVO.sourceSavingId != null) {
+            await savingManager.updateSavingCurrentAmount(
+              savingId: taskVO.sourceSavingId!,
+              transactionType: SavingConstant.savingTransactionOut,
+              transactionAmount: taskVO.amount!.abs(),
+            );
+          }
+          if (taskVO.targetSavingId != null) {
+            await savingManager.updateSavingCurrentAmount(
+              savingId: taskVO.targetSavingId!,
+              transactionType: SavingConstant.savingTransactionIn,
+              transactionAmount: taskVO.amount!.abs(),
+            );
+          }
+          break;
+
+        case CommitmentTaskType.thirdPartyPayment:
+          // Debit source only — money goes out
+          if (taskVO.sourceSavingId != null) {
+            await savingManager.updateSavingCurrentAmount(
+              savingId: taskVO.sourceSavingId!,
+              transactionType: SavingConstant.savingTransactionOut,
+              transactionAmount: taskVO.amount!.abs(),
+            );
+          }
+          break;
+
+        case CommitmentTaskType.cash:
+          // No digital account movement
+          break;
+
+        case null:
+          break;
+      }
+    }
+
+    await SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository()
+        .deleteById(id: taskVO.commitmentTaskId!);
   }
+
+  // ---------------------------------------------------------------------------
+  // Commitment task — add / edit / delete
+  // ---------------------------------------------------------------------------
 
   @override
   Future<void> addCommitmentTask(CommitmentTaskVO taskVO) async {
-    final IStartupManager startupManager =
-        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+    final startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getStartupManager();
+    final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository();
 
-    ICommitmentTaskRepository commitmentTaskRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentTaskRepository();
+    _validateTaskVO(taskVO);
 
-    final CommitmentTaskTableCompanion tableCompanion =
-        CommitmentTaskTableCompanion.insert(
-          id: taskVO.commitmentTaskId == null
-              ? const Value.absent()
-              : Value(taskVO.commitmentTaskId!),
-          createdBy: startupManager.currentUser.name,
-          dateUpdated: DateTime.now(),
-          lastModifiedBy: startupManager.currentUser.name,
-          name: taskVO.name ?? 'Commitment Task',
-          amount: taskVO.amount ?? 0.0,
-          isDone: Value(taskVO.isDone ?? false),
-          referredSavingId: taskVO.referredSavingVO?.savingId ?? '',
-        );
+    final companion = CommitmentTaskTableCompanion.insert(
+      id: taskVO.commitmentTaskId != null
+          ? Value(taskVO.commitmentTaskId!)
+          : const Value.absent(),
+      createdBy: startupManager.currentUser.name,
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: startupManager.currentUser.name,
+      name: taskVO.name ?? 'Commitment Task',
+      amount: taskVO.amount ?? 0.0,
+      isDone: Value(taskVO.isDone ?? false),
+      commitmentId: taskVO.commitmentId ?? '',
+      commitmentDetailId: taskVO.commitmentDetailId ?? '',
+      type: taskVO.type ?? CommitmentTaskType.internalTransfer,
+      sourceSavingId: Value(taskVO.sourceSavingId),
+      targetSavingId: Value(taskVO.targetSavingId),
+      payeeId: Value(taskVO.payeeId),
+      note: Value(taskVO.note),
+      paymentReference: Value(taskVO.paymentReference),
+    );
 
-    await commitmentTaskRepo.insertOne(tableCompanion);
+    await commitmentTaskRepo.insertOne(companion);
   }
 
   @override
   Future<void> editCommitmentTask(CommitmentTaskVO taskVO) async {
-    final IStartupManager startupManager =
-        SingletonUtil.getSingleton<IManagerLocator>()!.getStartupManager();
+    if (taskVO.commitmentTaskId == null) return;
 
-    ICommitmentTaskRepository commitmentTaskRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentTaskRepository();
+    final startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getStartupManager();
+    final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository();
 
-    final CommitmentTaskTableCompanion tableCompanion =
-        CommitmentTaskTableCompanion.insert(
-          id: taskVO.commitmentTaskId == null
-              ? const Value.absent()
-              : Value(taskVO.commitmentTaskId!),
-          createdBy: startupManager.currentUser.name,
-          dateUpdated: DateTime.now(),
-          lastModifiedBy: startupManager.currentUser.name,
-          name: taskVO.name ?? 'Commitment Task',
-          amount: taskVO.amount ?? 0.0,
-          isDone: Value(taskVO.isDone ?? false),
-          referredSavingId: taskVO.referredSavingVO?.savingId ?? '',
-        );
+    _validateTaskVO(taskVO);
 
-    if (taskVO.commitmentTaskId != null) {
-      await commitmentTaskRepo.updatePart(
-        tableCompanion: tableCompanion,
-        id: taskVO.commitmentTaskId!,
-      );
-    }
+    final companion = CommitmentTaskTableCompanion.insert(
+      id: Value(taskVO.commitmentTaskId!),
+      createdBy: startupManager.currentUser.name,
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: startupManager.currentUser.name,
+      name: taskVO.name ?? 'Commitment Task',
+      amount: taskVO.amount ?? 0.0,
+      isDone: Value(taskVO.isDone ?? false),
+      commitmentId: taskVO.commitmentId ?? '',
+      commitmentDetailId: taskVO.commitmentDetailId ?? '',
+      type: taskVO.type ?? CommitmentTaskType.internalTransfer,
+      sourceSavingId: Value(taskVO.sourceSavingId),
+      targetSavingId: Value(taskVO.targetSavingId),
+      payeeId: Value(taskVO.payeeId),
+      note: Value(taskVO.note),
+      paymentReference: Value(taskVO.paymentReference),
+    );
+
+    await commitmentTaskRepo.updatePart(
+      tableCompanion: companion,
+      id: taskVO.commitmentTaskId!,
+    );
   }
 
   @override
   Future<void> deleteCommitmentTask(CommitmentTaskVO taskVO) async {
-    ICommitmentTaskRepository commitmentTaskRepo =
-        SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentTaskRepository();
-
     if (taskVO.commitmentTaskId == null) return;
 
-    await commitmentTaskRepo.deleteById(id: taskVO.commitmentTaskId!);
+    await SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentTaskRepository()
+        .deleteById(id: taskVO.commitmentTaskId!);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Private helpers
+  // ---------------------------------------------------------------------------
+
+  /// Maps a saving table type string to a [CommitmentDetailType].
+  /// Falls back to [CommitmentDetailType.monthly] when unrecognised.
+  CommitmentDetailType _commitmentDetailTypeFromSavingType(String? value) {
+    if (value == null) return CommitmentDetailType.monthly;
+    return CommitmentDetailType.values.firstWhere(
+      (e) => e.name == value,
+      orElse: () => CommitmentDetailType.monthly,
+    );
+  }
+
+  /// Validates type-specific field requirements before any DB write.
+  /// Mirrors the rules documented in the schema design doc.
+  void _validateTaskVO(CommitmentTaskVO taskVO) {
+    switch (taskVO.type) {
+      case CommitmentTaskType.internalTransfer:
+        if (taskVO.sourceSavingId == null) {
+          throw Exception(
+            'sourceSavingId is required for an internal transfer.',
+          );
+        }
+        if (taskVO.targetSavingId == null) {
+          throw Exception(
+            'targetSavingId is required for an internal transfer.',
+          );
+        }
+        if (taskVO.sourceSavingId == taskVO.targetSavingId) {
+          throw Exception('Source and target savings must be different.');
+        }
+        break;
+
+      case CommitmentTaskType.thirdPartyPayment:
+        if (taskVO.sourceSavingId == null) {
+          throw Exception(
+            'sourceSavingId is required for a third-party payment.',
+          );
+        }
+        if (taskVO.payeeId == null) {
+          throw Exception('payeeId is required for a third-party payment.');
+        }
+        break;
+
+      case CommitmentTaskType.cash:
+        // No savings required for cash
+        break;
+
+      case null:
+        throw Exception('Payment type must be set before saving a task.');
+    }
   }
 }

@@ -4,6 +4,7 @@ import 'package:wise_spends/data/repositories/expense/i_commitment_detail_reposi
 import 'package:wise_spends/data/repositories/expense/i_commitment_repository.dart';
 import 'package:wise_spends/data/repositories/expense/i_commitment_task_repository.dart';
 import 'package:wise_spends/data/repositories/expense/i_expense_repository.dart';
+import 'package:wise_spends/data/repositories/expense/i_payee_repository.dart';
 import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_group_reference_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_reference_repository.dart';
@@ -27,13 +28,14 @@ abstract class IRepositoryLocator extends ILocator {
   ICommitmentRepository getCommitmentRepository();
   ICommitmentDetailRepository getCommitmentDetailRepository();
   ICommitmentTaskRepository getCommitmentTaskRepository();
+  IPayeeRepository getPayeeRepository();
 
   // Category Repository
   ICategoryRepository getCategoryRepository();
-  
+
   // Budget Repository
   IBudgetRepository getBudgetRepository();
-  
+
   // Budget Plan Repository
   IBudgetPlanRepository getBudgetPlanRepository();
 }

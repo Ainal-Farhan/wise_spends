@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
@@ -12,9 +13,10 @@ class CommitmentTaskRepository extends ICommitmentTaskRepository {
 
   @override
   Stream<List<ExpnsCommitmentTask>> watchAll(bool isDone) {
-    return (db.select(
-      db.commitmentTaskTable,
-    )..where((table) => table.isDone.equals(isDone))).watch();
+    return (db.select(table)
+          ..where((t) => t.isDone.equals(isDone))
+          ..orderBy([(t) => OrderingTerm.desc(t.dateUpdated)]))
+        .watch();
   }
 
   @override
@@ -70,5 +72,29 @@ class CommitmentTaskRepository extends ICommitmentTaskRepository {
     } catch (e) {
       throw Exception('Failed to delete commitment task: $e');
     }
+  }
+
+  @override
+  Stream<List<ExpnsCommitmentTask>> watchAllByCommitmentDetail(
+    String commitmentDetailId,
+  ) {
+    return (db.select(table)
+          ..where((t) => t.commitmentDetailId.equals(commitmentDetailId))
+          ..orderBy([(t) => OrderingTerm.desc(t.dateUpdated)]))
+        .watch();
+  }
+
+  @override
+  Future<void> deleteByCommitmentDetailId(String commitmentDetailId) async {
+    await (db.delete(
+      table,
+    )..where((t) => t.commitmentDetailId.equals(commitmentDetailId))).go();
+  }
+
+  @override
+  Future<void> deleteByCommitmentId(String commitmentId) async {
+    await (db.delete(
+      table,
+    )..where((t) => t.commitmentId.equals(commitmentId))).go();
   }
 }

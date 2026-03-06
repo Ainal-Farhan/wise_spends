@@ -12,12 +12,10 @@ class CommitmentTable extends BaseEntityTable {
   TextColumn get userId => text().references(UserTable, #id)();
 
   @override
-  Map<String, dynamic> toMapFromSubClass() {
-    return {
-      'name': name.toString(),
-      'description': description.toString(),
-      'referredSavingId': referredSavingId.toString(),
-      'userId': userId.toString(),
-    };
-  }
+  Map<String, dynamic> toMapFromSubClass() => {
+        'name': name.name,
+        'description': description.name,
+        'referredSavingId': referredSavingId.name,
+        'userId': userId.name,
+      };
 }

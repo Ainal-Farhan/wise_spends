@@ -464,7 +464,8 @@ class _TransactionDetailScreenContent extends StatelessWidget {
       case TransactionType.expense:
         return 'Expense';
       case TransactionType.transfer:
-        return 'Transfer';
+      case TransactionType.commitment:
+        return 'Commitment';
     }
   }
 
@@ -475,6 +476,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
       case TransactionType.expense:
         return AppColors.expense;
       case TransactionType.transfer:
+      case TransactionType.commitment:
         return AppColors.transfer;
     }
   }

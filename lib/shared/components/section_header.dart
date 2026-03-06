@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_text_styles.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 /// WiseSpends SectionHeader Component
 ///
@@ -87,16 +87,10 @@ class SectionHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: AppTextStyles.h3,
-                    ),
+                    Text(title, style: AppTextStyles.h3),
                     if (subtitle != null) ...[
                       const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        subtitle!,
-                        style: AppTextStyles.bodySmall,
-                      ),
+                      Text(subtitle!, style: AppTextStyles.bodySmall),
                     ],
                   ],
                 ),
@@ -168,9 +162,7 @@ class SectionHeaderCompact extends StatelessWidget {
       children: [
         Text(
           title,
-          style: AppTextStyles.bodyMedium.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
         ),
         if (onSeeAll != null)
           TextButton(

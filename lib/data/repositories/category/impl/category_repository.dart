@@ -110,6 +110,7 @@ class CategoryRepository extends ICategoryRepository {
             .where((c) => c.isExpense || (!c.isIncome && !c.isExpense))
             .toList();
       case TransactionType.transfer:
+      case TransactionType.commitment:
         return [];
     }
   }

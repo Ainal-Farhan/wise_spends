@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/constants/constant/enum/expense/commitment_detail_type.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/presentation/screens/commitment_task/commitment_task_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/components/forms/commitment_form.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
@@ -10,7 +12,6 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/presentation/blocs/commitment/commitment_bloc.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
-import '../commitment_task/commitment_task_screen.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 
@@ -62,7 +63,7 @@ class _CommitmentDetailScreenContentState
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: _openAddDetailDialog,
-            tooltip: 'Add Task',
+            tooltip: 'Add Detail',
           ),
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -114,35 +115,35 @@ class _CommitmentDetailScreenContentState
       ),
       body: BlocConsumer<CommitmentBloc, CommitmentState>(
         listener: (context, state) {
-          // Handle distribution success - navigate to Commitment Task screen
+          // Distribution succeeded — navigate to task screen
           if (state is CommitmentStateDistributionSuccess) {
-            // Show success message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(state.message),
-                  ],
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(state.message),
+                    ],
+                  ),
+                  backgroundColor: AppColors.success,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                backgroundColor: AppColors.success,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            );
-            // Navigate to Commitment Task screen, clearing the navigation stack
+              );
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
                 builder: (context) => CommitmentTaskScreen(
                   bloc: CommitmentTaskBloc(CommitmentTaskRepository()),
-                  commitmentId: state.commitmentId,
                 ),
               ),
-              (route) => route.isFirst, // Keep only the first route (home)
+              (route) => route.isFirst,
             );
+            return;
           }
 
           if (state is CommitmentStateSuccess) {
@@ -227,28 +228,22 @@ class _CommitmentDetailScreenContentState
     return [];
   }
 
-  CommitmentVO _buildCommitmentVO() {
+  /// Returns the full CommitmentVO from state (including referredSavingVO).
+  /// Falls back to a minimal VO built from widget params if state is not ready.
+  CommitmentVO _getCommitmentVOFromState() {
     final state = context.read<CommitmentBloc>().state;
-
-    // Try to get full commitment VO from state (includes referredSavingVO)
     if (state is CommitmentStateDetailScreenReady &&
         state.commitmentVO != null) {
-      return state.commitmentVO!;
+      // Ensure details are up to date from state
+      return state.commitmentVO!
+        ..commitmentDetailVOList = state.commitmentDetails;
     }
-
-    // Try form state
     if (state is CommitmentStateCommitmentFormLoaded) {
       return state.commitmentVO;
     }
-
-    // Fallback: build from available data (won't have referredSavingVO)
-    final vo = CommitmentVO()
+    return CommitmentVO()
       ..commitmentId = widget.commitmentId
       ..name = widget.commitmentName;
-    if (state is CommitmentStateDetailScreenReady) {
-      vo.commitmentDetailVOList = state.commitmentDetails;
-    }
-    return vo;
   }
 
   // ---------------------------------------------------------------------------
@@ -264,10 +259,10 @@ class _CommitmentDetailScreenContentState
           children: [
             Icon(Icons.task_outlined, size: 80, color: AppColors.textHint),
             const SizedBox(height: 16),
-            Text('No tasks yet', style: AppTextStyles.h3),
+            Text('No details yet', style: AppTextStyles.h3),
             const SizedBox(height: 8),
             Text(
-              'Add tasks to track payments for this commitment',
+              'Add details to define the recurring payments for this commitment',
               style: AppTextStyles.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -277,7 +272,7 @@ class _CommitmentDetailScreenContentState
             SizedBox(
               width: 200,
               child: AppButton.primary(
-                label: 'Add Task',
+                label: 'Add Detail',
                 icon: Icons.add,
                 onPressed: _openAddDetailDialog,
               ),
@@ -293,7 +288,6 @@ class _CommitmentDetailScreenContentState
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      onTap: null,
       child: Row(
         children: [
           Container(
@@ -303,8 +297,8 @@ class _CommitmentDetailScreenContentState
               color: AppColors.tertiary.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.payment,
+            child: Icon(
+              _iconForDetailType(detail.type),
               color: AppColors.tertiary,
               size: 24,
             ),
@@ -315,7 +309,7 @@ class _CommitmentDetailScreenContentState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  detail.description ?? 'Task',
+                  detail.description ?? 'Detail',
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -328,16 +322,44 @@ class _CommitmentDetailScreenContentState
                     fontSize: 14,
                   ),
                 ),
-                if (detail.referredSavingVO?.savingName != null) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    detail.referredSavingVO!.savingName!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    if (detail.referredSavingVO?.savingName != null)
+                      Expanded(
+                        child: Text(
+                          detail.referredSavingVO!.savingName!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppColors.textSecondary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    if (detail.type != null) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.tertiary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          _labelForDetailType(detail.type),
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: AppColors.tertiary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ],
             ),
           ),
@@ -381,15 +403,47 @@ class _CommitmentDetailScreenContentState
     );
   }
 
+  IconData _iconForDetailType(CommitmentDetailType? type) {
+    switch (type) {
+      case CommitmentDetailType.monthly:
+        return Icons.calendar_month;
+      case CommitmentDetailType.weekly:
+        return Icons.calendar_view_week;
+      case CommitmentDetailType.quarterly:
+        return Icons.date_range;
+      case CommitmentDetailType.yearly:
+        return Icons.event_repeat;
+      case CommitmentDetailType.oneOff:
+        return Icons.looks_one_outlined;
+      case null:
+        return Icons.payment;
+    }
+  }
+
+  String _labelForDetailType(CommitmentDetailType? type) {
+    switch (type) {
+      case CommitmentDetailType.monthly:
+        return 'Monthly';
+      case CommitmentDetailType.weekly:
+        return 'Weekly';
+      case CommitmentDetailType.quarterly:
+        return 'Quarterly';
+      case CommitmentDetailType.yearly:
+        return 'Yearly';
+      case CommitmentDetailType.oneOff:
+        return 'One-off';
+      case null:
+        return '';
+    }
+  }
+
   // ---------------------------------------------------------------------------
   // Actions
   // ---------------------------------------------------------------------------
 
-  /// Fires EditCommitmentEvent and listens for the form state, then pushes
-  /// the edit screen. Subscription is cancelled after the first match.
   void _openEditCommitmentScreen() {
     final bloc = context.read<CommitmentBloc>();
-    bloc.add(EditCommitmentEvent(_buildCommitmentVO()));
+    bloc.add(EditCommitmentEvent(_getCommitmentVOFromState()));
 
     late final StreamSubscription<CommitmentState> sub;
     sub = bloc.stream.listen((state) {
@@ -414,7 +468,7 @@ class _CommitmentDetailScreenContentState
 
   void _openAddDetailDialog() {
     _showDetailDialog(
-      title: 'Add Task',
+      title: 'Add Detail',
       confirmLabel: 'Add',
       savings: _getSavingsFromState(),
       onConfirm:
@@ -422,15 +476,16 @@ class _CommitmentDetailScreenContentState
             required double amount,
             required String? description,
             required String savingId,
+            required CommitmentDetailType type,
           }) {
-            final detailVO = CommitmentDetailVO()
-              ..amount = amount
-              ..description = description
-              ..savingId = savingId;
             context.read<CommitmentBloc>().add(
               SaveCommitmentDetailEvent(
                 commitmentId: widget.commitmentId,
-                commitmentDetailVO: detailVO,
+                commitmentDetailVO: CommitmentDetailVO()
+                  ..amount = amount
+                  ..description = description
+                  ..savingId = savingId
+                  ..type = type,
               ),
             );
           },
@@ -439,26 +494,28 @@ class _CommitmentDetailScreenContentState
 
   void _openEditDetailDialog(CommitmentDetailVO detail) {
     _showDetailDialog(
-      title: 'Edit Task',
+      title: 'Edit Detail',
       confirmLabel: 'Update',
       savings: _getSavingsFromState(),
       initialAmount: detail.amount,
       initialDescription: detail.description,
       initialSavingId: detail.savingId ?? detail.referredSavingVO?.savingId,
+      initialType: detail.type,
       onConfirm:
           ({
             required double amount,
             required String? description,
             required String savingId,
+            required CommitmentDetailType type,
           }) {
-            detail
-              ..amount = amount
-              ..description = description
-              ..savingId = savingId;
             context.read<CommitmentBloc>().add(
               SaveCommitmentDetailEvent(
                 commitmentId: widget.commitmentId,
-                commitmentDetailVO: detail,
+                commitmentDetailVO: detail
+                  ..amount = amount
+                  ..description = description
+                  ..savingId = savingId
+                  ..type = type,
               ),
             );
           },
@@ -472,10 +529,12 @@ class _CommitmentDetailScreenContentState
     double? initialAmount,
     String? initialDescription,
     String? initialSavingId,
+    CommitmentDetailType? initialType,
     required void Function({
       required double amount,
       required String? description,
       required String savingId,
+      required CommitmentDetailType type,
     })
     onConfirm,
   }) {
@@ -486,6 +545,8 @@ class _CommitmentDetailScreenContentState
       text: initialDescription ?? '',
     );
     String? selectedSavingId = initialSavingId;
+    CommitmentDetailType selectedType =
+        initialType ?? CommitmentDetailType.monthly;
 
     showDialog(
       context: context,
@@ -513,14 +574,39 @@ class _CommitmentDetailScreenContentState
                 AppTextField(
                   label: 'Description (Optional)',
                   controller: descriptionController,
-                  hint: 'e.g., January payment',
+                  hint: 'e.g., Monthly rent',
                   maxLines: 2,
+                ),
+                const SizedBox(height: 16),
+                // Recurrence type — drives how many tasks get generated on distribute
+                DropdownButtonFormField<CommitmentDetailType>(
+                  initialValue: selectedType,
+                  decoration: const InputDecoration(
+                    labelText: 'Recurrence',
+                    prefixIcon: Icon(Icons.repeat),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                  ),
+                  items: CommitmentDetailType.values
+                      .map(
+                        (t) => DropdownMenuItem(
+                          value: t,
+                          child: Text(_labelForDetailType(t)),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setDialogState(() => selectedType = value);
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   initialValue: selectedSavingId,
                   decoration: const InputDecoration(
-                    labelText: 'Savings Account',
+                    labelText: 'Target Savings Account',
                     prefixIcon: Icon(Icons.savings),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -567,10 +653,11 @@ class _CommitmentDetailScreenContentState
                 Navigator.pop(dialogContext);
                 onConfirm(
                   amount: amount,
-                  description: descriptionController.text.isEmpty
+                  description: descriptionController.text.trim().isEmpty
                       ? null
-                      : descriptionController.text,
+                      : descriptionController.text.trim(),
                   savingId: selectedSavingId!,
+                  type: selectedType,
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -606,14 +693,14 @@ class _CommitmentDetailScreenContentState
       builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.surface,
         title: const Text(
-          'Delete Task?',
+          'Delete Detail?',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
         content: const Text(
-          'Are you sure you want to delete this task? This cannot be undone.',
+          'Are you sure? Any tasks generated from this detail will also be deleted.',
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
@@ -645,7 +732,17 @@ class _CommitmentDetailScreenContentState
     );
   }
 
+  /// Distribute uses the commitmentVO already in state — no extra load needed.
+  /// The manager reads detail.savingId as targetSavingId for each task and
+  /// commitment.referredSavingId as the sourceSavingId.
   void _confirmDistributeCommitment() {
+    final commitmentVO = _getCommitmentVOFromState();
+
+    if (commitmentVO.commitmentDetailVOList.isEmpty) {
+      _showInlineError('Add at least one detail before distributing.');
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -657,9 +754,41 @@ class _CommitmentDetailScreenContentState
             fontWeight: FontWeight.w600,
           ),
         ),
-        content: const Text(
-          'This will distribute the commitment across months based on the frequency. Continue?',
-          style: TextStyle(color: AppColors.textSecondary),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'This will generate tasks for each detail based on their recurrence. Continue?',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 12),
+            // Preview the details that will be distributed
+            ...commitmentVO.commitmentDetailVOList.map(
+              (d) => Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.arrow_right,
+                      size: 16,
+                      color: AppColors.textSecondary,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '${d.description ?? 'Detail'} — RM ${(d.amount ?? 0).toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
         actions: [
           TextButton(
@@ -672,35 +801,11 @@ class _CommitmentDetailScreenContentState
           ElevatedButton(
             onPressed: () {
               Navigator.pop(dialogContext);
-
-              // Get current state
-              final state = context.read<CommitmentBloc>().state;
-
-              // If we have DetailScreenReady state with commitmentVO, distribute immediately
-              if (state is CommitmentStateDetailScreenReady &&
-                  state.commitmentVO != null) {
-                final commitmentVO = state.commitmentVO!;
-                commitmentVO.commitmentId = widget.commitmentId;
-                // Include current commitment details
-                commitmentVO.commitmentDetailVOList = state.commitmentDetails;
-                context.read<CommitmentBloc>().add(
-                  StartDistributeCommitmentEvent(commitmentVO),
-                );
-              } else {
-                // Need to load form first to get savings info
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Loading commitment details...'),
-                    backgroundColor: AppColors.primary,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
-                context.read<CommitmentBloc>().add(LoadCommitmentFormEvent());
-                // Distribution will happen after form loads via BlocListener
-              }
+              // commitmentVO already has referredSavingVO from _onLoadDetailScreen
+              // No extra load required — dispatch directly.
+              context.read<CommitmentBloc>().add(
+                StartDistributeCommitmentEvent(commitmentVO),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -726,7 +831,7 @@ class _CommitmentDetailScreenContentState
           ),
         ),
         content: const Text(
-          'Are you sure you want to delete this commitment? All tasks will be deleted. This cannot be undone.',
+          'Are you sure? All details and generated tasks will be deleted. This cannot be undone.',
           style: TextStyle(color: AppColors.textSecondary),
         ),
         actions: [

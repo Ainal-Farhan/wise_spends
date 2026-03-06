@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 /// Transaction type for amount display
 enum AmountType {
@@ -248,14 +248,12 @@ class _AnimatedAmountTextState extends State<AnimatedAmountText>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-    );
+    _controller = AnimationController(duration: widget.duration, vsync: this);
 
-    _animation = Tween<double>(begin: 0, end: widget.amount).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: widget.amount,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _animation.addListener(() {
       setState(() {
@@ -272,10 +270,10 @@ class _AnimatedAmountTextState extends State<AnimatedAmountText>
   void didUpdateWidget(AnimatedAmountText oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.amount != widget.amount) {
-      _animation = Tween<double>(begin: oldWidget.amount, end: widget.amount)
-          .animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-      );
+      _animation = Tween<double>(
+        begin: oldWidget.amount,
+        end: widget.amount,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
       _controller.forward(from: 0);
     }
   }

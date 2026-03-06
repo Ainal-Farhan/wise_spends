@@ -29,6 +29,12 @@ import 'package:wise_spends/presentation/screens/budget_plan/edit_budget_plan_sc
     as edit_budget_plan_screen;
 import 'package:wise_spends/presentation/screens/notifications/notifications_screen.dart'
     as notifications_screen;
+import 'package:wise_spends/presentation/screens/commitment_task/commitment_task_screen.dart'
+    as commitment_task_screen;
+import 'package:wise_spends/presentation/screens/payee/payee_management_screen.dart'
+    as payee_management_screen;
+import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
+import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/router/route_arguments.dart';
 
 /// Enhanced App Router with typed arguments
@@ -102,11 +108,17 @@ abstract class AppRouter {
 
       // Budget Plan routes
       case AppRoutes.budgetPlansList:
-        return _createRoute(const budget_plan_screen.BudgetPlansListScreen(), settings);
-      
+        return _createRoute(
+          const budget_plan_screen.BudgetPlansListScreen(),
+          settings,
+        );
+
       case AppRoutes.createBudgetPlan:
-        return _createRoute(const create_budget_plan_screen.CreateBudgetPlanScreen(), settings);
-      
+        return _createRoute(
+          const create_budget_plan_screen.CreateBudgetPlanScreen(),
+          settings,
+        );
+
       case AppRoutes.budgetPlanDetail:
         final args = settings.arguments as String;
         return _createRoute(
@@ -127,7 +139,10 @@ abstract class AppRouter {
 
       // Money Storage routes
       case AppRoutes.moneyStorage:
-        return _createRoute(const money_storage_screen.MoneyStorageScreen(), settings);
+        return _createRoute(
+          const money_storage_screen.MoneyStorageScreen(),
+          settings,
+        );
 
       // Reports routes
       case AppRoutes.reports:
@@ -140,7 +155,26 @@ abstract class AppRouter {
 
       // Notifications routes
       case AppRoutes.notifications:
-        return _createRoute(const notifications_screen.NotificationsScreen(), settings);
+        return _createRoute(
+          const notifications_screen.NotificationsScreen(),
+          settings,
+        );
+
+      // Commitment Task routes
+      case AppRoutes.commitmentTask:
+        return _createRoute(
+          commitment_task_screen.CommitmentTaskScreen(
+            bloc: CommitmentTaskBloc(CommitmentTaskRepository()),
+          ),
+          settings,
+        );
+
+      // Payee Management routes
+      case AppRoutes.payeeManagement:
+        return _createRoute(
+          payee_management_screen.PayeeManagementScreen(),
+          settings,
+        );
 
       // Default: Show error screen
       default:
@@ -153,10 +187,7 @@ abstract class AppRouter {
 
   /// Create a material page route with proper transitions
   static MaterialPageRoute _createRoute(Widget widget, RouteSettings settings) {
-    return MaterialPageRoute(
-      settings: settings,
-      builder: (context) => widget,
-    );
+    return MaterialPageRoute(settings: settings, builder: (context) => widget);
   }
 
   /// Navigate to a named route with typed arguments
@@ -165,11 +196,7 @@ abstract class AppRouter {
     String routeName, {
     RouteArguments? arguments,
   }) {
-    return Navigator.pushNamed(
-      context,
-      routeName,
-      arguments: arguments,
-    );
+    return Navigator.pushNamed(context, routeName, arguments: arguments);
   }
 
   /// Navigate and replace current route
@@ -178,11 +205,7 @@ abstract class AppRouter {
     String routeName, {
     RouteArguments? arguments,
   }) {
-    Navigator.pushReplacementNamed(
-      context,
-      routeName,
-      arguments: arguments,
-    );
+    Navigator.pushReplacementNamed(context, routeName, arguments: arguments);
   }
 
   /// Navigate and clear all previous routes
@@ -214,20 +237,14 @@ class _ErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Error'),
-      ),
+      appBar: AppBar(title: const Text('Error')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.red,
-              ),
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
               const SizedBox(height: 24),
               Text(
                 message,

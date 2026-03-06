@@ -1,11 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 /// Transaction type enum
-enum TransactionType {
-  income,
-  expense,
-  transfer,
-}
+enum TransactionType { income, expense, transfer, commitment }
 
 /// Main transaction entity - pure data class
 class TransactionEntity extends Equatable {
@@ -37,18 +33,18 @@ class TransactionEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        amount,
-        type,
-        categoryId,
-        date,
-        note,
-        sourceAccountId,
-        receiptImagePath,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    title,
+    amount,
+    type,
+    categoryId,
+    date,
+    note,
+    sourceAccountId,
+    receiptImagePath,
+    createdAt,
+    updatedAt,
+  ];
 
   TransactionEntity copyWith({
     String? id,

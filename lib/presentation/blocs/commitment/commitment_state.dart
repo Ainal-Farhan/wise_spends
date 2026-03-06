@@ -7,9 +7,6 @@ abstract class CommitmentState extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Unified state that always carries savings list alongside its primary data.
-/// This eliminates the race condition where LoadCommitmentFormEvent and
-/// LoadCommitmentDetailEvent would overwrite each other's emitted state.
 class CommitmentStateInitial extends CommitmentState {}
 
 class CommitmentStateLoading extends CommitmentState {}
@@ -24,15 +21,15 @@ class CommitmentStateCommitmentsLoaded extends CommitmentState {
   List<Object?> get props => [commitments];
 }
 
-/// Detail screen state — carries BOTH detail list AND savings list.
-/// Previously these were two separate states (CommitmentStateCommitmentFormLoaded
-/// and CommitmentStateCommitmentDetailLoaded), which caused the race condition:
-/// whichever event resolved last would overwrite the other's state, leaving
-/// either the savings list or the detail list missing.
+/// Detail screen state — carries BOTH detail list AND savings list AND the
+/// full commitmentVO (which includes referredSavingVO needed for distribution).
 class CommitmentStateDetailScreenReady extends CommitmentState {
   final List<CommitmentDetailVO> commitmentDetails;
   final List<ListSavingVO> savingVOList;
   final String commitmentId;
+
+  /// Full commitment VO including referredSavingVO — required for distribution.
+  /// Always populated by the bloc before emitting this state.
   final CommitmentVO? commitmentVO;
 
   const CommitmentStateDetailScreenReady({
@@ -43,7 +40,12 @@ class CommitmentStateDetailScreenReady extends CommitmentState {
   });
 
   @override
-  List<Object?> get props => [commitmentDetails, savingVOList, commitmentId, commitmentVO];
+  List<Object?> get props => [
+    commitmentDetails,
+    savingVOList,
+    commitmentId,
+    commitmentVO,
+  ];
 }
 
 /// Form screen state (add/edit commitment)
@@ -60,17 +62,6 @@ class CommitmentStateCommitmentFormLoaded extends CommitmentState {
   List<Object?> get props => [commitmentVO, savingVOList];
 }
 
-/// Distribution success state - triggers navigation to Commitment Task screen
-class CommitmentStateDistributionSuccess extends CommitmentState {
-  final String message;
-  final String commitmentId;
-
-  const CommitmentStateDistributionSuccess(this.message, this.commitmentId);
-
-  @override
-  List<Object?> get props => [message, commitmentId];
-}
-
 class CommitmentStateSuccess extends CommitmentState {
   final String message;
   final CommitmentEvent nextEvent;
@@ -79,6 +70,18 @@ class CommitmentStateSuccess extends CommitmentState {
 
   @override
   List<Object?> get props => [message, nextEvent];
+}
+
+/// Emitted after a successful distribute so the listener can navigate to
+/// CommitmentTaskScreen and show the result message.
+class CommitmentStateDistributionSuccess extends CommitmentState {
+  final String message;
+  final String commitmentId;
+
+  const CommitmentStateDistributionSuccess(this.message, this.commitmentId);
+
+  @override
+  List<Object?> get props => [message, commitmentId];
 }
 
 class CommitmentStateError extends CommitmentState {
@@ -90,8 +93,7 @@ class CommitmentStateError extends CommitmentState {
   List<Object?> get props => [message];
 }
 
-/// Factory extension — keeps construction centralised so call sites
-/// don't need to know which concrete class to instantiate.
+/// Factory extension — keeps construction centralised.
 extension CommitmentStateX on CommitmentState {
   static CommitmentState initial() => CommitmentStateInitial();
   static CommitmentState loading() => CommitmentStateLoading();
@@ -99,7 +101,6 @@ extension CommitmentStateX on CommitmentState {
   static CommitmentState commitmentsLoaded(List<CommitmentVO> list) =>
       CommitmentStateCommitmentsLoaded(list);
 
-  /// Single factory for the detail screen — always includes savings list.
   static CommitmentState detailScreenReady({
     required List<CommitmentDetailVO> details,
     required List<ListSavingVO> savings,
@@ -117,11 +118,13 @@ extension CommitmentStateX on CommitmentState {
     List<ListSavingVO> savings,
   ) => CommitmentStateCommitmentFormLoaded(vo, savings);
 
-  static CommitmentState distributionSuccess(String message, String commitmentId) =>
-      CommitmentStateDistributionSuccess(message, commitmentId);
-
   static CommitmentState success(String message, CommitmentEvent next) =>
       CommitmentStateSuccess(message, next);
+
+  static CommitmentState distributionSuccess(
+    String message,
+    String commitmentId,
+  ) => CommitmentStateDistributionSuccess(message, commitmentId);
 
   static CommitmentState error(String message) => CommitmentStateError(message);
 }
