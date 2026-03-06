@@ -14,10 +14,10 @@ class ExpenseTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
-      'amount': amount.toString(),
-      'description': description.toString(),
-      'expenseDate': expenseDate.toString(),
-      'referenceDataId': referenceDataId.toString()
+      'amount': amount.name,
+      'description': description.name,
+      'expenseDate': expenseDate.name,
+      'referenceDataId': referenceDataId.name,
     };
   }
 }

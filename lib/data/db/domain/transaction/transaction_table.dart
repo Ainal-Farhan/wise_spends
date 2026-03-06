@@ -21,15 +21,15 @@ class TransactionTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
-      'type': type.toString(),
-      'description': description.toString(),
-      'amount': amount.toString(),
-      'savingId': savingId.toString(),
-      'expenseId': expenseId.toString(),
-      'transactionDateTime': transactionDateTime.toString(),
-      'transferGroupId': transferGroupId.toString(),
-      'transferType': transferType.toString(),
-      'note': note.toString(),
+      'type': type.name,
+      'description': description.name,
+      'amount': amount.name,
+      'savingId': savingId.name,
+      'expenseId': expenseId.name,
+      'transactionDateTime': transactionDateTime.name,
+      'transferGroupId': transferGroupId.name,
+      'transferType': transferType.name,
+      'note': note.name,
     };
   }
 }

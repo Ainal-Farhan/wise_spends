@@ -14,11 +14,11 @@ class MoneyStorageTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
-      'iconUrl': iconUrl.toString(),
-      'longName': longName.toString(),
-      'shortName': shortName.toString(),
-      'type': type.toString(),
-      'userId': userId.toString()
+      'iconUrl': iconUrl.name,
+      'longName': longName.name,
+      'shortName': shortName.name,
+      'type': type.name,
+      'userId': userId.name,
     };
   }
 }

@@ -13,16 +13,16 @@ class ExchangeRateTable extends BaseEntityTable {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-    {fromCurrency, toCurrency, rateDate}
+    {fromCurrency, toCurrency, rateDate},
   ];
 
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
-      'fromCurrency': fromCurrency.toString(),
-      'toCurrency': toCurrency.toString(),
-      'rate': rate.toString(),
-      'rateDate': rateDate.toString(),
+      'fromCurrency': fromCurrency.name,
+      'toCurrency': toCurrency.name,
+      'rate': rate.name,
+      'rateDate': rateDate.name,
     };
   }
 }

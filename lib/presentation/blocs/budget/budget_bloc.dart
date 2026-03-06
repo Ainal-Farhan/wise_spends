@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
-import 'package:wise_spends/domain/repositories/budget_repository.dart';
+import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
 import 'budget_event.dart';
 import 'budget_state.dart';
 
@@ -31,7 +31,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     emit(BudgetLoading());
     try {
       final budgets = await _repository.getAllBudgets();
-      
+
       if (budgets.isEmpty) {
         emit(const BudgetEmpty('You haven\'t set any budgets yet'));
       } else {
@@ -40,11 +40,13 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
           return !budget.isExceeded;
         }).length;
 
-        emit(BudgetsLoaded(
-          budgets: budgets,
-          activeCount: budgets.where((b) => b.isActive).length,
-          onTrackCount: onTrackCount,
-        ));
+        emit(
+          BudgetsLoaded(
+            budgets: budgets,
+            activeCount: budgets.where((b) => b.isActive).length,
+            onTrackCount: onTrackCount,
+          ),
+        );
       }
     } catch (e) {
       emit(BudgetError('Failed to load budgets: ${e.toString()}'));
@@ -59,7 +61,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     emit(BudgetLoading());
     try {
       final budgets = await _repository.getActiveBudgets();
-      
+
       if (budgets.isEmpty) {
         emit(const BudgetEmpty('No active budgets'));
       } else {
@@ -103,10 +105,10 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      
+
       await _repository.createBudget(budget);
       emit(BudgetCreated(budget));
-      
+
       // Reload budgets after creation
       add(LoadBudgetsEvent());
     } catch (e) {
@@ -126,7 +128,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         emit(const BudgetError('Budget not found'));
         return;
       }
-      
+
       final updatedBudget = currentBudget.copyWith(
         name: event.name ?? currentBudget.name,
         limitAmount: event.amount ?? currentBudget.limitAmount,
@@ -135,10 +137,10 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         endDate: event.endDate ?? currentBudget.endDate,
         updatedAt: DateTime.now(),
       );
-      
+
       await _repository.updateBudget(updatedBudget);
       emit(BudgetUpdated(updatedBudget));
-      
+
       // Reload budgets after update
       add(LoadBudgetsEvent());
     } catch (e) {
@@ -154,7 +156,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     try {
       await _repository.deleteBudget(event.budgetId);
       emit(BudgetDeleted(event.budgetId));
-      
+
       // Reload budgets after deletion
       add(LoadBudgetsEvent());
     } catch (e) {
@@ -172,7 +174,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
         await _repository.deleteBudget(id);
       }
       emit(const BudgetDeleted('multiple'));
-      
+
       // Reload budgets after batch deletion
       add(LoadBudgetsEvent());
     } catch (e) {
@@ -215,12 +217,14 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
                   .where((b) => b.period == event.period)
                   .toList();
 
-        emit(BudgetsLoaded(
-          budgets: filtered,
-          activeCount: filtered.where((b) => b.isActive).length,
-          onTrackCount: filtered.where((b) => !b.isExceeded).length,
-          filterPeriod: event.period,
-        ));
+        emit(
+          BudgetsLoaded(
+            budgets: filtered,
+            activeCount: filtered.where((b) => b.isActive).length,
+            onTrackCount: filtered.where((b) => !b.isExceeded).length,
+            filterPeriod: event.period,
+          ),
+        );
       }
     } catch (e) {
       emit(BudgetError('Failed to filter budgets: ${e.toString()}'));

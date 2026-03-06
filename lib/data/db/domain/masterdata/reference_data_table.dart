@@ -18,13 +18,13 @@ class ReferenceDataTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
-      'label': label.toString(),
-      'groupLabel': groupLabel.toString(),
-      'value': value.toString(),
-      'groupValue': groupValue.toString(),
-      'referenceId': referenceId.toString(),
-      'isHasNext': isHasNext.toString(),
-      'nextReferenceDataId': nextReferenceDataId.toString()
+      'label': label.name,
+      'groupLabel': groupLabel.name,
+      'value': value.name,
+      'groupValue': groupValue.name,
+      'referenceId': referenceId.name,
+      'isHasNext': isHasNext.name,
+      'nextReferenceDataId': nextReferenceDataId.name,
     };
   }
 }

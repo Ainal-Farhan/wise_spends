@@ -26,9 +26,9 @@ import 'package:wise_spends/data/repositories/transaction/impl/transaction_repos
 import 'package:wise_spends/data/repositories/category/impl/category_repository.dart';
 import 'package:wise_spends/data/repositories/budget/impl/budget_repository.dart';
 import 'package:wise_spends/data/repositories/budget_plan/impl/budget_plan_repository.dart';
-import 'package:wise_spends/domain/repositories/category_repository.dart';
-import 'package:wise_spends/domain/repositories/budget_repository.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
+import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
+import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
+import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
 
 class RepositoryLocator extends IRepositoryLocator {
   @override

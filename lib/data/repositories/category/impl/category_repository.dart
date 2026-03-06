@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
-import 'package:wise_spends/domain/repositories/category_repository.dart';
+import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 class CategoryRepository extends ICategoryRepository {

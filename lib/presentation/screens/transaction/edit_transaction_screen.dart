@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
-import 'package:wise_spends/domain/repositories/category_repository.dart';
+import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/presentation/blocs/category/category_bloc.dart';
 import 'package:wise_spends/presentation/blocs/category/category_event.dart';
 import 'package:wise_spends/presentation/blocs/category/category_state.dart';

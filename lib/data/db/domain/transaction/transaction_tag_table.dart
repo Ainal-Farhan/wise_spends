@@ -8,9 +8,6 @@ class TransactionTagTable extends BaseEntityTable {
 
   @override
   Map<String, dynamic> toMapFromSubClass() {
-    return {
-      'name': name.toString(),
-      'colorHex': colorHex.toString(),
-    };
+    return {'name': name.name, 'colorHex': colorHex.name};
   }
 }

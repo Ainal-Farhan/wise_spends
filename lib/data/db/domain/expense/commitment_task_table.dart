@@ -82,8 +82,6 @@ class CommitmentTaskTable extends BaseEntityTable {
 
   @override
   Map<String, dynamic> toMapFromSubClass() => {
-    // Use .name (the column's SQL name string) not .toString()
-    // (which returns the column builder object's debug representation).
     'name': name.name,
     'amount': amount.name,
     'isDone': isDone.name,

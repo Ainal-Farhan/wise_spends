@@ -1,12 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_entity.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
+import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
 import 'budget_plan_list_event.dart';
 import 'budget_plan_list_state.dart';
 
 /// Budget Plan List BLoC - manages list of budget plans
-class BudgetPlanListBloc extends Bloc<BudgetPlanListEvent, BudgetPlanListState> {
+class BudgetPlanListBloc
+    extends Bloc<BudgetPlanListEvent, BudgetPlanListState> {
   final IBudgetPlanRepository _repository;
 
   BudgetPlanListBloc(this._repository) : super(BudgetPlanListInitial()) {
@@ -59,11 +60,13 @@ class BudgetPlanListBloc extends Bloc<BudgetPlanListEvent, BudgetPlanListState> 
         event.status,
         event.category,
       );
-      emit(currentState.copyWith(
-        filteredPlans: filtered,
-        filterStatus: event.status,
-        filterCategory: event.category,
-      ));
+      emit(
+        currentState.copyWith(
+          filteredPlans: filtered,
+          filterStatus: event.status,
+          filterCategory: event.category,
+        ),
+      );
     }
   }
 

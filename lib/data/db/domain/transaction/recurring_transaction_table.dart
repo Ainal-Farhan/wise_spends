@@ -7,7 +7,8 @@ import 'package:wise_spends/data/db/tables/category_table.dart';
 class RecurringTransactionTable extends BaseEntityTable {
   TextColumn get name => text()();
   TextColumn get type => text()(); // income | expense
-  RealColumn get amount => real().customConstraint('NOT NULL CHECK (amount > 0)')();
+  RealColumn get amount =>
+      real().customConstraint('NOT NULL CHECK (amount > 0)')();
   TextColumn get savingId => text().references(SavingTable, #id)();
   TextColumn get categoryId => text().nullable().references(Categories, #id)();
   TextColumn get frequency => text()(); // daily | weekly | monthly | yearly
@@ -20,17 +21,17 @@ class RecurringTransactionTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
-      'name': name.toString(),
-      'type': type.toString(),
-      'amount': amount.toString(),
-      'savingId': savingId.toString(),
-      'categoryId': categoryId.toString(),
-      'frequency': frequency.toString(),
-      'startDate': startDate.toString(),
-      'endDate': endDate.toString(),
-      'nextRunDate': nextRunDate.toString(),
-      'isActive': isActive.toString(),
-      'note': note.toString(),
+      'name': name.name,
+      'type': type.name,
+      'amount': amount.name,
+      'savingId': savingId.name,
+      'categoryId': categoryId.name,
+      'frequency': frequency.name,
+      'startDate': startDate.name,
+      'endDate': endDate.name,
+      'nextRunDate': nextRunDate.name,
+      'isActive': isActive.name,
+      'note': note.name,
     };
   }
 }

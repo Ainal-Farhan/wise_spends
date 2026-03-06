@@ -8,7 +8,7 @@ import 'package:wise_spends/data/repositories/transaction/i_transaction_reposito
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
-import 'package:wise_spends/domain/repositories/category_repository.dart';
+import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/presentation/blocs/category/category_bloc.dart';
 import 'package:wise_spends/presentation/blocs/category/category_event.dart';
 import 'package:wise_spends/presentation/blocs/category/category_state.dart';
@@ -31,7 +31,10 @@ class AddTransactionScreenArgs {
   final TransactionType? preselectedType;
   final String? editingTransactionId;
 
-  const AddTransactionScreenArgs({this.preselectedType, this.editingTransactionId});
+  const AddTransactionScreenArgs({
+    this.preselectedType,
+    this.editingTransactionId,
+  });
 }
 
 /// Enhanced Add Transaction Screen - Pure BLoC
@@ -982,9 +985,7 @@ class _AddTransactionScreenContentState
         updatedAt: DateTime.now(),
       );
 
-      context.read<TransactionBloc>().add(
-        UpdateTransactionEvent(transaction),
-      );
+      context.read<TransactionBloc>().add(UpdateTransactionEvent(transaction));
     } else {
       // Create new transaction
       context.read<TransactionBloc>().add(
@@ -999,8 +1000,8 @@ class _AddTransactionScreenContentState
           sourceAccountId: formState.selectedSourceAccount,
           destinationAccountId:
               formState.transactionType == TransactionType.transfer
-                  ? formState.selectedDestinationAccount
-                  : null,
+              ? formState.selectedDestinationAccount
+              : null,
         ),
       );
     }

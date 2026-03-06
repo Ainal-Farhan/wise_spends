@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
-import 'package:wise_spends/domain/repositories/budget_repository.dart';
+import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
 import 'package:wise_spends/presentation/blocs/budget/budget_bloc.dart';
 import 'package:wise_spends/presentation/blocs/budget/budget_event.dart';
 import 'package:wise_spends/presentation/blocs/budget/budget_state.dart';
@@ -97,7 +97,8 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
 
                     return SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (context, index) => _buildBudgetCard(context, budgets[index]),
+                        (context, index) =>
+                            _buildBudgetCard(context, budgets[index]),
                         childCount: budgets.length,
                       ),
                     );
@@ -155,10 +156,7 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  AppColors.tertiary,
-                  AppColors.tertiaryDark,
-                ],
+                colors: [AppColors.tertiary, AppColors.tertiaryDark],
               ),
               borderRadius: BorderRadius.circular(AppRadius.lg),
               boxShadow: [
@@ -353,7 +351,10 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
                   color: AppColors.primaryContainer,
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: const Icon(Icons.edit_outlined, color: AppColors.primary),
+                child: const Icon(
+                  Icons.edit_outlined,
+                  color: AppColors.primary,
+                ),
               ),
               title: const Text('Edit Budget'),
               onTap: () {
@@ -370,7 +371,10 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
                   color: AppColors.secondaryContainer,
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: const Icon(Icons.delete_outline, color: AppColors.secondary),
+                child: const Icon(
+                  Icons.delete_outline,
+                  color: AppColors.secondary,
+                ),
               ),
               title: const Text(
                 'Delete Budget',
@@ -449,30 +453,15 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _buildFilterChip(
-              label: 'All',
-              period: null,
-            ),
+            _buildFilterChip(label: 'All', period: null),
             const SizedBox(width: AppSpacing.sm),
-            _buildFilterChip(
-              label: 'Daily',
-              period: BudgetPeriod.daily,
-            ),
+            _buildFilterChip(label: 'Daily', period: BudgetPeriod.daily),
             const SizedBox(width: AppSpacing.sm),
-            _buildFilterChip(
-              label: 'Weekly',
-              period: BudgetPeriod.weekly,
-            ),
+            _buildFilterChip(label: 'Weekly', period: BudgetPeriod.weekly),
             const SizedBox(width: AppSpacing.sm),
-            _buildFilterChip(
-              label: 'Monthly',
-              period: BudgetPeriod.monthly,
-            ),
+            _buildFilterChip(label: 'Monthly', period: BudgetPeriod.monthly),
             const SizedBox(width: AppSpacing.sm),
-            _buildFilterChip(
-              label: 'Yearly',
-              period: BudgetPeriod.yearly,
-            ),
+            _buildFilterChip(label: 'Yearly', period: BudgetPeriod.yearly),
           ],
         ),
       ),
@@ -489,7 +478,7 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
         if (state is BudgetsLoaded) {
           currentFilterPeriod = state.filterPeriod;
         }
-        
+
         final isSelected = currentFilterPeriod == period;
 
         return FilterChip(
@@ -533,31 +522,13 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
               ),
             ),
             const SizedBox(height: AppSpacing.xxl),
-            Text(
-              'Filter by Period',
-              style: AppTextStyles.h2,
-            ),
+            Text('Filter by Period', style: AppTextStyles.h2),
             const SizedBox(height: AppSpacing.lg),
-            _buildFilterOption(
-              label: 'All Periods',
-              period: null,
-            ),
-            _buildFilterOption(
-              label: 'Daily',
-              period: BudgetPeriod.daily,
-            ),
-            _buildFilterOption(
-              label: 'Weekly',
-              period: BudgetPeriod.weekly,
-            ),
-            _buildFilterOption(
-              label: 'Monthly',
-              period: BudgetPeriod.monthly,
-            ),
-            _buildFilterOption(
-              label: 'Yearly',
-              period: BudgetPeriod.yearly,
-            ),
+            _buildFilterOption(label: 'All Periods', period: null),
+            _buildFilterOption(label: 'Daily', period: BudgetPeriod.daily),
+            _buildFilterOption(label: 'Weekly', period: BudgetPeriod.weekly),
+            _buildFilterOption(label: 'Monthly', period: BudgetPeriod.monthly),
+            _buildFilterOption(label: 'Yearly', period: BudgetPeriod.yearly),
             const SizedBox(height: AppSpacing.lg),
             AppButton.secondary(
               label: 'Clear Filter',
@@ -583,13 +554,15 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
         if (state is BudgetsLoaded) {
           currentFilterPeriod = state.filterPeriod;
         }
-        
+
         final isSelected = currentFilterPeriod == period;
 
         return ListTile(
           minLeadingWidth: AppTouchTarget.min,
           leading: Icon(
-            isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+            isSelected
+                ? Icons.radio_button_checked
+                : Icons.radio_button_unchecked,
             color: AppColors.primary,
           ),
           title: Text(

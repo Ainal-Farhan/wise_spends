@@ -7,7 +7,7 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_milestone_en
 import 'package:wise_spends/domain/entities/budget_plan/linked_account_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
-import 'budget_plan_params.dart';
+import '../../../domain/entities/budget_plan/budget_plan_params.dart';
 
 /// Budget Plan Repository Interface - defines contract for data layer
 abstract class IBudgetPlanRepository implements ISingleton {

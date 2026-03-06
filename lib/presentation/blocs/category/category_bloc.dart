@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
-import 'package:wise_spends/domain/repositories/category_repository.dart';
+import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'category_event.dart';
 import 'category_state.dart';
 

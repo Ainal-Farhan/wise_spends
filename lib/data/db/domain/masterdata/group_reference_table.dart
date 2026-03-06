@@ -9,6 +9,6 @@ class GroupReferenceTable extends BaseEntityTable {
 
   @override
   Map<String, dynamic> toMapFromSubClass() {
-    return {'label': label.toString(), 'value': value.toString()};
+    return {'label': label.name, 'value': value.name};
   }
 }

@@ -13,14 +13,11 @@ class TransactionTagMapTable extends BaseEntityTable {
 
   @override
   List<Set<Column>> get uniqueKeys => [
-    {transactionId, tagId}
+    {transactionId, tagId},
   ];
 
   @override
   Map<String, dynamic> toMapFromSubClass() {
-    return {
-      'transactionId': transactionId.toString(),
-      'tagId': tagId.toString(),
-    };
+    return {'transactionId': transactionId.name, 'tagId': tagId.name};
   }
 }

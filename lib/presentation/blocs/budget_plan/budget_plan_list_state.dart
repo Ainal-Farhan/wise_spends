@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
+import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
 
 /// Budget Plan List BLoC States
 abstract class BudgetPlanListState extends Equatable {

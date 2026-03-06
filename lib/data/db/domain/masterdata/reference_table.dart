@@ -14,11 +14,11 @@ class ReferenceTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
-      'label': label.toString(),
-      'value': value.toString(),
-      'isActive': isActive.toString(),
-      'belongTo': belongTo.toString(),
-      'groupId': groupId.toString()
+      'label': label.name,
+      'value': value.name,
+      'isActive': isActive.name,
+      'belongTo': belongTo.name,
+      'groupId': groupId.name,
     };
   }
 }

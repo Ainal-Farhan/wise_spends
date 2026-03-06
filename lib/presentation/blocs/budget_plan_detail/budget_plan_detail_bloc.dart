@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_params.dart';
+import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
+import 'package:wise_spends/domain/entities/budget_plan/budget_plan_params.dart';
 import 'budget_plan_detail_event.dart';
 import 'budget_plan_detail_state.dart';
 
@@ -210,9 +210,7 @@ class BudgetPlanDetailBloc
       // Reload plan detail
       add(LoadPlanDetail(currentState.plan.id));
     } catch (e) {
-      emit(
-        BudgetPlanDetailError('Failed to unlink account: ${e.toString()}'),
-      );
+      emit(BudgetPlanDetailError('Failed to unlink account: ${e.toString()}'));
     }
   }
 

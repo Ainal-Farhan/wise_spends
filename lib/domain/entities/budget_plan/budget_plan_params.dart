@@ -29,17 +29,17 @@ class CreateBudgetPlanParams extends Equatable {
 
   @override
   List<Object?> get props => [
-        name,
-        description,
-        category,
-        targetAmount,
-        currency,
-        startDate,
-        targetDate,
-        iconCode,
-        colorHex,
-        milestones,
-      ];
+    name,
+    description,
+    category,
+    targetAmount,
+    currency,
+    startDate,
+    targetDate,
+    iconCode,
+    colorHex,
+    milestones,
+  ];
 }
 
 /// Parameters for updating a budget plan
@@ -64,14 +64,14 @@ class UpdateBudgetPlanParams extends Equatable {
 
   @override
   List<Object?> get props => [
-        name,
-        description,
-        category,
-        targetAmount,
-        targetDate,
-        iconCode,
-        colorHex,
-      ];
+    name,
+    description,
+    category,
+    targetAmount,
+    targetDate,
+    iconCode,
+    colorHex,
+  ];
 }
 
 /// Parameters for adding a deposit
@@ -92,12 +92,12 @@ class AddDepositParams extends Equatable {
 
   @override
   List<Object?> get props => [
-        amount,
-        note,
-        source,
-        depositDate,
-        linkedAccountId,
-      ];
+    amount,
+    note,
+    source,
+    depositDate,
+    linkedAccountId,
+  ];
 }
 
 /// Parameters for adding a spending transaction
@@ -120,13 +120,13 @@ class AddPlanTransactionParams extends Equatable {
 
   @override
   List<Object?> get props => [
-        amount,
-        description,
-        vendor,
-        receiptImagePath,
-        transactionDate,
-        linkToMainTransaction,
-      ];
+    amount,
+    description,
+    vendor,
+    receiptImagePath,
+    transactionDate,
+    linkToMainTransaction,
+  ];
 }
 
 /// Parameters for creating a milestone
@@ -142,9 +142,5 @@ class CreateMilestoneParams extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        title,
-        targetAmount,
-        dueDate,
-      ];
+  List<Object?> get props => [title, targetAmount, dueDate];
 }

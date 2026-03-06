@@ -11,9 +11,9 @@ import 'package:wise_spends/data/repositories/masterdata/i_reference_repository.
 import 'package:wise_spends/data/repositories/saving/i_money_storage_repository.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
-import 'package:wise_spends/domain/repositories/category_repository.dart';
-import 'package:wise_spends/domain/repositories/budget_repository.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
+import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
+import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
+import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
 
 abstract class IRepositoryLocator extends ILocator {
   List<ICrudRepository> retrieveAllRepository();

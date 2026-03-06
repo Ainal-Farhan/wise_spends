@@ -8,8 +8,8 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_milestone_en
 import 'package:wise_spends/domain/entities/budget_plan/linked_account_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_repository.dart';
-import 'package:wise_spends/domain/repositories/budget_plan_params.dart';
+import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
+import 'package:wise_spends/domain/entities/budget_plan/budget_plan_params.dart';
 
 /// Budget Plan Repository Implementation
 /// Handles all database operations for budget plans
@@ -341,15 +341,16 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   }
 
   @override
-  Future<void> unlinkTransaction(
-    String planId,
-    String transactionId,
-  ) async {
+  Future<void> unlinkTransaction(String planId, String transactionId) async {
     final plan = await getPlanByUuid(planId);
     if (plan == null) throw Exception('Plan not found');
 
     final query = _db.delete(_db.budgetPlanTransactions)
-      ..where((tbl) => tbl.planId.equals(plan.id) & tbl.transactionId.equals(transactionId));
+      ..where(
+        (tbl) =>
+            tbl.planId.equals(plan.id) &
+            tbl.transactionId.equals(transactionId),
+      );
     await query.go();
   }
 

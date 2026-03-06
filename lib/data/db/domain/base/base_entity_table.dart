@@ -21,13 +21,12 @@ abstract class BaseEntityTable extends Table {
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = toMapFromSubClass();
 
-    map.addAll(
-    {
-      "id": id.toString(),
-      "createdBy": createdBy.toString(),
-      "dateCreated": dateCreated.toString(),
-      "dateUpdated": dateUpdated.toString(),
-      "lastModifiedBy": lastModifiedBy.toString()
+    map.addAll({
+      "id": id.name,
+      "createdBy": createdBy.name,
+      "dateCreated": dateCreated.name,
+      "dateUpdated": dateUpdated.name,
+      "lastModifiedBy": lastModifiedBy.name,
     });
 
     return map;

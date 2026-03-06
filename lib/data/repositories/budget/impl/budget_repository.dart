@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
-import 'package:wise_spends/domain/repositories/budget_repository.dart';
+import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
 
 /// Budget Repository Implementation
 /// Handles all database operations for budgets
@@ -23,7 +23,8 @@ class BudgetRepository extends IBudgetRepository {
 
   @override
   Future<List<BudgetEntity>> getActiveBudgets() async {
-    final query = _db.select(_db.budgets)..where((tbl) => tbl.isActive.equals(true));
+    final query = _db.select(_db.budgets)
+      ..where((tbl) => tbl.isActive.equals(true));
     final rows = await query.get();
 
     return rows.map(_mapToEntity).toList();
@@ -31,7 +32,8 @@ class BudgetRepository extends IBudgetRepository {
 
   @override
   Future<List<BudgetEntity>> getBudgetsByCategory(String categoryId) async {
-    final query = _db.select(_db.budgets)..where((tbl) => tbl.categoryId.equals(categoryId));
+    final query = _db.select(_db.budgets)
+      ..where((tbl) => tbl.categoryId.equals(categoryId));
     final rows = await query.get();
 
     return rows.map(_mapToEntity).toList();
@@ -50,13 +52,14 @@ class BudgetRepository extends IBudgetRepository {
   Future<BudgetEntity?> getCurrentBudgetByCategory(String categoryId) async {
     final now = DateTime.now();
     final query = _db.select(_db.budgets)
-      ..where((tbl) => 
-        tbl.categoryId.equals(categoryId) &
-        tbl.isActive.equals(true) &
-        tbl.startDate.isSmallerOrEqualValue(now) &
-        (tbl.endDate.isNull() | tbl.endDate.isBiggerOrEqualValue(now))
+      ..where(
+        (tbl) =>
+            tbl.categoryId.equals(categoryId) &
+            tbl.isActive.equals(true) &
+            tbl.startDate.isSmallerOrEqualValue(now) &
+            (tbl.endDate.isNull() | tbl.endDate.isBiggerOrEqualValue(now)),
       );
-    
+
     final rows = await query.get();
     if (rows.isEmpty) return null;
     return _mapToEntity(rows.first);
@@ -96,7 +99,8 @@ class BudgetRepository extends IBudgetRepository {
       updatedAt: Value(budget.updatedAt),
     );
 
-    final query = _db.update(_db.budgets)..where((tbl) => tbl.id.equals(budget.id));
+    final query = _db.update(_db.budgets)
+      ..where((tbl) => tbl.id.equals(budget.id));
     await query.write(updating);
 
     return budget;
@@ -112,7 +116,8 @@ class BudgetRepository extends IBudgetRepository {
       updatedAt: Value(DateTime.now()),
     );
 
-    final query = _db.update(_db.budgets)..where((tbl) => tbl.id.equals(budgetId));
+    final query = _db.update(_db.budgets)
+      ..where((tbl) => tbl.id.equals(budgetId));
     await query.write(updating);
 
     return getBudgetById(budgetId).then((budget) => budget!);
