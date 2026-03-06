@@ -2,8 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
-/// Transaction BLoC events
-/// All user actions and system events that trigger state changes
 abstract class TransactionEvent extends Equatable {
   const TransactionEvent();
 
@@ -11,24 +9,17 @@ abstract class TransactionEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// ============================================================================
-// LOAD EVENTS
-// ============================================================================
-
-/// Load all transactions
 class LoadTransactionsEvent extends TransactionEvent {}
 
-/// Load recent transactions for dashboard
 class LoadRecentTransactionsEvent extends TransactionEvent {
   final int limit;
 
   const LoadRecentTransactionsEvent({this.limit = 10});
 
   @override
-  List<Object> get props => [limit];
+  List<Object?> get props => [limit];
 }
 
-/// Load transactions by date range
 class LoadTransactionsByDateRangeEvent extends TransactionEvent {
   final DateTime startDate;
   final DateTime endDate;
@@ -39,20 +30,18 @@ class LoadTransactionsByDateRangeEvent extends TransactionEvent {
   });
 
   @override
-  List<Object> get props => [startDate, endDate];
+  List<Object?> get props => [startDate, endDate];
 }
 
-/// Load transactions by type
 class LoadTransactionsByTypeEvent extends TransactionEvent {
   final TransactionType type;
 
   const LoadTransactionsByTypeEvent(this.type);
 
   @override
-  List<Object> get props => [type];
+  List<Object?> get props => [type];
 }
 
-/// Load transactions grouped by date (for history screen)
 class LoadGroupedTransactionsEvent extends TransactionEvent {
   final DateTime? startDate;
   final DateTime? endDate;
@@ -63,21 +52,34 @@ class LoadGroupedTransactionsEvent extends TransactionEvent {
   List<Object?> get props => [startDate, endDate];
 }
 
-/// Load transaction by ID
+/// Loads a single transaction by ID only (no enrichment).
+/// Prefer [LoadTransactionDetailEvent] for the detail screen.
 class LoadTransactionByIdEvent extends TransactionEvent {
   final String transactionId;
 
   const LoadTransactionByIdEvent(this.transactionId);
 
   @override
-  List<Object> get props => [transactionId];
+  List<Object?> get props => [transactionId];
 }
 
-// ============================================================================
-// CREATE/UPDATE/DELETE EVENTS
-// ============================================================================
+/// Loads a transaction AND resolves its display names in parallel:
+///   - saving name from [sourceAccountId]
+///   - category name + icon from [categoryId]
+///   - payee info if [payeeId] is set
+///   - target account name if [transferGroupId] is set
+///   - commitment task name if [commitmentTaskId] is set
+///
+/// Emits [TransactionDetailLoaded] — never shows raw UUIDs.
+class LoadTransactionDetailEvent extends TransactionEvent {
+  final String transactionId;
 
-/// Create a new transaction
+  const LoadTransactionDetailEvent(this.transactionId);
+
+  @override
+  List<Object?> get props => [transactionId];
+}
+
 class CreateTransactionEvent extends TransactionEvent {
   final String title;
   final double amount;
@@ -115,54 +117,44 @@ class CreateTransactionEvent extends TransactionEvent {
   ];
 }
 
-/// Update an existing transaction
 class UpdateTransactionEvent extends TransactionEvent {
   final TransactionEntity transaction;
 
   const UpdateTransactionEvent(this.transaction);
 
   @override
-  List<Object> get props => [transaction];
+  List<Object?> get props => [transaction];
 }
 
-/// Delete a transaction
 class DeleteTransactionEvent extends TransactionEvent {
   final String transactionId;
 
   const DeleteTransactionEvent(this.transactionId);
 
   @override
-  List<Object> get props => [transactionId];
+  List<Object?> get props => [transactionId];
 }
 
-/// Delete multiple transactions (batch delete)
 class DeleteMultipleTransactionsEvent extends TransactionEvent {
   final List<String> transactionIds;
 
   const DeleteMultipleTransactionsEvent(this.transactionIds);
 
   @override
-  List<Object> get props => [transactionIds];
+  List<Object?> get props => [transactionIds];
 }
 
-// ============================================================================
-// SEARCH & FILTER EVENTS
-// ============================================================================
-
-/// Search transactions by query
 class SearchTransactionsEvent extends TransactionEvent {
   final String query;
 
   const SearchTransactionsEvent(this.query);
 
   @override
-  List<Object> get props => [query];
+  List<Object?> get props => [query];
 }
 
-/// Clear search results and reload transactions
 class ClearSearchEvent extends TransactionEvent {}
 
-/// Filter transactions by category
 class FilterTransactionsByCategoryEvent extends TransactionEvent {
   final String? categoryId;
 
@@ -172,7 +164,6 @@ class FilterTransactionsByCategoryEvent extends TransactionEvent {
   List<Object?> get props => [categoryId];
 }
 
-/// Filter transactions by type
 class FilterTransactionsByTypeEvent extends TransactionEvent {
   final TransactionType? type;
 
@@ -182,15 +173,8 @@ class FilterTransactionsByTypeEvent extends TransactionEvent {
   List<Object?> get props => [type];
 }
 
-/// Clear all filters
 class ClearFiltersEvent extends TransactionEvent {}
 
-// ============================================================================
-// REFRESH EVENTS
-// ============================================================================
-
-/// Refresh transactions (pull-to-refresh)
 class RefreshTransactionsEvent extends TransactionEvent {}
 
-/// Reload data (e.g., after returning from another screen)
 class ReloadTransactionsEvent extends TransactionEvent {}

@@ -1,19 +1,26 @@
 import 'package:equatable/equatable.dart';
 
-/// Transaction type enum
 enum TransactionType { income, expense, transfer, commitment }
 
-/// Main transaction entity - pure data class
 class TransactionEntity extends Equatable {
   final String id;
   final String title;
   final double amount;
   final TransactionType type;
-  final String categoryId;
+
+  // Relations
+  final String savingId;
+  final String? expenseId;
+  final String? commitmentTaskId;
+  final String? payeeId;
+
+  // Transfer Logic
+  final String? transferGroupId;
+  final String? transferType;
+
+  // Metadata
   final DateTime date;
   final String? note;
-  final String? sourceAccountId;
-  final String? receiptImagePath;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -22,14 +29,28 @@ class TransactionEntity extends Equatable {
     required this.title,
     required this.amount,
     required this.type,
-    required this.categoryId,
+    required this.savingId,
+    this.expenseId,
+    this.commitmentTaskId,
+    this.payeeId,
+    this.transferGroupId,
+    this.transferType,
     required this.date,
     this.note,
-    this.sourceAccountId,
-    this.receiptImagePath,
     required this.createdAt,
     required this.updatedAt,
   });
+
+  // ── Convenience aliases ────────────────────────────────────────────────────
+
+  /// Alias for [savingId] — used by screens that refer to the source account.
+  String get sourceAccountId => savingId;
+
+  /// Alias for [savingId] — kept for backward-compat call sites using savingIds.
+  String get savingIds => savingId;
+
+  /// Alias for [expenseId] — used by screens and blocs that refer to categoryId.
+  String? get categoryId => expenseId;
 
   @override
   List<Object?> get props => [
@@ -37,11 +58,14 @@ class TransactionEntity extends Equatable {
     title,
     amount,
     type,
-    categoryId,
+    savingId,
+    expenseId,
+    commitmentTaskId,
+    payeeId,
+    transferGroupId,
+    transferType,
     date,
     note,
-    sourceAccountId,
-    receiptImagePath,
     createdAt,
     updatedAt,
   ];
@@ -51,11 +75,14 @@ class TransactionEntity extends Equatable {
     String? title,
     double? amount,
     TransactionType? type,
-    String? categoryId,
+    String? savingId,
+    String? expenseId,
+    String? commitmentTaskId,
+    String? payeeId,
+    String? transferGroupId,
+    String? transferType,
     DateTime? date,
     String? note,
-    String? sourceAccountId,
-    String? receiptImagePath,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -64,11 +91,14 @@ class TransactionEntity extends Equatable {
       title: title ?? this.title,
       amount: amount ?? this.amount,
       type: type ?? this.type,
-      categoryId: categoryId ?? this.categoryId,
+      savingId: savingId ?? this.savingId,
+      expenseId: expenseId ?? this.expenseId,
+      commitmentTaskId: commitmentTaskId ?? this.commitmentTaskId,
+      payeeId: payeeId ?? this.payeeId,
+      transferGroupId: transferGroupId ?? this.transferGroupId,
+      transferType: transferType ?? this.transferType,
       date: date ?? this.date,
       note: note ?? this.note,
-      sourceAccountId: sourceAccountId ?? this.sourceAccountId,
-      receiptImagePath: receiptImagePath ?? this.receiptImagePath,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

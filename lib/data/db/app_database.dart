@@ -30,7 +30,7 @@ part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
-    Categories,
+    CategoryTable,
     Budgets,
     BudgetPlans,
     BudgetPlanDeposits,

@@ -25,14 +25,16 @@ class InitializeTransactionForm extends TransactionFormEvent {
 class InitializeTransactionFormForEdit extends TransactionFormEvent {
   final TransactionEntity transaction;
   final CategoryEntity? category;
+  final TimeOfDay? selectedTime;
 
   const InitializeTransactionFormForEdit({
     required this.transaction,
     this.category,
+    this.selectedTime,
   });
 
   @override
-  List<Object?> get props => [transaction, category];
+  List<Object?> get props => [transaction, category, selectedTime];
 }
 
 /// Change transaction type

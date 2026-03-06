@@ -12,15 +12,10 @@ import 'package:wise_spends/presentation/blocs/savings/savings_event.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_event.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_state.dart';
-import 'package:wise_spends/presentation/blocs/transaction_form/transaction_form_bloc.dart';
-import 'package:wise_spends/presentation/blocs/transaction_form/transaction_form_event.dart';
-import 'package:wise_spends/presentation/screens/transaction/add_transaction_screen.dart'
-    as add_screen;
+import 'package:wise_spends/presentation/screens/transaction/add_transaction_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 
-/// Edit Transaction Screen Wrapper
-/// Loads existing transaction data and initializes the form for editing
 class EditTransactionScreen extends StatelessWidget {
   final String transactionId;
 
@@ -28,113 +23,119 @@ class EditTransactionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => TransactionBloc(
-        context.read<ITransactionRepository>(),
-        context.read<ISavingRepository>(),
-      )..add(LoadTransactionByIdEvent(transactionId)),
-      child: _EditTransactionScreenContent(transactionId: transactionId),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (ctx) => TransactionBloc(
+            ctx.read<ITransactionRepository>(),
+            ctx.read<ISavingRepository>(),
+          )..add(LoadTransactionByIdEvent(transactionId)),
+        ),
+        BlocProvider(
+          create: (ctx) =>
+              CategoryBloc(ctx.read<ICategoryRepository>())
+                ..add(LoadCategoriesEvent()),
+        ),
+        BlocProvider(
+          create: (ctx) =>
+              SavingsBloc(ctx.read<ISavingRepository>())
+                ..add(LoadSavingsListEvent()),
+        ),
+      ],
+      child: _EditTransactionBody(transactionId: transactionId),
     );
   }
 }
 
-class _EditTransactionScreenContent extends StatelessWidget {
+// ---------------------------------------------------------------------------
+// Body — waits for transaction + categories before building the form
+// ---------------------------------------------------------------------------
+
+class _EditTransactionBody extends StatelessWidget {
   final String transactionId;
 
-  const _EditTransactionScreenContent({required this.transactionId});
+  const _EditTransactionBody({required this.transactionId});
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        if (state is TransactionLoading) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Edit Transaction')),
-            body: const Center(child: CircularProgressIndicator()),
-          );
-        } else if (state is TransactionLoadedById) {
-          final transaction = state.transaction;
+      builder: (context, txState) {
+        if (txState is TransactionLoading || txState is TransactionInitial) {
+          return _loadingScaffold();
+        }
+        if (txState is TransactionError) {
+          return _errorScaffold(context, txState.message);
+        }
+        if (txState is TransactionLoadedById) {
+          final transaction = txState.transaction;
 
-          return MultiBlocProvider(
-            providers: [
-              BlocProvider.value(value: context.read<TransactionBloc>()),
-              BlocProvider(
-                create: (ctx) =>
-                    CategoryBloc(ctx.read<ICategoryRepository>())
-                      ..add(LoadCategoriesEvent()),
-              ),
-              BlocProvider(
-                create: (ctx) =>
-                    SavingsBloc(ctx.read<ISavingRepository>())
-                      ..add(LoadSavingsListEvent()),
-              ),
-              BlocProvider(
-                create: (_) => TransactionFormBloc()
-                  ..add(
-                    InitializeTransactionFormForEdit(
-                      transaction: transaction,
-                      category: _findCategory(context, transaction.categoryId),
-                    ),
-                  ),
-              ),
-            ],
-            child: add_screen.AddTransactionScreen(
-              args: add_screen.AddTransactionScreenArgs(
-                editingTransactionId: transactionId,
-                preselectedType: transaction.type,
-              ),
-            ),
-          );
-        } else if (state is TransactionError) {
-          return Scaffold(
-            appBar: AppBar(title: const Text('Edit Transaction')),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.message,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  AppButton.primary(
-                    label: 'Go Back',
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-            ),
+          return BlocBuilder<CategoryBloc, CategoryState>(
+            builder: (context, catState) {
+              if (catState is! CategoryLoaded) {
+                return _loadingScaffold();
+              }
+
+              final CategoryEntity? category = catState.categories
+                  .cast<CategoryEntity?>()
+                  .firstWhere(
+                    (c) => c?.id == transaction.categoryId,
+                    orElse: () => null,
+                  );
+
+              final TimeOfDay? storedTime =
+                  transaction.date.hour == 0 && transaction.date.minute == 0
+                  ? null
+                  : TimeOfDay(
+                      hour: transaction.date.hour,
+                      minute: transaction.date.minute,
+                    );
+
+              // ← No BlocProvider wrapper here anymore
+              return AddTransactionScreen(
+                args: AddTransactionScreenArgs(
+                  editingTransactionId: transactionId,
+                  preselectedType: transaction.type,
+                  existingTransaction: transaction, // ← pass data via args
+                  existingCategory: category,
+                  existingTime: storedTime,
+                ),
+              );
+            },
           );
         }
-
-        return Scaffold(
-          appBar: AppBar(title: const Text('Edit Transaction')),
-          body: const Center(child: Text('Transaction not found')),
-        );
+        return _loadingScaffold();
       },
     );
   }
 
-  CategoryEntity? _findCategory(BuildContext context, String categoryId) {
-    try {
-      final categoryBloc = context.read<CategoryBloc>();
-      final state = categoryBloc.state;
-      if (state is CategoryLoaded) {
-        return state.categories.cast<CategoryEntity?>().firstWhere(
-          (c) => c?.id == categoryId,
-          orElse: () => null,
-        );
-      }
-    } catch (e) {
-      return null;
-    }
-    return null;
-  }
+  Scaffold _loadingScaffold() => Scaffold(
+    appBar: AppBar(title: const Text('Edit Transaction')),
+    body: const Center(child: CircularProgressIndicator()),
+  );
+
+  Scaffold _errorScaffold(BuildContext context, String message) => Scaffold(
+    appBar: AppBar(title: const Text('Edit Transaction')),
+    body: Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 24),
+            AppButton.primary(
+              label: 'Go Back',
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

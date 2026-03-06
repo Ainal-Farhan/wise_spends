@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/presentation/screens/commitment/commitment_management_screen.dart';
 import 'package:wise_spends/presentation/screens/payee/payee_management_screen.dart';
 import 'package:wise_spends/presentation/screens/settings/category_management_screen.dart';
@@ -64,6 +65,24 @@ class SettingsPage extends StatelessWidget {
               context,
               title: 'Preferences',
               children: [
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.account_balance_wallet,
+                  title: 'Budgets',
+                  subtitle: 'Manage your budgets and spending limits',
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.budgetList);
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  leading: Icons.account_balance,
+                  title: 'Money Storage',
+                  subtitle: 'Manage your money storage accounts',
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.moneyStorage);
+                  },
+                ),
                 _buildSettingsTile(
                   context,
                   leading: Icons.calendar_month_outlined,

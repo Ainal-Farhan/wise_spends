@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
-/// Transaction BLoC states
-/// Represents all possible UI states for transaction-related screens
 abstract class TransactionState extends Equatable {
   const TransactionState();
 
@@ -10,72 +9,42 @@ abstract class TransactionState extends Equatable {
   List<Object?> get props => [];
 }
 
-// ============================================================================
-// INITIAL & LOADING STATES
-// ============================================================================
-
-/// Initial state - before any data is loaded
 class TransactionInitial extends TransactionState {}
 
-/// Loading state - data is being fetched
 class TransactionLoading extends TransactionState {}
 
-/// Loading more items (pagination)
-class TransactionLoadingMore extends TransactionState {}
-
-// ============================================================================
-// SUCCESS STATES
-// ============================================================================
-
-/// All transactions loaded successfully
 class TransactionLoaded extends TransactionState {
   final List<TransactionEntity> transactions;
   final double totalIncome;
   final double totalExpenses;
   final double totalBalance;
-  final DateTime? startDate;
-  final DateTime? endDate;
   final TransactionType? filterType;
   final String? searchQuery;
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   const TransactionLoaded({
     required this.transactions,
-    this.totalIncome = 0,
-    this.totalExpenses = 0,
-    this.totalBalance = 0,
-    this.startDate,
-    this.endDate,
+    required this.totalIncome,
+    required this.totalExpenses,
+    required this.totalBalance,
     this.filterType,
     this.searchQuery,
+    this.startDate,
+    this.endDate,
   });
 
   @override
-  List<Object?> get props => [transactions, totalIncome, totalExpenses, totalBalance, startDate, endDate, filterType, searchQuery];
-
-  TransactionLoaded copyWith({
-    List<TransactionEntity>? transactions,
-    double? totalIncome,
-    double? totalExpenses,
-    double? totalBalance,
-    DateTime? startDate,
-    DateTime? endDate,
-    TransactionType? filterType,
-    String? searchQuery,
-  }) {
-    return TransactionLoaded(
-      transactions: transactions ?? this.transactions,
-      totalIncome: totalIncome ?? this.totalIncome,
-      totalExpenses: totalExpenses ?? this.totalExpenses,
-      totalBalance: totalBalance ?? this.totalBalance,
-      startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
-      filterType: filterType ?? this.filterType,
-      searchQuery: searchQuery ?? this.searchQuery,
-    );
-  }
+  List<Object?> get props => [
+    transactions,
+    totalIncome,
+    totalExpenses,
+    totalBalance,
+    startDate,
+    endDate,
+  ];
 }
 
-/// Recent transactions loaded (for dashboard)
 class RecentTransactionsLoaded extends TransactionState {
   final List<TransactionEntity> recentTransactions;
   final double totalIncome;
@@ -84,16 +53,20 @@ class RecentTransactionsLoaded extends TransactionState {
 
   const RecentTransactionsLoaded({
     required this.recentTransactions,
-    this.totalIncome = 0,
-    this.totalExpenses = 0,
-    this.totalBalance = 0,
+    required this.totalIncome,
+    required this.totalExpenses,
+    required this.totalBalance,
   });
 
   @override
-  List<Object> get props => [recentTransactions, totalIncome, totalExpenses, totalBalance];
+  List<Object?> get props => [
+    recentTransactions,
+    totalIncome,
+    totalExpenses,
+    totalBalance,
+  ];
 }
 
-/// Transactions grouped by date (for history screen with sticky headers)
 class TransactionsGroupedLoaded extends TransactionState {
   final Map<DateTime, List<TransactionEntity>> groupedTransactions;
   final double totalIncome;
@@ -102,26 +75,20 @@ class TransactionsGroupedLoaded extends TransactionState {
 
   const TransactionsGroupedLoaded({
     required this.groupedTransactions,
-    this.totalIncome = 0,
-    this.totalExpenses = 0,
-    this.totalBalance = 0,
+    required this.totalIncome,
+    required this.totalExpenses,
+    required this.totalBalance,
   });
 
   @override
-  List<Object> get props => [groupedTransactions, totalIncome, totalExpenses, totalBalance];
+  List<Object?> get props => [
+    groupedTransactions,
+    totalIncome,
+    totalExpenses,
+    totalBalance,
+  ];
 }
 
-/// Single transaction loaded by ID
-class TransactionLoadedById extends TransactionState {
-  final TransactionEntity transaction;
-
-  const TransactionLoadedById(this.transaction);
-
-  @override
-  List<Object> get props => [transaction];
-}
-
-/// Transactions filtered by type
 class TransactionsFilteredLoaded extends TransactionState {
   final List<TransactionEntity> transactions;
   final TransactionType? filterType;
@@ -137,11 +104,125 @@ class TransactionsFilteredLoaded extends TransactionState {
   List<Object?> get props => [transactions, filterType, filterCategory];
 }
 
-// ============================================================================
-// SEARCH STATES
-// ============================================================================
+/// Plain loaded-by-id state — still emitted for backward compat.
+/// Prefer [TransactionDetailLoaded] for the detail screen.
+class TransactionLoadedById extends TransactionState {
+  final TransactionEntity transaction;
 
-/// Search results
+  const TransactionLoadedById(this.transaction);
+
+  @override
+  List<Object?> get props => [transaction];
+}
+
+/// Enriched detail state — carries the resolved display strings so
+/// the screen never has to show raw UUIDs.
+///
+/// Emitted by [LoadTransactionDetailEvent] after parallel lookups for:
+///   - saving name (replaces sourceAccountId UUID)
+///   - category name + icon (replaces categoryId UUID)
+///   - payee info (for third-party commitment payments)
+///   - commitment task name (for commitment transactions)
+///   - target account name (for transfers)
+class TransactionDetailLoaded extends TransactionState {
+  final TransactionEntity transaction;
+
+  /// Resolved savings account name — e.g. "Main Savings".
+  final String accountName;
+
+  /// Resolved category name — e.g. "Food & Dining".
+  final String categoryName;
+
+  /// Resolved category icon — from [CategoryIconMapper].
+  final IconData categoryIcon;
+
+  // Transfer / commitment extras — all nullable
+  final String? targetAccountName;
+  final String? payeeName;
+  final String? payeeBankName;
+  final String? payeeAccountNumber;
+  final String? commitmentTaskName;
+
+  const TransactionDetailLoaded({
+    required this.transaction,
+    required this.accountName,
+    required this.categoryName,
+    required this.categoryIcon,
+    this.targetAccountName,
+    this.payeeName,
+    this.payeeBankName,
+    this.payeeAccountNumber,
+    this.commitmentTaskName,
+  });
+
+  @override
+  List<Object?> get props => [
+    transaction,
+    accountName,
+    categoryName,
+    categoryIcon,
+    targetAccountName,
+    payeeName,
+    payeeBankName,
+    payeeAccountNumber,
+    commitmentTaskName,
+  ];
+}
+
+class TransactionCreated extends TransactionState {
+  final TransactionEntity transaction;
+
+  const TransactionCreated(this.transaction);
+
+  @override
+  List<Object?> get props => [transaction];
+}
+
+class TransactionUpdated extends TransactionState {
+  final TransactionEntity transaction;
+
+  const TransactionUpdated(this.transaction);
+
+  @override
+  List<Object?> get props => [transaction];
+}
+
+class TransactionDeleted extends TransactionState {
+  final String transactionId;
+
+  const TransactionDeleted(this.transactionId);
+
+  @override
+  List<Object?> get props => [transactionId];
+}
+
+class MultipleTransactionsDeleted extends TransactionState {
+  final List<String> transactionIds;
+
+  const MultipleTransactionsDeleted(this.transactionIds);
+
+  @override
+  List<Object?> get props => [transactionIds];
+}
+
+class TransactionEmpty extends TransactionState {
+  final String message;
+
+  const TransactionEmpty(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class TransactionError extends TransactionState {
+  final String message;
+
+  const TransactionError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 class TransactionSearchResults extends TransactionState {
   final String query;
   final List<TransactionEntity> searchResults;
@@ -152,96 +233,5 @@ class TransactionSearchResults extends TransactionState {
   });
 
   @override
-  List<Object> get props => [query, searchResults];
-}
-
-// ============================================================================
-// MUTATION STATES (CREATE/UPDATE/DELETE)
-// ============================================================================
-
-/// Transaction created successfully
-class TransactionCreated extends TransactionState {
-  final TransactionEntity transaction;
-
-  const TransactionCreated(this.transaction);
-
-  @override
-  List<Object> get props => [transaction];
-}
-
-/// Transaction updated successfully
-class TransactionUpdated extends TransactionState {
-  final TransactionEntity transaction;
-
-  const TransactionUpdated(this.transaction);
-
-  @override
-  List<Object> get props => [transaction];
-}
-
-/// Transaction deleted successfully
-class TransactionDeleted extends TransactionState {
-  final String transactionId;
-
-  const TransactionDeleted(this.transactionId);
-
-  @override
-  List<Object> get props => [transactionId];
-}
-
-/// Multiple transactions deleted successfully
-class MultipleTransactionsDeleted extends TransactionState {
-  final List<String> transactionIds;
-
-  const MultipleTransactionsDeleted(this.transactionIds);
-
-  @override
-  List<Object> get props => [transactionIds];
-}
-
-// ============================================================================
-// ERROR STATES
-// ============================================================================
-
-/// Error state with message
-class TransactionError extends TransactionState {
-  final String message;
-  final String? errorCode;
-
-  const TransactionError(this.message, {this.errorCode});
-
-  @override
-  List<Object?> get props => [message, errorCode];
-}
-
-/// Empty state (no transactions found)
-class TransactionEmpty extends TransactionState {
-  final String message;
-
-  const TransactionEmpty([this.message = 'No transactions found']);
-
-  @override
-  List<Object> get props => [message];
-}
-
-// ============================================================================
-// HELPER EXTENSIONS
-// ============================================================================
-
-extension TransactionStateX on TransactionState {
-  /// Check if state is in loading condition
-  bool get isLoading => this is TransactionLoading || this is TransactionLoadingMore;
-
-  /// Check if state has data
-  bool get hasData =>
-      this is TransactionLoaded ||
-      this is RecentTransactionsLoaded ||
-      this is TransactionsGroupedLoaded ||
-      this is TransactionsFilteredLoaded;
-
-  /// Check if state is an error
-  bool get isError => this is TransactionError;
-
-  /// Check if state is empty
-  bool get isEmpty => this is TransactionEmpty;
+  List<Object?> get props => [query, searchResults];
 }

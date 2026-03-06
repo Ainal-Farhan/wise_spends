@@ -12,6 +12,7 @@ import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
 import 'package:wise_spends/domain/entities/impl/saving/saving_vo.dart';
+import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 class CommitmentManager extends ICommitmentManager {
   // ---------------------------------------------------------------------------
@@ -390,6 +391,9 @@ class CommitmentManager extends ICommitmentManager {
     if (taskVO.commitmentTaskId == null) return;
 
     if (isDone) {
+      // Save transaction record before processing
+      await _saveTransactionForTask(taskVO);
+
       final savingManager = SingletonUtil.getSingleton<IManagerLocator>()!
           .getSavingManager();
 
@@ -568,6 +572,83 @@ class CommitmentManager extends ICommitmentManager {
 
       case null:
         throw Exception('Payment type must be set before saving a task.');
+    }
+  }
+
+  /// Saves a transaction record for a completed commitment task.
+  /// Creates debit/credit entries in TransactionTable based on task type.
+  Future<void> _saveTransactionForTask(CommitmentTaskVO taskVO) async {
+    if (taskVO.amount == null || taskVO.amount! <= 0) return;
+
+    final transactionRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getTransactionRepository();
+    final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
+        .getSavingService();
+    final now = DateTime.now();
+    final baseId = 'txn_${now.millisecondsSinceEpoch}';
+
+    // Resolve saving names for display in note
+    String? sourceSavingName;
+    String? targetSavingName;
+
+    if (taskVO.sourceSavingId != null) {
+      final s = await savingService
+          .watchSavingById(taskVO.sourceSavingId!)
+          .first;
+      sourceSavingName = s?.name ?? 'Unknown Account';
+    }
+
+    if (taskVO.targetSavingId != null) {
+      final s = await savingService
+          .watchSavingById(taskVO.targetSavingId!)
+          .first;
+      targetSavingName = s?.name ?? 'Unknown Account';
+    }
+
+    switch (taskVO.type) {
+      case CommitmentTaskType.internalTransfer:
+        if (taskVO.sourceSavingId == null) return;
+        await transactionRepo.createTransaction(
+          TransactionEntity(
+            id: baseId,
+            title: taskVO.name ?? 'Commitment Transfer',
+            amount: taskVO.amount!,
+            type: TransactionType.commitment,
+            commitmentTaskId: taskVO.commitmentTaskId,
+            date: now,
+            note:
+                taskVO.note ??
+                'Transfer from $sourceSavingName to $targetSavingName',
+            savingId: taskVO.sourceSavingId!,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+        break;
+
+      case CommitmentTaskType.thirdPartyPayment:
+        if (taskVO.sourceSavingId == null) return;
+        await transactionRepo.createTransaction(
+          TransactionEntity(
+            id: baseId,
+            title: taskVO.name ?? 'Commitment Payment',
+            amount: taskVO.amount!,
+            type: TransactionType.commitment,
+            commitmentTaskId: taskVO.commitmentTaskId,
+            payeeId: taskVO.payeeId,
+            date: now,
+            note: taskVO.note ?? 'Payment from $sourceSavingName',
+            savingId: taskVO.sourceSavingId!,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+        break;
+
+      case CommitmentTaskType.cash:
+      case null:
+        // No transaction record needed
+        break;
     }
   }
 }

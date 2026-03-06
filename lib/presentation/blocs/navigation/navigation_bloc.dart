@@ -42,12 +42,8 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   String? _routeForIndex(int index) {
     switch (index) {
       case 1:
-        return AppRoutes.budgetList;
-      case 2:
         return AppRoutes.savings;
-      case 3:
-        return AppRoutes.moneyStorage;
-      case 4:
+      case 2:
         return AppRoutes.settings;
       default:
         return null; // 0 = Home, no push needed

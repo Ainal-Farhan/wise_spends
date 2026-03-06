@@ -32,8 +32,6 @@ class HomeScreen extends StatelessWidget {
             context.read<ISavingRepository>(),
           )..add(LoadRecentTransactionsEvent(limit: 10)),
         ),
-        // NavigationBloc is scoped to HomeScreen so it is created and
-        // disposed with this screen automatically.
         BlocProvider(create: (_) => NavigationBloc()),
       ],
       child: const _HomeScreenContent(),
@@ -75,9 +73,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
       body: RefreshIndicator(
         onRefresh: () async {
           context.read<TransactionBloc>().add(RefreshTransactionsEvent());
-          context.read<TransactionBloc>().add(
-            LoadRecentTransactionsEvent(limit: 10),
-          );
         },
         child: CustomScrollView(
           slivers: [
@@ -86,6 +81,17 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               floating: true,
               backgroundColor: AppColors.background,
               surfaceTintColor: Colors.transparent,
+              leading: IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.settings);
+                },
+                tooltip: 'Settings',
+                constraints: const BoxConstraints(
+                  minWidth: AppTouchTarget.min,
+                  minHeight: AppTouchTarget.min,
+                ),
+              ),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -135,7 +141,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                             minHeight: 16,
                           ),
                           child: Text(
-                            _pendingTaskCount > 99 ? '99+' : '$_pendingTaskCount',
+                            _pendingTaskCount > 99
+                                ? '99+'
+                                : '$_pendingTaskCount',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -230,20 +238,8 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
-                icon: Icon(Icons.account_balance_wallet),
-                label: 'Budgets',
-              ),
-              BottomNavigationBarItem(
                 icon: Icon(Icons.savings),
                 label: 'Savings',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.account_balance),
-                label: 'Money Storage',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: 'Settings',
               ),
             ],
             currentIndex: navState.selectedIndex,

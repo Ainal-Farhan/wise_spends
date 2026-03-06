@@ -442,7 +442,7 @@ class _TransactionHistoryScreenContentState
                 amount: transaction.amount,
                 type: transaction.type,
                 icon: CategoryIconMapper.getIconForCategory(
-                  transaction.categoryId,
+                  transaction.categoryId ?? '',
                 ),
                 date: transaction.date,
                 note: transaction.note,

@@ -1,9 +1,20 @@
-import 'package:wise_spends/core/di/i_singleton.dart';
+import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/data/db/tables/category_table.dart';
+import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 /// Category repository interface - defines contract for data layer
-abstract class ICategoryRepository implements ISingleton {
+abstract class ICategoryRepository
+    extends
+        ICrudRepository<
+          CategoryTable,
+          $CategoryTableTable,
+          CategoryTableCompanion,
+          TrnsctnCategory
+        > {
+  ICategoryRepository(AppDatabase db) : super(db, db.categoryTable);
+
   /// Get all categories
   Future<List<CategoryEntity>> getAllCategories();
 

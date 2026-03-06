@@ -1,20 +1,26 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
 import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 class CategoryRepository extends ICategoryRepository {
-  final AppDatabase _db = AppDatabase();
   static const _uuid = Uuid();
+
+  final startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
+      .getStartupManager();
+
+  CategoryRepository() : super(AppDatabase());
 
   @override
   void dispose() {}
 
   @override
   Future<List<CategoryEntity>> getAllCategories() async {
-    final rows = await _db.select(_db.categories).get();
+    final rows = await db.select(db.categoryTable).get();
     return rows.map(_mapToEntity).toList();
   }
 
@@ -32,7 +38,8 @@ class CategoryRepository extends ICategoryRepository {
 
   @override
   Future<CategoryEntity?> getCategoryById(String id) async {
-    final query = _db.select(_db.categories)..where((tbl) => tbl.id.equals(id));
+    final query = db.select(db.categoryTable)
+      ..where((tbl) => tbl.id.equals(id));
     final rows = await query.get();
     if (rows.isEmpty) return null;
     return _mapToEntity(rows.first);
@@ -40,7 +47,7 @@ class CategoryRepository extends ICategoryRepository {
 
   @override
   Future<CategoryEntity?> getCategoryByName(String name) async {
-    final query = _db.select(_db.categories)
+    final query = db.select(db.categoryTable)
       ..where((tbl) => tbl.name.equals(name));
     final rows = await query.get();
     if (rows.isEmpty) return null;
@@ -51,8 +58,8 @@ class CategoryRepository extends ICategoryRepository {
   Future<CategoryEntity> createCategory(CategoryEntity category) async {
     final id = category.id.isEmpty ? _uuid.v4() : category.id;
 
-    final companion = CategoriesCompanion.insert(
-      id: id,
+    final companion = CategoryTableCompanion.insert(
+      id: Value(id),
       name: category.name,
       iconCodePoint: category.iconCodePoint,
       iconFontFamily: Value(category.iconFontFamily),
@@ -61,9 +68,12 @@ class CategoryRepository extends ICategoryRepository {
       orderIndex: Value(category.orderIndex),
       isActive: Value(category.isActive),
       createdAt: Value(category.createdAt ?? DateTime.now()),
+      createdBy: startupManager.currentUser.name,
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: startupManager.currentUser.name,
     );
 
-    await _db.into(_db.categories).insert(companion);
+    await db.into(db.categoryTable).insert(companion);
 
     // Return the entity with the assigned ID so the BLoC can cache it correctly
     return category.copyWith(id: id);
@@ -71,11 +81,11 @@ class CategoryRepository extends ICategoryRepository {
 
   @override
   Future<CategoryEntity> updateCategory(CategoryEntity category) async {
-    final query = _db.update(_db.categories)
+    final query = db.update(db.categoryTable)
       ..where((tbl) => tbl.id.equals(category.id));
 
     await query.write(
-      CategoriesCompanion(
+      CategoryTableCompanion(
         name: Value(category.name),
         iconCodePoint: Value(category.iconCodePoint),
         iconFontFamily: Value(category.iconFontFamily),
@@ -91,8 +101,23 @@ class CategoryRepository extends ICategoryRepository {
 
   @override
   Future<void> deleteCategory(String id) async {
-    final query = _db.delete(_db.categories)..where((tbl) => tbl.id.equals(id));
+    final query = db.delete(db.categoryTable)
+      ..where((tbl) => tbl.id.equals(id));
     await query.go();
+  }
+
+  CategoryEntity _mapToEntity(TrnsctnCategory row) {
+    return CategoryEntity(
+      id: row.id,
+      name: row.name,
+      iconCodePoint: row.iconCodePoint,
+      iconFontFamily: row.iconFontFamily,
+      isIncome: row.isIncome,
+      isExpense: row.isExpense,
+      orderIndex: row.orderIndex,
+      isActive: row.isActive,
+      createdAt: row.createdAt,
+    );
   }
 
   @override
@@ -115,17 +140,6 @@ class CategoryRepository extends ICategoryRepository {
     }
   }
 
-  CategoryEntity _mapToEntity(Category row) {
-    return CategoryEntity(
-      id: row.id,
-      name: row.name,
-      iconCodePoint: row.iconCodePoint,
-      iconFontFamily: row.iconFontFamily,
-      isIncome: row.isIncome,
-      isExpense: row.isExpense,
-      orderIndex: row.orderIndex,
-      isActive: row.isActive,
-      createdAt: row.createdAt,
-    );
-  }
+  @override
+  String getTypeName() => 'CategoryTable';
 }

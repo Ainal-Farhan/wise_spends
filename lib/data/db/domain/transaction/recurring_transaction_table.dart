@@ -10,7 +10,8 @@ class RecurringTransactionTable extends BaseEntityTable {
   RealColumn get amount =>
       real().customConstraint('NOT NULL CHECK (amount > 0)')();
   TextColumn get savingId => text().references(SavingTable, #id)();
-  TextColumn get categoryId => text().nullable().references(Categories, #id)();
+  TextColumn get categoryId =>
+      text().nullable().references(CategoryTable, #id)();
   TextColumn get frequency => text()(); // daily | weekly | monthly | yearly
   DateTimeColumn get startDate => dateTime()();
   DateTimeColumn get endDate => dateTime().nullable()();

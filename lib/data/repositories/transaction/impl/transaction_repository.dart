@@ -131,8 +131,12 @@ class TransactionRepository extends ITransactionRepository {
       type: transaction.type,
       description: Value(transaction.title),
       amount: transaction.amount,
-      savingId: transaction.sourceAccountId ?? '',
-      expenseId: Value(transaction.categoryId),
+      savingId: transaction.savingId,
+      expenseId: Value(transaction.expenseId),
+      commitmentTaskId: Value(transaction.commitmentTaskId),
+      transferGroupId: Value(transaction.transferGroupId),
+      transferType: Value(transaction.transferType),
+      payeeId: Value(transaction.payeeId),
       transactionDateTime: Value(transaction.date),
       note: Value(transaction.note),
       createdBy: 'system',
@@ -153,8 +157,12 @@ class TransactionRepository extends ITransactionRepository {
       type: Value(transaction.type),
       description: Value(transaction.title),
       amount: Value(transaction.amount),
-      savingId: Value(transaction.sourceAccountId ?? ''),
-      expenseId: Value(transaction.categoryId),
+      savingId: Value(transaction.savingId),
+      expenseId: Value(transaction.expenseId),
+      commitmentTaskId: Value(transaction.commitmentTaskId),
+      transferGroupId: Value(transaction.transferGroupId),
+      transferType: Value(transaction.transferType),
+      payeeId: Value(transaction.payeeId),
       transactionDateTime: Value(transaction.date),
       note: Value(transaction.note),
       dateUpdated: Value(transaction.updatedAt),
@@ -197,12 +205,29 @@ class TransactionRepository extends ITransactionRepository {
       title: row.description,
       amount: row.amount,
       type: row.type,
-      categoryId: row.expenseId ?? 'uncategorized',
+      expenseId: row.expenseId ?? 'uncategorized',
       date: row.transactionDateTime ?? row.dateCreated,
       note: row.note,
-      sourceAccountId: row.savingId,
+      savingId: row.savingId,
       createdAt: row.dateCreated,
       updatedAt: row.dateUpdated,
     );
+  }
+
+  @override
+  Future<TransactionEntity?> getTransactionByTransferGroupId(
+    String transferGroupId, {
+    required String excludeId,
+  }) async {
+    final query = db.select(db.transactionTable)
+      ..where(
+        (tbl) =>
+            tbl.transferGroupId.equals(transferGroupId) &
+            tbl.id.equals(excludeId).not(),
+      );
+
+    final rows = await query.get();
+    if (rows.isEmpty) return null;
+    return _mapToEntity(rows.first);
   }
 }

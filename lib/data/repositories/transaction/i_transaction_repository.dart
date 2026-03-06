@@ -5,8 +5,14 @@ import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart'
 
 /// Enhanced Transaction Repository Interface
 /// Extends the base CRUD interface with transaction-specific methods
-abstract class ITransactionRepository extends ICrudRepository<TransactionTable,
-    $TransactionTableTable, TransactionTableCompanion, TrnsctnTransaction> {
+abstract class ITransactionRepository
+    extends
+        ICrudRepository<
+          TransactionTable,
+          $TransactionTableTable,
+          TransactionTableCompanion,
+          TrnsctnTransaction
+        > {
   ITransactionRepository(AppDatabase db) : super(db, db.transactionTable);
 
   Future<void> deleteBasedOnSavingId(String savingId);
@@ -17,9 +23,7 @@ abstract class ITransactionRepository extends ICrudRepository<TransactionTable,
     required DateTime startDate,
     required DateTime endDate,
   });
-  Future<List<TransactionEntity>> getTransactionsByType(
-    TransactionType type,
-  );
+  Future<List<TransactionEntity>> getTransactionsByType(TransactionType type);
   Future<List<TransactionEntity>> getTransactionsByCategory(String categoryId);
   Future<TransactionEntity?> getTransactionById(String id);
   Future<List<TransactionEntity>> getRecentTransactions({int limit = 10});
@@ -35,4 +39,8 @@ abstract class ITransactionRepository extends ICrudRepository<TransactionTable,
   Future<TransactionEntity> updateTransaction(TransactionEntity transaction);
   Future<void> deleteTransaction(String id);
   Future<List<TransactionEntity>> searchTransactions(String query);
+  Future<TransactionEntity?> getTransactionByTransferGroupId(
+    String transferGroupId, {
+    required String excludeId,
+  });
 }
