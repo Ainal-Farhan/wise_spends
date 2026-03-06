@@ -11,6 +11,7 @@ import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_e
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_state.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/domain/entities/impl/saving/saving_vo.dart';
 import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 
 class CommitmentTaskScreen extends StatelessWidget {
@@ -869,13 +870,13 @@ class _CommitmentTaskScreenContentState
                   if (selectedSourceId != null) {
                     taskVO.sourceSavingVO = savings
                         .where((s) => s.saving.id == selectedSourceId)
-                        .map((s) => s.savingVO)
+                        .map((s) => SavingVO.fromSvngSaving(s.saving))
                         .firstOrNull;
                   }
                   if (selectedTargetId != null) {
                     taskVO.targetSavingVO = savings
                         .where((s) => s.saving.id == selectedTargetId)
-                        .map((s) => s.savingVO)
+                        .map((s) => SavingVO.fromSvngSaving(s.saving))
                         .firstOrNull;
                   }
                   if (selectedPayeeId != null) {

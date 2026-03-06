@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 
 abstract class CommitmentTaskState extends Equatable {
   const CommitmentTaskState();
@@ -14,19 +16,30 @@ class CommitmentTaskLoading extends CommitmentTaskState {}
 
 class CommitmentTaskLoaded extends CommitmentTaskState {
   final List<CommitmentTaskVO> tasks;
+  final List<ListSavingVO> savingVOList;
+  final List<PayeeVO> payeeVOList;
   final String filterStatus;
 
-  const CommitmentTaskLoaded(this.tasks, {this.filterStatus = 'all'});
+  const CommitmentTaskLoaded(
+    this.tasks,
+    this.savingVOList,
+    this.payeeVOList, {
+    this.filterStatus = 'all',
+  });
 
   @override
-  List<Object?> get props => [tasks, filterStatus];
+  List<Object?> get props => [tasks, savingVOList, payeeVOList, filterStatus];
 
   CommitmentTaskLoaded copyWith({
     List<CommitmentTaskVO>? tasks,
+    List<ListSavingVO>? savingVOList,
+    List<PayeeVO>? payeeVOList,
     String? filterStatus,
   }) {
     return CommitmentTaskLoaded(
       tasks ?? this.tasks,
+      savingVOList ?? this.savingVOList,
+      payeeVOList ?? this.payeeVOList,
       filterStatus: filterStatus ?? this.filterStatus,
     );
   }

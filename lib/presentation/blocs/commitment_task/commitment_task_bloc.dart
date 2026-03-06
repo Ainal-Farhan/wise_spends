@@ -1,5 +1,11 @@
 import 'package:bloc/bloc.dart';
+import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/repositories/expense/i_commitment_task_repository.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
+import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 import 'commitment_task_event.dart';
 import 'commitment_task_state.dart';
 
@@ -25,7 +31,22 @@ class CommitmentTaskBloc
     emit(CommitmentTaskLoading());
     try {
       final tasks = await _repository.getCommitmentTasks();
-      emit(CommitmentTaskLoaded(tasks));
+
+      // Fetch savings for dropdown pickers
+      final savingManager = SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingManager();
+      final List<ListSavingVO> savingVOList = await savingManager
+          .loadListSavingVOList();
+
+      // Fetch payees for dropdown pickers
+      final payeeRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+          .getPayeeRepository();
+      final List<ExpnsPayee> payees = await payeeRepo.watchAll().first;
+      final List<PayeeVO> payeeVOList = payees
+          .map((p) => PayeeVO.fromExpnsPayee(p))
+          .toList();
+
+      emit(CommitmentTaskLoaded(tasks, savingVOList, payeeVOList));
     } catch (e) {
       emit(CommitmentTaskError(e.toString()));
     }
