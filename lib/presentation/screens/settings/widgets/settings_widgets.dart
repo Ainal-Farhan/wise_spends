@@ -122,6 +122,7 @@ class SettingsExpansionPanel extends StatelessWidget {
 /// - 'Coming Soon' badge for unimplemented features
 /// - Destructive action styling
 /// - Disabled state
+/// - Option to hide trailing chevron
 class SettingsTile extends StatelessWidget {
   final IconData leadingIcon;
   final String title;
@@ -131,6 +132,7 @@ class SettingsTile extends StatelessWidget {
   final bool isDestructive;
   final bool isDisabled;
   final bool showComingSoon;
+  final bool hideTrailing;
   final Color? leadingBackgroundColor;
   final Color? leadingIconColor;
 
@@ -144,6 +146,7 @@ class SettingsTile extends StatelessWidget {
     this.isDestructive = false,
     this.isDisabled = false,
     this.showComingSoon = false,
+    this.hideTrailing = false,
     this.leadingBackgroundColor,
     this.leadingIconColor,
   });
@@ -230,14 +233,16 @@ class SettingsTile extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               // Trailing widget
-              trailing ??
-                  Icon(
-                    Icons.chevron_right,
-                    color: isDisabled
-                        ? AppColors.textDisabled
-                        : AppColors.textSecondary,
-                    size: AppIconSize.md,
-                  ),
+              hideTrailing
+                  ? const SizedBox.shrink()
+                  : (trailing ??
+                      Icon(
+                        Icons.chevron_right,
+                        color: isDisabled
+                            ? AppColors.textDisabled
+                            : AppColors.textSecondary,
+                        size: AppIconSize.md,
+                      )),
             ],
           ),
         ),

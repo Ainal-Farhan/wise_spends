@@ -199,73 +199,76 @@ class _CategoryManagementScreenContent extends StatelessWidget {
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Row(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Row(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(iconData, color: color, size: 28),
             ),
-            child: Icon(iconData, color: color, size: 28),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  category.name ?? 'Unnamed',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w600,
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    category.name ?? 'Unnamed',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  _buildTypeBadge(label: typeLabel, color: typeColor),
+                ],
+              ),
+            ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                if (value == 'edit') {
+                  _showEditCategoryDialog(context, category);
+                } else if (value == 'delete') {
+                  _confirmDeleteCategory(context, category);
+                }
+              },
+              itemBuilder: (_) => [
+                PopupMenuItem(
+                  value: 'edit',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.edit, size: 18),
+                      const SizedBox(width: 8),
+                      Text('categories.edit'.tr),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                _buildTypeBadge(label: typeLabel, color: typeColor),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.delete,
+                        size: 18,
+                        color: AppColors.secondary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'general.delete'.tr,
+                        style: const TextStyle(color: AppColors.secondary),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {
-              if (value == 'edit') {
-                _showEditCategoryDialog(context, category);
-              } else if (value == 'delete') {
-                _confirmDeleteCategory(context, category);
-              }
-            },
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: 'edit',
-                child: Row(
-                  children: [
-                    const Icon(Icons.edit, size: 18),
-                    const SizedBox(width: 8),
-                    Text('categories.edit'.tr),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.delete,
-                      size: 18,
-                      color: AppColors.secondary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'general.delete'.tr,
-                      style: const TextStyle(color: AppColors.secondary),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

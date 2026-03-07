@@ -103,6 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.person_outline,
                   title: 'settings.edit_profile'.tr,
                   subtitle: 'settings.profile_subtitle'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.profile);
                   },
@@ -113,6 +114,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: 'settings.privacy_security'.tr,
                   subtitle: 'settings.privacy_security_desc'.tr,
                   showComingSoon: true,
+                  hideTrailing: true,
                   onTap: () {
                     _showComingSoonMessage(
                       context,
@@ -165,6 +167,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: 'settings.budget_reminders'.tr,
                   subtitle: 'settings.budget_reminders_desc'.tr,
                   showComingSoon: true,
+                  hideTrailing: true,
                   isDisabled: !_notificationsEnabled,
                   onTap: () {
                     if (_notificationsEnabled) {
@@ -194,6 +197,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.savings,
                   title: 'savings.title'.tr,
                   subtitle: 'savings.manage'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.savings);
                   },
@@ -203,6 +207,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.pie_chart_outline,
                   title: 'spending_budgets.title'.tr,
                   subtitle: 'spending_budgets.manage'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.budgetList);
                   },
@@ -212,6 +217,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.savings_outlined,
                   title: 'savings_plans.title'.tr,
                   subtitle: 'savings_plans.manage'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.budgetPlansList);
                   },
@@ -221,6 +227,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.account_balance,
                   title: 'money_storage.title'.tr,
                   subtitle: 'money_storage.manage'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.moneyStorage);
                   },
@@ -230,6 +237,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.calendar_month_outlined,
                   title: 'commitments.title'.tr,
                   subtitle: 'commitments.subtitle'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -244,6 +252,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.people_outline,
                   title: 'payees.title'.tr,
                   subtitle: 'payees.subtitle'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -258,6 +267,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.category_outlined,
                   title: 'categories.manage'.tr,
                   subtitle: 'categories.subtitle'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -286,10 +296,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.palette_outlined,
                   title: 'settings.theme'.tr,
                   subtitle: _getThemeSubtitle(),
-                  trailing: const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.textSecondary,
-                  ),
+                  hideTrailing: true,
                   onTap: () => _showThemeSelector(),
                 ),
                 const Divider(height: 1, indent: 60),
@@ -297,11 +304,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.language_outlined,
                   title: 'settings.language'.tr,
                   subtitle: _getLanguageSubtitle(),
-                  trailing: const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.textSecondary,
-                  ),
                   showComingSoon: true,
+                  hideTrailing: true,
                   onTap: () => _showLanguageSelector(),
                 ),
                 const Divider(height: 1, indent: 60),
@@ -309,11 +313,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.currency_exchange,
                   title: 'settings.currency'.tr,
                   subtitle: _getCurrencySubtitle(),
-                  trailing: const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.textSecondary,
-                  ),
                   showComingSoon: true,
+                  hideTrailing: true,
                   onTap: () {
                     _showComingSoonMessage(context, 'settings.currency'.tr);
                   },
@@ -337,6 +338,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.backup_outlined,
                   title: 'settings.backup_restore'.tr,
                   subtitle: 'settings.backup_restore_desc'.tr,
+                  hideTrailing: true,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.backupRestore);
                   },
@@ -347,6 +349,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: 'settings.export_data'.tr,
                   subtitle: 'settings.export_data_desc'.tr,
                   showComingSoon: true,
+                  hideTrailing: true,
                   onTap: () {
                     _showComingSoonMessage(context, 'settings.export_data'.tr);
                   },
@@ -357,6 +360,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: 'settings.clear_data'.tr,
                   subtitle: 'settings.clear_data_desc'.tr,
                   isDestructive: true,
+                  hideTrailing: true,
                   onTap: () => _showClearDataConfirmation(),
                 ),
               ],
@@ -379,6 +383,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: 'settings.help_faq'.tr,
                   subtitle: 'settings.help_faq_desc'.tr,
                   showComingSoon: true,
+                  hideTrailing: true,
                   onTap: () {
                     _showComingSoonMessage(context, 'settings.help_faq'.tr);
                   },
@@ -389,6 +394,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: 'settings.send_feedback'.tr,
                   subtitle: 'settings.send_feedback_desc'.tr,
                   showComingSoon: true,
+                  hideTrailing: true,
                   onTap: () {
                     _showComingSoonMessage(
                       context,
@@ -401,6 +407,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.info_outline,
                   title: 'settings.about_app'.tr,
                   subtitle: 'Version 1.0.0',
+                  hideTrailing: true,
                   onTap: () => _showAboutDialog(),
                 ),
               ],
@@ -560,8 +567,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
                         Text(
                           title,
@@ -570,11 +576,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             color: AppColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          description,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                        const SizedBox(width: AppSpacing.sm),
+                        // Info icon with tooltip
+                        GestureDetector(
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(description),
+                                backgroundColor: AppColors.primary,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(AppRadius.md),
+                                ),
+                                duration: const Duration(seconds: 3),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryContainer,
+                              borderRadius: BorderRadius.circular(AppRadius.full),
+                            ),
+                            child: const Icon(
+                              Icons.info_outline,
+                              size: 16,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ],

@@ -412,11 +412,6 @@ class _BackupRestoreScreenContent extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: color,
-              size: AppIconSize.md,
-            ),
           ],
         ),
       ),
@@ -468,11 +463,6 @@ class _BackupRestoreScreenContent extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            const Icon(
-              Icons.chevron_right,
-              color: AppColors.tertiary,
-              size: AppIconSize.md,
             ),
           ],
         ),
