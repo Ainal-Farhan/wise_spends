@@ -5,6 +5,8 @@ abstract class DomainTableConstant {
   static const String savingTablePrefix = "Svng";
   static const String masterdataTablePrefix = "Mstrdt";
   static const String notificationTablePrefix = "Ntfctn";
+  static const String budgetTablePrefix = "Bdgt";
+  static const String savingsPlanTablePrefix = "SvngPln";
 
   // Transaction Table Constant List
   static const String transactionTableTypeIn = 'in';

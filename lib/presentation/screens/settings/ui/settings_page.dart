@@ -64,7 +64,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final repository = UserRepository();
       final profile = await repository.getCurrentUser();
       if (mounted && profile != null) {
-        setState(() => _userProfile = profile);
+        setState(() => _userProfile = UserProfile.fromCmmnUser(profile));
       }
     } catch (e) {
       // Ignore errors, will show default values
@@ -200,9 +200,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
-                  leadingIcon: Icons.account_balance_wallet,
-                  title: 'budgets.title'.tr,
-                  subtitle: 'budgets.manage'.tr,
+                  leadingIcon: Icons.pie_chart_outline,
+                  title: 'spending_budgets.title'.tr,
+                  subtitle: 'spending_budgets.manage'.tr,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.budgetList);
+                  },
+                ),
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.savings_outlined,
+                  title: 'savings_plans.title'.tr,
+                  subtitle: 'savings_plans.manage'.tr,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.budgetPlansList);
                   },

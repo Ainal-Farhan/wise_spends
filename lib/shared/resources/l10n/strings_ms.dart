@@ -509,6 +509,14 @@ class MalayStrings {
     'budgets.tip_period': 'Tetapkan had harian, mingguan atau bulanan',
     'budgets.tip_alert': 'Amaran akan dipaparkan apabila hampir had',
 
+    // Spending Budgets (renamed for clarity)
+    'spending_budgets.title': 'Bajet Perbelanjaan',
+    'spending_budgets.manage': 'Jejak had perbelanjaan per kategori',
+
+    // Savings Plans (renamed from Budget Plans for clarity)
+    'savings_plans.title': 'Pelan Simpanan',
+    'savings_plans.manage': 'Simpan untuk matlamat kewangan',
+
     // Reports Screen
     'reports.export_success': 'Laporan berjaya dieksport',
     'reports.export_failed': 'Eksport gagal: {error}',

@@ -29,6 +29,24 @@ import 'package:wise_spends/data/repositories/budget_plan/impl/budget_plan_repos
 import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
 import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_deposit_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_spending_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_milestone_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_linked_account_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_deposit_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_spending_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_milestone_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_linked_account_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/i_transaction_tag_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/i_transaction_tag_map_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/i_recurring_transaction_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/impl/transaction_tag_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/impl/transaction_tag_map_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/impl/recurring_transaction_repository.dart';
+import 'package:wise_spends/data/repositories/masterdata/i_reference_data_repository.dart';
+import 'package:wise_spends/data/repositories/expense/i_expense_reference_repository.dart';
+import 'package:wise_spends/data/repositories/masterdata/impl/reference_data_repository.dart';
+import 'package:wise_spends/data/repositories/expense/impl/expense_reference_repository.dart';
 
 class RepositoryLocator extends IRepositoryLocator {
   @override
@@ -37,13 +55,26 @@ class RepositoryLocator extends IRepositoryLocator {
       getUserRepository(),
       getGroupReferenceRepository(),
       getReferenceRepository(),
+      getReferenceDataRepository(),
       getMoneyStorageRepository(),
       getSavingRepository(),
       getTransactionRepository(),
+      getTransactionTagRepository(),
+      getTransactionTagMapRepository(),
+      getRecurringTransactionRepository(),
       getExpenseRepository(),
+      getExpenseReferenceRepository(),
       getCommitmentRepository(),
       getCommitmentDetailRepository(),
       getCommitmentTaskRepository(),
+      getPayeeRepository(),
+      getCategoryRepository(),
+      getBudgetRepository(),
+      getBudgetPlanRepository(),
+      getSavingsPlanDepositRepository(),
+      getSavingsPlanSpendingRepository(),
+      getSavingsPlanMilestoneRepository(),
+      getSavingsPlanLinkedAccountRepository(),
     ];
 
     return allRepository;
@@ -232,5 +263,131 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<IPayeeRepository>()!;
+  }
+
+  @override
+  ISavingsPlanDepositRepository getSavingsPlanDepositRepository() {
+    ISavingsPlanDepositRepository? repository =
+        SingletonUtil.getSingleton<ISavingsPlanDepositRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ISavingsPlanDepositRepository>(
+        SavingsPlanDepositRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ISavingsPlanDepositRepository>()!;
+  }
+
+  @override
+  ISavingsPlanSpendingRepository getSavingsPlanSpendingRepository() {
+    ISavingsPlanSpendingRepository? repository =
+        SingletonUtil.getSingleton<ISavingsPlanSpendingRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ISavingsPlanSpendingRepository>(
+        SavingsPlanSpendingRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ISavingsPlanSpendingRepository>()!;
+  }
+
+  @override
+  ISavingsPlanMilestoneRepository getSavingsPlanMilestoneRepository() {
+    ISavingsPlanMilestoneRepository? repository =
+        SingletonUtil.getSingleton<ISavingsPlanMilestoneRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ISavingsPlanMilestoneRepository>(
+        SavingsPlanMilestoneRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ISavingsPlanMilestoneRepository>()!;
+  }
+
+  @override
+  ISavingsPlanLinkedAccountRepository getSavingsPlanLinkedAccountRepository() {
+    ISavingsPlanLinkedAccountRepository? repository =
+        SingletonUtil.getSingleton<ISavingsPlanLinkedAccountRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ISavingsPlanLinkedAccountRepository>(
+        SavingsPlanLinkedAccountRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ISavingsPlanLinkedAccountRepository>()!;
+  }
+
+  @override
+  ITransactionTagRepository getTransactionTagRepository() {
+    ITransactionTagRepository? repository =
+        SingletonUtil.getSingleton<ITransactionTagRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ITransactionTagRepository>(
+        TransactionTagRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ITransactionTagRepository>()!;
+  }
+
+  @override
+  ITransactionTagMapRepository getTransactionTagMapRepository() {
+    ITransactionTagMapRepository? repository =
+        SingletonUtil.getSingleton<ITransactionTagMapRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ITransactionTagMapRepository>(
+        TransactionTagMapRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ITransactionTagMapRepository>()!;
+  }
+
+  @override
+  IRecurringTransactionRepository getRecurringTransactionRepository() {
+    IRecurringTransactionRepository? repository =
+        SingletonUtil.getSingleton<IRecurringTransactionRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<IRecurringTransactionRepository>(
+        RecurringTransactionRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<IRecurringTransactionRepository>()!;
+  }
+
+  @override
+  IReferenceDataRepository getReferenceDataRepository() {
+    IReferenceDataRepository? repository =
+        SingletonUtil.getSingleton<IReferenceDataRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<IReferenceDataRepository>(
+        ReferenceDataRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<IReferenceDataRepository>()!;
+  }
+
+  @override
+  IExpenseReferenceRepository getExpenseReferenceRepository() {
+    IExpenseReferenceRepository? repository =
+        SingletonUtil.getSingleton<IExpenseReferenceRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<IExpenseReferenceRepository>(
+        ExpenseReferenceRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<IExpenseReferenceRepository>()!;
   }
 }

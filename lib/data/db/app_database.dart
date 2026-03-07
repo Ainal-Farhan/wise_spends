@@ -5,7 +5,6 @@ import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 import 'package:wise_spends/core/constants/constant/enum/expense/commitment_detail_type.dart';
 import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
@@ -21,20 +20,16 @@ import 'package:wise_spends/data/db/domain/expense/payee_table.dart';
 import 'package:wise_spends/data/db/domain/masterdata/index.dart';
 import 'package:wise_spends/data/db/domain/saving/index.dart';
 import 'package:wise_spends/data/db/domain/transaction/index.dart';
-import 'package:wise_spends/data/db/tables/budget_table.dart';
-import 'package:wise_spends/data/db/tables/budget_plan_tables.dart';
+import 'package:wise_spends/data/db/domain/budget/index.dart';
+import 'package:wise_spends/data/db/domain/savings_plan/index.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
-    Budgets,
-    BudgetPlans,
-    BudgetPlanDeposits,
-    BudgetPlanTransactions,
-    BudgetPlanLinkedAccounts,
-    BudgetPlanMilestones,
+    ...Budget.tableList,
+    ...SavingsPlan.tableList,
     ...Common.tableList,
     ...MasterData.tableList,
     ...Saving.tableList,
@@ -217,7 +212,10 @@ class AppDatabase extends _$AppDatabase {
             break;
           case 'GroupReferenceTable':
             final refs = (tableData as List)
-                .map((d) => MstrdtGroupReference.fromJson(d as Map<String, dynamic>))
+                .map(
+                  (d) =>
+                      MstrdtGroupReference.fromJson(d as Map<String, dynamic>),
+                )
                 .toList();
             await repo.saveAll(refs);
             break;
@@ -229,7 +227,10 @@ class AppDatabase extends _$AppDatabase {
             break;
           case 'ReferenceDataTable':
             final refs = (tableData as List)
-                .map((d) => MstrdtReferenceData.fromJson(d as Map<String, dynamic>))
+                .map(
+                  (d) =>
+                      MstrdtReferenceData.fromJson(d as Map<String, dynamic>),
+                )
                 .toList();
             await repo.saveAll(refs);
             break;
@@ -241,13 +242,19 @@ class AppDatabase extends _$AppDatabase {
             break;
           case 'ExpenseReferenceTable':
             final refs = (tableData as List)
-                .map((d) => MstrdtExpenseReference.fromJson(d as Map<String, dynamic>))
+                .map(
+                  (d) => MstrdtExpenseReference.fromJson(
+                    d as Map<String, dynamic>,
+                  ),
+                )
                 .toList();
             await repo.saveAll(refs);
             break;
           case 'MoneyStorageTable':
             final storages = (tableData as List)
-                .map((d) => SvngMoneyStorage.fromJson(d as Map<String, dynamic>))
+                .map(
+                  (d) => SvngMoneyStorage.fromJson(d as Map<String, dynamic>),
+                )
                 .toList();
             await repo.saveAll(storages);
             break;
@@ -259,7 +266,9 @@ class AppDatabase extends _$AppDatabase {
             break;
           case 'TransactionTable':
             final transactions = (tableData as List)
-                .map((d) => TrnsctnTransaction.fromJson(d as Map<String, dynamic>))
+                .map(
+                  (d) => TrnsctnTransaction.fromJson(d as Map<String, dynamic>),
+                )
                 .toList();
             await repo.saveAll(transactions);
             break;
@@ -271,13 +280,19 @@ class AppDatabase extends _$AppDatabase {
             break;
           case 'CommitmentDetailTable':
             final details = (tableData as List)
-                .map((d) => ExpnsCommitmentDetail.fromJson(d as Map<String, dynamic>))
+                .map(
+                  (d) =>
+                      ExpnsCommitmentDetail.fromJson(d as Map<String, dynamic>),
+                )
                 .toList();
             await repo.saveAll(details);
             break;
           case 'CommitmentTaskTable':
             final tasks = (tableData as List)
-                .map((d) => ExpnsCommitmentTask.fromJson(d as Map<String, dynamic>))
+                .map(
+                  (d) =>
+                      ExpnsCommitmentTask.fromJson(d as Map<String, dynamic>),
+                )
                 .toList();
             await repo.saveAll(tasks);
             break;

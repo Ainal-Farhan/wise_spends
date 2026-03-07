@@ -4,9 +4,14 @@ import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
 import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
 
 /// Budget Repository Implementation
-/// Handles all database operations for budgets
+/// Handles all database operations for spending budgets
 class BudgetRepository extends IBudgetRepository {
+  BudgetRepository() : super(AppDatabase());
+
   final AppDatabase _db = AppDatabase();
+
+  @override
+  String getTypeName() => 'SpendingBudgetTable';
 
   @override
   void dispose() {
@@ -15,7 +20,7 @@ class BudgetRepository extends IBudgetRepository {
 
   @override
   Future<List<BudgetEntity>> getAllBudgets() async {
-    final query = _db.select(_db.budgets);
+    final query = _db.select(_db.spendingBudgetTable);
     final rows = await query.get();
 
     return rows.map(_mapToEntity).toList();
@@ -23,7 +28,7 @@ class BudgetRepository extends IBudgetRepository {
 
   @override
   Future<List<BudgetEntity>> getActiveBudgets() async {
-    final query = _db.select(_db.budgets)
+    final query = _db.select(_db.spendingBudgetTable)
       ..where((tbl) => tbl.isActive.equals(true));
     final rows = await query.get();
 
@@ -32,7 +37,7 @@ class BudgetRepository extends IBudgetRepository {
 
   @override
   Future<List<BudgetEntity>> getBudgetsByCategory(String categoryId) async {
-    final query = _db.select(_db.budgets)
+    final query = _db.select(_db.spendingBudgetTable)
       ..where((tbl) => tbl.categoryId.equals(categoryId));
     final rows = await query.get();
 
@@ -41,7 +46,8 @@ class BudgetRepository extends IBudgetRepository {
 
   @override
   Future<BudgetEntity?> getBudgetById(String id) async {
-    final query = _db.select(_db.budgets)..where((tbl) => tbl.id.equals(id));
+    final query = _db.select(_db.spendingBudgetTable)
+      ..where((tbl) => tbl.id.equals(id));
     final rows = await query.get();
 
     if (rows.isEmpty) return null;
@@ -51,7 +57,7 @@ class BudgetRepository extends IBudgetRepository {
   @override
   Future<BudgetEntity?> getCurrentBudgetByCategory(String categoryId) async {
     final now = DateTime.now();
-    final query = _db.select(_db.budgets)
+    final query = _db.select(_db.spendingBudgetTable)
       ..where(
         (tbl) =>
             tbl.categoryId.equals(categoryId) &
@@ -67,8 +73,10 @@ class BudgetRepository extends IBudgetRepository {
 
   @override
   Future<BudgetEntity> createBudget(BudgetEntity budget) async {
-    final companion = BudgetsCompanion.insert(
-      id: budget.id,
+    final companion = SpendingBudgetTableCompanion.insert(
+      id: Value(budget.id),
+      createdBy: 'system',
+      lastModifiedBy: 'system',
       name: budget.name,
       categoryId: budget.categoryId,
       limitAmount: budget.limitAmount,
@@ -78,16 +86,17 @@ class BudgetRepository extends IBudgetRepository {
       endDate: Value(budget.endDate),
       isActive: Value(budget.isActive),
       createdAt: Value(budget.createdAt),
-      updatedAt: Value(budget.updatedAt),
+      dateCreated: Value(budget.createdAt),
+      dateUpdated: budget.updatedAt,
     );
 
-    await _db.into(_db.budgets).insert(companion);
+    await _db.into(_db.spendingBudgetTable).insert(companion);
     return budget;
   }
 
   @override
   Future<BudgetEntity> updateBudget(BudgetEntity budget) async {
-    final updating = BudgetsCompanion(
+    final updating = SpendingBudgetTableCompanion(
       name: Value(budget.name),
       categoryId: Value(budget.categoryId),
       limitAmount: Value(budget.limitAmount),
@@ -96,10 +105,10 @@ class BudgetRepository extends IBudgetRepository {
       startDate: Value(budget.startDate),
       endDate: Value(budget.endDate),
       isActive: Value(budget.isActive),
-      updatedAt: Value(budget.updatedAt),
+      dateUpdated: Value(budget.updatedAt),
     );
 
-    final query = _db.update(_db.budgets)
+    final query = _db.update(_db.spendingBudgetTable)
       ..where((tbl) => tbl.id.equals(budget.id));
     await query.write(updating);
 
@@ -111,12 +120,12 @@ class BudgetRepository extends IBudgetRepository {
     String budgetId,
     double spentAmount,
   ) async {
-    final updating = BudgetsCompanion(
+    final updating = SpendingBudgetTableCompanion(
       spentAmount: Value(spentAmount),
-      updatedAt: Value(DateTime.now()),
+      dateUpdated: Value(DateTime.now()),
     );
 
-    final query = _db.update(_db.budgets)
+    final query = _db.update(_db.spendingBudgetTable)
       ..where((tbl) => tbl.id.equals(budgetId));
     await query.write(updating);
 
@@ -125,7 +134,8 @@ class BudgetRepository extends IBudgetRepository {
 
   @override
   Future<void> deleteBudget(String id) async {
-    final query = _db.delete(_db.budgets)..where((tbl) => tbl.id.equals(id));
+    final query = _db.delete(_db.spendingBudgetTable)
+      ..where((tbl) => tbl.id.equals(id));
     await query.go();
   }
 
@@ -154,7 +164,7 @@ class BudgetRepository extends IBudgetRepository {
   }
 
   /// Map database row to entity
-  BudgetEntity _mapToEntity(Budget row) {
+  BudgetEntity _mapToEntity(BdgtSpendingBudget row) {
     return BudgetEntity(
       id: row.id,
       name: row.name,
@@ -169,7 +179,7 @@ class BudgetRepository extends IBudgetRepository {
       endDate: row.endDate,
       isActive: row.isActive,
       createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
+      updatedAt: row.dateUpdated,
     );
   }
 }

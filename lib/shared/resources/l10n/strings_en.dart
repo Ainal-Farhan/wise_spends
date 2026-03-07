@@ -509,6 +509,14 @@ class EnglishStrings {
     'budgets.tip_period': 'Set daily, weekly or monthly limits',
     'budgets.tip_alert': 'You\'ll see a warning when nearing the limit',
 
+    // Spending Budgets (renamed for clarity)
+    'spending_budgets.title': 'Spending Budget',
+    'spending_budgets.manage': 'Track spending limits per category',
+
+    // Savings Plans (renamed from Budget Plans for clarity)
+    'savings_plans.title': 'Savings Plan',
+    'savings_plans.manage': 'Save towards financial goals',
+
     // Reports Screen
     'reports.export_success': 'Report exported successfully',
     'reports.export_failed': 'Export failed: {error}',

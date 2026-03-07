@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:wise_spends/core/di/i_singleton.dart';
+import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/data/db/domain/savings_plan/index.dart';
+import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_deposit_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_transaction_entity.dart';
@@ -10,7 +12,15 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import '../../../domain/entities/budget_plan/budget_plan_params.dart';
 
 /// Budget Plan Repository Interface - defines contract for data layer
-abstract class IBudgetPlanRepository implements ISingleton {
+abstract class IBudgetPlanRepository
+    extends
+        ICrudRepository<
+          SavingsPlanTable,
+          $SavingsPlanTableTable,
+          SavingsPlanTableCompanion,
+          SvngPlnSavingsPlan
+        > {
+  IBudgetPlanRepository(AppDatabase db) : super(db, db.savingsPlanTable);
   // ============================================================================
   // CRUD Operations for Budget Plans
   // ============================================================================

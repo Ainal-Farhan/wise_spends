@@ -14,6 +14,15 @@ import 'package:wise_spends/data/repositories/transaction/i_transaction_reposito
 import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
 import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_deposit_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_spending_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_milestone_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_linked_account_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/i_transaction_tag_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/i_transaction_tag_map_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/i_recurring_transaction_repository.dart';
+import 'package:wise_spends/data/repositories/masterdata/i_reference_data_repository.dart';
+import 'package:wise_spends/data/repositories/expense/i_expense_reference_repository.dart';
 
 abstract class IRepositoryLocator extends ILocator {
   List<ICrudRepository> retrieveAllRepository();
@@ -38,4 +47,21 @@ abstract class IRepositoryLocator extends ILocator {
 
   // Budget Plan Repository
   IBudgetPlanRepository getBudgetPlanRepository();
+
+  // Savings Plan Child Repositories
+  ISavingsPlanDepositRepository getSavingsPlanDepositRepository();
+  ISavingsPlanSpendingRepository getSavingsPlanSpendingRepository();
+  ISavingsPlanMilestoneRepository getSavingsPlanMilestoneRepository();
+  ISavingsPlanLinkedAccountRepository getSavingsPlanLinkedAccountRepository();
+
+  // Transaction Child Repositories
+  ITransactionTagRepository getTransactionTagRepository();
+  ITransactionTagMapRepository getTransactionTagMapRepository();
+  IRecurringTransactionRepository getRecurringTransactionRepository();
+
+  // MasterData Child Repositories
+  IReferenceDataRepository getReferenceDataRepository();
+
+  // Expense Reference Repository
+  IExpenseReferenceRepository getExpenseReferenceRepository();
 }

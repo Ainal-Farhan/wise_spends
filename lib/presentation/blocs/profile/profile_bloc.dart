@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/data/repositories/common/i_user.repository.dart';
+import 'package:wise_spends/domain/models/user_profile.dart';
 import 'profile_event.dart';
 import 'profile_state.dart';
 
@@ -19,7 +20,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       final profile = await _repository.getCurrentUser();
       if (profile != null) {
-        emit(ProfileLoaded(profile));
+        emit(ProfileLoaded(UserProfile.fromCmmnUser(profile)));
       } else {
         emit(ProfileError('User not found'));
       }

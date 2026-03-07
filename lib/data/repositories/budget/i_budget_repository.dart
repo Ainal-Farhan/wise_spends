@@ -1,8 +1,19 @@
-import 'package:wise_spends/core/di/i_singleton.dart';
+import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/data/db/domain/budget/index.dart';
+import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
 
 /// Budget repository interface - defines contract for data layer
-abstract class IBudgetRepository implements ISingleton {
+abstract class IBudgetRepository
+    extends
+        ICrudRepository<
+          SpendingBudgetTable,
+          $SpendingBudgetTableTable,
+          SpendingBudgetTableCompanion,
+          BdgtSpendingBudget
+        > {
+  IBudgetRepository(AppDatabase db) : super(db, db.spendingBudgetTable);
+
   /// Get all budgets
   Future<List<BudgetEntity>> getAllBudgets();
 

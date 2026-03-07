@@ -12,9 +12,14 @@ import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_reposito
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_params.dart';
 
 /// Budget Plan Repository Implementation
-/// Handles all database operations for budget plans
+/// Handles all database operations for savings plans
 class BudgetPlanRepository extends IBudgetPlanRepository {
+  BudgetPlanRepository() : super(AppDatabase());
+
   final AppDatabase _db = AppDatabase();
+
+  @override
+  String getTypeName() => 'SavingsPlanTable';
 
   @override
   void dispose() {
@@ -28,14 +33,14 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   @override
   Stream<List<BudgetPlanEntity>> watchAllPlans() {
     return _db
-        .select(_db.budgetPlans)
+        .select(_db.savingsPlanTable)
         .watch()
         .map((rows) => rows.map((row) => _mapPlanToEntity(row)).toList());
   }
 
   @override
   Stream<BudgetPlanEntity?> watchPlanById(String id) {
-    final query = _db.select(_db.budgetPlans)
+    final query = _db.select(_db.savingsPlanTable)
       ..where((tbl) => tbl.id.equals(id));
     return query.watchSingleOrNull().map(
       (row) => row != null ? _mapPlanToEntity(row) : null,
@@ -44,14 +49,14 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   @override
   Future<List<BudgetPlanEntity>> getAllPlans() async {
-    final query = _db.select(_db.budgetPlans);
+    final query = _db.select(_db.savingsPlanTable);
     final rows = await query.get();
     return rows.map(_mapPlanToEntity).toList();
   }
 
   @override
   Future<BudgetPlanEntity?> getPlanByUuid(String id) async {
-    final query = _db.select(_db.budgetPlans)
+    final query = _db.select(_db.savingsPlanTable)
       ..where((tbl) => tbl.id.equals(id));
     final rows = await query.get();
     if (rows.isEmpty) return null;
@@ -61,7 +66,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   @override
   Future<BudgetPlanEntity> createPlan(CreateBudgetPlanParams params) async {
     final id = const Uuid().v4();
-    final companion = BudgetPlansCompanion.insert(
+    final companion = SavingsPlanTableCompanion.insert(
       id: Value(id),
       name: params.name,
       description: Value(params.description),
@@ -74,11 +79,13 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       colorHex: Value(params.colorHex),
       currentAmount: const Value(0.0),
       status: const Value('active'),
-      createdAt: Value(DateTime.now()),
-      updatedAt: Value(DateTime.now()),
+      createdBy: 'system',
+      dateCreated: Value(DateTime.now()),
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: 'system',
     );
 
-    await _db.into(_db.budgetPlans).insert(companion);
+    await _db.into(_db.savingsPlanTable).insert(companion);
 
     // Create milestones if provided
     if (params.milestones != null && params.milestones!.isNotEmpty) {
@@ -100,7 +107,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final plan = await getPlanByUuid(id);
     if (plan == null) throw Exception('Plan not found');
 
-    final updating = BudgetPlansCompanion(
+    final updating = SavingsPlanTableCompanion(
       name: params.name != null ? Value(params.name!) : const Value.absent(),
       description: params.description != null
           ? Value(params.description!)
@@ -120,10 +127,11 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       colorHex: params.colorHex != null
           ? Value(params.colorHex!)
           : const Value.absent(),
-      updatedAt: Value(DateTime.now()),
+      dateUpdated: Value(DateTime.now()),
+      lastModifiedBy: Value('system'),
     );
 
-    final query = _db.update(_db.budgetPlans)
+    final query = _db.update(_db.savingsPlanTable)
       ..where((tbl) => tbl.id.equals(id));
     await query.write(updating);
   }
@@ -152,25 +160,26 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       }
 
       // Delete linked accounts
-      final query = _db.delete(_db.budgetPlanLinkedAccounts)
+      final query = _db.delete(_db.savingsPlanLinkedAccountTable)
         ..where((tbl) => tbl.planId.equals(plan.id));
       await query.go();
     }
 
     // Delete the plan
-    final deleteQuery = _db.delete(_db.budgetPlans)
+    final deleteQuery = _db.delete(_db.savingsPlanTable)
       ..where((tbl) => tbl.id.equals(id));
     await deleteQuery.go();
   }
 
   @override
   Future<void> updatePlanStatus(String id, BudgetPlanStatus status) async {
-    final updating = BudgetPlansCompanion(
+    final updating = SavingsPlanTableCompanion(
       status: Value(status.name),
-      updatedAt: Value(DateTime.now()),
+      dateUpdated: Value(DateTime.now()),
+      lastModifiedBy: Value('system'),
     );
 
-    final query = _db.update(_db.budgetPlans)
+    final query = _db.update(_db.savingsPlanTable)
       ..where((tbl) => tbl.id.equals(id));
     await query.write(updating);
   }
@@ -187,7 +196,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       return;
     }
 
-    yield* (_db.select(_db.budgetPlanDeposits)
+    yield* (_db.select(_db.savingsPlanDepositTable)
           ..where((tbl) => tbl.planId.equals(plan.id)))
         .watch()
         .map((rows) => rows.map(_mapDepositToEntity).toList());
@@ -198,7 +207,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final plan = await getPlanByUuid(planId);
     if (plan == null) return [];
 
-    final query = _db.select(_db.budgetPlanDeposits)
+    final query = _db.select(_db.savingsPlanDepositTable)
       ..where((tbl) => tbl.planId.equals(plan.id));
     final rows = await query.get();
     return rows.map(_mapDepositToEntity).toList();
@@ -213,7 +222,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     if (plan == null) throw Exception('Plan not found');
 
     final id = const Uuid().v4();
-    final companion = BudgetPlanDepositsCompanion.insert(
+    final companion = SavingsPlanDepositTableCompanion.insert(
       id: Value(id),
       planId: plan.id,
       amount: params.amount,
@@ -221,10 +230,13 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       source: Value(params.source),
       depositDate: params.depositDate,
       linkedAccountId: Value(params.linkedAccountId),
-      createdAt: Value(DateTime.now()),
+      createdBy: 'system',
+      dateCreated: Value(DateTime.now()),
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: 'system',
     );
 
-    await _db.into(_db.budgetPlanDeposits).insert(companion);
+    await _db.into(_db.savingsPlanDepositTable).insert(companion);
 
     // Update plan's current amount
     await _updatePlanCurrentAmount(plan.id);
@@ -243,7 +255,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   @override
   Future<void> deleteDeposit(String id) async {
-    final query = _db.delete(_db.budgetPlanDeposits)
+    final query = _db.delete(_db.savingsPlanDepositTable)
       ..where((tbl) => tbl.id.equals(id));
     await query.go();
 
@@ -265,7 +277,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       return;
     }
 
-    yield* (_db.select(_db.budgetPlanTransactions)
+    yield* (_db.select(_db.savingsPlanSpendingTable)
           ..where((tbl) => tbl.planId.equals(plan.id)))
         .watch()
         .map((rows) => rows.map(_mapTransactionToEntity).toList());
@@ -278,7 +290,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final plan = await getPlanByUuid(planId);
     if (plan == null) return [];
 
-    final query = _db.select(_db.budgetPlanTransactions)
+    final query = _db.select(_db.savingsPlanSpendingTable)
       ..where((tbl) => tbl.planId.equals(plan.id));
     final rows = await query.get();
     return rows.map(_mapTransactionToEntity).toList();
@@ -293,18 +305,21 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     if (plan == null) throw Exception('Plan not found');
 
     final id = const Uuid().v4();
-    final companion = BudgetPlanTransactionsCompanion.insert(
+    final companion = SavingsPlanSpendingTableCompanion.insert(
       id: Value(id),
       planId: plan.id,
       amount: params.amount,
       description: Value(params.description),
       vendor: Value(params.vendor),
       receiptImagePath: Value(params.receiptImagePath),
-      transactionDate: params.transactionDate,
-      createdAt: Value(DateTime.now()),
+      spendingDate: params.transactionDate,
+      createdBy: 'system',
+      dateCreated: Value(DateTime.now()),
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: 'system',
     );
 
-    await _db.into(_db.budgetPlanTransactions).insert(companion);
+    await _db.into(_db.savingsPlanSpendingTable).insert(companion);
 
     // Update plan's current amount (subtract spending)
     await _updatePlanCurrentAmount(plan.id);
@@ -329,15 +344,18 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     if (plan == null) throw Exception('Plan not found');
 
     // Update the transactionId in budget_plan_transactions
-    final companion = BudgetPlanTransactionsCompanion.insert(
+    final companion = SavingsPlanSpendingTableCompanion.insert(
       id: Value(const Uuid().v4()),
       planId: plan.id,
       transactionId: Value(transactionId),
       amount: 0, // Should be populated from actual transaction
-      transactionDate: DateTime.now(),
-      createdAt: Value(DateTime.now()),
+      spendingDate: DateTime.now(),
+      createdBy: 'system',
+      dateCreated: Value(DateTime.now()),
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: 'system',
     );
-    await _db.into(_db.budgetPlanTransactions).insert(companion);
+    await _db.into(_db.savingsPlanSpendingTable).insert(companion);
   }
 
   @override
@@ -345,7 +363,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final plan = await getPlanByUuid(planId);
     if (plan == null) throw Exception('Plan not found');
 
-    final query = _db.delete(_db.budgetPlanTransactions)
+    final query = _db.delete(_db.savingsPlanSpendingTable)
       ..where(
         (tbl) =>
             tbl.planId.equals(plan.id) &
@@ -356,7 +374,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   @override
   Future<void> deletePlanTransaction(String id) async {
-    final query = _db.delete(_db.budgetPlanTransactions)
+    final query = _db.delete(_db.savingsPlanSpendingTable)
       ..where((tbl) => tbl.id.equals(id));
     await query.go();
 
@@ -377,7 +395,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       return;
     }
 
-    final stream = _db.select(_db.budgetPlanLinkedAccounts)
+    final stream = _db.select(_db.savingsPlanLinkedAccountTable)
       ..where((tbl) => tbl.planId.equals(plan.id));
 
     await for (final rows in stream.watch()) {
@@ -416,15 +434,18 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     if (plan == null) throw Exception('Plan not found');
 
     final id = const Uuid().v4();
-    final companion = BudgetPlanLinkedAccountsCompanion.insert(
+    final companion = SavingsPlanLinkedAccountTableCompanion.insert(
       id: Value(id),
       planId: plan.id,
       accountId: accountId,
       allocatedPercentage: Value(allocatedPercentage),
-      linkedAt: Value(DateTime.now()),
+      createdBy: 'system',
+      dateCreated: Value(DateTime.now()),
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: 'system',
     );
 
-    await _db.into(_db.budgetPlanLinkedAccounts).insert(companion);
+    await _db.into(_db.savingsPlanLinkedAccountTable).insert(companion);
   }
 
   @override
@@ -432,7 +453,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final plan = await getPlanByUuid(planId);
     if (plan == null) throw Exception('Plan not found');
 
-    final query = _db.delete(_db.budgetPlanLinkedAccounts)
+    final query = _db.delete(_db.savingsPlanLinkedAccountTable)
       ..where(
         (tbl) => tbl.planId.equals(plan.id) & tbl.accountId.equals(accountId),
       );
@@ -453,7 +474,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       return;
     }
 
-    yield* (_db.select(_db.budgetPlanMilestones)
+    yield* (_db.select(_db.savingsPlanMilestoneTable)
           ..where((tbl) => tbl.planId.equals(plan.id)))
         .watch()
         .map((rows) => rows.map(_mapMilestoneToEntity).toList());
@@ -464,7 +485,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final plan = await getPlanByUuid(planId);
     if (plan == null) return [];
 
-    final query = _db.select(_db.budgetPlanMilestones)
+    final query = _db.select(_db.savingsPlanMilestoneTable)
       ..where((tbl) => tbl.planId.equals(plan.id));
     final rows = await query.get();
     return rows.map(_mapMilestoneToEntity).toList();
@@ -481,16 +502,20 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     if (plan == null) throw Exception('Plan not found');
 
     final id = const Uuid().v4();
-    final companion = BudgetPlanMilestonesCompanion.insert(
+    final companion = SavingsPlanMilestoneTableCompanion.insert(
       id: Value(id),
       planId: plan.id,
       title: title,
       targetAmount: targetAmount,
       dueDate: Value(dueDate),
       isCompleted: const Value(false),
+      createdBy: 'system',
+      dateCreated: Value(DateTime.now()),
+      dateUpdated: DateTime.now(),
+      lastModifiedBy: 'system',
     );
 
-    await _db.into(_db.budgetPlanMilestones).insert(companion);
+    await _db.into(_db.savingsPlanMilestoneTable).insert(companion);
 
     return BudgetPlanMilestoneEntity(
       id: id,
@@ -503,19 +528,21 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   @override
   Future<void> completeMilestone(String milestoneId) async {
-    final updating = BudgetPlanMilestonesCompanion(
+    final updating = SavingsPlanMilestoneTableCompanion(
       isCompleted: const Value(true),
       completedAt: Value(DateTime.now()),
+      dateUpdated: Value(DateTime.now()),
+      lastModifiedBy: Value('system'),
     );
 
-    final query = _db.update(_db.budgetPlanMilestones)
+    final query = _db.update(_db.savingsPlanMilestoneTable)
       ..where((tbl) => tbl.id.equals(milestoneId));
     await query.write(updating);
   }
 
   @override
   Future<void> deleteMilestone(String milestoneId) async {
-    final query = _db.delete(_db.budgetPlanMilestones)
+    final query = _db.delete(_db.savingsPlanMilestoneTable)
       ..where((tbl) => tbl.id.equals(milestoneId));
     await query.go();
   }
@@ -767,7 +794,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   /// Update plan's current amount based on deposits and transactions
   Future<void> _updatePlanCurrentAmount(String planId) async {
     // Get total deposits
-    final depositsQuery = _db.select(_db.budgetPlanDeposits)
+    final depositsQuery = _db.select(_db.savingsPlanDepositTable)
       ..where((tbl) => tbl.planId.equals(planId));
     final deposits = await depositsQuery.get();
     final totalDeposits = deposits.fold<double>(
@@ -776,7 +803,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     );
 
     // Get total spending
-    final transactionsQuery = _db.select(_db.budgetPlanTransactions)
+    final transactionsQuery = _db.select(_db.savingsPlanSpendingTable)
       ..where((tbl) => tbl.planId.equals(planId));
     final transactions = await transactionsQuery.get();
     final totalSpending = transactions.fold<double>(
@@ -787,18 +814,19 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     // Update plan
     final currentAmount = totalDeposits - totalSpending;
 
-    final updating = BudgetPlansCompanion(
+    final updating = SavingsPlanTableCompanion(
       currentAmount: Value(currentAmount),
-      updatedAt: Value(DateTime.now()),
+      dateUpdated: Value(DateTime.now()),
+      lastModifiedBy: Value('system'),
     );
 
-    final query = _db.update(_db.budgetPlans)
+    final query = _db.update(_db.savingsPlanTable)
       ..where((tbl) => tbl.id.equals(planId));
     await query.write(updating);
   }
 
   /// Map database row to BudgetPlanEntity
-  BudgetPlanEntity _mapPlanToEntity(BudgetPlan row) {
+  BudgetPlanEntity _mapPlanToEntity(SvngPlnSavingsPlan row) {
     return BudgetPlanEntity(
       id: row.id,
       name: row.name,
@@ -821,12 +849,12 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       iconCode: row.iconCode,
       colorHex: row.colorHex,
       createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
+      updatedAt: row.dateUpdated,
     );
   }
 
   /// Map database row to BudgetPlanDepositEntity
-  BudgetPlanDepositEntity _mapDepositToEntity(BudgetPlanDeposit row) {
+  BudgetPlanDepositEntity _mapDepositToEntity(SvngPlnDeposit row) {
     return BudgetPlanDepositEntity(
       id: row.id,
       planId: row.planId,
@@ -835,14 +863,12 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       source: row.source ?? 'manual',
       depositDate: row.depositDate,
       linkedAccountId: row.linkedAccountId,
-      createdAt: row.createdAt,
+      createdAt: row.dateCreated,
     );
   }
 
   /// Map database row to BudgetPlanTransactionEntity
-  BudgetPlanTransactionEntity _mapTransactionToEntity(
-    BudgetPlanTransaction row,
-  ) {
+  BudgetPlanTransactionEntity _mapTransactionToEntity(SvngPlnSpending row) {
     return BudgetPlanTransactionEntity(
       id: row.id,
       planId: row.planId,
@@ -850,13 +876,13 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       amount: row.amount,
       description: row.description,
       vendor: row.vendor,
-      transactionDate: row.transactionDate,
-      createdAt: row.createdAt,
+      transactionDate: row.spendingDate,
+      createdAt: row.dateCreated,
     );
   }
 
   /// Map database row to BudgetPlanMilestoneEntity
-  BudgetPlanMilestoneEntity _mapMilestoneToEntity(BudgetPlanMilestone row) {
+  BudgetPlanMilestoneEntity _mapMilestoneToEntity(SvngPlnMilestone row) {
     return BudgetPlanMilestoneEntity(
       id: row.id,
       planId: row.planId,
