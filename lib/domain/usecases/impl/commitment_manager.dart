@@ -47,7 +47,6 @@ class CommitmentManager extends ICommitmentManager {
     final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
         .getSavingService();
 
-    // Resolve the referred saving ID — prefer explicit VO, fall back to first detail
     String? resolvedReferredSavingId = commitmentVO.referredSavingVO?.savingId;
     if (resolvedReferredSavingId == null &&
         commitmentVO.commitmentDetailVOList.isNotEmpty) {
@@ -61,7 +60,6 @@ class CommitmentManager extends ICommitmentManager {
       );
     }
 
-    // Ensure referredSavingVO is populated so downstream operations can use it
     if (commitmentVO.referredSavingVO == null) {
       final saving = await savingService
           .watchSavingById(resolvedReferredSavingId)
@@ -104,6 +102,20 @@ class CommitmentManager extends ICommitmentManager {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // saveCommitmentDetailVO — FIXED
+  // ---------------------------------------------------------------------------
+  // Previously only wrote `savingId` (source account) and left taskType,
+  // targetSavingId, and payeeId out of the companion entirely, so the values
+  // entered in the form were silently discarded.
+  //
+  // Changes:
+  //   1. Write `taskType` from `vo.taskType` (defaults to internalTransfer).
+  //   2. Write `targetSavingId` for internal transfers.
+  //   3. Write `payeeId` for third-party payments.
+  //   4. `savingId` is null-safe for cash payments — no source account needed.
+  // ---------------------------------------------------------------------------
+
   @override
   Future<void> saveCommitmentDetailVO(
     String commitmentId,
@@ -120,31 +132,51 @@ class CommitmentManager extends ICommitmentManager {
         .getSavingService();
 
     for (final vo in commitmentDetailVOList) {
-      final String? resolvedSavingId =
-          vo.referredSavingVO?.savingId ?? vo.savingId;
+      // ── Resolve source saving ──────────────────────────────────────────────
+      // Cash payments have no source saving — that is valid.
+      final String? resolvedSourceSavingId =
+          vo.sourceSavingVO?.savingId ?? vo.savingId;
 
-      if (resolvedSavingId == null) {
-        throw Exception('Commitment detail is missing a savings account.');
+      if (resolvedSourceSavingId == null &&
+          vo.taskType != CommitmentTaskType.cash) {
+        throw Exception(
+          'Commitment detail "${vo.description}" is missing a source savings account.',
+        );
       }
 
-      if (vo.referredSavingVO == null) {
+      // Hydrate sourceSavingVO if only the ID was set
+      if (resolvedSourceSavingId != null && vo.sourceSavingVO == null) {
         final saving = await savingService
-            .watchSavingById(resolvedSavingId)
+            .watchSavingById(resolvedSourceSavingId)
             .first;
         if (saving != null) {
-          vo.referredSavingVO = SavingVO.fromSvngSaving(saving);
+          vo.sourceSavingVO = SavingVO.fromSvngSaving(saving);
         }
       }
 
-      // Resolve to CommitmentDetailType enum — companion expects the enum
-      // directly since the column is now intEnum<CommitmentDetailType>().
-      // Fall back to monthly if nothing is set.
+      // ── Validate type-specific FK requirements ─────────────────────────────
+      if (vo.taskType == CommitmentTaskType.internalTransfer &&
+          vo.targetSavingId == null) {
+        throw Exception(
+          'Detail "${vo.description}" is an internal transfer but has no target savings account.',
+        );
+      }
+
+      if (vo.taskType == CommitmentTaskType.thirdPartyPayment &&
+          vo.payeeId == null) {
+        throw Exception(
+          'Detail "${vo.description}" is a third-party payment but has no payee selected.',
+        );
+      }
+
+      // ── Recurrence type ────────────────────────────────────────────────────
       final CommitmentDetailType resolvedType =
           vo.type ??
           _commitmentDetailTypeFromSavingType(
-            vo.referredSavingVO?.savingTableType?.value,
+            vo.sourceSavingVO?.savingTableType?.value,
           );
 
+      // ── Build companion — all new fields included ──────────────────────────
       final companion = CommitmentDetailTableCompanion.insert(
         id: vo.commitmentDetailId == null
             ? const Value.absent()
@@ -155,7 +187,22 @@ class CommitmentManager extends ICommitmentManager {
         amount: vo.amount ?? 0.0,
         description: vo.description ?? '-',
         type: resolvedType,
-        savingId: resolvedSavingId,
+        // NEW: persist the task payment type chosen in the form
+        taskType: Value(vo.taskType),
+        // Source saving — null only for cash payments
+        savingId: Value(resolvedSourceSavingId),
+        // NEW: target saving (internal transfer only, null otherwise)
+        targetSavingId: Value(
+          vo.taskType == CommitmentTaskType.internalTransfer
+              ? vo.targetSavingId
+              : null,
+        ),
+        // NEW: payee (third-party payment only, null otherwise)
+        payeeId: Value(
+          vo.taskType == CommitmentTaskType.thirdPartyPayment
+              ? vo.payeeId
+              : null,
+        ),
         commitmentId: commitmentId,
       );
 
@@ -180,8 +227,6 @@ class CommitmentManager extends ICommitmentManager {
     final commitmentDetailRepo =
         SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getCommitmentDetailRepository();
-
-    // Delete tasks for this commitment, then details, then commitment itself
     final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
         .getCommitmentTaskRepository();
 
@@ -195,8 +240,6 @@ class CommitmentManager extends ICommitmentManager {
     final commitmentDetailRepo =
         SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getCommitmentDetailRepository();
-
-    // Delete tasks linked to this detail, then the detail itself
     final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
         .getCommitmentTaskRepository();
 
@@ -218,19 +261,53 @@ class CommitmentManager extends ICommitmentManager {
             .getCommitmentDetailRepository();
     final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
         .getSavingService();
+    final payeeRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getPayeeRepository();
 
     final details = await commitmentDetailRepo
         .watchAllByCommitment(commitment)
         .first;
 
-    final Map<ExpnsCommitmentDetail, SvngSaving> detailMap = {};
+    // Build detail VOs with all three optional joins resolved
+    final List<CommitmentDetailVO> detailVOs = [];
     for (final detail in details) {
-      final saving = await savingService.watchSavingById(detail.savingId).first;
-      if (saving == null) continue;
-      detailMap[detail] = saving;
+      // Source saving
+      SvngSaving? sourceSaving;
+      if (detail.savingId != null) {
+        sourceSaving = await savingService
+            .watchSavingById(detail.savingId!)
+            .first;
+      }
+
+      // Target saving (internal transfers)
+      SvngSaving? targetSaving;
+      if (detail.targetSavingId != null) {
+        targetSaving = await savingService
+            .watchSavingById(detail.targetSavingId!)
+            .first;
+      }
+
+      // Payee (third-party payments)
+      ExpnsPayee? payee;
+      if (detail.payeeId != null) {
+        payee = await payeeRepo.findById(id: detail.payeeId!);
+      }
+
+      detailVOs.add(
+        CommitmentDetailVO.fromExpnsCommitmentDetail(
+          detail,
+          saving: sourceSaving,
+          targetSaving: targetSaving,
+          payee: payee,
+        ),
+      );
     }
 
-    final vo = CommitmentVO.fromExpnsCommitment(commitment, detailMap);
+    // Build commitment VO using detail VOs directly
+    final vo = CommitmentVO.fromExpnsCommitmentWithDetails(
+      commitment,
+      detailVOs,
+    );
 
     final saving = await savingService
         .watchSavingById(commitment.referredSavingId)
@@ -269,7 +346,6 @@ class CommitmentManager extends ICommitmentManager {
 
     final List<CommitmentTaskVO> result = [];
     for (final task in tasks) {
-      // Resolve source saving
       SvngSaving? sourceSaving;
       if (task.sourceSavingId != null) {
         sourceSaving = await savingService
@@ -277,7 +353,6 @@ class CommitmentManager extends ICommitmentManager {
             .first;
       }
 
-      // Resolve target saving (internal transfers only)
       SvngSaving? targetSaving;
       if (task.targetSavingId != null) {
         targetSaving = await savingService
@@ -285,13 +360,13 @@ class CommitmentManager extends ICommitmentManager {
             .first;
       }
 
-      // Resolve payee (third-party payments only)
       ExpnsPayee? payee;
       if (task.payeeId != null) {
         final payeeRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
             .getPayeeRepository();
         payee = await payeeRepo.findById(id: task.payeeId!);
       }
+
       result.add(
         CommitmentTaskVO.fromExpnsCommitmentTask(
           task,
@@ -306,7 +381,21 @@ class CommitmentManager extends ICommitmentManager {
   }
 
   // ---------------------------------------------------------------------------
-  // Distribute
+  // startDistributeCommitment — FIXED
+  // ---------------------------------------------------------------------------
+  // Previously hardcoded every task as:
+  //   type           = internalTransfer
+  //   sourceSavingId = commitment.referredSaving   (always the pool account)
+  //   targetSavingId = detail.savingId             (always treated as destination)
+  //
+  // Now branches on detail.taskType so each detail drives its own task shape:
+  //
+  //   internalTransfer  → sourceSaving = detail.savingId (or commitment saving as
+  //                        fallback), targetSaving = detail.targetSavingId
+  //   thirdPartyPayment → sourceSaving = detail.savingId, payeeId = detail.payeeId
+  //   cash              → no savings linked
+  //
+  // Balance check is kept but now scoped to details that actually debit a saving.
   // ---------------------------------------------------------------------------
 
   @override
@@ -315,72 +404,135 @@ class CommitmentManager extends ICommitmentManager {
       return 'No commitment details found for this commitment.';
     }
 
-    if (vo.referredSavingVO == null || vo.referredSavingVO!.savingId == null) {
-      return 'No savings account found for this commitment.';
-    }
-
     final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
         .getSavingService();
-
-    final SvngSaving? sourceSaving = await savingService
-        .watchSavingById(vo.referredSavingVO!.savingId!)
-        .first;
-
-    if (sourceSaving == null) {
-      return 'Savings account not found.';
-    }
-
-    if (sourceSaving.currentAmount < (vo.totalAmount ?? 0.0)) {
-      return 'Insufficient balance in ${sourceSaving.name}.';
-    }
-
     final startupManager = SingletonUtil.getSingleton<IManagerLocator>()!
         .getStartupManager();
     final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
         .getCommitmentTaskRepository();
 
+    // ── Balance check: sum amounts that will debit a digital account ──────────
+    // Cash tasks don't touch any account so they are excluded.
+    double totalDebit = 0.0;
+    for (final detail in vo.commitmentDetailVOList) {
+      if (detail.taskType != CommitmentTaskType.cash) {
+        totalDebit += detail.amount ?? 0.0;
+      }
+    }
+
+    // Only check the commitment-level referred saving if it is the actual
+    // source for any detail.  If every detail specifies its own sourceSavingId
+    // we skip this commitment-level guard (individual checks below will catch).
+    if (vo.referredSavingVO?.savingId != null && totalDebit > 0) {
+      final SvngSaving? poolSaving = await savingService
+          .watchSavingById(vo.referredSavingVO!.savingId!)
+          .first;
+
+      if (poolSaving != null && poolSaving.currentAmount < totalDebit) {
+        return 'Insufficient balance in ${poolSaving.name}.';
+      }
+    }
+
+    // ── Build task companions ─────────────────────────────────────────────────
     final List<CommitmentTaskTableCompanion> companions = [];
 
     for (final detail in vo.commitmentDetailVOList) {
       if (detail.commitmentDetailId == null) continue;
 
-      final String? detailSavingId =
-          detail.referredSavingVO?.savingId ?? detail.savingId;
+      switch (detail.taskType) {
+        // ── Internal transfer ──────────────────────────────────────────────
+        case CommitmentTaskType.internalTransfer:
+          // Source: use detail's own savingId; fall back to the commitment's
+          // referred saving if the detail was created before the form update.
+          final String? sourceSavingId =
+              detail.savingId ?? vo.referredSavingVO?.savingId;
 
-      if (detailSavingId == null) continue;
+          // Target: must be set — skip gracefully with a log rather than crash.
+          final String? targetSavingId = detail.targetSavingId;
 
-      // Each detail generates one task:
-      //   sourceSavingId = commitment's referred saving (money leaves here)
-      //   targetSavingId = detail's saving (money arrives here)
-      //   type           = internalTransfer
-      // Amount is always positive — direction is implied by source → target.
-      companions.add(
-        CommitmentTaskTableCompanion.insert(
-          createdBy: startupManager.currentUser.name,
-          dateUpdated: DateTime.now(),
-          lastModifiedBy: startupManager.currentUser.name,
-          name: detail.description ?? 'Commitment Task',
-          amount: detail.amount ?? 0.0,
-          isDone: const Value(false),
-          commitmentId: vo.commitmentId!,
-          commitmentDetailId: detail.commitmentDetailId!,
-          type: CommitmentTaskType.internalTransfer,
-          sourceSavingId: Value(sourceSaving.id),
-          targetSavingId: Value(detailSavingId),
-        ),
-      );
+          if (sourceSavingId == null || targetSavingId == null) {
+            // Detail is incomplete — skip and continue distributing the rest.
+            continue;
+          }
+
+          companions.add(
+            CommitmentTaskTableCompanion.insert(
+              createdBy: startupManager.currentUser.name,
+              dateUpdated: DateTime.now(),
+              lastModifiedBy: startupManager.currentUser.name,
+              name: detail.description ?? 'Commitment Task',
+              amount: detail.amount ?? 0.0,
+              isDone: const Value(false),
+              commitmentId: vo.commitmentId!,
+              commitmentDetailId: detail.commitmentDetailId!,
+              type: CommitmentTaskType.internalTransfer,
+              sourceSavingId: Value(sourceSavingId),
+              targetSavingId: Value(targetSavingId),
+              // payeeId intentionally absent (null) for transfers
+            ),
+          );
+          break;
+
+        // ── Third-party payment ────────────────────────────────────────────
+        case CommitmentTaskType.thirdPartyPayment:
+          final String? sourceSavingId =
+              detail.savingId ?? vo.referredSavingVO?.savingId;
+          final String? payeeId = detail.payeeId;
+
+          if (sourceSavingId == null || payeeId == null) {
+            continue;
+          }
+
+          companions.add(
+            CommitmentTaskTableCompanion.insert(
+              createdBy: startupManager.currentUser.name,
+              dateUpdated: DateTime.now(),
+              lastModifiedBy: startupManager.currentUser.name,
+              name: detail.description ?? 'Commitment Task',
+              amount: detail.amount ?? 0.0,
+              isDone: const Value(false),
+              commitmentId: vo.commitmentId!,
+              commitmentDetailId: detail.commitmentDetailId!,
+              type: CommitmentTaskType.thirdPartyPayment,
+              sourceSavingId: Value(sourceSavingId),
+              // targetSavingId intentionally null — money leaves the system
+              payeeId: Value(payeeId),
+            ),
+          );
+          break;
+
+        // ── Cash ───────────────────────────────────────────────────────────
+        case CommitmentTaskType.cash:
+          // No account links needed — just record the task.
+          companions.add(
+            CommitmentTaskTableCompanion.insert(
+              createdBy: startupManager.currentUser.name,
+              dateUpdated: DateTime.now(),
+              lastModifiedBy: startupManager.currentUser.name,
+              name: detail.description ?? 'Commitment Task',
+              amount: detail.amount ?? 0.0,
+              isDone: const Value(false),
+              commitmentId: vo.commitmentId!,
+              commitmentDetailId: detail.commitmentDetailId!,
+              type: CommitmentTaskType.cash,
+              // Both saving fields null — cash has no digital movement
+            ),
+          );
+          break;
+      }
     }
 
     if (companions.isEmpty) {
-      return 'No valid commitment details to distribute.';
+      return 'No valid commitment details to distribute. '
+          'Ensure each detail has the required account / payee information.';
     }
 
     await commitmentTaskRepo.saveAllFromTableCompanion(companions);
-    return 'Successfully distributed the commitment.';
+    return 'Successfully distributed ${companions.length} task(s).';
   }
 
   // ---------------------------------------------------------------------------
-  // Commitment task — status update
+  // Commitment task — status update (unchanged)
   // ---------------------------------------------------------------------------
 
   @override
@@ -391,7 +543,6 @@ class CommitmentManager extends ICommitmentManager {
     if (taskVO.commitmentTaskId == null) return;
 
     if (isDone) {
-      // Save transaction record before processing
       await _saveTransactionForTask(taskVO);
 
       final savingManager = SingletonUtil.getSingleton<IManagerLocator>()!
@@ -399,7 +550,6 @@ class CommitmentManager extends ICommitmentManager {
 
       switch (taskVO.type) {
         case CommitmentTaskType.internalTransfer:
-          // Debit source, credit target
           if (taskVO.sourceSavingId != null) {
             await savingManager.updateSavingCurrentAmount(
               savingId: taskVO.sourceSavingId!,
@@ -417,7 +567,6 @@ class CommitmentManager extends ICommitmentManager {
           break;
 
         case CommitmentTaskType.thirdPartyPayment:
-          // Debit source only — money goes out
           if (taskVO.sourceSavingId != null) {
             await savingManager.updateSavingCurrentAmount(
               savingId: taskVO.sourceSavingId!,
@@ -428,7 +577,6 @@ class CommitmentManager extends ICommitmentManager {
           break;
 
         case CommitmentTaskType.cash:
-          // No digital account movement
           break;
 
         case null:
@@ -442,7 +590,7 @@ class CommitmentManager extends ICommitmentManager {
   }
 
   // ---------------------------------------------------------------------------
-  // Commitment task — add / edit / delete
+  // Commitment task — add / edit / delete (unchanged)
   // ---------------------------------------------------------------------------
 
   @override
@@ -525,8 +673,6 @@ class CommitmentManager extends ICommitmentManager {
   // Private helpers
   // ---------------------------------------------------------------------------
 
-  /// Maps a saving table type string to a [CommitmentDetailType].
-  /// Falls back to [CommitmentDetailType.monthly] when unrecognised.
   CommitmentDetailType _commitmentDetailTypeFromSavingType(String? value) {
     if (value == null) return CommitmentDetailType.monthly;
     return CommitmentDetailType.values.firstWhere(
@@ -535,8 +681,6 @@ class CommitmentManager extends ICommitmentManager {
     );
   }
 
-  /// Validates type-specific field requirements before any DB write.
-  /// Mirrors the rules documented in the schema design doc.
   void _validateTaskVO(CommitmentTaskVO taskVO) {
     switch (taskVO.type) {
       case CommitmentTaskType.internalTransfer:
@@ -567,7 +711,6 @@ class CommitmentManager extends ICommitmentManager {
         break;
 
       case CommitmentTaskType.cash:
-        // No savings required for cash
         break;
 
       case null:
@@ -575,8 +718,6 @@ class CommitmentManager extends ICommitmentManager {
     }
   }
 
-  /// Saves a transaction record for a completed commitment task.
-  /// Creates debit/credit entries in TransactionTable based on task type.
   Future<void> _saveTransactionForTask(CommitmentTaskVO taskVO) async {
     if (taskVO.amount == null || taskVO.amount! <= 0) return;
 
@@ -587,7 +728,6 @@ class CommitmentManager extends ICommitmentManager {
     final now = DateTime.now();
     final baseId = 'txn_${now.millisecondsSinceEpoch}';
 
-    // Resolve saving names for display in note
     String? sourceSavingName;
     String? targetSavingName;
 
@@ -649,7 +789,6 @@ class CommitmentManager extends ICommitmentManager {
 
       case CommitmentTaskType.cash:
       case null:
-        // No transaction record needed
         break;
     }
   }

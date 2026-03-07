@@ -21,20 +21,24 @@ class CommitmentStateCommitmentsLoaded extends CommitmentState {
   List<Object?> get props => [commitments];
 }
 
-/// Detail screen state — carries BOTH detail list AND savings list AND the
-/// full commitmentVO (which includes referredSavingVO needed for distribution).
+/// Detail screen state — carries detail list, savings list, payee list, and
+/// the full commitmentVO (which includes referredSavingVO needed for distribution).
 class CommitmentStateDetailScreenReady extends CommitmentState {
   final List<CommitmentDetailVO> commitmentDetails;
   final List<ListSavingVO> savingVOList;
+
+  /// Payee list for the CommitmentDetailForm third-party payment picker.
+  final List<PayeeVO> payeeVOList;
+
   final String commitmentId;
 
   /// Full commitment VO including referredSavingVO — required for distribution.
-  /// Always populated by the bloc before emitting this state.
   final CommitmentVO? commitmentVO;
 
   const CommitmentStateDetailScreenReady({
     required this.commitmentDetails,
     required this.savingVOList,
+    required this.payeeVOList,
     required this.commitmentId,
     this.commitmentVO,
   });
@@ -43,6 +47,7 @@ class CommitmentStateDetailScreenReady extends CommitmentState {
   List<Object?> get props => [
     commitmentDetails,
     savingVOList,
+    payeeVOList,
     commitmentId,
     commitmentVO,
   ];
@@ -104,11 +109,13 @@ extension CommitmentStateX on CommitmentState {
   static CommitmentState detailScreenReady({
     required List<CommitmentDetailVO> details,
     required List<ListSavingVO> savings,
+    required List<PayeeVO> payees,
     required String commitmentId,
     CommitmentVO? commitmentVO,
   }) => CommitmentStateDetailScreenReady(
     commitmentDetails: details,
     savingVOList: savings,
+    payeeVOList: payees,
     commitmentId: commitmentId,
     commitmentVO: commitmentVO,
   );

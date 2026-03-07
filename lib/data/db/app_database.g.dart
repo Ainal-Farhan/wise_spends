@@ -5716,652 +5716,6 @@ class CommitmentTableCompanion extends UpdateCompanion<ExpnsCommitment> {
   }
 }
 
-class $CommitmentDetailTableTable extends CommitmentDetailTable
-    with TableInfo<$CommitmentDetailTableTable, ExpnsCommitmentDetail> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $CommitmentDetailTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    clientDefault: () => UuidGenerator().v4(),
-  );
-  static const VerificationMeta _createdByMeta = const VerificationMeta(
-    'createdBy',
-  );
-  @override
-  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
-    'created_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
-    'dateCreated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-    'date_created',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
-    'dateUpdated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-    'date_updated',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
-    'lastModifiedBy',
-  );
-  @override
-  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
-    'last_modified_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
-  @override
-  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
-    'amount',
-    aliasedName,
-    false,
-    type: DriftSqlType.double,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta(
-    'description',
-  );
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-    'description',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  @override
-  late final GeneratedColumnWithTypeConverter<CommitmentDetailType, int> type =
-      GeneratedColumn<int>(
-        'type',
-        aliasedName,
-        false,
-        type: DriftSqlType.int,
-        requiredDuringInsert: true,
-      ).withConverter<CommitmentDetailType>(
-        $CommitmentDetailTableTable.$convertertype,
-      );
-  static const VerificationMeta _savingIdMeta = const VerificationMeta(
-    'savingId',
-  );
-  @override
-  late final GeneratedColumn<String> savingId = GeneratedColumn<String>(
-    'saving_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES saving_table (id)',
-    ),
-  );
-  static const VerificationMeta _commitmentIdMeta = const VerificationMeta(
-    'commitmentId',
-  );
-  @override
-  late final GeneratedColumn<String> commitmentId = GeneratedColumn<String>(
-    'commitment_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES commitment_table (id)',
-    ),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    amount,
-    description,
-    type,
-    savingId,
-    commitmentId,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'commitment_detail_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<ExpnsCommitmentDetail> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdByMeta);
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-        _dateCreatedMeta,
-        dateCreated.isAcceptableOrUnknown(
-          data['date_created']!,
-          _dateCreatedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-        _dateUpdatedMeta,
-        dateUpdated.isAcceptableOrUnknown(
-          data['date_updated']!,
-          _dateUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('last_modified_by')) {
-      context.handle(
-        _lastModifiedByMeta,
-        lastModifiedBy.isAcceptableOrUnknown(
-          data['last_modified_by']!,
-          _lastModifiedByMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastModifiedByMeta);
-    }
-    if (data.containsKey('amount')) {
-      context.handle(
-        _amountMeta,
-        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_amountMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-        _descriptionMeta,
-        description.isAcceptableOrUnknown(
-          data['description']!,
-          _descriptionMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
-    }
-    if (data.containsKey('saving_id')) {
-      context.handle(
-        _savingIdMeta,
-        savingId.isAcceptableOrUnknown(data['saving_id']!, _savingIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_savingIdMeta);
-    }
-    if (data.containsKey('commitment_id')) {
-      context.handle(
-        _commitmentIdMeta,
-        commitmentId.isAcceptableOrUnknown(
-          data['commitment_id']!,
-          _commitmentIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_commitmentIdMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  ExpnsCommitmentDetail map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ExpnsCommitmentDetail(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      createdBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_by'],
-      )!,
-      dateCreated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_created'],
-      )!,
-      dateUpdated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_updated'],
-      )!,
-      lastModifiedBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_modified_by'],
-      )!,
-      amount: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}amount'],
-      )!,
-      description: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description'],
-      )!,
-      type: $CommitmentDetailTableTable.$convertertype.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.int,
-          data['${effectivePrefix}type'],
-        )!,
-      ),
-      savingId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}saving_id'],
-      )!,
-      commitmentId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}commitment_id'],
-      )!,
-    );
-  }
-
-  @override
-  $CommitmentDetailTableTable createAlias(String alias) {
-    return $CommitmentDetailTableTable(attachedDatabase, alias);
-  }
-
-  static JsonTypeConverter2<CommitmentDetailType, int, int> $convertertype =
-      const EnumIndexConverter<CommitmentDetailType>(
-        CommitmentDetailType.values,
-      );
-}
-
-class ExpnsCommitmentDetail extends DataClass
-    implements Insertable<ExpnsCommitmentDetail> {
-  final String id;
-  final String createdBy;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final String lastModifiedBy;
-  final double amount;
-  final String description;
-
-  /// Recurrence pattern - using intEnum for type safety
-  final CommitmentDetailType type;
-  final String savingId;
-  final String commitmentId;
-  const ExpnsCommitmentDetail({
-    required this.id,
-    required this.createdBy,
-    required this.dateCreated,
-    required this.dateUpdated,
-    required this.lastModifiedBy,
-    required this.amount,
-    required this.description,
-    required this.type,
-    required this.savingId,
-    required this.commitmentId,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['created_by'] = Variable<String>(createdBy);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['amount'] = Variable<double>(amount);
-    map['description'] = Variable<String>(description);
-    {
-      map['type'] = Variable<int>(
-        $CommitmentDetailTableTable.$convertertype.toSql(type),
-      );
-    }
-    map['saving_id'] = Variable<String>(savingId);
-    map['commitment_id'] = Variable<String>(commitmentId);
-    return map;
-  }
-
-  CommitmentDetailTableCompanion toCompanion(bool nullToAbsent) {
-    return CommitmentDetailTableCompanion(
-      id: Value(id),
-      createdBy: Value(createdBy),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      lastModifiedBy: Value(lastModifiedBy),
-      amount: Value(amount),
-      description: Value(description),
-      type: Value(type),
-      savingId: Value(savingId),
-      commitmentId: Value(commitmentId),
-    );
-  }
-
-  factory ExpnsCommitmentDetail.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ExpnsCommitmentDetail(
-      id: serializer.fromJson<String>(json['id']),
-      createdBy: serializer.fromJson<String>(json['createdBy']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      amount: serializer.fromJson<double>(json['amount']),
-      description: serializer.fromJson<String>(json['description']),
-      type: $CommitmentDetailTableTable.$convertertype.fromJson(
-        serializer.fromJson<int>(json['type']),
-      ),
-      savingId: serializer.fromJson<String>(json['savingId']),
-      commitmentId: serializer.fromJson<String>(json['commitmentId']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'createdBy': serializer.toJson<String>(createdBy),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'amount': serializer.toJson<double>(amount),
-      'description': serializer.toJson<String>(description),
-      'type': serializer.toJson<int>(
-        $CommitmentDetailTableTable.$convertertype.toJson(type),
-      ),
-      'savingId': serializer.toJson<String>(savingId),
-      'commitmentId': serializer.toJson<String>(commitmentId),
-    };
-  }
-
-  ExpnsCommitmentDetail copyWith({
-    String? id,
-    String? createdBy,
-    DateTime? dateCreated,
-    DateTime? dateUpdated,
-    String? lastModifiedBy,
-    double? amount,
-    String? description,
-    CommitmentDetailType? type,
-    String? savingId,
-    String? commitmentId,
-  }) => ExpnsCommitmentDetail(
-    id: id ?? this.id,
-    createdBy: createdBy ?? this.createdBy,
-    dateCreated: dateCreated ?? this.dateCreated,
-    dateUpdated: dateUpdated ?? this.dateUpdated,
-    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-    amount: amount ?? this.amount,
-    description: description ?? this.description,
-    type: type ?? this.type,
-    savingId: savingId ?? this.savingId,
-    commitmentId: commitmentId ?? this.commitmentId,
-  );
-  ExpnsCommitmentDetail copyWithCompanion(CommitmentDetailTableCompanion data) {
-    return ExpnsCommitmentDetail(
-      id: data.id.present ? data.id.value : this.id,
-      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
-      dateCreated: data.dateCreated.present
-          ? data.dateCreated.value
-          : this.dateCreated,
-      dateUpdated: data.dateUpdated.present
-          ? data.dateUpdated.value
-          : this.dateUpdated,
-      lastModifiedBy: data.lastModifiedBy.present
-          ? data.lastModifiedBy.value
-          : this.lastModifiedBy,
-      amount: data.amount.present ? data.amount.value : this.amount,
-      description: data.description.present
-          ? data.description.value
-          : this.description,
-      type: data.type.present ? data.type.value : this.type,
-      savingId: data.savingId.present ? data.savingId.value : this.savingId,
-      commitmentId: data.commitmentId.present
-          ? data.commitmentId.value
-          : this.commitmentId,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ExpnsCommitmentDetail(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('amount: $amount, ')
-          ..write('description: $description, ')
-          ..write('type: $type, ')
-          ..write('savingId: $savingId, ')
-          ..write('commitmentId: $commitmentId')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    amount,
-    description,
-    type,
-    savingId,
-    commitmentId,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is ExpnsCommitmentDetail &&
-          other.id == this.id &&
-          other.createdBy == this.createdBy &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.lastModifiedBy == this.lastModifiedBy &&
-          other.amount == this.amount &&
-          other.description == this.description &&
-          other.type == this.type &&
-          other.savingId == this.savingId &&
-          other.commitmentId == this.commitmentId);
-}
-
-class CommitmentDetailTableCompanion
-    extends UpdateCompanion<ExpnsCommitmentDetail> {
-  final Value<String> id;
-  final Value<String> createdBy;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<String> lastModifiedBy;
-  final Value<double> amount;
-  final Value<String> description;
-  final Value<CommitmentDetailType> type;
-  final Value<String> savingId;
-  final Value<String> commitmentId;
-  final Value<int> rowid;
-  const CommitmentDetailTableCompanion({
-    this.id = const Value.absent(),
-    this.createdBy = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.lastModifiedBy = const Value.absent(),
-    this.amount = const Value.absent(),
-    this.description = const Value.absent(),
-    this.type = const Value.absent(),
-    this.savingId = const Value.absent(),
-    this.commitmentId = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  CommitmentDetailTableCompanion.insert({
-    this.id = const Value.absent(),
-    required String createdBy,
-    this.dateCreated = const Value.absent(),
-    required DateTime dateUpdated,
-    required String lastModifiedBy,
-    required double amount,
-    required String description,
-    required CommitmentDetailType type,
-    required String savingId,
-    required String commitmentId,
-    this.rowid = const Value.absent(),
-  }) : createdBy = Value(createdBy),
-       dateUpdated = Value(dateUpdated),
-       lastModifiedBy = Value(lastModifiedBy),
-       amount = Value(amount),
-       description = Value(description),
-       type = Value(type),
-       savingId = Value(savingId),
-       commitmentId = Value(commitmentId);
-  static Insertable<ExpnsCommitmentDetail> custom({
-    Expression<String>? id,
-    Expression<String>? createdBy,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<String>? lastModifiedBy,
-    Expression<double>? amount,
-    Expression<String>? description,
-    Expression<int>? type,
-    Expression<String>? savingId,
-    Expression<String>? commitmentId,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (createdBy != null) 'created_by': createdBy,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
-      if (amount != null) 'amount': amount,
-      if (description != null) 'description': description,
-      if (type != null) 'type': type,
-      if (savingId != null) 'saving_id': savingId,
-      if (commitmentId != null) 'commitment_id': commitmentId,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  CommitmentDetailTableCompanion copyWith({
-    Value<String>? id,
-    Value<String>? createdBy,
-    Value<DateTime>? dateCreated,
-    Value<DateTime>? dateUpdated,
-    Value<String>? lastModifiedBy,
-    Value<double>? amount,
-    Value<String>? description,
-    Value<CommitmentDetailType>? type,
-    Value<String>? savingId,
-    Value<String>? commitmentId,
-    Value<int>? rowid,
-  }) {
-    return CommitmentDetailTableCompanion(
-      id: id ?? this.id,
-      createdBy: createdBy ?? this.createdBy,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-      amount: amount ?? this.amount,
-      description: description ?? this.description,
-      type: type ?? this.type,
-      savingId: savingId ?? this.savingId,
-      commitmentId: commitmentId ?? this.commitmentId,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (createdBy.present) {
-      map['created_by'] = Variable<String>(createdBy.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (lastModifiedBy.present) {
-      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
-    }
-    if (amount.present) {
-      map['amount'] = Variable<double>(amount.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (type.present) {
-      map['type'] = Variable<int>(
-        $CommitmentDetailTableTable.$convertertype.toSql(type.value),
-      );
-    }
-    if (savingId.present) {
-      map['saving_id'] = Variable<String>(savingId.value);
-    }
-    if (commitmentId.present) {
-      map['commitment_id'] = Variable<String>(commitmentId.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CommitmentDetailTableCompanion(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('amount: $amount, ')
-          ..write('description: $description, ')
-          ..write('type: $type, ')
-          ..write('savingId: $savingId, ')
-          ..write('commitmentId: $commitmentId, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $PayeeTableTable extends PayeeTable
     with TableInfo<$PayeeTableTable, ExpnsPayee> {
   @override
@@ -6933,6 +6287,833 @@ class PayeeTableCompanion extends UpdateCompanion<ExpnsPayee> {
           ..write('accountNumber: $accountNumber, ')
           ..write('bankName: $bankName, ')
           ..write('note: $note, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CommitmentDetailTableTable extends CommitmentDetailTable
+    with TableInfo<$CommitmentDetailTableTable, ExpnsCommitmentDetail> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CommitmentDetailTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<CommitmentDetailType, int> type =
+      GeneratedColumn<int>(
+        'type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<CommitmentDetailType>(
+        $CommitmentDetailTableTable.$convertertype,
+      );
+  @override
+  late final GeneratedColumnWithTypeConverter<CommitmentTaskType, int>
+  taskType =
+      GeneratedColumn<int>(
+        'task_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      ).withConverter<CommitmentTaskType>(
+        $CommitmentDetailTableTable.$convertertaskType,
+      );
+  static const VerificationMeta _savingIdMeta = const VerificationMeta(
+    'savingId',
+  );
+  @override
+  late final GeneratedColumn<String> savingId = GeneratedColumn<String>(
+    'saving_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES saving_table (id)',
+    ),
+  );
+  static const VerificationMeta _targetSavingIdMeta = const VerificationMeta(
+    'targetSavingId',
+  );
+  @override
+  late final GeneratedColumn<String> targetSavingId = GeneratedColumn<String>(
+    'target_saving_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES saving_table (id)',
+    ),
+  );
+  static const VerificationMeta _payeeIdMeta = const VerificationMeta(
+    'payeeId',
+  );
+  @override
+  late final GeneratedColumn<String> payeeId = GeneratedColumn<String>(
+    'payee_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES payee_table (id)',
+    ),
+  );
+  static const VerificationMeta _commitmentIdMeta = const VerificationMeta(
+    'commitmentId',
+  );
+  @override
+  late final GeneratedColumn<String> commitmentId = GeneratedColumn<String>(
+    'commitment_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES commitment_table (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    amount,
+    description,
+    type,
+    taskType,
+    savingId,
+    targetSavingId,
+    payeeId,
+    commitmentId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'commitment_detail_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExpnsCommitmentDetail> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(
+        _amountMeta,
+        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('saving_id')) {
+      context.handle(
+        _savingIdMeta,
+        savingId.isAcceptableOrUnknown(data['saving_id']!, _savingIdMeta),
+      );
+    }
+    if (data.containsKey('target_saving_id')) {
+      context.handle(
+        _targetSavingIdMeta,
+        targetSavingId.isAcceptableOrUnknown(
+          data['target_saving_id']!,
+          _targetSavingIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('payee_id')) {
+      context.handle(
+        _payeeIdMeta,
+        payeeId.isAcceptableOrUnknown(data['payee_id']!, _payeeIdMeta),
+      );
+    }
+    if (data.containsKey('commitment_id')) {
+      context.handle(
+        _commitmentIdMeta,
+        commitmentId.isAcceptableOrUnknown(
+          data['commitment_id']!,
+          _commitmentIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_commitmentIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExpnsCommitmentDetail map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExpnsCommitmentDetail(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}amount'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      type: $CommitmentDetailTableTable.$convertertype.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}type'],
+        )!,
+      ),
+      taskType: $CommitmentDetailTableTable.$convertertaskType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}task_type'],
+        )!,
+      ),
+      savingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}saving_id'],
+      ),
+      targetSavingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_saving_id'],
+      ),
+      payeeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payee_id'],
+      ),
+      commitmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}commitment_id'],
+      )!,
+    );
+  }
+
+  @override
+  $CommitmentDetailTableTable createAlias(String alias) {
+    return $CommitmentDetailTableTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<CommitmentDetailType, int, int> $convertertype =
+      const EnumIndexConverter<CommitmentDetailType>(
+        CommitmentDetailType.values,
+      );
+  static JsonTypeConverter2<CommitmentTaskType, int, int> $convertertaskType =
+      const EnumIndexConverter<CommitmentTaskType>(CommitmentTaskType.values);
+}
+
+class ExpnsCommitmentDetail extends DataClass
+    implements Insertable<ExpnsCommitmentDetail> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+  final double amount;
+  final String description;
+
+  /// Recurrence pattern (monthly, weekly, etc.). Kept for scheduling logic.
+  final CommitmentDetailType type;
+
+  /// Determines HOW this detail's tasks are paid when distributed:
+  ///   internalTransfer  → sourceSaving (savingId) → targetSaving (targetSavingId)
+  ///   thirdPartyPayment → sourceSaving (savingId) → external payee (payeeId)
+  ///   cash              → no digital account movement
+  ///
+  /// Defaults to internalTransfer (index 0) so existing rows stay valid.
+  final CommitmentTaskType taskType;
+
+  /// The savings account funds are drawn FROM. Required for internalTransfer
+  /// and thirdPartyPayment; nullable for cash.
+  final String? savingId;
+
+  /// Destination account. Only meaningful when taskType == internalTransfer.
+  final String? targetSavingId;
+
+  /// Recipient. Only meaningful when taskType == thirdPartyPayment.
+  final String? payeeId;
+  final String commitmentId;
+  const ExpnsCommitmentDetail({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.amount,
+    required this.description,
+    required this.type,
+    required this.taskType,
+    this.savingId,
+    this.targetSavingId,
+    this.payeeId,
+    required this.commitmentId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['amount'] = Variable<double>(amount);
+    map['description'] = Variable<String>(description);
+    {
+      map['type'] = Variable<int>(
+        $CommitmentDetailTableTable.$convertertype.toSql(type),
+      );
+    }
+    {
+      map['task_type'] = Variable<int>(
+        $CommitmentDetailTableTable.$convertertaskType.toSql(taskType),
+      );
+    }
+    if (!nullToAbsent || savingId != null) {
+      map['saving_id'] = Variable<String>(savingId);
+    }
+    if (!nullToAbsent || targetSavingId != null) {
+      map['target_saving_id'] = Variable<String>(targetSavingId);
+    }
+    if (!nullToAbsent || payeeId != null) {
+      map['payee_id'] = Variable<String>(payeeId);
+    }
+    map['commitment_id'] = Variable<String>(commitmentId);
+    return map;
+  }
+
+  CommitmentDetailTableCompanion toCompanion(bool nullToAbsent) {
+    return CommitmentDetailTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      amount: Value(amount),
+      description: Value(description),
+      type: Value(type),
+      taskType: Value(taskType),
+      savingId: savingId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(savingId),
+      targetSavingId: targetSavingId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetSavingId),
+      payeeId: payeeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(payeeId),
+      commitmentId: Value(commitmentId),
+    );
+  }
+
+  factory ExpnsCommitmentDetail.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExpnsCommitmentDetail(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      amount: serializer.fromJson<double>(json['amount']),
+      description: serializer.fromJson<String>(json['description']),
+      type: $CommitmentDetailTableTable.$convertertype.fromJson(
+        serializer.fromJson<int>(json['type']),
+      ),
+      taskType: $CommitmentDetailTableTable.$convertertaskType.fromJson(
+        serializer.fromJson<int>(json['taskType']),
+      ),
+      savingId: serializer.fromJson<String?>(json['savingId']),
+      targetSavingId: serializer.fromJson<String?>(json['targetSavingId']),
+      payeeId: serializer.fromJson<String?>(json['payeeId']),
+      commitmentId: serializer.fromJson<String>(json['commitmentId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'amount': serializer.toJson<double>(amount),
+      'description': serializer.toJson<String>(description),
+      'type': serializer.toJson<int>(
+        $CommitmentDetailTableTable.$convertertype.toJson(type),
+      ),
+      'taskType': serializer.toJson<int>(
+        $CommitmentDetailTableTable.$convertertaskType.toJson(taskType),
+      ),
+      'savingId': serializer.toJson<String?>(savingId),
+      'targetSavingId': serializer.toJson<String?>(targetSavingId),
+      'payeeId': serializer.toJson<String?>(payeeId),
+      'commitmentId': serializer.toJson<String>(commitmentId),
+    };
+  }
+
+  ExpnsCommitmentDetail copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    double? amount,
+    String? description,
+    CommitmentDetailType? type,
+    CommitmentTaskType? taskType,
+    Value<String?> savingId = const Value.absent(),
+    Value<String?> targetSavingId = const Value.absent(),
+    Value<String?> payeeId = const Value.absent(),
+    String? commitmentId,
+  }) => ExpnsCommitmentDetail(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    amount: amount ?? this.amount,
+    description: description ?? this.description,
+    type: type ?? this.type,
+    taskType: taskType ?? this.taskType,
+    savingId: savingId.present ? savingId.value : this.savingId,
+    targetSavingId: targetSavingId.present
+        ? targetSavingId.value
+        : this.targetSavingId,
+    payeeId: payeeId.present ? payeeId.value : this.payeeId,
+    commitmentId: commitmentId ?? this.commitmentId,
+  );
+  ExpnsCommitmentDetail copyWithCompanion(CommitmentDetailTableCompanion data) {
+    return ExpnsCommitmentDetail(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      type: data.type.present ? data.type.value : this.type,
+      taskType: data.taskType.present ? data.taskType.value : this.taskType,
+      savingId: data.savingId.present ? data.savingId.value : this.savingId,
+      targetSavingId: data.targetSavingId.present
+          ? data.targetSavingId.value
+          : this.targetSavingId,
+      payeeId: data.payeeId.present ? data.payeeId.value : this.payeeId,
+      commitmentId: data.commitmentId.present
+          ? data.commitmentId.value
+          : this.commitmentId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpnsCommitmentDetail(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('amount: $amount, ')
+          ..write('description: $description, ')
+          ..write('type: $type, ')
+          ..write('taskType: $taskType, ')
+          ..write('savingId: $savingId, ')
+          ..write('targetSavingId: $targetSavingId, ')
+          ..write('payeeId: $payeeId, ')
+          ..write('commitmentId: $commitmentId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    amount,
+    description,
+    type,
+    taskType,
+    savingId,
+    targetSavingId,
+    payeeId,
+    commitmentId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExpnsCommitmentDetail &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.amount == this.amount &&
+          other.description == this.description &&
+          other.type == this.type &&
+          other.taskType == this.taskType &&
+          other.savingId == this.savingId &&
+          other.targetSavingId == this.targetSavingId &&
+          other.payeeId == this.payeeId &&
+          other.commitmentId == this.commitmentId);
+}
+
+class CommitmentDetailTableCompanion
+    extends UpdateCompanion<ExpnsCommitmentDetail> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<double> amount;
+  final Value<String> description;
+  final Value<CommitmentDetailType> type;
+  final Value<CommitmentTaskType> taskType;
+  final Value<String?> savingId;
+  final Value<String?> targetSavingId;
+  final Value<String?> payeeId;
+  final Value<String> commitmentId;
+  final Value<int> rowid;
+  const CommitmentDetailTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.description = const Value.absent(),
+    this.type = const Value.absent(),
+    this.taskType = const Value.absent(),
+    this.savingId = const Value.absent(),
+    this.targetSavingId = const Value.absent(),
+    this.payeeId = const Value.absent(),
+    this.commitmentId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CommitmentDetailTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required double amount,
+    required String description,
+    required CommitmentDetailType type,
+    this.taskType = const Value.absent(),
+    this.savingId = const Value.absent(),
+    this.targetSavingId = const Value.absent(),
+    this.payeeId = const Value.absent(),
+    required String commitmentId,
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       amount = Value(amount),
+       description = Value(description),
+       type = Value(type),
+       commitmentId = Value(commitmentId);
+  static Insertable<ExpnsCommitmentDetail> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<double>? amount,
+    Expression<String>? description,
+    Expression<int>? type,
+    Expression<int>? taskType,
+    Expression<String>? savingId,
+    Expression<String>? targetSavingId,
+    Expression<String>? payeeId,
+    Expression<String>? commitmentId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (amount != null) 'amount': amount,
+      if (description != null) 'description': description,
+      if (type != null) 'type': type,
+      if (taskType != null) 'task_type': taskType,
+      if (savingId != null) 'saving_id': savingId,
+      if (targetSavingId != null) 'target_saving_id': targetSavingId,
+      if (payeeId != null) 'payee_id': payeeId,
+      if (commitmentId != null) 'commitment_id': commitmentId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CommitmentDetailTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<double>? amount,
+    Value<String>? description,
+    Value<CommitmentDetailType>? type,
+    Value<CommitmentTaskType>? taskType,
+    Value<String?>? savingId,
+    Value<String?>? targetSavingId,
+    Value<String?>? payeeId,
+    Value<String>? commitmentId,
+    Value<int>? rowid,
+  }) {
+    return CommitmentDetailTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      amount: amount ?? this.amount,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      taskType: taskType ?? this.taskType,
+      savingId: savingId ?? this.savingId,
+      targetSavingId: targetSavingId ?? this.targetSavingId,
+      payeeId: payeeId ?? this.payeeId,
+      commitmentId: commitmentId ?? this.commitmentId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<double>(amount.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<int>(
+        $CommitmentDetailTableTable.$convertertype.toSql(type.value),
+      );
+    }
+    if (taskType.present) {
+      map['task_type'] = Variable<int>(
+        $CommitmentDetailTableTable.$convertertaskType.toSql(taskType.value),
+      );
+    }
+    if (savingId.present) {
+      map['saving_id'] = Variable<String>(savingId.value);
+    }
+    if (targetSavingId.present) {
+      map['target_saving_id'] = Variable<String>(targetSavingId.value);
+    }
+    if (payeeId.present) {
+      map['payee_id'] = Variable<String>(payeeId.value);
+    }
+    if (commitmentId.present) {
+      map['commitment_id'] = Variable<String>(commitmentId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CommitmentDetailTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('amount: $amount, ')
+          ..write('description: $description, ')
+          ..write('type: $type, ')
+          ..write('taskType: $taskType, ')
+          ..write('savingId: $savingId, ')
+          ..write('targetSavingId: $targetSavingId, ')
+          ..write('payeeId: $payeeId, ')
+          ..write('commitmentId: $commitmentId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -15823,9 +16004,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CommitmentTableTable commitmentTable = $CommitmentTableTable(
     this,
   );
+  late final $PayeeTableTable payeeTable = $PayeeTableTable(this);
   late final $CommitmentDetailTableTable commitmentDetailTable =
       $CommitmentDetailTableTable(this);
-  late final $PayeeTableTable payeeTable = $PayeeTableTable(this);
   late final $CommitmentTaskTableTable commitmentTaskTable =
       $CommitmentTaskTableTable(this);
   late final $TransactionTableTable transactionTable = $TransactionTableTable(
@@ -15866,8 +16047,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     budgetPlanDeposits,
     categoryTable,
     commitmentTable,
-    commitmentDetailTable,
     payeeTable,
+    commitmentDetailTable,
     commitmentTaskTable,
     transactionTable,
     budgetPlanTransactions,
@@ -18262,34 +18443,6 @@ final class $$SavingTableTableReferences
   }
 
   static MultiTypedResultKey<
-    $CommitmentDetailTableTable,
-    List<ExpnsCommitmentDetail>
-  >
-  _commitmentDetailTableRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.commitmentDetailTable,
-        aliasName: $_aliasNameGenerator(
-          db.savingTable.id,
-          db.commitmentDetailTable.savingId,
-        ),
-      );
-
-  $$CommitmentDetailTableTableProcessedTableManager
-  get commitmentDetailTableRefs {
-    final manager = $$CommitmentDetailTableTableTableManager(
-      $_db,
-      $_db.commitmentDetailTable,
-    ).filter((f) => f.savingId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _commitmentDetailTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
     $BudgetPlanLinkedAccountsTable,
     List<BudgetPlanLinkedAccount>
   >
@@ -18543,32 +18696,6 @@ class $$SavingTableTableFilterComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
-    return f(composer);
-  }
-
-  Expression<bool> commitmentDetailTableRefs(
-    Expression<bool> Function($$CommitmentDetailTableTableFilterComposer f) f,
-  ) {
-    final $$CommitmentDetailTableTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.commitmentDetailTable,
-          getReferencedColumn: (t) => t.savingId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$CommitmentDetailTableTableFilterComposer(
-                $db: $db,
-                $table: $db.commitmentDetailTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
     return f(composer);
   }
 
@@ -18960,32 +19087,6 @@ class $$SavingTableTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> commitmentDetailTableRefs<T extends Object>(
-    Expression<T> Function($$CommitmentDetailTableTableAnnotationComposer a) f,
-  ) {
-    final $$CommitmentDetailTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.commitmentDetailTable,
-          getReferencedColumn: (t) => t.savingId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$CommitmentDetailTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.commitmentDetailTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
   Expression<T> budgetPlanLinkedAccountsRefs<T extends Object>(
     Expression<T> Function($$BudgetPlanLinkedAccountsTableAnnotationComposer a)
     f,
@@ -19059,7 +19160,6 @@ class $$SavingTableTableTableManager
             bool moneyStorageId,
             bool budgetPlanDepositsRefs,
             bool commitmentTableRefs,
-            bool commitmentDetailTableRefs,
             bool budgetPlanLinkedAccountsRefs,
             bool recurringTransactionTableRefs,
           })
@@ -19185,7 +19285,6 @@ class $$SavingTableTableTableManager
                 moneyStorageId = false,
                 budgetPlanDepositsRefs = false,
                 commitmentTableRefs = false,
-                commitmentDetailTableRefs = false,
                 budgetPlanLinkedAccountsRefs = false,
                 recurringTransactionTableRefs = false,
               }) {
@@ -19194,7 +19293,6 @@ class $$SavingTableTableTableManager
                   explicitlyWatchedTables: [
                     if (budgetPlanDepositsRefs) db.budgetPlanDeposits,
                     if (commitmentTableRefs) db.commitmentTable,
-                    if (commitmentDetailTableRefs) db.commitmentDetailTable,
                     if (budgetPlanLinkedAccountsRefs)
                       db.budgetPlanLinkedAccounts,
                     if (recurringTransactionTableRefs)
@@ -19293,27 +19391,6 @@ class $$SavingTableTableTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (commitmentDetailTableRefs)
-                        await $_getPrefetchedData<
-                          SvngSaving,
-                          $SavingTableTable,
-                          ExpnsCommitmentDetail
-                        >(
-                          currentTable: table,
-                          referencedTable: $$SavingTableTableReferences
-                              ._commitmentDetailTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$SavingTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).commitmentDetailTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.savingId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
                       if (budgetPlanLinkedAccountsRefs)
                         await $_getPrefetchedData<
                           SvngSaving,
@@ -19381,7 +19458,6 @@ typedef $$SavingTableTableProcessedTableManager =
         bool moneyStorageId,
         bool budgetPlanDepositsRefs,
         bool commitmentTableRefs,
-        bool commitmentDetailTableRefs,
         bool budgetPlanLinkedAccountsRefs,
         bool recurringTransactionTableRefs,
       })
@@ -21192,670 +21268,6 @@ typedef $$CommitmentTableTableProcessedTableManager =
         bool commitmentTaskTableRefs,
       })
     >;
-typedef $$CommitmentDetailTableTableCreateCompanionBuilder =
-    CommitmentDetailTableCompanion Function({
-      Value<String> id,
-      required String createdBy,
-      Value<DateTime> dateCreated,
-      required DateTime dateUpdated,
-      required String lastModifiedBy,
-      required double amount,
-      required String description,
-      required CommitmentDetailType type,
-      required String savingId,
-      required String commitmentId,
-      Value<int> rowid,
-    });
-typedef $$CommitmentDetailTableTableUpdateCompanionBuilder =
-    CommitmentDetailTableCompanion Function({
-      Value<String> id,
-      Value<String> createdBy,
-      Value<DateTime> dateCreated,
-      Value<DateTime> dateUpdated,
-      Value<String> lastModifiedBy,
-      Value<double> amount,
-      Value<String> description,
-      Value<CommitmentDetailType> type,
-      Value<String> savingId,
-      Value<String> commitmentId,
-      Value<int> rowid,
-    });
-
-final class $$CommitmentDetailTableTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $CommitmentDetailTableTable,
-          ExpnsCommitmentDetail
-        > {
-  $$CommitmentDetailTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $SavingTableTable _savingIdTable(_$AppDatabase db) =>
-      db.savingTable.createAlias(
-        $_aliasNameGenerator(
-          db.commitmentDetailTable.savingId,
-          db.savingTable.id,
-        ),
-      );
-
-  $$SavingTableTableProcessedTableManager get savingId {
-    final $_column = $_itemColumn<String>('saving_id')!;
-
-    final manager = $$SavingTableTableTableManager(
-      $_db,
-      $_db.savingTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_savingIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static $CommitmentTableTable _commitmentIdTable(_$AppDatabase db) =>
-      db.commitmentTable.createAlias(
-        $_aliasNameGenerator(
-          db.commitmentDetailTable.commitmentId,
-          db.commitmentTable.id,
-        ),
-      );
-
-  $$CommitmentTableTableProcessedTableManager get commitmentId {
-    final $_column = $_itemColumn<String>('commitment_id')!;
-
-    final manager = $$CommitmentTableTableTableManager(
-      $_db,
-      $_db.commitmentTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_commitmentIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $CommitmentTaskTableTable,
-    List<ExpnsCommitmentTask>
-  >
-  _commitmentTaskTableRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.commitmentTaskTable,
-        aliasName: $_aliasNameGenerator(
-          db.commitmentDetailTable.id,
-          db.commitmentTaskTable.commitmentDetailId,
-        ),
-      );
-
-  $$CommitmentTaskTableTableProcessedTableManager get commitmentTaskTableRefs {
-    final manager =
-        $$CommitmentTaskTableTableTableManager(
-          $_db,
-          $_db.commitmentTaskTable,
-        ).filter(
-          (f) => f.commitmentDetailId.id.sqlEquals($_itemColumn<String>('id')!),
-        );
-
-    final cache = $_typedResult.readTableOrNull(
-      _commitmentTaskTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$CommitmentDetailTableTableFilterComposer
-    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
-  $$CommitmentDetailTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get amount => $composableBuilder(
-    column: $table.amount,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnWithTypeConverterFilters<
-    CommitmentDetailType,
-    CommitmentDetailType,
-    int
-  >
-  get type => $composableBuilder(
-    column: $table.type,
-    builder: (column) => ColumnWithTypeConverterFilters(column),
-  );
-
-  $$SavingTableTableFilterComposer get savingId {
-    final $$SavingTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.savingId,
-      referencedTable: $db.savingTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SavingTableTableFilterComposer(
-            $db: $db,
-            $table: $db.savingTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$CommitmentTableTableFilterComposer get commitmentId {
-    final $$CommitmentTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.commitmentId,
-      referencedTable: $db.commitmentTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CommitmentTableTableFilterComposer(
-            $db: $db,
-            $table: $db.commitmentTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> commitmentTaskTableRefs(
-    Expression<bool> Function($$CommitmentTaskTableTableFilterComposer f) f,
-  ) {
-    final $$CommitmentTaskTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.commitmentTaskTable,
-      getReferencedColumn: (t) => t.commitmentDetailId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CommitmentTaskTableTableFilterComposer(
-            $db: $db,
-            $table: $db.commitmentTaskTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$CommitmentDetailTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
-  $$CommitmentDetailTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get amount => $composableBuilder(
-    column: $table.amount,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get type => $composableBuilder(
-    column: $table.type,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$SavingTableTableOrderingComposer get savingId {
-    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.savingId,
-      referencedTable: $db.savingTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SavingTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.savingTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$CommitmentTableTableOrderingComposer get commitmentId {
-    final $$CommitmentTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.commitmentId,
-      referencedTable: $db.commitmentTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CommitmentTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.commitmentTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$CommitmentDetailTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
-  $$CommitmentDetailTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get createdBy =>
-      $composableBuilder(column: $table.createdBy, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get amount =>
-      $composableBuilder(column: $table.amount, builder: (column) => column);
-
-  GeneratedColumn<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => column,
-  );
-
-  GeneratedColumnWithTypeConverter<CommitmentDetailType, int> get type =>
-      $composableBuilder(column: $table.type, builder: (column) => column);
-
-  $$SavingTableTableAnnotationComposer get savingId {
-    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.savingId,
-      referencedTable: $db.savingTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SavingTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.savingTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$CommitmentTableTableAnnotationComposer get commitmentId {
-    final $$CommitmentTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.commitmentId,
-      referencedTable: $db.commitmentTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CommitmentTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.commitmentTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<T> commitmentTaskTableRefs<T extends Object>(
-    Expression<T> Function($$CommitmentTaskTableTableAnnotationComposer a) f,
-  ) {
-    final $$CommitmentTaskTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.commitmentTaskTable,
-          getReferencedColumn: (t) => t.commitmentDetailId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$CommitmentTaskTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.commitmentTaskTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$CommitmentDetailTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $CommitmentDetailTableTable,
-          ExpnsCommitmentDetail,
-          $$CommitmentDetailTableTableFilterComposer,
-          $$CommitmentDetailTableTableOrderingComposer,
-          $$CommitmentDetailTableTableAnnotationComposer,
-          $$CommitmentDetailTableTableCreateCompanionBuilder,
-          $$CommitmentDetailTableTableUpdateCompanionBuilder,
-          (ExpnsCommitmentDetail, $$CommitmentDetailTableTableReferences),
-          ExpnsCommitmentDetail,
-          PrefetchHooks Function({
-            bool savingId,
-            bool commitmentId,
-            bool commitmentTaskTableRefs,
-          })
-        > {
-  $$CommitmentDetailTableTableTableManager(
-    _$AppDatabase db,
-    $CommitmentDetailTableTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$CommitmentDetailTableTableFilterComposer(
-                $db: db,
-                $table: table,
-              ),
-          createOrderingComposer: () =>
-              $$CommitmentDetailTableTableOrderingComposer(
-                $db: db,
-                $table: table,
-              ),
-          createComputedFieldComposer: () =>
-              $$CommitmentDetailTableTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> createdBy = const Value.absent(),
-                Value<DateTime> dateCreated = const Value.absent(),
-                Value<DateTime> dateUpdated = const Value.absent(),
-                Value<String> lastModifiedBy = const Value.absent(),
-                Value<double> amount = const Value.absent(),
-                Value<String> description = const Value.absent(),
-                Value<CommitmentDetailType> type = const Value.absent(),
-                Value<String> savingId = const Value.absent(),
-                Value<String> commitmentId = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => CommitmentDetailTableCompanion(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                amount: amount,
-                description: description,
-                type: type,
-                savingId: savingId,
-                commitmentId: commitmentId,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                required String createdBy,
-                Value<DateTime> dateCreated = const Value.absent(),
-                required DateTime dateUpdated,
-                required String lastModifiedBy,
-                required double amount,
-                required String description,
-                required CommitmentDetailType type,
-                required String savingId,
-                required String commitmentId,
-                Value<int> rowid = const Value.absent(),
-              }) => CommitmentDetailTableCompanion.insert(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                amount: amount,
-                description: description,
-                type: type,
-                savingId: savingId,
-                commitmentId: commitmentId,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CommitmentDetailTableTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({
-                savingId = false,
-                commitmentId = false,
-                commitmentTaskTableRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (commitmentTaskTableRefs) db.commitmentTaskTable,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (savingId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.savingId,
-                                    referencedTable:
-                                        $$CommitmentDetailTableTableReferences
-                                            ._savingIdTable(db),
-                                    referencedColumn:
-                                        $$CommitmentDetailTableTableReferences
-                                            ._savingIdTable(db)
-                                            .id,
-                                  )
-                                  as T;
-                        }
-                        if (commitmentId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.commitmentId,
-                                    referencedTable:
-                                        $$CommitmentDetailTableTableReferences
-                                            ._commitmentIdTable(db),
-                                    referencedColumn:
-                                        $$CommitmentDetailTableTableReferences
-                                            ._commitmentIdTable(db)
-                                            .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (commitmentTaskTableRefs)
-                        await $_getPrefetchedData<
-                          ExpnsCommitmentDetail,
-                          $CommitmentDetailTableTable,
-                          ExpnsCommitmentTask
-                        >(
-                          currentTable: table,
-                          referencedTable:
-                              $$CommitmentDetailTableTableReferences
-                                  ._commitmentTaskTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$CommitmentDetailTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).commitmentTaskTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.commitmentDetailId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$CommitmentDetailTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $CommitmentDetailTableTable,
-      ExpnsCommitmentDetail,
-      $$CommitmentDetailTableTableFilterComposer,
-      $$CommitmentDetailTableTableOrderingComposer,
-      $$CommitmentDetailTableTableAnnotationComposer,
-      $$CommitmentDetailTableTableCreateCompanionBuilder,
-      $$CommitmentDetailTableTableUpdateCompanionBuilder,
-      (ExpnsCommitmentDetail, $$CommitmentDetailTableTableReferences),
-      ExpnsCommitmentDetail,
-      PrefetchHooks Function({
-        bool savingId,
-        bool commitmentId,
-        bool commitmentTaskTableRefs,
-      })
-    >;
 typedef $$PayeeTableTableCreateCompanionBuilder =
     PayeeTableCompanion Function({
       Value<String> id,
@@ -21886,6 +21298,34 @@ typedef $$PayeeTableTableUpdateCompanionBuilder =
 final class $$PayeeTableTableReferences
     extends BaseReferences<_$AppDatabase, $PayeeTableTable, ExpnsPayee> {
   $$PayeeTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<
+    $CommitmentDetailTableTable,
+    List<ExpnsCommitmentDetail>
+  >
+  _commitmentDetailTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.commitmentDetailTable,
+        aliasName: $_aliasNameGenerator(
+          db.payeeTable.id,
+          db.commitmentDetailTable.payeeId,
+        ),
+      );
+
+  $$CommitmentDetailTableTableProcessedTableManager
+  get commitmentDetailTableRefs {
+    final manager = $$CommitmentDetailTableTableTableManager(
+      $_db,
+      $_db.commitmentDetailTable,
+    ).filter((f) => f.payeeId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _commitmentDetailTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 
   static MultiTypedResultKey<
     $CommitmentTaskTableTable,
@@ -21991,6 +21431,32 @@ class $$PayeeTableTableFilterComposer
     column: $table.note,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> commitmentDetailTableRefs(
+    Expression<bool> Function($$CommitmentDetailTableTableFilterComposer f) f,
+  ) {
+    final $$CommitmentDetailTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.commitmentDetailTable,
+          getReferencedColumn: (t) => t.payeeId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CommitmentDetailTableTableFilterComposer(
+                $db: $db,
+                $table: $db.commitmentDetailTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 
   Expression<bool> commitmentTaskTableRefs(
     Expression<bool> Function($$CommitmentTaskTableTableFilterComposer f) f,
@@ -22142,6 +21608,32 @@ class $$PayeeTableTableAnnotationComposer
   GeneratedColumn<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => column);
 
+  Expression<T> commitmentDetailTableRefs<T extends Object>(
+    Expression<T> Function($$CommitmentDetailTableTableAnnotationComposer a) f,
+  ) {
+    final $$CommitmentDetailTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.commitmentDetailTable,
+          getReferencedColumn: (t) => t.payeeId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CommitmentDetailTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.commitmentDetailTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
   Expression<T> commitmentTaskTableRefs<T extends Object>(
     Expression<T> Function($$CommitmentTaskTableTableAnnotationComposer a) f,
   ) {
@@ -22208,6 +21700,7 @@ class $$PayeeTableTableTableManager
           (ExpnsPayee, $$PayeeTableTableReferences),
           ExpnsPayee,
           PrefetchHooks Function({
+            bool commitmentDetailTableRefs,
             bool commitmentTaskTableRefs,
             bool transactionTableRefs,
           })
@@ -22281,18 +21774,41 @@ class $$PayeeTableTableTableManager
               .toList(),
           prefetchHooksCallback:
               ({
+                commitmentDetailTableRefs = false,
                 commitmentTaskTableRefs = false,
                 transactionTableRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (commitmentDetailTableRefs) db.commitmentDetailTable,
                     if (commitmentTaskTableRefs) db.commitmentTaskTable,
                     if (transactionTableRefs) db.transactionTable,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (commitmentDetailTableRefs)
+                        await $_getPrefetchedData<
+                          ExpnsPayee,
+                          $PayeeTableTable,
+                          ExpnsCommitmentDetail
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PayeeTableTableReferences
+                              ._commitmentDetailTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PayeeTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).commitmentDetailTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.payeeId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (commitmentTaskTableRefs)
                         await $_getPrefetchedData<
                           ExpnsPayee,
@@ -22356,8 +21872,923 @@ typedef $$PayeeTableTableProcessedTableManager =
       (ExpnsPayee, $$PayeeTableTableReferences),
       ExpnsPayee,
       PrefetchHooks Function({
+        bool commitmentDetailTableRefs,
         bool commitmentTaskTableRefs,
         bool transactionTableRefs,
+      })
+    >;
+typedef $$CommitmentDetailTableTableCreateCompanionBuilder =
+    CommitmentDetailTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required double amount,
+      required String description,
+      required CommitmentDetailType type,
+      Value<CommitmentTaskType> taskType,
+      Value<String?> savingId,
+      Value<String?> targetSavingId,
+      Value<String?> payeeId,
+      required String commitmentId,
+      Value<int> rowid,
+    });
+typedef $$CommitmentDetailTableTableUpdateCompanionBuilder =
+    CommitmentDetailTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<double> amount,
+      Value<String> description,
+      Value<CommitmentDetailType> type,
+      Value<CommitmentTaskType> taskType,
+      Value<String?> savingId,
+      Value<String?> targetSavingId,
+      Value<String?> payeeId,
+      Value<String> commitmentId,
+      Value<int> rowid,
+    });
+
+final class $$CommitmentDetailTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $CommitmentDetailTableTable,
+          ExpnsCommitmentDetail
+        > {
+  $$CommitmentDetailTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $SavingTableTable _savingIdTable(_$AppDatabase db) =>
+      db.savingTable.createAlias(
+        $_aliasNameGenerator(
+          db.commitmentDetailTable.savingId,
+          db.savingTable.id,
+        ),
+      );
+
+  $$SavingTableTableProcessedTableManager? get savingId {
+    final $_column = $_itemColumn<String>('saving_id');
+    if ($_column == null) return null;
+    final manager = $$SavingTableTableTableManager(
+      $_db,
+      $_db.savingTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_savingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $SavingTableTable _targetSavingIdTable(_$AppDatabase db) =>
+      db.savingTable.createAlias(
+        $_aliasNameGenerator(
+          db.commitmentDetailTable.targetSavingId,
+          db.savingTable.id,
+        ),
+      );
+
+  $$SavingTableTableProcessedTableManager? get targetSavingId {
+    final $_column = $_itemColumn<String>('target_saving_id');
+    if ($_column == null) return null;
+    final manager = $$SavingTableTableTableManager(
+      $_db,
+      $_db.savingTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_targetSavingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $PayeeTableTable _payeeIdTable(_$AppDatabase db) =>
+      db.payeeTable.createAlias(
+        $_aliasNameGenerator(
+          db.commitmentDetailTable.payeeId,
+          db.payeeTable.id,
+        ),
+      );
+
+  $$PayeeTableTableProcessedTableManager? get payeeId {
+    final $_column = $_itemColumn<String>('payee_id');
+    if ($_column == null) return null;
+    final manager = $$PayeeTableTableTableManager(
+      $_db,
+      $_db.payeeTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_payeeIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CommitmentTableTable _commitmentIdTable(_$AppDatabase db) =>
+      db.commitmentTable.createAlias(
+        $_aliasNameGenerator(
+          db.commitmentDetailTable.commitmentId,
+          db.commitmentTable.id,
+        ),
+      );
+
+  $$CommitmentTableTableProcessedTableManager get commitmentId {
+    final $_column = $_itemColumn<String>('commitment_id')!;
+
+    final manager = $$CommitmentTableTableTableManager(
+      $_db,
+      $_db.commitmentTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_commitmentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $CommitmentTaskTableTable,
+    List<ExpnsCommitmentTask>
+  >
+  _commitmentTaskTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.commitmentTaskTable,
+        aliasName: $_aliasNameGenerator(
+          db.commitmentDetailTable.id,
+          db.commitmentTaskTable.commitmentDetailId,
+        ),
+      );
+
+  $$CommitmentTaskTableTableProcessedTableManager get commitmentTaskTableRefs {
+    final manager =
+        $$CommitmentTaskTableTableTableManager(
+          $_db,
+          $_db.commitmentTaskTable,
+        ).filter(
+          (f) => f.commitmentDetailId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _commitmentTaskTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CommitmentDetailTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
+  $$CommitmentDetailTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<
+    CommitmentDetailType,
+    CommitmentDetailType,
+    int
+  >
+  get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<CommitmentTaskType, CommitmentTaskType, int>
+  get taskType => $composableBuilder(
+    column: $table.taskType,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  $$SavingTableTableFilterComposer get savingId {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.savingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SavingTableTableFilterComposer get targetSavingId {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.targetSavingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PayeeTableTableFilterComposer get payeeId {
+    final $$PayeeTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.payeeId,
+      referencedTable: $db.payeeTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PayeeTableTableFilterComposer(
+            $db: $db,
+            $table: $db.payeeTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CommitmentTableTableFilterComposer get commitmentId {
+    final $$CommitmentTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.commitmentId,
+      referencedTable: $db.commitmentTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CommitmentTableTableFilterComposer(
+            $db: $db,
+            $table: $db.commitmentTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> commitmentTaskTableRefs(
+    Expression<bool> Function($$CommitmentTaskTableTableFilterComposer f) f,
+  ) {
+    final $$CommitmentTaskTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.commitmentTaskTable,
+      getReferencedColumn: (t) => t.commitmentDetailId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CommitmentTaskTableTableFilterComposer(
+            $db: $db,
+            $table: $db.commitmentTaskTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CommitmentDetailTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
+  $$CommitmentDetailTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taskType => $composableBuilder(
+    column: $table.taskType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$SavingTableTableOrderingComposer get savingId {
+    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.savingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SavingTableTableOrderingComposer get targetSavingId {
+    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.targetSavingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PayeeTableTableOrderingComposer get payeeId {
+    final $$PayeeTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.payeeId,
+      referencedTable: $db.payeeTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PayeeTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.payeeTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CommitmentTableTableOrderingComposer get commitmentId {
+    final $$CommitmentTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.commitmentId,
+      referencedTable: $db.commitmentTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CommitmentTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.commitmentTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CommitmentDetailTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CommitmentDetailTableTable> {
+  $$CommitmentDetailTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<CommitmentDetailType, int> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<CommitmentTaskType, int> get taskType =>
+      $composableBuilder(column: $table.taskType, builder: (column) => column);
+
+  $$SavingTableTableAnnotationComposer get savingId {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.savingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SavingTableTableAnnotationComposer get targetSavingId {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.targetSavingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$PayeeTableTableAnnotationComposer get payeeId {
+    final $$PayeeTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.payeeId,
+      referencedTable: $db.payeeTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PayeeTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.payeeTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CommitmentTableTableAnnotationComposer get commitmentId {
+    final $$CommitmentTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.commitmentId,
+      referencedTable: $db.commitmentTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CommitmentTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.commitmentTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> commitmentTaskTableRefs<T extends Object>(
+    Expression<T> Function($$CommitmentTaskTableTableAnnotationComposer a) f,
+  ) {
+    final $$CommitmentTaskTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.commitmentTaskTable,
+          getReferencedColumn: (t) => t.commitmentDetailId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CommitmentTaskTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.commitmentTaskTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$CommitmentDetailTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CommitmentDetailTableTable,
+          ExpnsCommitmentDetail,
+          $$CommitmentDetailTableTableFilterComposer,
+          $$CommitmentDetailTableTableOrderingComposer,
+          $$CommitmentDetailTableTableAnnotationComposer,
+          $$CommitmentDetailTableTableCreateCompanionBuilder,
+          $$CommitmentDetailTableTableUpdateCompanionBuilder,
+          (ExpnsCommitmentDetail, $$CommitmentDetailTableTableReferences),
+          ExpnsCommitmentDetail,
+          PrefetchHooks Function({
+            bool savingId,
+            bool targetSavingId,
+            bool payeeId,
+            bool commitmentId,
+            bool commitmentTaskTableRefs,
+          })
+        > {
+  $$CommitmentDetailTableTableTableManager(
+    _$AppDatabase db,
+    $CommitmentDetailTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CommitmentDetailTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$CommitmentDetailTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CommitmentDetailTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<double> amount = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<CommitmentDetailType> type = const Value.absent(),
+                Value<CommitmentTaskType> taskType = const Value.absent(),
+                Value<String?> savingId = const Value.absent(),
+                Value<String?> targetSavingId = const Value.absent(),
+                Value<String?> payeeId = const Value.absent(),
+                Value<String> commitmentId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CommitmentDetailTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                amount: amount,
+                description: description,
+                type: type,
+                taskType: taskType,
+                savingId: savingId,
+                targetSavingId: targetSavingId,
+                payeeId: payeeId,
+                commitmentId: commitmentId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required double amount,
+                required String description,
+                required CommitmentDetailType type,
+                Value<CommitmentTaskType> taskType = const Value.absent(),
+                Value<String?> savingId = const Value.absent(),
+                Value<String?> targetSavingId = const Value.absent(),
+                Value<String?> payeeId = const Value.absent(),
+                required String commitmentId,
+                Value<int> rowid = const Value.absent(),
+              }) => CommitmentDetailTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                amount: amount,
+                description: description,
+                type: type,
+                taskType: taskType,
+                savingId: savingId,
+                targetSavingId: targetSavingId,
+                payeeId: payeeId,
+                commitmentId: commitmentId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CommitmentDetailTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                savingId = false,
+                targetSavingId = false,
+                payeeId = false,
+                commitmentId = false,
+                commitmentTaskTableRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (commitmentTaskTableRefs) db.commitmentTaskTable,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (savingId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.savingId,
+                                    referencedTable:
+                                        $$CommitmentDetailTableTableReferences
+                                            ._savingIdTable(db),
+                                    referencedColumn:
+                                        $$CommitmentDetailTableTableReferences
+                                            ._savingIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (targetSavingId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.targetSavingId,
+                                    referencedTable:
+                                        $$CommitmentDetailTableTableReferences
+                                            ._targetSavingIdTable(db),
+                                    referencedColumn:
+                                        $$CommitmentDetailTableTableReferences
+                                            ._targetSavingIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (payeeId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.payeeId,
+                                    referencedTable:
+                                        $$CommitmentDetailTableTableReferences
+                                            ._payeeIdTable(db),
+                                    referencedColumn:
+                                        $$CommitmentDetailTableTableReferences
+                                            ._payeeIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (commitmentId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.commitmentId,
+                                    referencedTable:
+                                        $$CommitmentDetailTableTableReferences
+                                            ._commitmentIdTable(db),
+                                    referencedColumn:
+                                        $$CommitmentDetailTableTableReferences
+                                            ._commitmentIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (commitmentTaskTableRefs)
+                        await $_getPrefetchedData<
+                          ExpnsCommitmentDetail,
+                          $CommitmentDetailTableTable,
+                          ExpnsCommitmentTask
+                        >(
+                          currentTable: table,
+                          referencedTable:
+                              $$CommitmentDetailTableTableReferences
+                                  ._commitmentTaskTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CommitmentDetailTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).commitmentTaskTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.commitmentDetailId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$CommitmentDetailTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CommitmentDetailTableTable,
+      ExpnsCommitmentDetail,
+      $$CommitmentDetailTableTableFilterComposer,
+      $$CommitmentDetailTableTableOrderingComposer,
+      $$CommitmentDetailTableTableAnnotationComposer,
+      $$CommitmentDetailTableTableCreateCompanionBuilder,
+      $$CommitmentDetailTableTableUpdateCompanionBuilder,
+      (ExpnsCommitmentDetail, $$CommitmentDetailTableTableReferences),
+      ExpnsCommitmentDetail,
+      PrefetchHooks Function({
+        bool savingId,
+        bool targetSavingId,
+        bool payeeId,
+        bool commitmentId,
+        bool commitmentTaskTableRefs,
       })
     >;
 typedef $$CommitmentTaskTableTableCreateCompanionBuilder =
@@ -30349,10 +30780,10 @@ class $AppDatabaseManager {
       $$CategoryTableTableTableManager(_db, _db.categoryTable);
   $$CommitmentTableTableTableManager get commitmentTable =>
       $$CommitmentTableTableTableManager(_db, _db.commitmentTable);
-  $$CommitmentDetailTableTableTableManager get commitmentDetailTable =>
-      $$CommitmentDetailTableTableTableManager(_db, _db.commitmentDetailTable);
   $$PayeeTableTableTableManager get payeeTable =>
       $$PayeeTableTableTableManager(_db, _db.payeeTable);
+  $$CommitmentDetailTableTableTableManager get commitmentDetailTable =>
+      $$CommitmentDetailTableTableTableManager(_db, _db.commitmentDetailTable);
   $$CommitmentTaskTableTableTableManager get commitmentTaskTable =>
       $$CommitmentTaskTableTableTableManager(_db, _db.commitmentTaskTable);
   $$TransactionTableTableTableManager get transactionTable =>

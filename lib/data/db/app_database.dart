@@ -50,13 +50,66 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
         await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        // ── v2 → v3 ───────────────────────────────────────────────────────
+        // SQLite cannot change column nullability with ALTER TABLE, so we
+        // recreate commitment_detail_table with the correct schema and copy
+        // existing data across.
+        //
+        // Changes vs v2 schema:
+        //   saving_id        TEXT NOT NULL  →  TEXT NULLABLE
+        //   task_type        (new) INTEGER NOT NULL DEFAULT 0
+        //   target_saving_id (new) TEXT NULLABLE
+        //   payee_id         (new) TEXT NULLABLE
+        //
+        // Existing rows keep task_type = 0 (internalTransfer) and NULL for
+        // the new FK columns — the old distribute behaviour is preserved.
+        if (from < 4) {
+          // 1. Create the new table alongside the old one
+          await customStatement('''
+            CREATE TABLE IF NOT EXISTS commitment_detail_table_new (
+              id                TEXT NOT NULL PRIMARY KEY,
+              created_by        TEXT NOT NULL,
+              date_created      INTEGER NOT NULL DEFAULT (unixepoch()),
+              date_updated      INTEGER NOT NULL,
+              last_modified_by  TEXT NOT NULL,
+              amount            REAL NOT NULL,
+              description       TEXT NOT NULL,
+              type              INTEGER NOT NULL,
+              task_type         INTEGER NOT NULL DEFAULT 0,
+              saving_id         TEXT REFERENCES saving_table(id),
+              target_saving_id  TEXT REFERENCES saving_table(id),
+              payee_id          TEXT REFERENCES payee_table(id),
+              commitment_id     TEXT NOT NULL REFERENCES commitment_table(id)
+            )
+          ''');
+
+          // 2. Copy all existing rows; new columns receive their defaults
+          await customStatement('''
+            INSERT INTO commitment_detail_table_new
+              (id, created_by, date_created, date_updated, last_modified_by,
+               amount, description, type, saving_id, commitment_id)
+            SELECT
+              id, created_by, date_created, date_updated, last_modified_by,
+              amount, description, type, saving_id, commitment_id
+            FROM commitment_detail_table
+          ''');
+
+          // 3. Drop old table and rename new one into place
+          await customStatement('DROP TABLE commitment_detail_table');
+          await customStatement(
+            'ALTER TABLE commitment_detail_table_new '
+            'RENAME TO commitment_detail_table',
+          );
+        }
       },
     );
   }
@@ -80,17 +133,12 @@ class AppDatabase extends _$AppDatabase {
       extension: ext,
     );
 
-    if (file.existsSync()) {
-      file.deleteSync();
-    }
+    if (file.existsSync()) file.deleteSync();
 
     FileUtil.createFileIntoDirectory(file);
     if (isJson) {
       Map<String, dynamic> data = await retrieveDataFromAllTables();
-
-      String jsonString = jsonEncode(data);
-
-      await file.writeAsString(jsonString);
+      await file.writeAsString(jsonEncode(data));
     } else {
       await customStatement('VACUUM INTO ?', [file.path]);
     }
@@ -99,9 +147,7 @@ class AppDatabase extends _$AppDatabase {
 
   Future<Directory> getAppMediaDirectory() async {
     final Directory? baseDir = await getExternalStorageDirectory();
-    if (baseDir == null) {
-      throw Exception("External storage not available");
-    }
+    if (baseDir == null) throw Exception('External storage not available');
 
     final mediaDir = Directory(
       path.join(
@@ -113,18 +159,15 @@ class AppDatabase extends _$AppDatabase {
     if (!(await mediaDir.exists())) {
       await mediaDir.create(recursive: true);
     }
-
     return mediaDir;
   }
 
   Future<String> getBackupFolderPath() async {
     final Directory dir = await getAppMediaDirectory();
-
     final backupDir = Directory(path.join(dir.path, 'backup', 'db'));
     if (!(await backupDir.exists())) {
       await backupDir.create(recursive: true);
     }
-
     return backupDir.path;
   }
 
@@ -140,17 +183,12 @@ class AppDatabase extends _$AppDatabase {
       extension: ext,
     );
 
-    if (file.existsSync()) {
-      file.deleteSync();
-    }
+    if (file.existsSync()) file.deleteSync();
 
     FileUtil.createFileIntoDirectory(file);
     if (isJson) {
       Map<String, dynamic> data = await retrieveDataFromAllTables();
-
-      String jsonString = jsonEncode(data);
-
-      await file.writeAsString(jsonString);
+      await file.writeAsString(jsonEncode(data));
     } else {
       await customStatement('VACUUM INTO ?', [file.path]);
     }
@@ -171,7 +209,6 @@ class AppDatabase extends _$AppDatabase {
     );
     if (filePicker != null && filePicker.count == 1) {
       File file = File(filePicker.files.single.path ?? '');
-
       final List<String> allowedExtensions = [ext];
 
       if (FileUtil.isMatchCustomExtensions(
@@ -192,7 +229,8 @@ class AppDatabase extends _$AppDatabase {
 
         return true;
       } else {
-        throw 'The file extension is ${FileUtil.getFileExtension(file)}, it must be ${allowedExtensions.join(" or ")}';
+        throw 'The file extension is ${FileUtil.getFileExtension(file)}, '
+            'it must be ${allowedExtensions.join(" or ")}';
       }
     }
     return false;
@@ -200,20 +238,15 @@ class AppDatabase extends _$AppDatabase {
 
   Future<Map<String, dynamic>> retrieveDataFromAllTables() async {
     Map<String, dynamic> data = {};
-
     for (final repo
         in SingletonUtil.getSingleton<IRepositoryLocator>()!
             .retrieveAllRepository()) {
       data[repo.tableName()] = [];
-      List<DataClass> dataClassList = await repo.findAll();
-
-      if (dataClassList.isNotEmpty) {
-        for (DataClass dataClass in dataClassList) {
-          data[repo.tableName()].add(dataClass.toJson());
-        }
+      final List<DataClass> rows = await repo.findAll();
+      for (final row in rows) {
+        data[repo.tableName()].add(row.toJson());
       }
     }
-
     return data;
   }
 
@@ -223,114 +256,60 @@ class AppDatabase extends _$AppDatabase {
             .retrieveAllRepository()) {
       await repo.deleteAll();
 
-      if (data[repo.tableName()] != null) {
-        if (repo.tableName() == 'UserTable') {
-          List<CmmnUser> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(CmmnUser.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
+      final tableData = data[repo.tableName()];
+      if (tableData == null) continue;
 
-        if (repo.tableName() == 'GroupReferenceTable') {
-          List<MstrdtGroupReference> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(MstrdtGroupReference.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'ReferenceTable') {
-          List<MstrdtReference> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(MstrdtReference.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'ReferenceDataTable') {
-          List<MstrdtReferenceData> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(MstrdtReferenceData.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'ExpenseTable') {
-          List<ExpnsExpense> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(ExpnsExpense.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'ExpenseReferenceTable') {
-          List<MstrdtExpenseReference> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(MstrdtExpenseReference.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'MoneyStorageTable') {
-          List<SvngMoneyStorage> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(SvngMoneyStorage.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'SavingTable') {
-          List<SvngSaving> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(SvngSaving.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'TransactionTable') {
-          List<TrnsctnTransaction> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(TrnsctnTransaction.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'CommitmentTable') {
-          List<ExpnsCommitment> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(ExpnsCommitment.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'CommitmentDetailTable') {
-          List<ExpnsCommitmentDetail> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(ExpnsCommitmentDetail.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
-
-        if (repo.tableName() == 'CommitmentTaskTable') {
-          List<ExpnsCommitmentTask> items = [];
-          for (final dataInJson in data[repo.tableName()]) {
-            items.add(ExpnsCommitmentTask.fromJson(dataInJson));
-          }
-          await repo.saveAll(items);
-          continue;
-        }
+      switch (repo.tableName()) {
+        case 'UserTable':
+          await repo.saveAll([for (final d in tableData) CmmnUser.fromJson(d)]);
+        case 'GroupReferenceTable':
+          await repo.saveAll([
+            for (final d in tableData) MstrdtGroupReference.fromJson(d),
+          ]);
+        case 'ReferenceTable':
+          await repo.saveAll([
+            for (final d in tableData) MstrdtReference.fromJson(d),
+          ]);
+        case 'ReferenceDataTable':
+          await repo.saveAll([
+            for (final d in tableData) MstrdtReferenceData.fromJson(d),
+          ]);
+        case 'ExpenseTable':
+          await repo.saveAll([
+            for (final d in tableData) ExpnsExpense.fromJson(d),
+          ]);
+        case 'ExpenseReferenceTable':
+          await repo.saveAll([
+            for (final d in tableData) MstrdtExpenseReference.fromJson(d),
+          ]);
+        case 'MoneyStorageTable':
+          await repo.saveAll([
+            for (final d in tableData) SvngMoneyStorage.fromJson(d),
+          ]);
+        case 'SavingTable':
+          await repo.saveAll([
+            for (final d in tableData) SvngSaving.fromJson(d),
+          ]);
+        case 'TransactionTable':
+          await repo.saveAll([
+            for (final d in tableData) TrnsctnTransaction.fromJson(d),
+          ]);
+        case 'CommitmentTable':
+          await repo.saveAll([
+            for (final d in tableData) ExpnsCommitment.fromJson(d),
+          ]);
+        case 'CommitmentDetailTable':
+          await repo.saveAll([
+            for (final d in tableData) ExpnsCommitmentDetail.fromJson(d),
+          ]);
+        case 'CommitmentTaskTable':
+          await repo.saveAll([
+            for (final d in tableData) ExpnsCommitmentTask.fromJson(d),
+          ]);
+        case 'PayeeTable':
+          await repo.saveAll([
+            for (final d in tableData) ExpnsPayee.fromJson(d),
+          ]);
       }
     }
   }

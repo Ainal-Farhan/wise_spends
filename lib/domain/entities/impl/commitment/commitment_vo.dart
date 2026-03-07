@@ -25,9 +25,30 @@ class CommitmentVO extends IVO {
     for (final entry in commitmentDetailMap.entries) {
       totalAmount = totalAmount! + entry.key.amount;
       commitmentDetailVOList.add(
-        CommitmentDetailVO.fromExpnsCommitmentDetail(entry.key, entry.value),
+        CommitmentDetailVO.fromExpnsCommitmentDetail(
+          entry.key,
+          saving: entry.value,
+        ),
       );
     }
+  }
+
+  /// Constructs a CommitmentVO from an already-resolved list of
+  /// [CommitmentDetailVO] objects (source saving + target saving + payee
+  /// all hydrated). Use this from CommitmentManager after the detail join
+  /// loop so we never pass a Map that can only carry one saving per detail.
+  CommitmentVO.fromExpnsCommitmentWithDetails(
+    ExpnsCommitment commitment,
+    List<CommitmentDetailVO> details,
+  ) {
+    commitmentId = commitment.id;
+    name = commitment.name;
+    description = commitment.description;
+    commitmentDetailVOList = details;
+    totalAmount = details.fold(
+      0.0,
+      (sum, d) => (sum ?? .0) + (d.amount ?? 0.0),
+    );
   }
 
   CommitmentVO.fromJson(Map<String, dynamic> json) {

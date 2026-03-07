@@ -3,7 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 import 'package:wise_spends/domain/usecases/i_commitment_manager.dart';
+import 'package:wise_spends/domain/usecases/i_payee_manager.dart';
 import 'package:wise_spends/domain/usecases/i_saving_manager.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
@@ -15,11 +17,13 @@ part 'commitment_state.dart';
 class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
   final ICommitmentManager _commitmentManager;
   final ISavingManager _savingManager;
+  final IPayeeManager _payeeManager;
   Function? updateAppBar;
 
   CommitmentBloc({
     ICommitmentManager? commitmentManager,
     ISavingManager? savingManager,
+    IPayeeManager? payeeManager,
   }) : _commitmentManager =
            commitmentManager ??
            SingletonUtil.getSingleton<IManagerLocator>()!
@@ -27,11 +31,11 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
        _savingManager =
            savingManager ??
            SingletonUtil.getSingleton<IManagerLocator>()!.getSavingManager(),
+       _payeeManager =
+           payeeManager ??
+           SingletonUtil.getSingleton<IManagerLocator>()!.getPayeeManager(),
        super(CommitmentStateX.initial()) {
     on<LoadCommitmentsEvent>(_onLoadCommitments);
-    // Single event replaces the two racing events (LoadCommitmentFormEvent +
-    // LoadCommitmentDetailEvent). Both async calls run in parallel via
-    // Future.wait, then emit one combined state.
     on<LoadDetailScreenEvent>(_onLoadDetailScreen);
     on<LoadCommitmentFormEvent>(_onLoadCommitmentForm);
     on<SaveCommitmentEvent>(_onSaveCommitment);
@@ -56,9 +60,9 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
     }
   }
 
-  /// Replaces the two-event pattern that caused the race condition.
-  /// Both the savings list and the commitment details are fetched in parallel,
-  /// then emitted together as CommitmentStateDetailScreenReady.
+  /// Fetches savings, commitment details, and payees in parallel so the detail
+  /// form can render all three pickers (source saving, target saving, payee)
+  /// without a second round-trip.
   Future<void> _onLoadDetailScreen(
     LoadDetailScreenEvent event,
     Emitter<CommitmentState> emit,
@@ -70,17 +74,20 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
         _commitmentManager.retrieveCommitmentVOBasedOnCommitmentId(
           event.commitmentId,
         ),
+        _payeeManager.loadPayeeVOList(),
       ]);
 
       final savings = results[0] as List<ListSavingVO>;
       final commitment = results[1] as CommitmentVO?;
+      final payees = results[2] as List<PayeeVO>;
 
       emit(
         CommitmentStateX.detailScreenReady(
           details: commitment?.commitmentDetailVOList ?? [],
           savings: savings,
+          payees: payees,
           commitmentId: event.commitmentId,
-          commitmentVO: commitment, // carries referredSavingVO for distribution
+          commitmentVO: commitment,
         ),
       );
     } catch (e) {
@@ -132,7 +139,6 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
       emit(
         CommitmentStateX.success(
           'Successfully saved commitment detail',
-          // Reload using the unified event so savings list is preserved
           LoadDetailScreenEvent(event.commitmentId),
         ),
       );

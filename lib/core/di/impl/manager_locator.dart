@@ -5,12 +5,14 @@ import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/domain/usecases/i_commitment_manager.dart';
 import 'package:wise_spends/domain/usecases/i_home_logged_in_manager.dart';
 import 'package:wise_spends/domain/usecases/i_login_manager.dart';
+import 'package:wise_spends/domain/usecases/i_payee_manager.dart';
 import 'package:wise_spends/domain/usecases/i_saving_manager.dart';
 import 'package:wise_spends/domain/usecases/i_startup_manager.dart';
 import 'package:wise_spends/domain/usecases/i_transaction_manager.dart';
 import 'package:wise_spends/domain/usecases/impl/commitment_manager.dart';
 import 'package:wise_spends/domain/usecases/impl/home_logged_in_manager.dart';
 import 'package:wise_spends/domain/usecases/impl/login_manager.dart';
+import 'package:wise_spends/domain/usecases/impl/payee_manager.dart';
 import 'package:wise_spends/domain/usecases/impl/saving_manager.dart';
 import 'package:wise_spends/domain/usecases/impl/startup_manager.dart';
 import 'package:wise_spends/domain/usecases/impl/transaction_manager.dart';
@@ -25,7 +27,8 @@ class ManagerLocator extends IManagerLocator {
 
     if (manager == null) {
       SingletonUtil.registerSingleton<IHomeLoggedInManager>(
-          HomeLoggedInManager());
+        HomeLoggedInManager(),
+      );
     }
 
     return SingletonUtil.getSingleton<IHomeLoggedInManager>()!;
@@ -71,7 +74,8 @@ class ManagerLocator extends IManagerLocator {
 
     if (manager == null) {
       SingletonUtil.registerSingleton<ITransactionManager>(
-          TransactionManager());
+        TransactionManager(),
+      );
     }
 
     return SingletonUtil.getSingleton<ITransactionManager>()!;
@@ -84,7 +88,8 @@ class ManagerLocator extends IManagerLocator {
 
     if (manager == null) {
       SingletonUtil.registerSingleton<IConfigurationManager>(
-          ConfigurationManager());
+        ConfigurationManager(),
+      );
     }
 
     return SingletonUtil.getSingleton<IConfigurationManager>()!;
@@ -111,5 +116,14 @@ class ManagerLocator extends IManagerLocator {
     }
 
     return SingletonUtil.getSingleton<ICommitmentManager>()!;
+  }
+
+  @override
+  IPayeeManager getPayeeManager() {
+    IPayeeManager? manager = SingletonUtil.getSingleton<IPayeeManager>();
+    if (manager == null) {
+      SingletonUtil.registerSingleton<IPayeeManager>(PayeeManager());
+    }
+    return SingletonUtil.getSingleton<IPayeeManager>()!;
   }
 }
