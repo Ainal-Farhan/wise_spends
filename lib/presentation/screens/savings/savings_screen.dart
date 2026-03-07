@@ -41,15 +41,35 @@ class _SavingsScreenContent extends StatelessWidget {
         if (state is SavingsSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text(state.message),
+                ],
+              ),
               backgroundColor: AppColors.success,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
             ),
           );
         } else if (state is SavingsError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Text(state.message),
+                ],
+              ),
               backgroundColor: AppColors.error,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
             ),
           );
         }
@@ -95,16 +115,19 @@ class _SavingsScreenContent extends StatelessWidget {
     BuildContext context,
     List<ListSavingVO> savingsList,
   ) {
-    // Group savings by type
     final Map<String, List<ListSavingVO>> savingGroupMap = {};
-
     for (final saving in savingsList) {
       final type = saving.saving.type;
-      if (!savingGroupMap.containsKey(type)) {
-        savingGroupMap[type] = [];
-      }
-      savingGroupMap[type]!.add(saving);
+      savingGroupMap.putIfAbsent(type, () => []).add(saving);
     }
+
+    // Total balance & stats
+    final totalBalance = savingsList.fold<double>(
+      0.0,
+      (sum, s) => sum + s.saving.currentAmount,
+    );
+    final withGoal = savingsList.where((s) => s.saving.isHasGoal).length;
+    final accountCount = savingsList.length;
 
     if (savingsList.isEmpty) {
       return Scaffold(
@@ -113,121 +136,124 @@ class _SavingsScreenContent extends StatelessWidget {
       );
     }
 
-    // Calculate total balance
-    final totalBalance = savingsList.fold<double>(
-      0.0,
-      (sum, saving) => sum + saving.saving.currentAmount,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: Text('savings.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {
-              context.read<SavingsBloc>().add(LoadAddSavingsFormEvent());
-            },
-            tooltip: 'Add Money Storage',
+            onPressed: () =>
+                context.read<SavingsBloc>().add(LoadAddSavingsFormEvent()),
+            tooltip: 'general.add_new_saving'.tr,
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          context.read<SavingsBloc>().add(LoadSavingsListEvent());
-        },
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Total Balance Card
-              _buildTotalBalanceCard(context, totalBalance),
-              const SizedBox(height: 24),
-
-              // Section Header
-              SectionHeader(
-                title: 'Your Savings',
-                subtitle:
-                    '${savingsList.length} ${savingsList.length == 1 ? 'account' : 'accounts'}',
-              ),
-              const SizedBox(height: 12),
-
-              // Savings Cards
-              ...savingGroupMap.entries.map(
-                (entry) => _buildSavingGroup(context, entry),
-              ),
-              const SizedBox(height: 80),
-            ],
-          ),
+        onRefresh: () async =>
+            context.read<SavingsBloc>().add(LoadSavingsListEvent()),
+        child: ListView.builder(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          // index 0 = card header, rest = groups
+          itemCount: savingGroupMap.length + 1,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return _buildHeaderCard(
+                context,
+                totalBalance: totalBalance,
+                accountCount: accountCount,
+                withGoal: withGoal,
+              );
+            }
+            final entry = savingGroupMap.entries.elementAt(index - 1);
+            return _buildSavingGroup(context, entry);
+          },
         ),
       ),
     );
   }
 
-  Widget _buildTotalBalanceCard(BuildContext context, double totalBalance) {
-    return AppCard.gradient(
+  // ---------------------------------------------------------------------------
+  // Header card — SectionHeader.card with stats row inside collapsible
+  // ---------------------------------------------------------------------------
+
+  Widget _buildHeaderCard(
+    BuildContext context, {
+    required double totalBalance,
+    required int accountCount,
+    required int withGoal,
+  }) {
+    return SectionHeader.card(
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [AppColors.primary, AppColors.primaryDark],
       ),
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      padding: const EdgeInsets.all(AppSpacing.xxl),
-      child: Column(
+      icon: Icons.savings_outlined,
+      label: 'general.your_savings'.tr,
+      title: NumberFormat.currency(
+        symbol: 'RM ',
+        decimalDigits: 2,
+      ).format(totalBalance),
+      subtitle:
+          '$accountCount ${'general.accounts'.tr}  ·  '
+          '${'savings.with_goal'.trWith({'total': withGoal.toString()})}',
+      learnMoreLabel: 'general.learn_more'.tr,
+      learnLessLabel: 'general.less'.tr,
+      collapsibleBody: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(
-                Icons.account_balance,
-                color: Colors.white70,
-                size: AppIconSize.lg,
-              ),
-              SizedBox(width: AppSpacing.sm),
-              Text(
-                'Total Balance',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
           Text(
-            NumberFormat.currency(
-              symbol: 'RM ',
-              decimalDigits: 2,
-            ).format(totalBalance),
-            style: AppTextStyles.balanceDisplay,
+            'general.your_savings'.tr,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
           ),
+          const SizedBox(height: 10),
+          SectionHeaderBullet('savings.what_are_desc'.tr),
+          SectionHeaderBullet('savings.tip_goal'.tr),
+          SectionHeaderBullet('savings.tip_storage'.tr),
         ],
       ),
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Group header using plain SectionHeader
+  // ---------------------------------------------------------------------------
+
   Widget _buildSavingGroup(
     BuildContext context,
     MapEntry<String, List<ListSavingVO>> entry,
   ) {
+    final label = SavingTableType.findByValue(entry.key)?.label ?? entry.key;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-            child: Text(
-              SavingTableType.findByValue(entry.key)!.label.toUpperCase(),
-              style: AppTextStyles.caption.copyWith(
-                fontWeight: FontWeight.w600,
+          SectionHeader(
+            title: label,
+            leading: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.folder_outlined,
+                size: 16,
                 color: AppColors.primary,
               ),
             ),
+            subtitle:
+                '${entry.value.length} '
+                '${entry.value.length == 1 ? 'account' : 'accounts'}',
           ),
-          ...entry.value.map((saving) => _buildSavingCard(context, saving)),
+          const SizedBox(height: AppSpacing.md),
+          ...entry.value.map((s) => _buildSavingCard(context, s)),
         ],
       ),
     );
@@ -241,7 +267,7 @@ class _SavingsScreenContent extends StatelessWidget {
         : 0.0;
 
     return AppCard(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       onTap: () => context.read<SavingsBloc>().add(
         LoadEditSavingsEvent(saving.saving.id),
       ),
@@ -255,7 +281,7 @@ class _SavingsScreenContent extends StatelessWidget {
                 radius: 24,
                 child: const Icon(Icons.savings, color: Colors.white),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,23 +310,18 @@ class _SavingsScreenContent extends StatelessWidget {
                       context.read<SavingsBloc>().add(
                         LoadEditSavingsEvent(saving.saving.id),
                       );
-                      break;
                     case 'transaction':
                       context.read<SavingsBloc>().add(
                         LoadSavingTransactionEvent(savingId: saving.saving.id),
                       );
-                      break;
                     case 'delete':
                       showDeleteDialog(
                         context: context,
                         autoDisplayMessage: false,
-                        onDelete: () async {
-                          context.read<SavingsBloc>().add(
-                            DeleteSavingEvent(saving.saving.id),
-                          );
-                        },
+                        onDelete: () async => context.read<SavingsBloc>().add(
+                          DeleteSavingEvent(saving.saving.id),
+                        ),
                       );
-                      break;
                   }
                 },
                 itemBuilder: (context) => [
@@ -308,8 +329,8 @@ class _SavingsScreenContent extends StatelessWidget {
                     value: 'edit',
                     child: Row(
                       children: [
-                        Icon(Icons.edit, size: 18),
-                        SizedBox(width: 8),
+                        const Icon(Icons.edit, size: 18),
+                        const SizedBox(width: 8),
                         Text('savings.edit'.tr),
                       ],
                     ),
@@ -318,8 +339,8 @@ class _SavingsScreenContent extends StatelessWidget {
                     value: 'transaction',
                     child: Row(
                       children: [
-                        Icon(Icons.swap_horiz, size: 18),
-                        SizedBox(width: 8),
+                        const Icon(Icons.swap_horiz, size: 18),
+                        const SizedBox(width: 8),
                         Text('savings.transactions'.tr),
                       ],
                     ),
@@ -328,15 +349,15 @@ class _SavingsScreenContent extends StatelessWidget {
                     value: 'delete',
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.delete,
                           size: 18,
                           color: AppColors.secondary,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Delete',
-                          style: TextStyle(color: AppColors.secondary),
+                          'general.delete'.tr,
+                          style: const TextStyle(color: AppColors.secondary),
                         ),
                       ],
                     ),
@@ -345,7 +366,7 @@ class _SavingsScreenContent extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Row(
             children: [
               Expanded(
@@ -363,12 +384,12 @@ class _SavingsScreenContent extends StatelessWidget {
             ],
           ),
           if (hasGoal) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.2),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.15),
                 valueColor: const AlwaysStoppedAnimation<Color>(
                   AppColors.primary,
                 ),
@@ -416,49 +437,52 @@ class _SavingsScreenContent extends StatelessWidget {
         saving?.saving.type ?? SavingTableType.values.first.value;
     String? selectedMoneyStorageId = saving?.moneyStorage?.id;
 
-    List<DropdownMenuItem<String>> moneyStorageItems = [
+    final moneyStorageItems = <DropdownMenuItem<String>>[
       DropdownMenuItem(value: '', child: Text('savings.no_money_storage'.tr)),
       ...moneyStorageList.map(
-        (storage) =>
-            DropdownMenuItem(value: storage.id, child: Text(storage.shortName)),
+        (s) => DropdownMenuItem(value: s.id, child: Text(s.shortName)),
       ),
     ];
 
     return Scaffold(
-      appBar: AppBar(title: Text(isEditing ? 'Edit Saving' : 'Add New Saving')),
+      appBar: AppBar(
+        title: Text(
+          isEditing ? 'general.edit_saving'.tr : 'general.add_new_saving'.tr,
+        ),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Form(
           key: formKey,
           child: ListView(
             children: [
               AppTextField(
-                label: 'Name',
+                label: 'general.name'.tr,
                 controller: nameController,
                 prefixIcon: Icons.label,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               AppTextField(
-                label: 'Initial Amount (RM)',
+                label: 'general.initial_amount'.tr,
                 controller: initialAmountController,
                 prefixText: 'RM ',
                 keyboardType: AppTextFieldKeyboardType.decimal,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               StatefulBuilder(
                 builder: (context, setState) => AppCard(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   child: Column(
                     children: [
                       SwitchListTile(
                         title: Text('savings.has_goal'.tr),
                         value: isHasGoal,
-                        onChanged: (value) => setState(() => isHasGoal = value),
+                        onChanged: (v) => setState(() => isHasGoal = v),
                       ),
                       if (isHasGoal) ...[
                         const SizedBox(height: 8),
                         AppTextField(
-                          label: 'Goal Amount (RM)',
+                          label: 'general.goal_amount'.tr,
                           controller: goalAmountController,
                           prefixText: 'RM ',
                           keyboardType: AppTextFieldKeyboardType.decimal,
@@ -468,48 +492,48 @@ class _SavingsScreenContent extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               DropdownButtonFormField<String>(
                 initialValue: selectedSavingType,
-                decoration: const InputDecoration(
-                  labelText: 'Saving Type',
-                  prefixIcon: Icon(Icons.category),
+                decoration: InputDecoration(
+                  labelText: 'general.saving_type'.tr,
+                  prefixIcon: const Icon(Icons.category),
                 ),
                 items: SavingTableType.values
                     .map(
-                      (type) => DropdownMenuItem(
-                        value: type.value,
-                        child: Text(type.label),
+                      (t) => DropdownMenuItem(
+                        value: t.value,
+                        child: Text(t.label),
                       ),
                     )
                     .toList(),
-                onChanged: (value) => selectedSavingType = value ?? 'saving',
+                onChanged: (v) => selectedSavingType = v ?? 'saving',
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               DropdownButtonFormField<String>(
                 initialValue: selectedMoneyStorageId,
-                decoration: const InputDecoration(
-                  labelText: 'Money Storage',
-                  prefixIcon: Icon(Icons.account_balance),
+                decoration: InputDecoration(
+                  labelText: 'general.money_storage'.tr,
+                  prefixIcon: const Icon(Icons.account_balance),
                 ),
                 items: moneyStorageItems,
-                onChanged: (value) => selectedMoneyStorageId = value,
+                onChanged: (v) => selectedMoneyStorageId = v,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xxxl),
               Row(
                 children: [
                   Expanded(
                     child: AppButton.secondary(
-                      label: 'Cancel',
+                      label: 'general.cancel'.tr,
                       onPressed: () => context.read<SavingsBloc>().add(
                         LoadSavingsListEvent(),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: AppButton.primary(
-                      label: isEditing ? 'Update' : 'Add',
+                      label: isEditing ? 'general.update'.tr : 'general.add'.tr,
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           final initialAmount =
@@ -520,7 +544,6 @@ class _SavingsScreenContent extends StatelessWidget {
                               ? double.tryParse(goalAmountController.text) ??
                                     0.0
                               : 0.0;
-
                           if (isEditing && saving != null) {
                             context.read<SavingsBloc>().add(
                               UpdateSavingsEvent(
@@ -576,6 +599,10 @@ class _SavingsScreenContent extends StatelessWidget {
   }
 }
 
+// =============================================================================
+// Loading skeleton
+// =============================================================================
+
 class _SavingsScreenLoading extends StatelessWidget {
   const _SavingsScreenLoading();
 
@@ -588,6 +615,10 @@ class _SavingsScreenLoading extends StatelessWidget {
   }
 }
 
+// =============================================================================
+// Empty state
+// =============================================================================
+
 class NoSavingsEmptyState extends StatelessWidget {
   const NoSavingsEmptyState({super.key});
 
@@ -597,10 +628,9 @@ class NoSavingsEmptyState extends StatelessWidget {
       icon: Icons.savings_outlined,
       title: 'No savings yet',
       subtitle: 'Add your first savings account to get started',
-      actionLabel: 'Add Savings',
-      onAction: () {
-        context.read<SavingsBloc>().add(LoadAddSavingsFormEvent());
-      },
+      actionLabel: 'general.add_new_saving'.tr,
+      onAction: () =>
+          context.read<SavingsBloc>().add(LoadAddSavingsFormEvent()),
       iconColor: AppColors.success,
     );
   }

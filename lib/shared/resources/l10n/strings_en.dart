@@ -107,6 +107,8 @@ class EnglishStrings {
     'general.emergency': 'Emergency',
     'general.edit_saving': 'Edit Saving',
     'general.add_new_saving': 'Add New Saving',
+    'general.learn_more': 'Learn more',
+    'general.less': 'Less',
 
     // Transaction Types
     'transaction.type.income': 'Income',
@@ -302,12 +304,86 @@ class EnglishStrings {
     'error.validation.amount_positive': 'Amount must be greater than 0',
     'error.validation.date': 'Please select a valid date',
     'error.validation.name': 'Please enter a name',
+    'error.something_wrong.title': 'Something went wrong',
 
     // Empty States
     'empty.no_data': 'No data available',
     'empty.no_results': 'No results found',
     'empty.no_results_subtitle': 'Try adjusting your search or filters',
     'empty.get_started': 'Get Started',
+
+    // ── empty — generic ───────────────────────────────────────────────────────
+    'empty.no_items.title': 'Nothing here yet',
+    'empty.no_items.subtitle': 'Items you add will appear here',
+    'empty.no_items.action': 'Add Item',
+
+    // ── empty — transactions ──────────────────────────────────────────────────
+    'empty.no_transactions.title': 'No transactions yet',
+    'empty.no_transactions.subtitle':
+        'Start recording your income and expenses',
+    'empty.no_transactions.action': 'Add Transaction',
+
+    // ── empty — budgets ───────────────────────────────────────────────────────
+    'empty.no_budgets.title': 'No budgets set',
+    'empty.no_budgets.subtitle':
+        'Create a budget to keep your spending in check',
+    'empty.no_budgets.action': 'Create Budget',
+
+    // ── empty — budget plans ──────────────────────────────────────────────────
+    'empty.no_budget_plans.title': 'No budget plans yet',
+    'empty.no_budget_plans.subtitle': 'Plan ahead by setting savings goals',
+    'empty.no_budget_plans.action': 'Create Plan',
+
+    // ── empty — savings ───────────────────────────────────────────────────────
+    'empty.no_savings.title': 'No savings yet',
+    'empty.no_savings.subtitle':
+        'Add your first savings account to get started',
+    'empty.no_savings.action': 'Add Savings',
+
+    // ── empty — search ────────────────────────────────────────────────────────
+    'empty.no_search.title': 'No results found',
+    'empty.no_search.subtitle': 'Try a different keyword or clear the search',
+
+    // ── empty — notifications ─────────────────────────────────────────────────
+    'empty.no_notifications.title': 'All caught up',
+    'empty.no_notifications.subtitle': 'You have no new notifications',
+
+    // ── empty — reports ───────────────────────────────────────────────────────
+    'empty.no_reports.title': 'No reports available',
+    'empty.no_reports.subtitle': 'Add transactions to generate your reports',
+
+    // ── empty — categories ────────────────────────────────────────────────────
+    'empty.no_categories.title': 'No categories',
+    'empty.no_categories.subtitle': 'Add your first category to get started',
+    'empty.no_categories.action': 'Add Category',
+
+    // ── empty — money storage ─────────────────────────────────────────────────
+    'empty.no_money_storage.title': 'No money storage yet',
+    'empty.no_money_storage.subtitle':
+        'Add your first account to track your balance',
+    'empty.no_money_storage.action': 'Add Money Storage',
+
+    // ── empty — payees ────────────────────────────────────────────────────────
+    'empty.no_payees.title': 'No payees yet',
+    'empty.no_payees.subtitle': 'Add payees to manage your payment recipients',
+    'empty.no_payees.action': 'Add Payee',
+
+    // ── empty — commitments ───────────────────────────────────────────────────
+    'empty.no_commitments.title': 'No commitments yet',
+    'empty.no_commitments.subtitle':
+        'Add recurring expenses like rent, loans, or subscriptions',
+    'empty.no_commitments.action': 'Add Commitment',
+
+    // ── empty — permission denied ─────────────────────────────────────────────
+    'empty.permission_denied.title': 'Access denied',
+    'empty.permission_denied.subtitle':
+        'You don\'t have permission to view this content',
+    'empty.permission_denied.action': 'Request Access',
+
+    // ── empty — offline ───────────────────────────────────────────────────────
+    'empty.offline.title': 'You\'re offline',
+    'empty.offline.subtitle': 'Check your connection and try again',
+    'empty.offline.action': 'Retry',
 
     // Time
     'time.just_now': 'Just now',
@@ -425,6 +501,9 @@ class EnglishStrings {
     'budgets.edit_coming_soon': 'Edit budget feature coming soon',
     'budgets.create_coming_soon': 'Create budget feature coming soon',
     'budgets.filter_by_period': 'Filter by Period',
+    'budgets.tip_categories': 'Assign categories to track specific spending',
+    'budgets.tip_period': 'Set daily, weekly or monthly limits',
+    'budgets.tip_alert': 'You\'ll see a warning when nearing the limit',
 
     // Reports Screen
     'reports.export_success': 'Report exported successfully',
@@ -439,14 +518,10 @@ class EnglishStrings {
 
     // Payee Screen
     'payees.title': 'Payees',
-    'payees.subtitle': 'Payment recipients for transfers',
     'payees.add': 'Add Payee',
     'payees.edit': 'Edit',
     'payees.delete': 'Delete',
     'payees.no_payees': 'No payees yet',
-    'payees.no_payees_desc':
-        'Add payees to manage your third-party payment recipients',
-    'payees.add_payee': 'Add Payee',
     'payees.something_wrong': 'Oops! Something went wrong',
     'payees.enter_name': 'Please enter a payee name',
     'payees.name': 'Name',
@@ -458,10 +533,16 @@ class EnglishStrings {
     'payees.note': 'Note (Optional)',
     'payees.note_hint': 'e.g., PayNow UEN, DuitNow ID',
     'payees.update': 'Update',
+    'payees.subtitle': 'Third-party payment recipients',
+    'payees.what_are': 'About payees',
+    'payees.tip_third_party': 'Use payees for insurance, loans, vendors',
+    'payees.tip_bank': 'Store bank name and account for quick reference',
+    'payees.tip_reuse': 'Payees can be reused across multiple expenses',
+    'payees.add_payee': 'Add Payee',
     'payees.edit_payee': 'Edit Payee',
     'payees.delete_payee': 'Delete Payee?',
-    'payees.delete_payee_msg':
-        'Are you sure you want to delete this payee? This cannot be undone.',
+    'payees.delete_payee_msg': 'Are you sure? This cannot be undone.',
+    'payees.no_payees_desc': 'Add payees to manage payment recipients',
 
     // Money Storage Screen
     'money_storage.title': 'Money Storage',
@@ -469,6 +550,9 @@ class EnglishStrings {
     'money_storage.something_wrong': 'Oops! Something went wrong',
     'money_storage.edit': 'Edit',
     'money_storage.transactions': 'Transactions',
+    'money_storage.tip_short_name': 'Use a short name like "Maybank" or "Cash"',
+    'money_storage.tip_track': 'Track balances across all your accounts',
+    'money_storage.tip_negative': 'Negative balances are shown in red',
 
     // Savings Screen
     'savings.title': 'Savings',
@@ -479,6 +563,10 @@ class EnglishStrings {
     'savings.has_goal': 'Has Goal?',
     'savings.saving_transactions': 'Saving Transactions',
     'savings.transaction_form_coming_soon': 'Transaction form coming soon',
+    'savings.what_are_desc': 'Track how your money grows across accounts',
+    'savings.tip_goal': 'Set a goal amount to track your progress',
+    'savings.tip_storage': 'Link to a money storage to see its source',
+    'savings.with_goal': '{total} with goal',
 
     // Commitment Screen
     'commitments.title': 'Commitments',
@@ -511,6 +599,16 @@ class EnglishStrings {
     'commitments.select_savings': 'Select savings account',
     'commitments.none': 'None',
     'commitments.select_savings_required': 'Please select a savings account',
+    'commitments.unnamed': 'Unnamed Commitment',
+    'commitments.this_commitment': 'this commitment',
+    'commitments.what_are_desc':
+        'Commitments are recurring expenses you pay regularly, such as:',
+    'commitments.example_rent': 'Rent or mortgage payments',
+    'commitments.example_insurance': 'Car insurance',
+    'commitments.example_streaming':
+        'Streaming subscriptions (Netflix, Spotify)',
+    'commitments.example_utilities': 'Utility bills',
+    'commitments.example_loan': 'Loan payments',
 
     // Commitment Tasks Screen
     'commitment_tasks.title': 'Commitment Tasks',
@@ -559,6 +657,15 @@ class EnglishStrings {
     'categories.for_money_spent': 'For money spent',
     'categories.for_both': 'For both income and expense',
     'categories.added': 'Category added successfully',
+    'categories.no_categories': 'No categories',
+    'categories.no_categories_desc': 'Add your first category to get started',
+    'categories.manage_title': 'categories',
+    'categories.what_are': 'About categories',
+    'categories.tip_income': 'Income categories track money you receive',
+    'categories.tip_expense': 'Expense categories track money you spend',
+    'categories.tip_both': '"Both" type works for transfers',
+    'categories.tip_icon': 'Tap Add to pick a custom icon',
+    'categories.delete_confirm': 'Are you sure you want to delete "{name}"?',
 
     // Backup & Restore
     'backup_restore.title': 'Backup & Restore',

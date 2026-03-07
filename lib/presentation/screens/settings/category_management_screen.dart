@@ -8,6 +8,7 @@ import 'package:wise_spends/presentation/blocs/category/category_event.dart';
 import 'package:wise_spends/presentation/blocs/category/category_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
@@ -41,7 +42,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.add),
               onPressed: () => _navigateToAddCategory(context),
-              tooltip: 'Add Category',
+              tooltip: 'categories.add'.tr,
             ),
           ],
           bottom: TabBar(
@@ -56,10 +57,10 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                 ),
               );
             },
-            tabs: const [
-              Tab(text: 'All'),
-              Tab(text: 'Income'),
-              Tab(text: 'Expense'),
+            tabs: [
+              Tab(text: 'general.all'.tr),
+              Tab(text: 'categories.income'.tr),
+              Tab(text: 'categories.expense'.tr),
             ],
           ),
         ),
@@ -78,32 +79,46 @@ class _CategoryManagementScreenContent extends StatelessWidget {
               if (categories.isEmpty) {
                 return EmptyStateWidget(
                   icon: Icons.category_outlined,
-                  title: 'No categories',
-                  subtitle: 'Add your first category to get started',
-                  actionLabel: 'Add Category',
+                  title: 'categories.no_categories'.tr,
+                  subtitle: 'categories.no_categories_desc'.tr,
+                  actionLabel: 'categories.add'.tr,
                   onAction: () => _navigateToAddCategory(context),
                   iconColor: AppColors.primary,
                 );
               }
 
+              // Count by type for header stats
+              final incomeCount = state.categories
+                  .where((c) => c.isIncome)
+                  .length;
+              final expenseCount = state.categories
+                  .where((c) => c.isExpense)
+                  .length;
+
               return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<CategoryBloc>().add(LoadCategoriesEvent());
-                },
+                onRefresh: () async =>
+                    context.read<CategoryBloc>().add(LoadCategoriesEvent()),
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: categories.length,
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  // index 0 = header card, rest = category cards
+                  itemCount: categories.length + 1,
                   itemBuilder: (context, index) {
-                    return _buildCategoryCard(context, categories[index]);
+                    if (index == 0) {
+                      return _buildHeaderCard(
+                        totalCount: state.categories.length,
+                        incomeCount: incomeCount,
+                        expenseCount: expenseCount,
+                      );
+                    }
+                    return _buildCategoryCard(context, categories[index - 1]);
                   },
                 ),
               );
             } else if (state is CategoryError) {
               return ErrorStateWidget(
                 message: state.message,
-                onAction: () {
-                  context.read<CategoryBloc>().add(LoadCategoriesEvent());
-                },
+                onAction: () =>
+                    context.read<CategoryBloc>().add(LoadCategoriesEvent()),
               );
             }
             return const SizedBox.shrink();
@@ -113,14 +128,53 @@ class _CategoryManagementScreenContent extends StatelessWidget {
     );
   }
 
-  void _navigateToAddCategory(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const AddCategoryScreen()),
-    ).then((_) {
-      context.read<CategoryBloc>().add(LoadCategoriesEvent());
-    });
+  // ---------------------------------------------------------------------------
+  // Header card
+  // ---------------------------------------------------------------------------
+
+  Widget _buildHeaderCard({
+    required int totalCount,
+    required int incomeCount,
+    required int expenseCount,
+  }) {
+    return SectionHeader.card(
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [AppColors.primary, AppColors.primaryDark],
+      ),
+      icon: Icons.category_outlined,
+      label: 'categories.manage'.tr,
+      title: '$totalCount ${'categories.manage_title'.tr}',
+      subtitle:
+          '$incomeCount ${'categories.income'.tr.toLowerCase()}  ·  '
+          '$expenseCount ${'categories.expense'.tr.toLowerCase()}',
+      learnMoreLabel: 'general.learn_more'.tr,
+      learnLessLabel: 'general.less'.tr,
+      collapsibleBody: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'categories.what_are'.tr,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 10),
+          SectionHeaderBullet('categories.tip_income'.tr),
+          SectionHeaderBullet('categories.tip_expense'.tr),
+          SectionHeaderBullet('categories.tip_both'.tr),
+          SectionHeaderBullet('categories.tip_icon'.tr),
+        ],
+      ),
+    );
   }
+
+  // ---------------------------------------------------------------------------
+  // Category card
+  // ---------------------------------------------------------------------------
 
   Widget _buildCategoryCard(BuildContext context, dynamic category) {
     final iconData = category.iconCodePoint != null
@@ -131,8 +185,20 @@ class _CategoryManagementScreenContent extends StatelessWidget {
     final isExpense = category.isExpense == true;
     final color = _getCategoryColor(category);
 
+    final typeLabel = isIncome && isExpense
+        ? 'categories.both'.tr
+        : isIncome
+        ? 'categories.income'.tr
+        : 'categories.expense'.tr;
+
+    final typeColor = isIncome && isExpense
+        ? AppColors.tertiary
+        : isIncome
+        ? AppColors.income
+        : AppColors.expense;
+
     return AppCard(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Row(
         children: [
           Container(
@@ -144,7 +210,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
             ),
             child: Icon(iconData, color: color, size: 28),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,18 +222,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                _buildTypeBadge(
-                  label: isIncome && isExpense
-                      ? 'Both'
-                      : isIncome
-                      ? 'Income'
-                      : 'Expense',
-                  color: isIncome && isExpense
-                      ? AppColors.tertiary
-                      : isIncome
-                      ? AppColors.income
-                      : AppColors.expense,
-                ),
+                _buildTypeBadge(label: typeLabel, color: typeColor),
               ],
             ),
           ),
@@ -185,8 +240,8 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                 value: 'edit',
                 child: Row(
                   children: [
-                    Icon(Icons.edit, size: 18),
-                    SizedBox(width: 8),
+                    const Icon(Icons.edit, size: 18),
+                    const SizedBox(width: 8),
                     Text('categories.edit'.tr),
                   ],
                 ),
@@ -195,11 +250,15 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete, size: 18, color: AppColors.secondary),
-                    SizedBox(width: 8),
+                    const Icon(
+                      Icons.delete,
+                      size: 18,
+                      color: AppColors.secondary,
+                    ),
+                    const SizedBox(width: 8),
                     Text(
-                      'Delete',
-                      style: TextStyle(color: AppColors.secondary),
+                      'general.delete'.tr,
+                      style: const TextStyle(color: AppColors.secondary),
                     ),
                   ],
                 ),
@@ -237,6 +296,21 @@ class _CategoryManagementScreenContent extends StatelessWidget {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Navigation
+  // ---------------------------------------------------------------------------
+
+  void _navigateToAddCategory(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AddCategoryScreen()),
+    ).then((_) => context.read<CategoryBloc>().add(LoadCategoriesEvent()));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Edit dialog
+  // ---------------------------------------------------------------------------
+
   void _showEditCategoryDialog(BuildContext context, dynamic category) {
     final nameController = TextEditingController(text: category.name);
     final categoryBloc = context.read<CategoryBloc>();
@@ -256,19 +330,19 @@ class _CategoryManagementScreenContent extends StatelessWidget {
         return StatefulBuilder(
           builder: (dialogContext, setDialogState) => CustomDialog(
             config: CustomDialogConfig(
-              title: 'Edit Category',
+              title: 'categories.edit'.tr,
               icon: Icons.edit_note,
               iconColor: AppColors.tertiary,
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AppTextField(
-                    label: 'Category Name',
+                    label: 'general.name'.tr,
                     controller: nameController,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                   Text('categories.type'.tr, style: AppTextStyles.bodySemiBold),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   RadioGroup<CategoryType>(
                     groupValue: categoryType,
                     onChanged: (value) {
@@ -297,11 +371,11 @@ class _CategoryManagementScreenContent extends StatelessWidget {
               ),
               buttons: [
                 CustomDialogButton(
-                  text: 'Cancel',
+                  text: 'general.cancel'.tr,
                   onPressed: () => Navigator.pop(dialogContext),
                 ),
                 CustomDialogButton(
-                  text: 'Update',
+                  text: 'general.update'.tr,
                   isDefault: true,
                   onPressed: () {
                     if (nameController.text.isEmpty) {
@@ -309,11 +383,14 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                         SnackBar(
                           content: Text('categories.enter_name'.tr),
                           backgroundColor: AppColors.error,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppRadius.md),
+                          ),
                         ),
                       );
                       return;
                     }
-
                     categoryBloc.add(
                       UpdateCategoryEvent(
                         category.copyWith(
@@ -327,12 +404,21 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                         ),
                       ),
                     );
-
                     Navigator.pop(dialogContext);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('categories.updated'.tr),
+                        content: Row(
+                          children: [
+                            const Icon(Icons.check_circle, color: Colors.white),
+                            const SizedBox(width: 8),
+                            Text('categories.updated'.tr),
+                          ],
+                        ),
                         backgroundColor: AppColors.success,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                        ),
                       ),
                     );
                   },
@@ -345,6 +431,10 @@ class _CategoryManagementScreenContent extends StatelessWidget {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Delete dialog
+  // ---------------------------------------------------------------------------
+
   void _confirmDeleteCategory(BuildContext context, dynamic category) {
     final categoryBloc = context.read<CategoryBloc>();
 
@@ -352,26 +442,37 @@ class _CategoryManagementScreenContent extends StatelessWidget {
       context: context,
       builder: (dialogContext) => CustomDialog(
         config: CustomDialogConfig(
-          title: 'Delete Category?',
-          message:
-              'Are you sure you want to delete "${category.name}"? This cannot be undone.',
+          title: 'general.delete'.tr,
+          message: 'categories.delete_confirm'.trWith({
+            'name': category.name ?? '',
+          }),
           icon: Icons.delete_outline,
           iconColor: AppColors.secondary,
           buttons: [
             CustomDialogButton(
-              text: 'Cancel',
+              text: 'general.cancel'.tr,
               onPressed: () => Navigator.pop(dialogContext),
             ),
             CustomDialogButton(
-              text: 'Delete',
+              text: 'general.delete'.tr,
               isDestructive: true,
               onPressed: () {
                 categoryBloc.add(DeleteCategoryEvent(category.id));
                 Navigator.pop(dialogContext);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('categories.deleted'.tr),
+                    content: Row(
+                      children: [
+                        const Icon(Icons.check_circle, color: Colors.white),
+                        const SizedBox(width: 8),
+                        Text('categories.deleted'.tr),
+                      ],
+                    ),
                     backgroundColor: AppColors.success,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
                   ),
                 );
               },

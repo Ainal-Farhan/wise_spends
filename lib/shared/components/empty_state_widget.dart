@@ -1,71 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'app_button.dart';
 
+// =============================================================================
+// Enum
+// =============================================================================
+
 /// Empty state types for different scenarios
 enum EmptyStateType {
-  /// No items - generic empty state
   noItems,
-
-  /// No transactions
   noTransactions,
-
-  /// No budgets
   noBudgets,
-
-  /// No budget plans
   noBudgetPlans,
-
-  /// No savings
   noSavings,
-
-  /// No search results
   noSearchResults,
-
-  /// No notifications
   noNotifications,
-
-  /// No data for reports
   noReports,
-
-  /// No categories
   noCategories,
-
-  /// Permission denied
+  noMoneyStorage,
+  noPayees,
+  noCommitments,
   permissionDenied,
-
-  /// Offline state
   offline,
 }
 
+// =============================================================================
+// Core widget
+// =============================================================================
+
 /// WiseSpends EmptyStateWidget Component
 ///
-/// A standardized empty state component for displaying when there's no data.
+/// A standardised empty state component for displaying when there's no data.
 ///
-/// Features:
-/// - Pre-configured types for common scenarios
-/// - Custom illustration support
-/// - Clear, descriptive messaging
-/// - Optional CTA button
-/// - Consistent styling
-///
-/// Usage:
 /// ```dart
-/// // Generic empty state
+/// // Generic
 /// EmptyStateWidget(
 ///   icon: Icons.inbox,
-///   title: 'No items yet',
-///   subtitle: 'Add your first item to get started',
+///   title: 'empty.no_items.title'.tr,
+///   subtitle: 'empty.no_items.subtitle'.tr,
 /// )
 ///
-/// // With action button
+/// // With primary action
 /// EmptyStateWidget(
 ///   icon: Icons.receipt_long,
-///   title: 'No transactions',
-///   subtitle: 'Start tracking your finances',
-///   actionLabel: 'Add Transaction',
+///   title: 'empty.no_transactions.title'.tr,
+///   subtitle: 'empty.no_transactions.subtitle'.tr,
+///   actionLabel: 'empty.no_transactions.action'.tr,
 ///   onAction: () {},
 /// )
 ///
@@ -107,7 +90,7 @@ class EmptyStateWidget extends StatelessWidget {
     this.customContent,
   });
 
-  /// Pre-configured empty state by type
+  /// Pre-configured empty state by type — all strings from localization
   factory EmptyStateWidget.type({
     required EmptyStateType type,
     VoidCallback? onAction,
@@ -116,95 +99,120 @@ class EmptyStateWidget extends StatelessWidget {
       case EmptyStateType.noItems:
         return EmptyStateWidget(
           icon: Icons.inbox_outlined,
-          title: 'No items yet',
-          subtitle: 'Add your first item to get started',
-          actionLabel: 'Add Item',
+          title: 'empty.no_items.title'.tr,
+          subtitle: 'empty.no_items.subtitle'.tr,
+          actionLabel: 'empty.no_items.action'.tr,
           onAction: onAction,
           iconColor: AppColors.primary,
         );
       case EmptyStateType.noTransactions:
         return EmptyStateWidget(
           icon: Icons.receipt_long_outlined,
-          title: 'No transactions yet',
-          subtitle:
-              'Start tracking your finances by adding your first transaction',
-          actionLabel: 'Add Transaction',
+          title: 'empty.no_transactions.title'.tr,
+          subtitle: 'empty.no_transactions.subtitle'.tr,
+          actionLabel: 'empty.no_transactions.action'.tr,
           onAction: onAction,
           iconColor: AppColors.primary,
         );
       case EmptyStateType.noBudgets:
         return EmptyStateWidget(
           icon: Icons.account_balance_wallet_outlined,
-          title: 'No budgets set',
-          subtitle: 'Create a budget to track your spending and stay on track',
-          actionLabel: 'Create Budget',
+          title: 'empty.no_budgets.title'.tr,
+          subtitle: 'empty.no_budgets.subtitle'.tr,
+          actionLabel: 'empty.no_budgets.action'.tr,
           onAction: onAction,
           iconColor: AppColors.tertiary,
         );
       case EmptyStateType.noBudgetPlans:
         return EmptyStateWidget(
           icon: Icons.savings_outlined,
-          title: 'No budget plans',
-          subtitle: 'Create a budget plan to track your savings goals',
-          actionLabel: 'Create Plan',
+          title: 'empty.no_budget_plans.title'.tr,
+          subtitle: 'empty.no_budget_plans.subtitle'.tr,
+          actionLabel: 'empty.no_budget_plans.action'.tr,
           onAction: onAction,
           iconColor: AppColors.tertiary,
         );
       case EmptyStateType.noSavings:
         return EmptyStateWidget(
           icon: Icons.savings_outlined,
-          title: 'No savings yet',
-          subtitle: 'Start saving by adding your first savings account',
-          actionLabel: 'Add Savings',
+          title: 'empty.no_savings.title'.tr,
+          subtitle: 'empty.no_savings.subtitle'.tr,
+          actionLabel: 'empty.no_savings.action'.tr,
           onAction: onAction,
           iconColor: AppColors.success,
         );
       case EmptyStateType.noSearchResults:
         return EmptyStateWidget(
           icon: Icons.search_off_outlined,
-          title: 'No results found',
-          subtitle: 'Try adjusting your search terms or filters',
+          title: 'empty.no_search.title'.tr,
+          subtitle: 'empty.no_search.subtitle'.tr,
           iconColor: AppColors.textHint,
         );
       case EmptyStateType.noNotifications:
         return EmptyStateWidget(
           icon: Icons.notifications_none,
-          title: 'No notifications',
-          subtitle: 'You\'re all caught up! Notifications will appear here',
+          title: 'empty.no_notifications.title'.tr,
+          subtitle: 'empty.no_notifications.subtitle'.tr,
           iconColor: AppColors.info,
         );
       case EmptyStateType.noReports:
         return EmptyStateWidget(
           icon: Icons.insights_outlined,
-          title: 'No data available',
-          subtitle: 'Add some transactions to see your financial insights',
+          title: 'empty.no_reports.title'.tr,
+          subtitle: 'empty.no_reports.subtitle'.tr,
           iconColor: AppColors.info,
         );
       case EmptyStateType.noCategories:
         return EmptyStateWidget(
           icon: Icons.category_outlined,
-          title: 'No categories',
-          subtitle: 'Add categories to organize your transactions',
-          actionLabel: 'Add Category',
+          title: 'empty.no_categories.title'.tr,
+          subtitle: 'empty.no_categories.subtitle'.tr,
+          actionLabel: 'empty.no_categories.action'.tr,
           onAction: onAction,
           iconColor: AppColors.warning,
+        );
+      case EmptyStateType.noMoneyStorage:
+        return EmptyStateWidget(
+          icon: Icons.account_balance_outlined,
+          title: 'empty.no_money_storage.title'.tr,
+          subtitle: 'empty.no_money_storage.subtitle'.tr,
+          actionLabel: 'empty.no_money_storage.action'.tr,
+          onAction: onAction,
+          iconColor: AppColors.tertiary,
+        );
+      case EmptyStateType.noPayees:
+        return EmptyStateWidget(
+          icon: Icons.people_outline,
+          title: 'empty.no_payees.title'.tr,
+          subtitle: 'empty.no_payees.subtitle'.tr,
+          actionLabel: 'empty.no_payees.action'.tr,
+          onAction: onAction,
+          iconColor: AppColors.tertiary,
+        );
+      case EmptyStateType.noCommitments:
+        return EmptyStateWidget(
+          icon: Icons.calendar_month_outlined,
+          title: 'empty.no_commitments.title'.tr,
+          subtitle: 'empty.no_commitments.subtitle'.tr,
+          actionLabel: 'empty.no_commitments.action'.tr,
+          onAction: onAction,
+          iconColor: AppColors.tertiary,
         );
       case EmptyStateType.permissionDenied:
         return EmptyStateWidget(
           icon: Icons.block_outlined,
-          title: 'Permission denied',
-          subtitle: 'Please enable the required permissions in settings',
-          actionLabel: 'Open Settings',
+          title: 'empty.permission_denied.title'.tr,
+          subtitle: 'empty.permission_denied.subtitle'.tr,
+          actionLabel: 'empty.permission_denied.action'.tr,
           onAction: onAction,
           iconColor: AppColors.secondary,
         );
       case EmptyStateType.offline:
         return EmptyStateWidget(
           icon: Icons.cloud_off_outlined,
-          title: 'You\'re offline',
-          subtitle:
-              'Some features may be limited. Check your internet connection.',
-          actionLabel: 'Retry',
+          title: 'empty.offline.title'.tr,
+          subtitle: 'empty.offline.subtitle'.tr,
+          actionLabel: 'empty.offline.action'.tr,
           onAction: onAction,
           iconColor: AppColors.textHint,
         );
@@ -221,7 +229,7 @@ class EmptyStateWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon or illustration
+              // ── Illustration or icon ────────────────────────────────────
               if (illustration != null) ...[
                 illustration!,
                 const SizedBox(height: AppSpacing.xxl),
@@ -244,13 +252,13 @@ class EmptyStateWidget extends StatelessWidget {
                 const SizedBox(height: AppSpacing.xxl),
               ],
 
-              // Custom content (optional)
+              // ── Custom content ──────────────────────────────────────────
               if (customContent != null) ...[
                 customContent!,
                 const SizedBox(height: AppSpacing.lg),
               ],
 
-              // Title
+              // ── Title ───────────────────────────────────────────────────
               Text(
                 title,
                 style: AppTextStyles.emptyStateTitle,
@@ -258,14 +266,14 @@ class EmptyStateWidget extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
 
-              // Subtitle
+              // ── Subtitle ────────────────────────────────────────────────
               Text(
                 subtitle,
                 style: AppTextStyles.emptyStateSubtitle,
                 textAlign: TextAlign.center,
               ),
 
-              // Action buttons
+              // ── Primary action ──────────────────────────────────────────
               if (actionLabel != null && onAction != null) ...[
                 const SizedBox(height: AppSpacing.xxl),
                 SizedBox(
@@ -278,7 +286,7 @@ class EmptyStateWidget extends StatelessWidget {
                 ),
               ],
 
-              // Secondary action button
+              // ── Secondary action ────────────────────────────────────────
               if (secondaryActionLabel != null && secondaryAction != null) ...[
                 const SizedBox(height: AppSpacing.sm),
                 SizedBox(
@@ -297,94 +305,106 @@ class EmptyStateWidget extends StatelessWidget {
   }
 }
 
-/// Specialized empty state for transactions
+// =============================================================================
+// Specialised empty states — thin wrappers that use EmptyStateWidget.type
+// so all string logic stays in one place
+// =============================================================================
+
 class NoTransactionsEmptyState extends StatelessWidget {
   final VoidCallback? onAddTransaction;
-
   const NoTransactionsEmptyState({super.key, this.onAddTransaction});
 
   @override
-  Widget build(BuildContext context) {
-    return EmptyStateWidget(
-      icon: Icons.receipt_long_outlined,
-      title: 'No transactions yet',
-      subtitle: 'Start tracking your finances by adding your first transaction',
-      actionLabel: 'Add Transaction',
-      onAction: onAddTransaction,
-      iconColor: AppColors.primary,
-    );
-  }
+  Widget build(BuildContext context) => EmptyStateWidget.type(
+    type: EmptyStateType.noTransactions,
+    onAction: onAddTransaction,
+  );
 }
 
-/// Specialized empty state for budgets
 class NoBudgetsEmptyState extends StatelessWidget {
   final VoidCallback? onAddBudget;
-
   const NoBudgetsEmptyState({super.key, this.onAddBudget});
 
   @override
-  Widget build(BuildContext context) {
-    return EmptyStateWidget(
-      icon: Icons.account_balance_wallet_outlined,
-      title: 'No budgets set',
-      subtitle: 'Create a budget to track your spending and stay on track',
-      actionLabel: 'Create Budget',
-      onAction: onAddBudget,
-      iconColor: AppColors.tertiary,
-    );
-  }
+  Widget build(BuildContext context) => EmptyStateWidget.type(
+    type: EmptyStateType.noBudgets,
+    onAction: onAddBudget,
+  );
 }
 
-/// Specialized empty state for budget plans
 class NoBudgetPlansEmptyState extends StatelessWidget {
   final VoidCallback? onCreatePlan;
-
   const NoBudgetPlansEmptyState({super.key, this.onCreatePlan});
 
   @override
-  Widget build(BuildContext context) {
-    return EmptyStateWidget(
-      icon: Icons.savings_outlined,
-      title: 'No budget plans',
-      subtitle: 'Create a budget plan to track your savings goals',
-      actionLabel: 'Create Plan',
-      onAction: onCreatePlan,
-      iconColor: AppColors.tertiary,
-    );
-  }
+  Widget build(BuildContext context) => EmptyStateWidget.type(
+    type: EmptyStateType.noBudgetPlans,
+    onAction: onCreatePlan,
+  );
 }
 
-/// Specialized empty state for search results
+class NoSavingsEmptyState extends StatelessWidget {
+  final VoidCallback? onAddSaving;
+  const NoSavingsEmptyState({super.key, this.onAddSaving});
+
+  @override
+  Widget build(BuildContext context) => EmptyStateWidget.type(
+    type: EmptyStateType.noSavings,
+    onAction: onAddSaving,
+  );
+}
+
 class NoSearchResultsEmptyState extends StatelessWidget {
   const NoSearchResultsEmptyState({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const EmptyStateWidget(
-      icon: Icons.search_off_outlined,
-      title: 'No results found',
-      subtitle: 'Try adjusting your search terms or filters',
-      iconColor: AppColors.textHint,
-    );
-  }
+  Widget build(BuildContext context) =>
+      EmptyStateWidget.type(type: EmptyStateType.noSearchResults);
 }
 
-/// Specialized empty state for reports/analytics
 class NoReportsEmptyState extends StatelessWidget {
   const NoReportsEmptyState({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const EmptyStateWidget(
-      icon: Icons.insights_outlined,
-      title: 'No data available',
-      subtitle: 'Add some transactions to see your financial insights',
-      iconColor: AppColors.info,
-    );
-  }
+  Widget build(BuildContext context) =>
+      EmptyStateWidget.type(type: EmptyStateType.noReports);
 }
 
-/// Error state widget
+class NoMoneyStorageEmptyState extends StatelessWidget {
+  final VoidCallback? onAdd;
+  const NoMoneyStorageEmptyState({super.key, this.onAdd});
+
+  @override
+  Widget build(BuildContext context) => EmptyStateWidget.type(
+    type: EmptyStateType.noMoneyStorage,
+    onAction: onAdd,
+  );
+}
+
+class NoPayeesEmptyState extends StatelessWidget {
+  final VoidCallback? onAdd;
+  const NoPayeesEmptyState({super.key, this.onAdd});
+
+  @override
+  Widget build(BuildContext context) =>
+      EmptyStateWidget.type(type: EmptyStateType.noPayees, onAction: onAdd);
+}
+
+class NoCommitmentsEmptyState extends StatelessWidget {
+  final VoidCallback? onAdd;
+  const NoCommitmentsEmptyState({super.key, this.onAdd});
+
+  @override
+  Widget build(BuildContext context) => EmptyStateWidget.type(
+    type: EmptyStateType.noCommitments,
+    onAction: onAdd,
+  );
+}
+
+// =============================================================================
+// Error state
+// =============================================================================
+
 class ErrorStateWidget extends StatelessWidget {
   final String message;
   final String? actionLabel;
@@ -403,9 +423,9 @@ class ErrorStateWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyStateWidget(
       icon: Icons.error_outline,
-      title: 'Oops! Something went wrong',
+      title: 'error.something_wrong.title'.tr,
       subtitle: message,
-      actionLabel: actionLabel ?? (showRetry ? 'Retry' : null),
+      actionLabel: actionLabel ?? (showRetry ? 'general.retry'.tr : null),
       onAction: onAction,
       iconColor: AppColors.secondary,
     );

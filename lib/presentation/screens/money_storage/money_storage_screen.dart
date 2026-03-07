@@ -15,13 +15,6 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/domain/entities/impl/money_storage/money_storage_vo.dart';
 
-/// Enhanced Money Storage Screen
-/// Features:
-/// - Card-based layout with gradient backgrounds
-/// - Quick overview of all money storage accounts
-/// - Total balance summary
-/// - Pull-to-refresh
-/// - Empty state with CTA
 class MoneyStorageScreen extends StatelessWidget {
   const MoneyStorageScreen({super.key});
 
@@ -53,7 +46,13 @@ class MoneyStorageScreen extends StatelessWidget {
           } else if (state is MoneyStorageError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.message),
+                content: Row(
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.white),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(state.message),
+                  ],
+                ),
                 backgroundColor: AppColors.error,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
@@ -71,7 +70,6 @@ class MoneyStorageScreen extends StatelessWidget {
                   LoadAddMoneyStorageEvent(),
                 );
           }
-
           BlocProvider.of<ActionButtonBloc>(context).add(
             OnUpdateActionButtonEvent(
               context: context,
@@ -91,9 +89,8 @@ class MoneyStorageScreen extends StatelessWidget {
             );
           } else if (state is MoneyStorageError) {
             return _buildErrorState(context, state.message);
-          } else {
-            return const _MoneyStorageScreenLoading();
           }
+          return const _MoneyStorageScreenLoading();
         },
       ),
     );
@@ -101,13 +98,10 @@ class MoneyStorageScreen extends StatelessWidget {
 
   Widget _buildMoneyStorageList(
     BuildContext context,
-    List<MoneyStorageVO> moneyStorageList,
+    List<MoneyStorageVO> list,
   ) {
-    // Calculate total balance
-    final totalBalance = moneyStorageList.fold<double>(
-      0.0,
-      (sum, storage) => sum + storage.amount,
-    );
+    final totalBalance = list.fold<double>(0.0, (s, m) => s + m.amount);
+    final negativeCount = list.where((m) => m.amount < 0).length;
 
     return Scaffold(
       appBar: AppBar(
@@ -115,92 +109,74 @@ class MoneyStorageScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () {
-              context.read<MoneyStorageBloc>().add(LoadAddMoneyStorageEvent());
-            },
-            tooltip: 'Add Money Storage',
+            onPressed: () => context.read<MoneyStorageBloc>().add(
+              LoadAddMoneyStorageEvent(),
+            ),
+            tooltip: 'general.add_money_storage'.tr,
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          context.read<MoneyStorageBloc>().add(LoadMoneyStorageListEvent());
-        },
-        child: moneyStorageList.isNotEmpty
-            ? SingleChildScrollView(
+        onRefresh: () async =>
+            context.read<MoneyStorageBloc>().add(LoadMoneyStorageListEvent()),
+        child: list.isNotEmpty
+            ? ListView.builder(
                 padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Total Balance Card
-                    _buildTotalBalanceCard(context, totalBalance),
-                    const SizedBox(height: AppSpacing.xxl),
-
-                    // Section Header
-                    SectionHeader(
-                      title: 'Your Accounts',
-                      subtitle:
-                          '${moneyStorageList.length} ${moneyStorageList.length == 1 ? 'account' : 'accounts'}',
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Money Storage Cards
-                    ...moneyStorageList.map(
-                      (storage) => _buildMoneyStorageCard(context, storage),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                  ],
-                ),
+                itemCount: list.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return _buildHeaderCard(
+                      context,
+                      totalBalance: totalBalance,
+                      accountCount: list.length,
+                      negativeCount: negativeCount,
+                    );
+                  }
+                  return _buildMoneyStorageCard(context, list[index - 1]);
+                },
               )
             : NoMoneyStorageEmptyState(
-                onAdd: () {
-                  context.read<MoneyStorageBloc>().add(
-                    LoadAddMoneyStorageEvent(),
-                  );
-                },
+                onAdd: () => context.read<MoneyStorageBloc>().add(
+                  LoadAddMoneyStorageEvent(),
+                ),
               ),
       ),
     );
   }
 
-  Widget _buildTotalBalanceCard(BuildContext context, double totalBalance) {
-    return AppCard.gradient(
+  // ---------------------------------------------------------------------------
+  // Header card — SectionHeader.card
+  // ---------------------------------------------------------------------------
+
+  Widget _buildHeaderCard(
+    BuildContext context, {
+    required double totalBalance,
+    required int accountCount,
+    required int negativeCount,
+  }) {
+    return SectionHeader.card(
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [AppColors.primary, AppColors.primaryDark],
       ),
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      padding: const EdgeInsets.all(AppSpacing.xxl),
-      child: Column(
+      icon: Icons.account_balance,
+      label: 'general.your_accounts'.tr,
+      title: NumberFormat.currency(
+        symbol: 'RM ',
+        decimalDigits: 2,
+      ).format(totalBalance),
+      subtitle:
+          '$accountCount ${'general.accounts'.tr}'
+          '${negativeCount > 0 ? '  ·  $negativeCount negative' : ''}',
+      learnMoreLabel: 'general.learn_more'.tr,
+      learnLessLabel: 'general.less'.tr,
+      collapsibleBody: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
-            children: [
-              Icon(
-                Icons.account_balance,
-                color: Colors.white70,
-                size: AppIconSize.lg,
-              ),
-              SizedBox(width: AppSpacing.sm),
-              Text(
-                'Total Balance',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            NumberFormat.currency(
-              symbol: 'RM ',
-              decimalDigits: 2,
-            ).format(totalBalance),
-            style: AppTextStyles.balanceDisplay,
-          ),
+          SectionHeaderBullet('money_storage.tip_short_name'.tr),
+          SectionHeaderBullet('money_storage.tip_track'.tr),
+          SectionHeaderBullet('money_storage.tip_negative'.tr),
         ],
       ),
     );
@@ -219,7 +195,7 @@ class MoneyStorageScreen extends StatelessWidget {
           Container(
             width: AppTouchTarget.min,
             height: AppTouchTarget.min,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -289,17 +265,12 @@ class MoneyStorageScreen extends StatelessWidget {
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
-            constraints: const BoxConstraints(
-              minWidth: AppTouchTarget.min,
-              minHeight: AppTouchTarget.min,
-            ),
-            onSelected: (String result) async {
+            onSelected: (result) async {
               if (result == 'edit') {
                 context.read<MoneyStorageBloc>().add(
                   LoadEditMoneyStorageEvent(storage.moneyStorage.id),
                 );
-              }
-              if (result == 'delete') {
+              } else if (result == 'delete') {
                 final confirmed = await showDeleteDialog(
                   context: context,
                   title: 'Delete Money Storage',
@@ -313,7 +284,7 @@ class MoneyStorageScreen extends StatelessWidget {
                 }
               }
             },
-            itemBuilder: (BuildContext context) => [
+            itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'edit',
                 child: Row(
@@ -335,8 +306,8 @@ class MoneyStorageScreen extends StatelessWidget {
                     ),
                     SizedBox(width: AppSpacing.sm),
                     Text(
-                      'Delete',
-                      style: TextStyle(color: AppColors.secondary),
+                      'general.delete'.tr,
+                      style: const TextStyle(color: AppColors.secondary),
                     ),
                   ],
                 ),
@@ -366,7 +337,11 @@ class MoneyStorageScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Money Storage' : 'Add New Money Storage'),
+        title: Text(
+          isEditing
+              ? 'general.update_money_storage'.tr
+              : 'general.add_money_storage'.tr,
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -375,61 +350,53 @@ class MoneyStorageScreen extends StatelessWidget {
           child: ListView(
             children: [
               AppTextField(
-                label: 'Short Name',
+                label: 'general.short_name'.tr,
                 controller: shortNameController,
                 prefixIcon: Icons.label,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a short name';
-                  }
-                  return null;
-                },
+                validator: (v) => (v == null || v.isEmpty)
+                    ? 'error.validation.required'.tr
+                    : null,
               ),
               const SizedBox(height: AppSpacing.lg),
               AppTextField(
-                label: 'Full Name',
+                label: 'general.full_name'.tr,
                 controller: longNameController,
                 prefixIcon: Icons.title,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a full name';
-                  }
-                  return null;
-                },
+                validator: (v) => (v == null || v.isEmpty)
+                    ? 'error.validation.required'.tr
+                    : null,
               ),
               const SizedBox(height: AppSpacing.lg),
               AppTextField(
-                label: 'Amount (RM)',
+                label: 'general.amount'.tr,
                 controller: amountController,
                 prefixText: 'RM ',
                 keyboardType: AppTextFieldKeyboardType.decimal,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an amount';
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return 'error.validation.required'.tr;
                   }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
+                  if (double.tryParse(v) == null) {
+                    return 'error.validation.amount'.tr;
                   }
                   return null;
                 },
               ),
-              const SizedBox(height: AppSpacing.xxl),
+              const SizedBox(height: AppSpacing.xxxl),
               Row(
                 children: [
                   Expanded(
                     child: AppButton.secondary(
-                      label: 'Cancel',
-                      onPressed: () {
-                        context.read<MoneyStorageBloc>().add(
-                          LoadMoneyStorageListEvent(),
-                        );
-                      },
+                      label: 'general.cancel'.tr,
+                      onPressed: () => context.read<MoneyStorageBloc>().add(
+                        LoadMoneyStorageListEvent(),
+                      ),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: AppButton.primary(
-                      label: isEditing ? 'Update' : 'Add',
+                      label: isEditing ? 'general.update'.tr : 'general.add'.tr,
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
                           final amount = double.parse(amountController.text);
@@ -443,7 +410,6 @@ class MoneyStorageScreen extends StatelessWidget {
                               ),
                             );
                           } else {
-                            // Add new account - allows multiple accounts
                             context.read<MoneyStorageBloc>().add(
                               AddMoneyStorageEvent(
                                 shortName: shortNameController.text,
@@ -451,31 +417,6 @@ class MoneyStorageScreen extends StatelessWidget {
                                 amount: amount,
                               ),
                             );
-                            // Show success and return to list
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.check_circle,
-                                      color: Colors.white,
-                                    ),
-                                    const SizedBox(width: AppSpacing.sm),
-                                    Text(
-                                      'Money storage added successfully',
-                                    ),
-                                  ],
-                                ),
-                                backgroundColor: AppColors.success,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadius.md,
-                                  ),
-                                ),
-                              ),
-                            );
-                            Navigator.pop(context);
                           }
                         }
                       },
@@ -493,43 +434,16 @@ class MoneyStorageScreen extends StatelessWidget {
   Widget _buildErrorState(BuildContext context, String message) {
     return Scaffold(
       appBar: AppBar(title: Text('money_storage.title'.tr)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: AppIconSize.hero,
-              color: AppColors.secondary,
-            ),
-            const SizedBox(height: AppSpacing.xxl),
-            Text('money_storage.something_wrong'.tr, style: AppTextStyles.h3),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              message,
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            SizedBox(
-              width: 200,
-              child: AppButton.primary(
-                label: 'Retry',
-                onPressed: () {
-                  context.read<MoneyStorageBloc>().add(
-                    LoadMoneyStorageListEvent(),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+      body: ErrorStateWidget(
+        message: message,
+        onAction: () =>
+            context.read<MoneyStorageBloc>().add(LoadMoneyStorageListEvent()),
       ),
     );
   }
 }
+
+// =============================================================================
 
 class _MoneyStorageScreenLoading extends StatelessWidget {
   const _MoneyStorageScreenLoading();
@@ -545,7 +459,6 @@ class _MoneyStorageScreenLoading extends StatelessWidget {
 
 class NoMoneyStorageEmptyState extends StatelessWidget {
   final VoidCallback? onAdd;
-
   const NoMoneyStorageEmptyState({super.key, this.onAdd});
 
   @override
@@ -554,12 +467,11 @@ class NoMoneyStorageEmptyState extends StatelessWidget {
       icon: Icons.account_balance_outlined,
       title: 'No money storage yet',
       subtitle: 'Add your first money storage to get started',
-      actionLabel: 'Add Money Storage',
+      actionLabel: 'general.add_money_storage'.tr,
       onAction:
           onAdd ??
-          () {
-            context.read<MoneyStorageBloc>().add(LoadAddMoneyStorageEvent());
-          },
+          () =>
+              context.read<MoneyStorageBloc>().add(LoadAddMoneyStorageEvent()),
       iconColor: AppColors.tertiary,
     );
   }

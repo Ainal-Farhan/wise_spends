@@ -1,40 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
+import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 /// WiseSpends SectionHeader Component
 ///
-/// A standardized section header component for consistent section titles
-/// with optional "See All" action.
+/// Two variants available via named constructors:
 ///
-/// Features:
-/// - Title with consistent styling
-/// - Optional "See All" action
-/// - Optional subtitle/description
-/// - Optional leading widget (icon)
-/// - Consistent spacing
+/// ─────────────────────────────────────────────────────────────────────────────
+/// 1. Default constructor — plain section title (existing behaviour, unchanged)
+/// ─────────────────────────────────────────────────────────────────────────────
 ///
-/// Usage:
 /// ```dart
-/// // Basic section header
-/// SectionHeader(
-///   title: 'Recent Transactions',
-/// )
+/// // Basic
+/// SectionHeader(title: 'Recent Transactions')
 ///
-/// // With see all action
-/// SectionHeader(
-///   title: 'Recent Transactions',
-///   onSeeAll: () {},
-/// )
+/// // With "See All" action
+/// SectionHeader(title: 'Recent Transactions', onSeeAll: () {})
 ///
-/// // With custom see all text
-/// SectionHeader(
-///   title: 'Budgets',
-///   seeAllText: 'View All',
-///   onSeeAll: () {},
-/// )
+/// // With custom action text
+/// SectionHeader(title: 'Budgets', seeAllText: 'View All', onSeeAll: () {})
 ///
 /// // With subtitle
 /// SectionHeader(
@@ -44,20 +31,42 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 /// )
 ///
 /// // With leading icon
-/// SectionHeader(
-///   title: 'Categories',
-///   leading: Icon(Icons.category),
+/// SectionHeader(title: 'Categories', leading: Icon(Icons.category))
+/// ```
+///
+/// ─────────────────────────────────────────────────────────────────────────────
+/// 2. SectionHeader.card — gradient screen-header card with optional collapsible
+/// ─────────────────────────────────────────────────────────────────────────────
+///
+/// ```dart
+/// // Static (no collapse)
+/// SectionHeader.card(
+///   gradient: LinearGradient(colors: [AppColors.primary, AppColors.primaryDark]),
+///   icon: Icons.account_balance_wallet,
+///   label: 'Budget Overview',
+///   title: 'Manage Your Budgets',
+///   subtitle: 'Track spending limits and stay on target',
+/// )
+///
+/// // With collapsible "Learn more" body
+/// SectionHeader.card(
+///   gradient: LinearGradient(colors: [AppColors.tertiary, AppColors.tertiaryDark]),
+///   icon: Icons.calendar_month,
+///   label: 'general.commitment_overview'.tr,
+///   title: 'general.manage_recurring'.tr,
+///   subtitle: 'commitments.subtitle'.tr,
+///   learnMoreLabel: 'general.learn_more'.tr,
+///   learnLessLabel: 'general.less'.tr,
+///   collapsibleBody: Column(
+///     children: [
+///       SectionHeaderBullet('Rent or mortgage'),
+///       SectionHeaderBullet('Car insurance'),
+///     ],
+///   ),
 /// )
 /// ```
 class SectionHeader extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final VoidCallback? onSeeAll;
-  final String? seeAllText;
-  final Widget? leading;
-  final Widget? trailing;
-  final bool showDivider;
-  final EdgeInsetsGeometry? padding;
+  // ── Default constructor (plain section title) ─────────────────────────────
 
   const SectionHeader({
     super.key,
@@ -69,7 +78,121 @@ class SectionHeader extends StatelessWidget {
     this.trailing,
     this.showDivider = false,
     this.padding,
+  }) : _isCard = false,
+       // card-only fields
+       gradient = null,
+       icon = null,
+       label = null,
+       learnMoreLabel = 'Learn more',
+       learnLessLabel = 'Less',
+       collapsibleBody = null,
+       cardBorderRadius = null,
+       cardPadding = null,
+       cardMargin = null;
+
+  // ── Card constructor (gradient screen-header) ─────────────────────────────
+
+  const SectionHeader.card({
+    super.key,
+    required LinearGradient this.gradient,
+    required IconData this.icon,
+    required String this.label,
+    required this.title,
+    required String this.subtitle,
+    this.collapsibleBody,
+    this.learnMoreLabel = 'Learn more',
+    this.learnLessLabel = 'Less',
+    BorderRadius? borderRadius,
+    EdgeInsets? padding,
+    this.cardMargin,
+  }) : _isCard = true,
+       cardBorderRadius = borderRadius,
+       cardPadding = padding,
+       onSeeAll = null,
+       seeAllText = null,
+       leading = null,
+       trailing = null,
+       showDivider = false,
+       padding = null;
+
+  // ── Shared ────────────────────────────────────────────────────────────────
+
+  final bool _isCard;
+  final String title;
+
+  // Plain-only
+  final String? subtitle;
+  final VoidCallback? onSeeAll;
+  final String? seeAllText;
+  final Widget? leading;
+  final Widget? trailing;
+  final bool showDivider;
+  final EdgeInsetsGeometry? padding;
+
+  // Card-only
+  final LinearGradient? gradient;
+  final IconData? icon;
+  final String? label;
+  final Widget? collapsibleBody;
+  final String learnMoreLabel;
+  final String learnLessLabel;
+  final BorderRadius? cardBorderRadius;
+  final EdgeInsets? cardPadding;
+  final EdgeInsets? cardMargin;
+
+  @override
+  Widget build(BuildContext context) {
+    return _isCard
+        ? _SectionHeaderCard(
+            gradient: gradient!,
+            icon: icon!,
+            label: label!,
+            title: title,
+            subtitle: subtitle ?? '',
+            collapsibleBody: collapsibleBody,
+            learnMoreLabel: learnMoreLabel,
+            learnLessLabel: learnLessLabel,
+            borderRadius: cardBorderRadius,
+            padding: cardPadding,
+            margin: cardMargin,
+          )
+        : _SectionHeaderPlain(
+            title: title,
+            subtitle: subtitle,
+            onSeeAll: onSeeAll,
+            seeAllText: seeAllText,
+            leading: leading,
+            trailing: trailing,
+            showDivider: showDivider,
+            padding: padding,
+          );
+  }
+}
+
+// =============================================================================
+// Plain variant (internal)
+// =============================================================================
+
+class _SectionHeaderPlain extends StatelessWidget {
+  const _SectionHeaderPlain({
+    required this.title,
+    this.subtitle,
+    this.onSeeAll,
+    this.seeAllText,
+    this.leading,
+    this.trailing,
+    this.showDivider = false,
+    this.padding,
   });
+
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onSeeAll;
+  final String? seeAllText;
+  final Widget? leading;
+  final Widget? trailing;
+  final bool showDivider;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -141,13 +264,170 @@ class SectionHeader extends StatelessWidget {
   }
 }
 
-/// Compact section header for cards
-class SectionHeaderCompact extends StatelessWidget {
-  final String title;
-  final VoidCallback? onSeeAll;
-  final String? seeAllText;
-  final Widget? trailing;
+// =============================================================================
+// Card variant (internal, stateful for collapse animation)
+// =============================================================================
 
+class _SectionHeaderCard extends StatefulWidget {
+  const _SectionHeaderCard({
+    required this.gradient,
+    required this.icon,
+    required this.label,
+    required this.title,
+    required this.subtitle,
+    this.collapsibleBody,
+    required this.learnMoreLabel,
+    required this.learnLessLabel,
+    this.borderRadius,
+    this.padding,
+    this.margin,
+  });
+
+  final LinearGradient gradient;
+  final IconData icon;
+  final String label;
+  final String title;
+  final String subtitle;
+  final Widget? collapsibleBody;
+  final String learnMoreLabel;
+  final String learnLessLabel;
+  final BorderRadius? borderRadius;
+  final EdgeInsets? padding;
+  final EdgeInsets? margin;
+
+  @override
+  State<_SectionHeaderCard> createState() => _SectionHeaderCardState();
+}
+
+class _SectionHeaderCardState extends State<_SectionHeaderCard> {
+  bool _expanded = false;
+
+  void _toggle() => setState(() => _expanded = !_expanded);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: widget.margin ?? const EdgeInsets.only(bottom: 24),
+      child: AppCard.gradient(
+        gradient: widget.gradient,
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(16),
+        padding: widget.padding ?? const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Top row: icon + label + optional toggle pill ──────────────
+            Row(
+              children: [
+                Icon(widget.icon, color: Colors.white70, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    widget.label,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                if (widget.collapsibleBody != null) _buildTogglePill(),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // ── Title ─────────────────────────────────────────────────────
+            Text(
+              widget.title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // ── Subtitle ──────────────────────────────────────────────────
+            Text(
+              widget.subtitle,
+              style: const TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+
+            // ── Collapsible body ──────────────────────────────────────────
+            if (widget.collapsibleBody != null)
+              AnimatedSize(
+                duration: const Duration(milliseconds: 280),
+                curve: Curves.easeInOut,
+                alignment: Alignment.topCenter,
+                child: _expanded
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
+                          Container(
+                            width: double.infinity,
+                            height: 1,
+                            color: Colors.white.withValues(alpha: 0.2),
+                          ),
+                          const SizedBox(height: 16),
+                          widget.collapsibleBody!,
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTogglePill() {
+    return GestureDetector(
+      onTap: _toggle,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _expanded ? widget.learnLessLabel : widget.learnMoreLabel,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(width: 4),
+            AnimatedRotation(
+              turns: _expanded ? 0.5 : 0,
+              duration: const Duration(milliseconds: 280),
+              child: const Icon(
+                Icons.keyboard_arrow_down,
+                color: Colors.white,
+                size: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// SectionHeaderCompact — unchanged from original
+// =============================================================================
+
+/// Compact section header for use inside cards.
+///
+/// ```dart
+/// SectionHeaderCompact(title: 'Quick Actions', onSeeAll: () {})
+/// ```
+class SectionHeaderCompact extends StatelessWidget {
   const SectionHeaderCompact({
     super.key,
     required this.title,
@@ -155,6 +435,11 @@ class SectionHeaderCompact extends StatelessWidget {
     this.seeAllText,
     this.trailing,
   });
+
+  final String title;
+  final VoidCallback? onSeeAll;
+  final String? seeAllText;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +480,45 @@ class SectionHeaderCompact extends StatelessWidget {
         else
           const SizedBox.shrink(),
       ],
+    );
+  }
+}
+
+// =============================================================================
+// SectionHeaderBullet — for use inside SectionHeader.card collapsibleBody
+// =============================================================================
+
+/// A white bullet-point row for use inside [SectionHeader.card]'s
+/// [collapsibleBody].
+///
+/// ```dart
+/// SectionHeaderBullet('Rent or mortgage payments')
+/// SectionHeaderBullet('Car insurance')
+/// ```
+class SectionHeaderBullet extends StatelessWidget {
+  const SectionHeaderBullet(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '• ',
+            style: TextStyle(color: Colors.white54, fontSize: 13),
+          ),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

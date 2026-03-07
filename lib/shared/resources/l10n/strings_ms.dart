@@ -108,6 +108,8 @@ class MalayStrings {
     'general.emergency': 'Kecemasan',
     'general.edit_saving': 'Sunting Simpanan',
     'general.add_new_saving': 'Tambah Simpanan Baru',
+    'general.learn_more': 'Ketahui lebih lanjut',
+    'general.less': 'Kurang',
 
     // Transaction Types
     'transaction.type.income': 'Pemasukan',
@@ -311,6 +313,80 @@ class MalayStrings {
     'empty.no_results': 'Tiada keputusan ditemui',
     'empty.no_results_subtitle': 'Cuba laraskan carian atau tapisan anda',
     'empty.get_started': 'Mula',
+    // ── empty — generic ───────────────────────────────────────────────────────
+    'empty.no_items.title': 'Tiada apa-apa lagi',
+    'empty.no_items.subtitle': 'Item yang anda tambah akan muncul di sini',
+    'empty.no_items.action': 'Tambah Item',
+
+    // ── empty — transactions ──────────────────────────────────────────────────
+    'empty.no_transactions.title': 'Tiada transaksi lagi',
+    'empty.no_transactions.subtitle':
+        'Mula rekod pendapatan dan perbelanjaan anda',
+    'empty.no_transactions.action': 'Tambah Transaksi',
+
+    // ── empty — budgets ───────────────────────────────────────────────────────
+    'empty.no_budgets.title': 'Tiada bajet ditetapkan',
+    'empty.no_budgets.subtitle': 'Cipta bajet untuk kawal perbelanjaan anda',
+    'empty.no_budgets.action': 'Cipta Bajet',
+
+    // ── empty — budget plans ──────────────────────────────────────────────────
+    'empty.no_budget_plans.title': 'Tiada pelan bajet lagi',
+    'empty.no_budget_plans.subtitle':
+        'Rancang lebih awal dengan menetapkan matlamat simpanan',
+    'empty.no_budget_plans.action': 'Cipta Pelan',
+
+    // ── empty — savings ───────────────────────────────────────────────────────
+    'empty.no_savings.title': 'Tiada simpanan lagi',
+    'empty.no_savings.subtitle':
+        'Tambah akaun simpanan pertama anda untuk bermula',
+    'empty.no_savings.action': 'Tambah Simpanan',
+
+    // ── empty — search ────────────────────────────────────────────────────────
+    'empty.no_search.title': 'Tiada hasil dijumpai',
+    'empty.no_search.subtitle': 'Cuba kata kunci lain atau kosongkan carian',
+
+    // ── empty — notifications ─────────────────────────────────────────────────
+    'empty.no_notifications.title': 'Semua sudah dibaca',
+    'empty.no_notifications.subtitle': 'Anda tiada pemberitahuan baharu',
+
+    // ── empty — reports ───────────────────────────────────────────────────────
+    'empty.no_reports.title': 'Tiada laporan tersedia',
+    'empty.no_reports.subtitle': 'Tambah transaksi untuk jana laporan anda',
+
+    // ── empty — categories ────────────────────────────────────────────────────
+    'empty.no_categories.title': 'Tiada kategori',
+    'empty.no_categories.subtitle':
+        'Tambah kategori pertama anda untuk bermula',
+    'empty.no_categories.action': 'Tambah Kategori',
+
+    // ── empty — money storage ─────────────────────────────────────────────────
+    'empty.no_money_storage.title': 'Tiada storan wang lagi',
+    'empty.no_money_storage.subtitle':
+        'Tambah akaun pertama anda untuk jejak baki',
+    'empty.no_money_storage.action': 'Tambah Storan Wang',
+
+    // ── empty — payees ────────────────────────────────────────────────────────
+    'empty.no_payees.title': 'Tiada penerima lagi',
+    'empty.no_payees.subtitle':
+        'Tambah penerima untuk urus penerima bayaran anda',
+    'empty.no_payees.action': 'Tambah Penerima',
+
+    // ── empty — commitments ───────────────────────────────────────────────────
+    'empty.no_commitments.title': 'Tiada komitmen lagi',
+    'empty.no_commitments.subtitle':
+        'Tambah perbelanjaan berulang seperti sewa, pinjaman, atau langganan',
+    'empty.no_commitments.action': 'Tambah Komitmen',
+
+    // ── empty — permission denied ─────────────────────────────────────────────
+    'empty.permission_denied.title': 'Akses ditolak',
+    'empty.permission_denied.subtitle':
+        'Anda tiada kebenaran untuk melihat kandungan ini',
+    'empty.permission_denied.action': 'Minta Akses',
+
+    // ── empty — offline ───────────────────────────────────────────────────────
+    'empty.offline.title': 'Anda di luar talian',
+    'empty.offline.subtitle': 'Semak sambungan anda dan cuba semula',
+    'empty.offline.action': 'Cuba Semula',
 
     // Time
     'time.just_now': 'Baru sebentar',
@@ -429,6 +505,9 @@ class MalayStrings {
     'budgets.edit_coming_soon': 'Ciri sunting belanjawan akan datang',
     'budgets.create_coming_soon': 'Cipta ciri belanjawan akan datang',
     'budgets.filter_by_period': 'Tapis Mengikut Tempoh',
+    'budgets.tip_categories': 'Tugaskan kategori untuk jejak perbelanjaan',
+    'budgets.tip_period': 'Tetapkan had harian, mingguan atau bulanan',
+    'budgets.tip_alert': 'Amaran akan dipaparkan apabila hampir had',
 
     // Reports Screen
     'reports.export_success': 'Laporan berjaya dieksport',
@@ -443,7 +522,6 @@ class MalayStrings {
 
     // Payee Screen
     'payees.title': 'Penerima Bayaran',
-    'payees.subtitle': 'Penerima pembayaran untuk pemindahan',
     'payees.add': 'Tambah Penerima Bayaran',
     'payees.edit': 'Sunting',
     'payees.delete': 'Padam',
@@ -464,8 +542,12 @@ class MalayStrings {
     'payees.update': 'Kemas Kini',
     'payees.edit_payee': 'Sunting Penerima Bayaran',
     'payees.delete_payee': 'Padam Penerima Bayaran?',
-    'payees.delete_payee_msg':
-        'Adakah anda pasti mahu memadam penerima bayaran ini? Ini tidak boleh diubah.',
+    'payees.delete_payee_msg': 'Adakah anda pasti? Ini tidak boleh dibatalkan.',
+    'payees.subtitle': 'Penerima pembayaran pihak ketiga',
+    'payees.what_are': 'About payees',
+    'payees.tip_third_party': 'Use payees for insurance, loans, vendors',
+    'payees.tip_bank': 'Store bank name and account for quick reference',
+    'payees.tip_reuse': 'Payees can be reused across multiple expenses',
 
     // Money Storage Screen
     'money_storage.title': 'Storan Wang',
@@ -473,6 +555,10 @@ class MalayStrings {
     'money_storage.something_wrong': 'Maaf! Sesuatu telah berlaku',
     'money_storage.edit': 'Sunting',
     'money_storage.transactions': 'Transaksi',
+    'money_storage.tip_short_name':
+        'Guna nama pendek seperti "Maybank" atau "Tunai"',
+    'money_storage.tip_track': 'Jejak baki merentasi semua akaun anda',
+    'money_storage.tip_negative': 'Baki negatif ditunjukkan dalam merah',
 
     // Savings Screen
     'savings.title': 'Simpanan',
@@ -483,6 +569,11 @@ class MalayStrings {
     'savings.has_goal': 'Ada Matlamat?',
     'savings.saving_transactions': 'Transaksi Simpanan',
     'savings.transaction_form_coming_soon': 'Borang transaksi akan datang',
+    'savings.what_are_desc': 'Jejak pertumbuhan wang anda merentasi akaun',
+    'savings.tip_goal': 'Tetapkan jumlah sasaran untuk jejak kemajuan',
+    'savings.tip_storage': 'Paut ke storan wang untuk lihat sumbernya',
+    'savings.with_goal': '{total} dengan matlamat',
+    'error.something_wrong.title': 'Sesuatu telah berlaku',
 
     // Commitment Screen
     'commitments.title': 'Komitmen',
@@ -515,6 +606,15 @@ class MalayStrings {
     'commitments.select_savings': 'Pilih akaun simpanan',
     'commitments.none': 'Tiada',
     'commitments.select_savings_required': 'Sila pilih akaun simpanan',
+    'commitments.unnamed': 'Komitmen Tanpa Nama',
+    'commitments.this_commitment': 'komitmen ini',
+    'commitments.what_are_desc':
+        'Komitmen adalah perbelanjaan berulang yang anda bayar secara berkala, seperti:',
+    'commitments.example_rent': 'Bayaran sewa atau gadai janji',
+    'commitments.example_insurance': 'Insurans kereta',
+    'commitments.example_streaming': 'Langganan penstriman (Netflix, Spotify)',
+    'commitments.example_utilities': 'Bil utiliti',
+    'commitments.example_loan': 'Bayaran pinjaman',
 
     // Commitment Tasks Screen
     'commitment_tasks.title': 'Tugas Komitmen',
@@ -563,6 +663,17 @@ class MalayStrings {
     'categories.for_money_spent': 'Untuk wang dibelanjakan',
     'categories.for_both': 'Untuk kedua-dua pemasukan dan perbelanjaan',
     'categories.added': 'Kategori berjaya ditambah',
+    'categories.no_categories': 'Tiada kategori',
+    'categories.no_categories_desc':
+        'Tambah kategori pertama anda untuk bermula',
+    'categories.manage_title': 'kategori',
+    'categories.what_are': 'Tentang kategori',
+    'categories.tip_income': 'Kategori pendapatan jejak wang yang diterima',
+    'categories.tip_expense':
+        'Kategori perbelanjaan jejak wang yang dibelanjakan',
+    'categories.tip_both': 'Jenis "Kedua-dua" sesuai untuk pemindahan',
+    'categories.tip_icon': 'Ketik Tambah untuk pilih ikon tersuai',
+    'categories.delete_confirm': 'Adakah anda pasti mahu padam "{name}"?',
 
     // Backup & Restore
     'backup_restore.title': 'Sandaran & Pulih',
