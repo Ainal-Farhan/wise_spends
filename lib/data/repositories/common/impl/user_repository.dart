@@ -58,6 +58,15 @@ class UserRepository extends IUserRepository {
           phoneNumber: profile.phone != null
               ? Value(profile.phone!)
               : const Value.absent(),
+          occupation: profile.occupation != null
+              ? Value(profile.occupation!)
+              : const Value.absent(),
+          address: profile.address != null
+              ? Value(profile.address!)
+              : const Value.absent(),
+          profileImageUrl: profile.profileImageUrl != null
+              ? Value(profile.profileImageUrl!)
+              : const Value.absent(),
           dateUpdated: Value(DateTime.now()),
           lastModifiedBy: Value(profile.id),
         ),

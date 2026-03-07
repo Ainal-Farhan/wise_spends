@@ -3,6 +3,9 @@ class UserProfile {
   final String name;
   final String? email;
   final String? phone;
+  final String? occupation;
+  final String? address;
+  final String? profileImageUrl;
   final DateTime dateCreated;
   final DateTime dateUpdated;
 
@@ -11,6 +14,9 @@ class UserProfile {
     required this.name,
     this.email,
     this.phone,
+    this.occupation,
+    this.address,
+    this.profileImageUrl,
     required this.dateCreated,
     required this.dateUpdated,
   });
@@ -20,6 +26,9 @@ class UserProfile {
     String? name,
     String? email,
     String? phone,
+    String? occupation,
+    String? address,
+    String? profileImageUrl,
     DateTime? dateCreated,
     DateTime? dateUpdated,
   }) {
@@ -28,6 +37,9 @@ class UserProfile {
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
+      occupation: occupation ?? this.occupation,
+      address: address ?? this.address,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
     );
@@ -39,6 +51,9 @@ class UserProfile {
       'name': name,
       'email': email,
       'phone': phone,
+      'occupation': occupation,
+      'address': address,
+      'profileImageUrl': profileImageUrl,
       'dateCreated': dateCreated.millisecondsSinceEpoch,
       'dateUpdated': dateUpdated.millisecondsSinceEpoch,
     };
@@ -50,6 +65,9 @@ class UserProfile {
       name: map['name'] ?? '',
       email: map['email'],
       phone: map['phone'],
+      occupation: map['occupation'],
+      address: map['address'],
+      profileImageUrl: map['profileImageUrl'],
       dateCreated: DateTime.fromMillisecondsSinceEpoch(map['dateCreated']),
       dateUpdated: DateTime.fromMillisecondsSinceEpoch(map['dateUpdated']),
     );
@@ -62,6 +80,9 @@ class UserProfile {
       name: cmmnUser.name,
       email: cmmnUser.email,
       phone: cmmnUser.phoneNumber,
+      occupation: cmmnUser.occupation,
+      address: cmmnUser.address,
+      profileImageUrl: cmmnUser.profileImageUrl,
       dateCreated: cmmnUser.dateCreated,
       dateUpdated: cmmnUser.dateUpdated,
     );

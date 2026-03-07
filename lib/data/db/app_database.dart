@@ -50,7 +50,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -109,6 +109,35 @@ class AppDatabase extends _$AppDatabase {
             'ALTER TABLE commitment_detail_table_new '
             'RENAME TO commitment_detail_table',
           );
+        }
+
+        // ── v4 → v5 ───────────────────────────────────────────────────────
+        // Add new columns to user_table for enhanced profile features:
+        //   occupation       TEXT NULLABLE
+        //   address          TEXT NULLABLE
+        //   profile_image_url  TEXT NULLABLE
+        if (from < 5) {
+          // Add occupation column
+          await customStatement('''
+            ALTER TABLE user_table ADD COLUMN occupation TEXT NULLABLE
+          ''');
+
+          // Add address column
+          await customStatement('''
+            ALTER TABLE user_table ADD COLUMN address TEXT NULLABLE
+          ''');
+
+          // Add profile_image_url column (snake_case for SQLite)
+          await customStatement('''
+            ALTER TABLE user_table ADD COLUMN profile_image_url TEXT NULLABLE
+          ''');
+        }
+
+        if (from < 6) {
+          // Add profile_image_url column (snake_case for SQLite)
+          await customStatement('''
+            ALTER TABLE user_table ADD COLUMN profile_image_url TEXT NULLABLE
+          ''');
         }
       },
     );

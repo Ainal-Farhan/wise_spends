@@ -10,6 +10,12 @@ class UserTable extends BaseEntityTable {
 
   TextColumn get phoneNumber => text().nullable()();
 
+  TextColumn get occupation => text().nullable()();
+
+  TextColumn get address => text().nullable()();
+
+  TextColumn get profileImageUrl => text().nullable()();
+
   @override
   List<Set<Column>> get uniqueKeys => [
     {name},
@@ -21,6 +27,9 @@ class UserTable extends BaseEntityTable {
       'name': name.name,
       'email': email.name,
       'phoneNumber': phoneNumber.name,
+      'occupation': occupation.name,
+      'address': address.name,
+      'profileImageUrl': profileImageUrl.name,
     };
   }
 }

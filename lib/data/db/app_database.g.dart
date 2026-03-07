@@ -1564,6 +1564,39 @@ class $UserTableTable extends UserTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _occupationMeta = const VerificationMeta(
+    'occupation',
+  );
+  @override
+  late final GeneratedColumn<String> occupation = GeneratedColumn<String>(
+    'occupation',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _addressMeta = const VerificationMeta(
+    'address',
+  );
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+    'address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileImageUrlMeta = const VerificationMeta(
+    'profileImageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> profileImageUrl = GeneratedColumn<String>(
+    'profile_image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1574,6 +1607,9 @@ class $UserTableTable extends UserTable
     name,
     email,
     phoneNumber,
+    occupation,
+    address,
+    profileImageUrl,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1652,6 +1688,27 @@ class $UserTableTable extends UserTable
         ),
       );
     }
+    if (data.containsKey('occupation')) {
+      context.handle(
+        _occupationMeta,
+        occupation.isAcceptableOrUnknown(data['occupation']!, _occupationMeta),
+      );
+    }
+    if (data.containsKey('address')) {
+      context.handle(
+        _addressMeta,
+        address.isAcceptableOrUnknown(data['address']!, _addressMeta),
+      );
+    }
+    if (data.containsKey('profile_image_url')) {
+      context.handle(
+        _profileImageUrlMeta,
+        profileImageUrl.isAcceptableOrUnknown(
+          data['profile_image_url']!,
+          _profileImageUrlMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1697,6 +1754,18 @@ class $UserTableTable extends UserTable
         DriftSqlType.string,
         data['${effectivePrefix}phone_number'],
       ),
+      occupation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occupation'],
+      ),
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      ),
+      profileImageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_image_url'],
+      ),
     );
   }
 
@@ -1715,6 +1784,9 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
   final String name;
   final String? email;
   final String? phoneNumber;
+  final String? occupation;
+  final String? address;
+  final String? profileImageUrl;
   const CmmnUser({
     required this.id,
     required this.createdBy,
@@ -1724,6 +1796,9 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
     required this.name,
     this.email,
     this.phoneNumber,
+    this.occupation,
+    this.address,
+    this.profileImageUrl,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1739,6 +1814,15 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
     }
     if (!nullToAbsent || phoneNumber != null) {
       map['phone_number'] = Variable<String>(phoneNumber);
+    }
+    if (!nullToAbsent || occupation != null) {
+      map['occupation'] = Variable<String>(occupation);
+    }
+    if (!nullToAbsent || address != null) {
+      map['address'] = Variable<String>(address);
+    }
+    if (!nullToAbsent || profileImageUrl != null) {
+      map['profile_image_url'] = Variable<String>(profileImageUrl);
     }
     return map;
   }
@@ -1757,6 +1841,15 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
       phoneNumber: phoneNumber == null && nullToAbsent
           ? const Value.absent()
           : Value(phoneNumber),
+      occupation: occupation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(occupation),
+      address: address == null && nullToAbsent
+          ? const Value.absent()
+          : Value(address),
+      profileImageUrl: profileImageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(profileImageUrl),
     );
   }
 
@@ -1774,6 +1867,9 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
       name: serializer.fromJson<String>(json['name']),
       email: serializer.fromJson<String?>(json['email']),
       phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
+      occupation: serializer.fromJson<String?>(json['occupation']),
+      address: serializer.fromJson<String?>(json['address']),
+      profileImageUrl: serializer.fromJson<String?>(json['profileImageUrl']),
     );
   }
   @override
@@ -1788,6 +1884,9 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
       'name': serializer.toJson<String>(name),
       'email': serializer.toJson<String?>(email),
       'phoneNumber': serializer.toJson<String?>(phoneNumber),
+      'occupation': serializer.toJson<String?>(occupation),
+      'address': serializer.toJson<String?>(address),
+      'profileImageUrl': serializer.toJson<String?>(profileImageUrl),
     };
   }
 
@@ -1800,6 +1899,9 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
     String? name,
     Value<String?> email = const Value.absent(),
     Value<String?> phoneNumber = const Value.absent(),
+    Value<String?> occupation = const Value.absent(),
+    Value<String?> address = const Value.absent(),
+    Value<String?> profileImageUrl = const Value.absent(),
   }) => CmmnUser(
     id: id ?? this.id,
     createdBy: createdBy ?? this.createdBy,
@@ -1809,6 +1911,11 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
     name: name ?? this.name,
     email: email.present ? email.value : this.email,
     phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
+    occupation: occupation.present ? occupation.value : this.occupation,
+    address: address.present ? address.value : this.address,
+    profileImageUrl: profileImageUrl.present
+        ? profileImageUrl.value
+        : this.profileImageUrl,
   );
   CmmnUser copyWithCompanion(UserTableCompanion data) {
     return CmmnUser(
@@ -1828,6 +1935,13 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
       phoneNumber: data.phoneNumber.present
           ? data.phoneNumber.value
           : this.phoneNumber,
+      occupation: data.occupation.present
+          ? data.occupation.value
+          : this.occupation,
+      address: data.address.present ? data.address.value : this.address,
+      profileImageUrl: data.profileImageUrl.present
+          ? data.profileImageUrl.value
+          : this.profileImageUrl,
     );
   }
 
@@ -1841,7 +1955,10 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('name: $name, ')
           ..write('email: $email, ')
-          ..write('phoneNumber: $phoneNumber')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('occupation: $occupation, ')
+          ..write('address: $address, ')
+          ..write('profileImageUrl: $profileImageUrl')
           ..write(')'))
         .toString();
   }
@@ -1856,6 +1973,9 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
     name,
     email,
     phoneNumber,
+    occupation,
+    address,
+    profileImageUrl,
   );
   @override
   bool operator ==(Object other) =>
@@ -1868,7 +1988,10 @@ class CmmnUser extends DataClass implements Insertable<CmmnUser> {
           other.lastModifiedBy == this.lastModifiedBy &&
           other.name == this.name &&
           other.email == this.email &&
-          other.phoneNumber == this.phoneNumber);
+          other.phoneNumber == this.phoneNumber &&
+          other.occupation == this.occupation &&
+          other.address == this.address &&
+          other.profileImageUrl == this.profileImageUrl);
 }
 
 class UserTableCompanion extends UpdateCompanion<CmmnUser> {
@@ -1880,6 +2003,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
   final Value<String> name;
   final Value<String?> email;
   final Value<String?> phoneNumber;
+  final Value<String?> occupation;
+  final Value<String?> address;
+  final Value<String?> profileImageUrl;
   final Value<int> rowid;
   const UserTableCompanion({
     this.id = const Value.absent(),
@@ -1890,6 +2016,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
     this.name = const Value.absent(),
     this.email = const Value.absent(),
     this.phoneNumber = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.address = const Value.absent(),
+    this.profileImageUrl = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   UserTableCompanion.insert({
@@ -1901,6 +2030,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
     required String name,
     this.email = const Value.absent(),
     this.phoneNumber = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.address = const Value.absent(),
+    this.profileImageUrl = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdBy = Value(createdBy),
        dateUpdated = Value(dateUpdated),
@@ -1915,6 +2047,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
     Expression<String>? name,
     Expression<String>? email,
     Expression<String>? phoneNumber,
+    Expression<String>? occupation,
+    Expression<String>? address,
+    Expression<String>? profileImageUrl,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1926,6 +2061,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
       if (name != null) 'name': name,
       if (email != null) 'email': email,
       if (phoneNumber != null) 'phone_number': phoneNumber,
+      if (occupation != null) 'occupation': occupation,
+      if (address != null) 'address': address,
+      if (profileImageUrl != null) 'profile_image_url': profileImageUrl,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1939,6 +2077,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
     Value<String>? name,
     Value<String?>? email,
     Value<String?>? phoneNumber,
+    Value<String?>? occupation,
+    Value<String?>? address,
+    Value<String?>? profileImageUrl,
     Value<int>? rowid,
   }) {
     return UserTableCompanion(
@@ -1950,6 +2091,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
       name: name ?? this.name,
       email: email ?? this.email,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      occupation: occupation ?? this.occupation,
+      address: address ?? this.address,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1981,6 +2125,15 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
     if (phoneNumber.present) {
       map['phone_number'] = Variable<String>(phoneNumber.value);
     }
+    if (occupation.present) {
+      map['occupation'] = Variable<String>(occupation.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (profileImageUrl.present) {
+      map['profile_image_url'] = Variable<String>(profileImageUrl.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1998,6 +2151,9 @@ class UserTableCompanion extends UpdateCompanion<CmmnUser> {
           ..write('name: $name, ')
           ..write('email: $email, ')
           ..write('phoneNumber: $phoneNumber, ')
+          ..write('occupation: $occupation, ')
+          ..write('address: $address, ')
+          ..write('profileImageUrl: $profileImageUrl, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -17205,6 +17361,9 @@ typedef $$UserTableTableCreateCompanionBuilder =
       required String name,
       Value<String?> email,
       Value<String?> phoneNumber,
+      Value<String?> occupation,
+      Value<String?> address,
+      Value<String?> profileImageUrl,
       Value<int> rowid,
     });
 typedef $$UserTableTableUpdateCompanionBuilder =
@@ -17217,6 +17376,9 @@ typedef $$UserTableTableUpdateCompanionBuilder =
       Value<String> name,
       Value<String?> email,
       Value<String?> phoneNumber,
+      Value<String?> occupation,
+      Value<String?> address,
+      Value<String?> profileImageUrl,
       Value<int> rowid,
     });
 
@@ -17333,6 +17495,21 @@ class $$UserTableTableFilterComposer
 
   ColumnFilters<String> get phoneNumber => $composableBuilder(
     column: $table.phoneNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -17460,6 +17637,21 @@ class $$UserTableTableOrderingComposer
     column: $table.phoneNumber,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserTableTableAnnotationComposer
@@ -17500,6 +17692,19 @@ class $$UserTableTableAnnotationComposer
 
   GeneratedColumn<String> get phoneNumber => $composableBuilder(
     column: $table.phoneNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
     builder: (column) => column,
   );
 
@@ -17620,6 +17825,9 @@ class $$UserTableTableTableManager
                 Value<String> name = const Value.absent(),
                 Value<String?> email = const Value.absent(),
                 Value<String?> phoneNumber = const Value.absent(),
+                Value<String?> occupation = const Value.absent(),
+                Value<String?> address = const Value.absent(),
+                Value<String?> profileImageUrl = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserTableCompanion(
                 id: id,
@@ -17630,6 +17838,9 @@ class $$UserTableTableTableManager
                 name: name,
                 email: email,
                 phoneNumber: phoneNumber,
+                occupation: occupation,
+                address: address,
+                profileImageUrl: profileImageUrl,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -17642,6 +17853,9 @@ class $$UserTableTableTableManager
                 required String name,
                 Value<String?> email = const Value.absent(),
                 Value<String?> phoneNumber = const Value.absent(),
+                Value<String?> occupation = const Value.absent(),
+                Value<String?> address = const Value.absent(),
+                Value<String?> profileImageUrl = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => UserTableCompanion.insert(
                 id: id,
@@ -17652,6 +17866,9 @@ class $$UserTableTableTableManager
                 name: name,
                 email: email,
                 phoneNumber: phoneNumber,
+                occupation: occupation,
+                address: address,
+                profileImageUrl: profileImageUrl,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

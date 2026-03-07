@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
+import 'package:wise_spends/domain/models/user_profile.dart';
 import 'package:wise_spends/presentation/screens/commitment/commitment_management_screen.dart';
 import 'package:wise_spends/presentation/screens/payee/payee_management_screen.dart';
 import 'package:wise_spends/presentation/screens/settings/category_management_screen.dart';
@@ -20,7 +22,7 @@ import '../dialogs/language_selector_dialog.dart';
 /// - Interactive dialogs for selections
 /// - Clean, organized layout
 /// - Destructive action confirmations
-/// - Profile header with user info
+/// - Profile header with actual user data
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -29,6 +31,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  UserProfile? _userProfile;
+
   // Settings state
   ThemeMode _currentTheme = ThemeMode.system;
   String _currentLanguage = 'en';
@@ -45,6 +49,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isPreferencesExpanded = false;
   bool _isDataExpanded = false;
   bool _isSupportExpanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final repository = UserRepository();
+      final profile = await repository.getCurrentUser();
+      if (mounted && profile != null) {
+        setState(() => _userProfile = profile);
+      }
+    } catch (e) {
+      // Ignore errors, will show default values
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +100,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   leadingIcon: Icons.person_outline,
                   title: 'Profile',
                   subtitle: 'Edit your personal information',
-                  showComingSoon: true,
                   onTap: () {
-                    _showComingSoonMessage(context, 'Profile');
+                    Navigator.pushNamed(context, AppRoutes.profile);
                   },
                 ),
                 const Divider(height: 1, indent: 60),
@@ -386,6 +407,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // ---------------------------------------------------------------------------
 
   Widget _buildProfileHeader() {
+    final name = _userProfile?.name ?? 'Guest User';
+    final email = _userProfile?.email ?? 'guest@example.com';
+
     return Container(
       margin: const EdgeInsets.all(AppSpacing.lg),
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -413,29 +437,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
-            child: const Icon(
-              Icons.person,
-              color: Colors.white,
-              size: 32,
+            child: CircleAvatar(
+              backgroundColor: Colors.white.withValues(alpha: 0.3),
+              child: Text(
+                name.isNotEmpty ? name[0].toUpperCase() : 'U',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.md),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Guest User',
-                  style: TextStyle(
+                  name,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'guest@example.com',
-                  style: TextStyle(
+                  email,
+                  style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                   ),
@@ -445,14 +475,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           InkWell(
             onTap: () {
-              _showComingSoonMessage(context, 'Edit Profile');
+              Navigator.pushNamed(context, AppRoutes.profile);
             },
             borderRadius: BorderRadius.circular(AppRadius.sm),
             child: Container(
               padding: const EdgeInsets.all(AppSpacing.sm),
               child: const Icon(
                 Icons.edit,
-                color: Colors.white70,
+                color: Colors.white,
                 size: AppIconSize.sm,
               ),
             ),
