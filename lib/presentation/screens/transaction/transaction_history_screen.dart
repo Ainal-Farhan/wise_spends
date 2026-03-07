@@ -493,9 +493,9 @@ class _TransactionHistoryScreenContentState
     final transactionDate = DateTime(date.year, date.month, date.day);
 
     if (transactionDate == today) {
-      return 'Today';
+      return 'transaction.history.today'.tr;
     } else if (transactionDate == yesterday) {
-      return 'Yesterday';
+      return 'general.yesterday'.tr;
     } else {
       final daysAgo = today.difference(transactionDate).inDays;
       if (daysAgo < 7) {
@@ -639,13 +639,13 @@ class _TransactionHistoryScreenContentState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // ── Date Range ──────────────────────────────────
-                        Text('Date Range', style: AppTextStyles.h3),
+                        Text('transaction.history.date_range'.tr, style: AppTextStyles.h3),
                         const SizedBox(height: AppSpacing.sm),
                         Wrap(
                           spacing: AppSpacing.sm,
                           runSpacing: AppSpacing.sm,
                           children: [
-                            _buildDateRangeOption(ctx, bloc, 'Today', () {
+                            _buildDateRangeOption(ctx, bloc, 'transaction.history.today'.tr, () {
                               final now = DateTime.now();
                               bloc.add(
                                 FilterTransactionsByDateRangeEvent(
@@ -658,11 +658,11 @@ class _TransactionHistoryScreenContentState
                                     59,
                                     59,
                                   ),
-                                  rangeLabel: 'Today',
+                                  rangeLabel: 'transaction.history.today'.tr,
                                 ),
                               );
                             }),
-                            _buildDateRangeOption(ctx, bloc, 'This Week', () {
+                            _buildDateRangeOption(ctx, bloc, 'transaction.history.this_week'.tr, () {
                               final now = DateTime.now();
                               final start = now.subtract(
                                 Duration(days: now.weekday - 1),
@@ -675,24 +675,24 @@ class _TransactionHistoryScreenContentState
                                     start.day,
                                   ),
                                   to: now,
-                                  rangeLabel: 'This Week',
+                                  rangeLabel: 'transaction.history.this_week'.tr,
                                 ),
                               );
                             }),
-                            _buildDateRangeOption(ctx, bloc, 'This Month', () {
+                            _buildDateRangeOption(ctx, bloc, 'transaction.history.this_month'.tr, () {
                               final now = DateTime.now();
                               bloc.add(
                                 FilterTransactionsByDateRangeEvent(
                                   from: DateTime(now.year, now.month, 1),
                                   to: now,
-                                  rangeLabel: 'This Month',
+                                  rangeLabel: 'transaction.history.this_month'.tr,
                                 ),
                               );
                             }),
                             _buildDateRangeOption(
                               ctx,
                               bloc,
-                              'Custom Range',
+                              'transaction.history.custom_range'.tr,
                               () async {
                                 Navigator.pop(ctx);
                                 final picked = await showDateRangePicker(
@@ -730,7 +730,7 @@ class _TransactionHistoryScreenContentState
                         const SizedBox(height: AppSpacing.xxl),
 
                         // ── Transaction Type ────────────────────────────
-                        Text('Transaction Type', style: AppTextStyles.h3),
+                        Text('transaction.history.transaction_type'.tr, style: AppTextStyles.h3),
                         const SizedBox(height: AppSpacing.sm),
                         _buildFilterOption(
                           ctx,
@@ -756,7 +756,7 @@ class _TransactionHistoryScreenContentState
 
                         // ── Clear all button ────────────────────────────
                         AppButton.secondary(
-                          label: 'Clear All Filters',
+                          label: 'transaction.history.clear_filters'.tr,
                           onPressed: () {
                             bloc.add(ClearFiltersEvent());
                             Navigator.pop(ctx);
@@ -902,7 +902,7 @@ class _TransactionHistoryScreenContentState
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
-              Text('Search Transactions', style: AppTextStyles.h2),
+              Text('transaction.history.search'.tr, style: AppTextStyles.h2),
               const SizedBox(height: AppSpacing.lg),
               AppTextField(
                 controller: _searchController,

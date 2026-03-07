@@ -1,38 +1,55 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 
 enum TransactionType {
-  income(
-    label: 'Income',
-    icon: Icons.arrow_downward_rounded,
-    color: AppColors.income,
-  ),
-  expense(
-    label: 'Expense',
-    icon: Icons.arrow_upward_rounded,
-    color: AppColors.expense,
-  ),
-  transfer(
-    label: 'Transfer',
-    icon: Icons.swap_horiz_rounded,
-    color: AppColors.transfer,
-  ),
-  commitment(
-    label: 'Commitment',
-    icon: Icons.event_repeat_rounded,
-    color: AppColors.commitment,
-  );
+  income,
+  expense,
+  transfer,
+  commitment;
 
-  const TransactionType({
-    required this.label,
-    required this.icon,
-    required this.color,
-  });
+  /// Get localized label for transaction type
+  String get label {
+    switch (this) {
+      case income:
+        return 'transaction.type.income'.tr;
+      case expense:
+        return 'transaction.type.expense'.tr;
+      case transfer:
+        return 'transaction.type.transfer'.tr;
+      case commitment:
+        return 'transaction.type.commitment'.tr;
+    }
+  }
 
-  final String label;
-  final IconData icon;
-  final Color color;
+  /// Get icon for transaction type
+  IconData get icon {
+    switch (this) {
+      case income:
+        return Icons.arrow_downward_rounded;
+      case expense:
+        return Icons.arrow_upward_rounded;
+      case transfer:
+        return Icons.swap_horiz_rounded;
+      case commitment:
+        return Icons.event_repeat_rounded;
+    }
+  }
+
+  /// Get color for transaction type
+  Color get color {
+    switch (this) {
+      case income:
+        return AppColors.income;
+      case expense:
+        return AppColors.expense;
+      case transfer:
+        return AppColors.transfer;
+      case commitment:
+        return AppColors.commitment;
+    }
+  }
 }
 
 class TransactionEntity extends Equatable {

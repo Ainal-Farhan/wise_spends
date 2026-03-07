@@ -207,7 +207,7 @@ class _EditBudgetPlanScreenContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Plan Name', style: AppTextStyles.bodySemiBold),
+          Text('budget_plans.plan_name_label'.tr, style: AppTextStyles.bodySemiBold),
           const SizedBox(height: 8),
           AppTextField(
             label: 'Name',
@@ -215,7 +215,7 @@ class _EditBudgetPlanScreenContent extends StatelessWidget {
             controller: nameController,
           ),
           const SizedBox(height: 16),
-          Text('Description', style: AppTextStyles.bodySemiBold),
+          Text('budget_plans.description_label'.tr, style: AppTextStyles.bodySemiBold),
           const SizedBox(height: 8),
           AppTextField(
             label: 'Description',
@@ -224,7 +224,7 @@ class _EditBudgetPlanScreenContent extends StatelessWidget {
             maxLines: 3,
           ),
           const SizedBox(height: 16),
-          Text('Category', style: AppTextStyles.bodySemiBold),
+          Text('budget_plans.category_label'.tr, style: AppTextStyles.bodySemiBold),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -260,7 +260,7 @@ class _EditBudgetPlanScreenContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Target Amount', style: AppTextStyles.bodySemiBold),
+          Text('budget_plans.target_amount_label'.tr, style: AppTextStyles.bodySemiBold),
           const SizedBox(height: 8),
           AppTextField(
             label: 'Amount',
@@ -270,7 +270,7 @@ class _EditBudgetPlanScreenContent extends StatelessWidget {
             keyboardType: AppTextFieldKeyboardType.decimal,
           ),
           const SizedBox(height: 16),
-          Text('Target Date', style: AppTextStyles.bodySemiBold),
+          Text('budget_plans.target_date_label'.tr, style: AppTextStyles.bodySemiBold),
           const SizedBox(height: 8),
           InkWell(
             onTap: () async {
@@ -323,7 +323,7 @@ class _EditBudgetPlanScreenContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Review Plan', style: AppTextStyles.h3),
+          Text('budget_plans.review'.tr, style: AppTextStyles.h3),
           const SizedBox(height: 16),
           AppCard(
             child: Column(

@@ -241,9 +241,9 @@ class _AddDepositBottomSheetState extends State<AddDepositBottomSheet> {
         final accounts = snapshot.data ?? [];
 
         if (accounts.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text('No linked accounts available'),
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text('budget_plans.no_linked_accounts'.tr),
           );
         }
 

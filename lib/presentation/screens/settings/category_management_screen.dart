@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/constant/enum/category_enum.dart';
 import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/presentation/blocs/category/category_bloc.dart';
@@ -35,7 +36,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Manage Categories'),
+          title: Text('categories.manage'.tr),
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
@@ -179,14 +180,14 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                 _confirmDeleteCategory(context, category);
               }
             },
-            itemBuilder: (_) => const [
+            itemBuilder: (_) => [
               PopupMenuItem(
                 value: 'edit',
                 child: Row(
                   children: [
                     Icon(Icons.edit, size: 18),
                     SizedBox(width: 8),
-                    Text('Edit'),
+                    Text('categories.edit'.tr),
                   ],
                 ),
               ),
@@ -266,7 +267,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                     controller: nameController,
                   ),
                   const SizedBox(height: 16),
-                  Text('Category Type', style: AppTextStyles.bodySemiBold),
+                  Text('categories.type'.tr, style: AppTextStyles.bodySemiBold),
                   const SizedBox(height: 8),
                   RadioGroup<CategoryType>(
                     groupValue: categoryType,
@@ -278,15 +279,15 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                     child: Column(
                       children: [
                         RadioListTile<CategoryType>(
-                          title: const Text('Income'),
+                          title: Text('categories.income'.tr),
                           value: CategoryType.income,
                         ),
                         RadioListTile<CategoryType>(
-                          title: const Text('Expense'),
+                          title: Text('categories.expense'.tr),
                           value: CategoryType.expense,
                         ),
                         RadioListTile<CategoryType>(
-                          title: const Text('Both'),
+                          title: Text('categories.both'.tr),
                           value: CategoryType.both,
                         ),
                       ],
@@ -305,8 +306,8 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                   onPressed: () {
                     if (nameController.text.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter a category name'),
+                        SnackBar(
+                          content: Text('categories.enter_name'.tr),
                           backgroundColor: AppColors.error,
                         ),
                       );
@@ -329,8 +330,8 @@ class _CategoryManagementScreenContent extends StatelessWidget {
 
                     Navigator.pop(dialogContext);
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Category updated successfully'),
+                      SnackBar(
+                        content: Text('categories.updated'.tr),
                         backgroundColor: AppColors.success,
                       ),
                     );
@@ -368,8 +369,8 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                 categoryBloc.add(DeleteCategoryEvent(category.id));
                 Navigator.pop(dialogContext);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Category deleted successfully'),
+                  SnackBar(
+                    content: Text('categories.deleted'.tr),
                     backgroundColor: AppColors.success,
                   ),
                 );

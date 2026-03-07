@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -110,7 +111,7 @@ class SectionHeader extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        seeAllText ?? 'See All',
+                        seeAllText ?? 'general.see_all'.tr,
                         style: AppTextStyles.labelMedium.copyWith(
                           color: AppColors.primary,
                         ),
@@ -176,7 +177,7 @@ class SectionHeaderCompact extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  seeAllText ?? 'See All',
+                  seeAllText ?? 'general.see_all'.tr,
                   style: AppTextStyles.labelSmall.copyWith(
                     color: AppColors.primary,
                   ),

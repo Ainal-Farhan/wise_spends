@@ -1,4 +1,5 @@
 import 'package:wise_spends/core/config/app_locale.dart';
+import 'package:wise_spends/core/services/preferences_service.dart';
 import 'package:wise_spends/shared/resources/l10n/strings_en.dart';
 import 'package:wise_spends/shared/resources/l10n/strings_ms.dart';
 
@@ -6,10 +7,22 @@ import 'package:wise_spends/shared/resources/l10n/strings_ms.dart';
 class LocalizationService {
   static final LocalizationService _instance = LocalizationService._internal();
   factory LocalizationService() => _instance;
-  LocalizationService._internal();
+  LocalizationService._internal() {
+    _loadSavedLocale();
+  }
 
   AppLocale _currentLocale = AppLocale.english;
   Map<String, String> _strings = EnglishStrings.strings;
+
+  /// Load saved locale from preferences
+  Future<void> _loadSavedLocale() async {
+    final prefs = PreferencesService();
+    await prefs.init();
+    _currentLocale = prefs.getAppLocale();
+    _strings = _currentLocale == AppLocale.malay
+        ? MalayStrings.strings
+        : EnglishStrings.strings;
+  }
 
   /// Get current locale
   AppLocale get currentLocale => _currentLocale;
@@ -17,12 +30,16 @@ class LocalizationService {
   /// Get current strings
   Map<String, String> get strings => _strings;
 
-  /// Set locale
-  void setLocale(AppLocale locale) {
+  /// Set locale and save to preferences
+  Future<void> setLocale(AppLocale locale) async {
     _currentLocale = locale;
     _strings = locale == AppLocale.malay
         ? MalayStrings.strings
         : EnglishStrings.strings;
+    
+    // Save to preferences
+    final prefs = PreferencesService();
+    await prefs.saveLanguage(locale.code);
   }
 
   /// Get string by key

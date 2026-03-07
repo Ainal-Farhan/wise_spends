@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/constant/enum/action_button_enum.dart';
 import 'package:wise_spends/data/repositories/saving/impl/money_storage_repository.dart';
 import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
@@ -110,7 +111,7 @@ class MoneyStorageScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Money Storage'),
+        title: Text('money_storage.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -312,14 +313,14 @@ class MoneyStorageScreen extends StatelessWidget {
                 }
               }
             },
-            itemBuilder: (BuildContext context) => const [
+            itemBuilder: (BuildContext context) => [
               PopupMenuItem(
                 value: 'edit',
                 child: Row(
                   children: [
                     Icon(Icons.edit, size: AppIconSize.sm),
                     SizedBox(width: AppSpacing.sm),
-                    Text('Edit'),
+                    Text('money_storage.edit'.tr),
                   ],
                 ),
               ),
@@ -460,7 +461,7 @@ class MoneyStorageScreen extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                     const SizedBox(width: AppSpacing.sm),
-                                    const Text(
+                                    Text(
                                       'Money storage added successfully',
                                     ),
                                   ],
@@ -491,7 +492,7 @@ class MoneyStorageScreen extends StatelessWidget {
 
   Widget _buildErrorState(BuildContext context, String message) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Money Storage')),
+      appBar: AppBar(title: Text('money_storage.title'.tr)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -502,7 +503,7 @@ class MoneyStorageScreen extends StatelessWidget {
               color: AppColors.secondary,
             ),
             const SizedBox(height: AppSpacing.xxl),
-            Text('Oops! Something went wrong', style: AppTextStyles.h3),
+            Text('money_storage.something_wrong'.tr, style: AppTextStyles.h3),
             const SizedBox(height: AppSpacing.sm),
             Text(
               message,
@@ -536,7 +537,7 @@ class _MoneyStorageScreenLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Money Storage')),
+      appBar: AppBar(title: Text('money_storage.title'.tr)),
       body: const Center(child: CircularProgressIndicator()),
     );
   }

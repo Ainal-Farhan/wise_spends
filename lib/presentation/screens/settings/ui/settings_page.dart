@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/app_locale.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
+import 'package:wise_spends/core/services/preferences_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
-import 'package:wise_spends/presentation/screens/commitment/commitment_management_screen.dart';
+import 'package:wise_spends/presentation/screens/commitment/commitment_screen.dart';
 import 'package:wise_spends/presentation/screens/payee/payee_management_screen.dart';
 import 'package:wise_spends/presentation/screens/settings/category_management_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
@@ -73,7 +76,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text('settings.title'.tr),
         centerTitle: true,
         elevation: 0,
       ),
@@ -88,8 +91,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Account & Security Section
             _buildExpansionPanel(
               id: 'account',
-              title: 'Account & Security',
-              description: 'Manage your account settings and security',
+              title: 'settings.account_security'.tr,
+              description: 'settings.account_security_desc'.tr,
               leadingIcon: Icons.security_outlined,
               isExpanded: _isAccountExpanded,
               onExpansionChanged: (expanded) {
@@ -98,8 +101,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 SettingsTile(
                   leadingIcon: Icons.person_outline,
-                  title: 'Profile',
-                  subtitle: 'Edit your personal information',
+                  title: 'settings.edit_profile'.tr,
+                  subtitle: 'settings.profile_subtitle'.tr,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.profile);
                   },
@@ -107,24 +110,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.lock_outline,
-                  title: 'Privacy & Security',
-                  subtitle: 'Password, biometrics, and privacy',
+                  title: 'settings.privacy_security'.tr,
+                  subtitle: 'settings.privacy_security_desc'.tr,
                   showComingSoon: true,
                   onTap: () {
-                    _showComingSoonMessage(context, 'Privacy & Security');
+                    _showComingSoonMessage(
+                      context,
+                      'settings.privacy_security'.tr,
+                    );
                   },
                 ),
                 const Divider(height: 1, indent: 60),
                 SettingsToggleTile(
                   leadingIcon: Icons.fingerprint,
-                  title: 'Biometric Login',
-                  subtitle: 'Use fingerprint or face to unlock',
+                  title: 'settings.biometric_login'.tr,
+                  subtitle: 'settings.biometric_subtitle'.tr,
                   value: _biometricEnabled,
                   onChanged: (value) {
                     setState(() => _biometricEnabled = value);
                     _showComingSoonMessage(
                       context,
-                      value ? 'Biometric enabled' : 'Biometric disabled',
+                      value
+                          ? 'settings.biometric_enabled'.tr
+                          : 'settings.biometric_disabled'.tr,
                     );
                   },
                 ),
@@ -134,8 +142,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Notifications Section
             _buildExpansionPanel(
               id: 'notifications',
-              title: 'Notifications',
-              description: 'Control how you receive notifications',
+              title: 'settings.notifications'.tr,
+              description: 'settings.notifications_desc'.tr,
               leadingIcon: Icons.notifications_outlined,
               isExpanded: _isNotificationsExpanded,
               onExpansionChanged: (expanded) {
@@ -144,8 +152,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 SettingsToggleTile(
                   leadingIcon: Icons.notifications_active,
-                  title: 'Push Notifications',
-                  subtitle: 'Receive transaction alerts and reminders',
+                  title: 'settings.push_notifications'.tr,
+                  subtitle: 'settings.push_notifications_desc'.tr,
                   value: _notificationsEnabled,
                   onChanged: (value) {
                     setState(() => _notificationsEnabled = value);
@@ -154,13 +162,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.calendar_month_outlined,
-                  title: 'Budget Reminders',
-                  subtitle: 'Get notified when approaching budget limits',
+                  title: 'settings.budget_reminders'.tr,
+                  subtitle: 'settings.budget_reminders_desc'.tr,
                   showComingSoon: true,
                   isDisabled: !_notificationsEnabled,
                   onTap: () {
                     if (_notificationsEnabled) {
-                      _showComingSoonMessage(context, 'Budget Reminders');
+                      _showComingSoonMessage(
+                        context,
+                        'settings.budget_reminders'.tr,
+                      );
                     }
                   },
                 ),
@@ -170,8 +181,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Finance Management Section
             _buildExpansionPanel(
               id: 'finance',
-              title: 'Finance Management',
-              description: 'Manage your budgets, accounts, and categories',
+              title: 'settings.finance_management'.tr,
+              description: 'settings.finance_management_desc'.tr,
               leadingIcon: Icons.attach_money,
               leadingBackgroundColor: AppColors.tertiaryContainer,
               isExpanded: _isFinanceExpanded,
@@ -181,8 +192,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 SettingsTile(
                   leadingIcon: Icons.savings,
-                  title: 'Savings',
-                  subtitle: 'Manage your savings goals',
+                  title: 'savings.title'.tr,
+                  subtitle: 'savings.manage'.tr,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.savings);
                   },
@@ -190,8 +201,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.account_balance_wallet,
-                  title: 'Budgets',
-                  subtitle: 'Track spending limits and budgets',
+                  title: 'budgets.title'.tr,
+                  subtitle: 'budgets.manage'.tr,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.budgetList);
                   },
@@ -199,8 +210,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.account_balance,
-                  title: 'Money Storage',
-                  subtitle: 'Manage savings and storage accounts',
+                  title: 'money_storage.title'.tr,
+                  subtitle: 'money_storage.manage'.tr,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.moneyStorage);
                   },
@@ -208,14 +219,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.calendar_month_outlined,
-                  title: 'Commitments',
-                  subtitle: 'Recurring expenses and bills',
+                  title: 'commitments.title'.tr,
+                  subtitle: 'commitments.subtitle'.tr,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            const CommitmentManagementScreen(),
+                        builder: (context) => const CommitmentScreen(),
                       ),
                     );
                   },
@@ -223,8 +233,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.people_outline,
-                  title: 'Payees',
-                  subtitle: 'Payment recipients for transfers',
+                  title: 'payees.title'.tr,
+                  subtitle: 'payees.subtitle'.tr,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -237,8 +247,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.category_outlined,
-                  title: 'Categories',
-                  subtitle: 'Transaction categories and tags',
+                  title: 'categories.manage'.tr,
+                  subtitle: 'categories.subtitle'.tr,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -254,8 +264,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Preferences Section
             _buildExpansionPanel(
               id: 'preferences',
-              title: 'Preferences',
-              description: 'Customize your app experience',
+              title: 'settings.preferences'.tr,
+              description: 'settings.preferences_desc'.tr,
               leadingIcon: Icons.tune,
               leadingBackgroundColor: AppColors.secondaryContainer,
               isExpanded: _isPreferencesExpanded,
@@ -265,7 +275,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 SettingsTile(
                   leadingIcon: Icons.palette_outlined,
-                  title: 'Theme',
+                  title: 'settings.theme'.tr,
                   subtitle: _getThemeSubtitle(),
                   trailing: const Icon(
                     Icons.chevron_right,
@@ -276,7 +286,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.language_outlined,
-                  title: 'Language',
+                  title: 'settings.language'.tr,
                   subtitle: _getLanguageSubtitle(),
                   trailing: const Icon(
                     Icons.chevron_right,
@@ -288,7 +298,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.currency_exchange,
-                  title: 'Currency',
+                  title: 'settings.currency'.tr,
                   subtitle: _getCurrencySubtitle(),
                   trailing: const Icon(
                     Icons.chevron_right,
@@ -296,7 +306,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   showComingSoon: true,
                   onTap: () {
-                    _showComingSoonMessage(context, 'Currency Settings');
+                    _showComingSoonMessage(context, 'settings.currency'.tr);
                   },
                 ),
               ],
@@ -305,8 +315,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Data & Storage Section
             _buildExpansionPanel(
               id: 'data',
-              title: 'Data & Storage',
-              description: 'Backup, export, and manage your data',
+              title: 'settings.data_storage'.tr,
+              description: 'settings.data_storage_desc'.tr,
               leadingIcon: Icons.storage_outlined,
               leadingBackgroundColor: AppColors.warning.withValues(alpha: 0.1),
               isExpanded: _isDataExpanded,
@@ -316,8 +326,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 SettingsTile(
                   leadingIcon: Icons.backup_outlined,
-                  title: 'Backup & Restore',
-                  subtitle: 'Export and import your data',
+                  title: 'settings.backup_restore'.tr,
+                  subtitle: 'settings.backup_restore_desc'.tr,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.backupRestore);
                   },
@@ -325,18 +335,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.file_download_outlined,
-                  title: 'Export Data',
-                  subtitle: 'Export transactions to CSV or PDF',
+                  title: 'settings.export_data'.tr,
+                  subtitle: 'settings.export_data_desc'.tr,
                   showComingSoon: true,
                   onTap: () {
-                    _showComingSoonMessage(context, 'Export Data');
+                    _showComingSoonMessage(context, 'settings.export_data'.tr);
                   },
                 ),
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.delete_outline,
-                  title: 'Clear All Data',
-                  subtitle: 'Permanently delete all local data',
+                  title: 'settings.clear_data'.tr,
+                  subtitle: 'settings.clear_data_desc'.tr,
                   isDestructive: true,
                   onTap: () => _showClearDataConfirmation(),
                 ),
@@ -346,8 +356,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             // Support Section
             _buildExpansionPanel(
               id: 'support',
-              title: 'Support',
-              description: 'Get help and learn more about the app',
+              title: 'settings.support'.tr,
+              description: 'settings.support_desc'.tr,
               leadingIcon: Icons.help_outline,
               leadingBackgroundColor: AppColors.info.withValues(alpha: 0.1),
               isExpanded: _isSupportExpanded,
@@ -357,27 +367,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 SettingsTile(
                   leadingIcon: Icons.help_center,
-                  title: 'Help & FAQ',
-                  subtitle: 'Common questions and answers',
+                  title: 'settings.help_faq'.tr,
+                  subtitle: 'settings.help_faq_desc'.tr,
                   showComingSoon: true,
                   onTap: () {
-                    _showComingSoonMessage(context, 'Help & FAQ');
+                    _showComingSoonMessage(context, 'settings.help_faq'.tr);
                   },
                 ),
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.feedback_outlined,
-                  title: 'Send Feedback',
-                  subtitle: 'Share your thoughts with us',
+                  title: 'settings.send_feedback'.tr,
+                  subtitle: 'settings.send_feedback_desc'.tr,
                   showComingSoon: true,
                   onTap: () {
-                    _showComingSoonMessage(context, 'Send Feedback');
+                    _showComingSoonMessage(
+                      context,
+                      'settings.send_feedback'.tr,
+                    );
                   },
                 ),
                 const Divider(height: 1, indent: 60),
                 SettingsTile(
                   leadingIcon: Icons.info_outline,
-                  title: 'About WiseSpends',
+                  title: 'settings.about_app'.tr,
                   subtitle: 'Version 1.0.0',
                   onTap: () => _showAboutDialog(),
                 ),
@@ -388,7 +401,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: AppButton.destructive(
-                label: 'Sign Out',
+                label: 'settings.sign_out'.tr,
                 onPressed: _showSignOutConfirmation,
                 isFullWidth: true,
               ),
@@ -464,10 +477,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   email,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
@@ -527,8 +537,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: leadingBackgroundColor ??
-                          AppColors.primaryContainer,
+                      color:
+                          leadingBackgroundColor ?? AppColors.primaryContainer,
                       borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Icon(
@@ -635,7 +645,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const Icon(Icons.construction_outlined, color: Colors.white),
             const SizedBox(width: 12),
             Expanded(
-              child: Text('$feature feature coming soon!'),
+              child: Text(
+                'settings.feature_coming_soon'.trWith({'feature': feature}),
+              ),
             ),
           ],
         ),
@@ -660,6 +672,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (themeMode != null && themeMode != _currentTheme) {
       setState(() => _currentTheme = themeMode);
+
+      // Save theme preference
+      final prefs = PreferencesService();
+      await prefs.init();
+      final themeIndex = themeMode == ThemeMode.system
+          ? 0
+          : themeMode == ThemeMode.light
+          ? 1
+          : 2;
+      await prefs.saveTheme(themeIndex);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -683,20 +706,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (languageCode != null && languageCode != _currentLanguage) {
+      // Change the app locale and save to preferences
+      final locale = AppLocale.fromCode(languageCode);
+      await LocalizationService().setLocale(locale);
+
       setState(() => _currentLanguage = languageCode);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Language changed to ${_getLanguageSubtitle()}',
-            style: const TextStyle(color: Colors.white),
+
+      // Show success message and rebuild UI
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Language changed to ${_getLanguageSubtitle()}',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: AppColors.success,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
           ),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
-        ),
-      );
+        );
+
+        // Rebuild the widget to reflect new language
+        setState(() {});
+      }
     }
   }
 
@@ -705,24 +739,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (dialogContext) => CustomDialog(
         config: CustomDialogConfig(
-          title: 'Clear All Data?',
-          message:
-              'This will permanently delete all your local data including transactions, budgets, and settings. This action cannot be undone.',
+          title: 'settings.clear_all_data'.tr,
+          message: 'settings.clear_all_data_msg'.tr,
           icon: Icons.warning_amber_rounded,
           iconColor: AppColors.warning,
           buttons: [
             CustomDialogButton(
-              text: 'Cancel',
+              text: 'general.cancel'.tr,
               onPressed: () => Navigator.pop(dialogContext),
             ),
             CustomDialogButton(
-              text: 'Clear All',
+              text: 'general.delete'.tr,
               isDestructive: true,
               onPressed: () {
                 Navigator.pop(dialogContext);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('All data cleared successfully'),
+                  SnackBar(
+                    content: Text('settings.all_data_cleared'.tr),
                     backgroundColor: AppColors.success,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -740,24 +773,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (dialogContext) => CustomDialog(
         config: CustomDialogConfig(
-          title: 'Sign Out',
-          message:
-              'Are you sure you want to sign out? You will need to sign in again to access your data.',
+          title: 'settings.sign_out'.tr,
+          message: 'settings.sign_out_msg'.tr,
           icon: Icons.logout,
           iconColor: AppColors.tertiary,
           buttons: [
             CustomDialogButton(
-              text: 'Cancel',
+              text: 'general.cancel'.tr,
               onPressed: () => Navigator.pop(dialogContext),
             ),
             CustomDialogButton(
-              text: 'Sign Out',
+              text: 'settings.sign_out'.tr,
               isDestructive: true,
               onPressed: () {
                 Navigator.pop(dialogContext);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Signed out successfully'),
+                  SnackBar(
+                    content: Text('settings.signed_out'.tr),
                     backgroundColor: AppColors.success,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -773,7 +805,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showAboutDialog() {
     showAboutDialog(
       context: context,
-      applicationName: 'WiseSpends',
+      applicationName: 'general.app_name'.tr,
       applicationVersion: '1.0.0',
       applicationIcon: Container(
         width: AppTouchTarget.min,
@@ -785,9 +817,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: const Icon(Icons.account_balance_wallet, color: Colors.white),
       ),
       children: [
-        const Text('WiseSpends - Smart Budget Tracking'),
+        Text('settings.wise_spends_subtitle'.tr),
         const SizedBox(height: AppSpacing.md),
-        const Text('© 2026 WiseSpends. All rights reserved.'),
+        Text('settings.copyright'.tr),
       ],
     );
   }

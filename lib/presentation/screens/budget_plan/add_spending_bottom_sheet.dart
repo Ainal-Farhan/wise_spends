@@ -360,7 +360,7 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
             });
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Receipt attached: ${result.files.single.name}'),
+                content: Text('budget_plans.receipt_attached'.trWith({'name': result.files.single.name})),
                 backgroundColor: WiseSpendsColors.success,
                 behavior: SnackBarBehavior.floating,
               ),
@@ -369,7 +369,7 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to pick receipt: ${e.toString()}'),
+              content: Text('budget_plans.receipt_failed'.trWith({'error': e.toString()})),
               backgroundColor: WiseSpendsColors.error,
               behavior: SnackBarBehavior.floating,
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/data/services/backup_service.dart';
 import 'package:wise_spends/presentation/blocs/backup/backup_restore_bloc.dart';
 import 'package:wise_spends/presentation/blocs/backup/backup_restore_event.dart';
@@ -36,7 +37,7 @@ class _BackupRestoreScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Backup & Restore'),
+        title: Text('backup_restore.title'.tr),
         centerTitle: true,
       ),
       body: BlocConsumer<BackupRestoreBloc, BackupRestoreState>(

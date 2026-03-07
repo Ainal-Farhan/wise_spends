@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
@@ -169,7 +170,7 @@ class _AddTransactionScreenContentState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditMode ? 'Edit Transaction' : 'Add Transaction'),
+        title: Text(_isEditMode ? 'transaction.edit'.tr : 'transaction.add'.tr),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
@@ -574,7 +575,7 @@ class _AddTransactionScreenContentState
           children: [
             Row(
               children: [
-                Text('Payee', style: AppTextStyles.bodySemiBold),
+                Text('transaction.add.payee'.tr, style: AppTextStyles.bodySemiBold),
                 const SizedBox(width: 6),
                 Text(
                   '(optional)',
@@ -757,7 +758,7 @@ class _AddTransactionScreenContentState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Amount', style: AppTextStyles.bodySemiBold),
+        Text('transaction.add.amount'.tr, style: AppTextStyles.bodySemiBold),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -912,7 +913,7 @@ class _AddTransactionScreenContentState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Category', style: AppTextStyles.bodySemiBold),
+        Text('transaction.add.category'.tr, style: AppTextStyles.bodySemiBold),
         const SizedBox(height: 12),
         BlocBuilder<CategoryBloc, CategoryState>(
           builder: (context, state) {
@@ -939,9 +940,9 @@ class _AddTransactionScreenContentState
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppColors.divider),
                 ),
-                child: const Text(
+                child: Text(
                   'No categories found. Add categories in Settings.',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: const TextStyle(color: AppColors.textSecondary),
                   textAlign: TextAlign.center,
                 ),
               );
@@ -1093,8 +1094,8 @@ class _AddTransactionScreenContentState
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
     final d = DateTime(date.year, date.month, date.day);
-    if (d == today) return 'Today';
-    if (d == yesterday) return 'Yesterday';
+    if (d == today) return 'transaction.history.today'.tr;
+    if (d == yesterday) return 'general.yesterday'.tr;
     return DateFormat('EEEE, MMMM d, y').format(date);
   }
 
@@ -1532,9 +1533,9 @@ class _AccountDropdown extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.divider),
         ),
-        child: const Text(
+        child: Text(
           'No savings accounts available. Please add one first.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
       );
     }

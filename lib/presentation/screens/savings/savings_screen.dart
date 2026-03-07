@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/core/constants/constant/enum/action_button_enum.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
@@ -107,7 +108,7 @@ class _SavingsScreenContent extends StatelessWidget {
 
     if (savingsList.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Savings')),
+        appBar: AppBar(title: Text('savings.title'.tr)),
         body: const NoSavingsEmptyState(),
       );
     }
@@ -120,7 +121,7 @@ class _SavingsScreenContent extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Savings'),
+        title: Text('savings.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -302,14 +303,14 @@ class _SavingsScreenContent extends StatelessWidget {
                       break;
                   }
                 },
-                itemBuilder: (context) => const [
+                itemBuilder: (context) => [
                   PopupMenuItem(
                     value: 'edit',
                     child: Row(
                       children: [
                         Icon(Icons.edit, size: 18),
                         SizedBox(width: 8),
-                        Text('Edit'),
+                        Text('savings.edit'.tr),
                       ],
                     ),
                   ),
@@ -319,7 +320,7 @@ class _SavingsScreenContent extends StatelessWidget {
                       children: [
                         Icon(Icons.swap_horiz, size: 18),
                         SizedBox(width: 8),
-                        Text('Transactions'),
+                        Text('savings.transactions'.tr),
                       ],
                     ),
                   ),
@@ -416,7 +417,7 @@ class _SavingsScreenContent extends StatelessWidget {
     String? selectedMoneyStorageId = saving?.moneyStorage?.id;
 
     List<DropdownMenuItem<String>> moneyStorageItems = [
-      const DropdownMenuItem(value: '', child: Text('No Money Storage')),
+      DropdownMenuItem(value: '', child: Text('savings.no_money_storage'.tr)),
       ...moneyStorageList.map(
         (storage) =>
             DropdownMenuItem(value: storage.id, child: Text(storage.shortName)),
@@ -450,7 +451,7 @@ class _SavingsScreenContent extends StatelessWidget {
                   child: Column(
                     children: [
                       SwitchListTile(
-                        title: const Text('Has Goal?'),
+                        title: Text('savings.has_goal'.tr),
                         value: isHasGoal,
                         onChanged: (value) => setState(() => isHasGoal = value),
                       ),
@@ -559,14 +560,14 @@ class _SavingsScreenContent extends StatelessWidget {
 
   Widget _buildTransactionForm(BuildContext context, String savingId) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Saving Transactions')),
-      body: const Center(child: Text('Transaction form coming soon')),
+      appBar: AppBar(title: Text('savings.saving_transactions'.tr)),
+      body: Center(child: Text('savings.transaction_form_coming_soon'.tr)),
     );
   }
 
   Widget _buildErrorState(BuildContext context, String message) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Savings')),
+      appBar: AppBar(title: Text('savings.title'.tr)),
       body: ErrorStateWidget(
         message: message,
         onAction: () => context.read<SavingsBloc>().add(LoadSavingsListEvent()),
@@ -581,7 +582,7 @@ class _SavingsScreenLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Savings')),
+      appBar: AppBar(title: Text('savings.title'.tr)),
       body: const Center(child: CircularProgressIndicator()),
     );
   }

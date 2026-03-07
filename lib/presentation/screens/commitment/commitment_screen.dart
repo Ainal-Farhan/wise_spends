@@ -12,28 +12,61 @@ import 'commitment_detail_screen.dart';
 import 'add_commitment_screen.dart';
 import 'edit_commitment_screen.dart';
 
-class CommitmentListScreen extends StatelessWidget {
-  const CommitmentListScreen({super.key});
+/// Combined Commitment Screen - Header + list in a single layer
+class CommitmentScreen extends StatelessWidget {
+  const CommitmentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => CommitmentBloc()..add(const LoadCommitmentsEvent()),
-      child: const _CommitmentListScreenContent(),
+      child: const _CommitmentScreenContent(),
     );
   }
 }
 
-class _CommitmentListScreenContent extends StatefulWidget {
-  const _CommitmentListScreenContent();
+class _CommitmentScreenContent extends StatefulWidget {
+  const _CommitmentScreenContent();
 
   @override
-  State<_CommitmentListScreenContent> createState() =>
-      _CommitmentListScreenContentState();
+  State<_CommitmentScreenContent> createState() =>
+      _CommitmentScreenContentState();
 }
 
-class _CommitmentListScreenContentState
-    extends State<_CommitmentListScreenContent> {
+class _CommitmentScreenContentState extends State<_CommitmentScreenContent>
+    with SingleTickerProviderStateMixin {
+  bool _isIntroExpanded = false;
+  late final AnimationController _animController;
+  late final Animation<double> _expandAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 280),
+    );
+    _expandAnimation = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  void _toggleIntro() {
+    setState(() => _isIntroExpanded = !_isIntroExpanded);
+    if (_isIntroExpanded) {
+      _animController.forward();
+    } else {
+      _animController.reverse();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,10 +153,6 @@ class _CommitmentListScreenContentState
           } else if (state is CommitmentStateCommitmentsLoaded) {
             final commitments = state.commitments;
 
-            if (commitments.isEmpty) {
-              return _buildEmptyState(context);
-            }
-
             return RefreshIndicator(
               onRefresh: () async {
                 context.read<CommitmentBloc>().add(
@@ -132,9 +161,20 @@ class _CommitmentListScreenContentState
               },
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),
-                itemCount: commitments.length,
-                itemBuilder: (context, index) =>
-                    _buildCommitmentCard(context, commitments[index]),
+                // +1 for the header card, +1 if empty state
+                itemCount: commitments.isEmpty ? 2 : commitments.length + 1,
+                itemBuilder: (context, index) {
+                  // First item is always the header card
+                  if (index == 0) {
+                    return _buildHeaderCard();
+                  }
+
+                  if (commitments.isEmpty) {
+                    return _buildEmptyState(context);
+                  }
+
+                  return _buildCommitmentCard(context, commitments[index - 1]);
+                },
               ),
             );
           } else if (state is CommitmentStateError) {
@@ -145,8 +185,172 @@ class _CommitmentListScreenContentState
               ),
             );
           }
+
           return const SizedBox.shrink();
         },
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Header card with collapsible intro
+  // ---------------------------------------------------------------------------
+
+  Widget _buildHeaderCard() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: AppCard.gradient(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.tertiary, AppColors.tertiaryDark],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Always-visible header row ──────────────────────────────────
+            Row(
+              children: [
+                const Icon(
+                  Icons.calendar_month,
+                  color: Colors.white70,
+                  size: 24,
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Commitment Overview',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                // "Learn more" toggle button
+                GestureDetector(
+                  onTap: _toggleIntro,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _isIntroExpanded ? 'Less' : 'Learn more',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        AnimatedRotation(
+                          turns: _isIntroExpanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 280),
+                          child: const Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // ── Always-visible title + subtitle ───────────────────────────
+            const Text(
+              'Manage Recurring Expenses',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Track bills, subscriptions, and regular payments',
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+
+            // ── Collapsible intro section ──────────────────────────────────
+            SizeTransition(
+              sizeFactor: _expandAnimation,
+              axisAlignment: -1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    height: 1,
+                    color: Colors.white.withValues(alpha: 0.2),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'What are commitments?',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Commitments are recurring expenses you pay regularly, such as:',
+                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                  const SizedBox(height: 10),
+                  ...[
+                    'Rent or mortgage payments',
+                    'Car insurance',
+                    'Streaming subscriptions (Netflix, Spotify)',
+                    'Utility bills',
+                    'Loan payments',
+                  ].map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '• ',
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontSize: 13,
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              item,
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -156,38 +360,36 @@ class _CommitmentListScreenContentState
   // ---------------------------------------------------------------------------
 
   Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.calendar_month_outlined,
-              size: 80,
-              color: AppColors.textHint,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.calendar_month_outlined,
+            size: 80,
+            color: AppColors.textHint,
+          ),
+          const SizedBox(height: 16),
+          Text('commitments.no_commitments'.tr, style: AppTextStyles.h3),
+          const SizedBox(height: 8),
+          Text(
+            'Add your first recurring expense to track bills and subscriptions',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
             ),
-            const SizedBox(height: 16),
-            Text('commitments.no_commitments'.tr, style: AppTextStyles.h3),
-            const SizedBox(height: 8),
-            Text(
-              'Add your first recurring expense to track bills and subscriptions',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: 200,
+            child: AppButton.primary(
+              label: 'Add Commitment',
+              icon: Icons.add,
+              onPressed: () => _navigateToAddCommitment(context),
             ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: 200,
-              child: AppButton.primary(
-                label: 'Add Commitment',
-                icon: Icons.add,
-                onPressed: () => _navigateToAddCommitment(context),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -263,8 +465,8 @@ class _CommitmentListScreenContentState
                     value: 'edit',
                     child: Row(
                       children: [
-                        Icon(Icons.edit, size: 18),
-                        SizedBox(width: 8),
+                        const Icon(Icons.edit, size: 18),
+                        const SizedBox(width: 8),
                         Text('commitments.edit'.tr),
                       ],
                     ),
@@ -273,13 +475,13 @@ class _CommitmentListScreenContentState
                     value: 'delete',
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.delete,
                           size: 18,
                           color: AppColors.secondary,
                         ),
-                        SizedBox(width: 8),
-                        Text(
+                        const SizedBox(width: 8),
+                        const Text(
                           'Delete',
                           style: TextStyle(color: AppColors.secondary),
                         ),
@@ -299,7 +501,10 @@ class _CommitmentListScreenContentState
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('commitments.total_amount'.tr, style: AppTextStyles.caption),
+                  Text(
+                    'commitments.total_amount'.tr,
+                    style: AppTextStyles.caption,
+                  ),
                   Text(
                     NumberFormat.currency(
                       symbol: 'RM ',
@@ -336,7 +541,6 @@ class _CommitmentListScreenContentState
           const SizedBox(height: 10),
           Row(
             children: [
-              // Details button
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () =>
@@ -372,7 +576,6 @@ class _CommitmentListScreenContentState
                 ),
               ),
               const SizedBox(width: 10),
-              // Distribute button — disabled when no details exist
               Expanded(
                 child: FilledButton.icon(
                   onPressed: hasDetails
@@ -417,7 +620,8 @@ class _CommitmentListScreenContentState
         config: CustomDialogConfig(
           title: 'Distribute Commitment?',
           message:
-              'This will create $detailCount task${detailCount == 1 ? '' : 's'} from "${commitment.name ?? 'this commitment'}".',
+              'This will create $detailCount task${detailCount == 1 ? '' : 's'} '
+              'from "${commitment.name ?? 'this commitment'}".',
           icon: Icons.send_and_archive_rounded,
           iconColor: AppColors.success,
           content: Column(
@@ -425,13 +629,16 @@ class _CommitmentListScreenContentState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.green.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(10),
-                  border:
-                      Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -460,7 +667,10 @@ class _CommitmentListScreenContentState
               const SizedBox(height: 10),
               Text(
                 'commitments.distribute_task_msg'.tr,
-                style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),
@@ -518,7 +728,8 @@ class _CommitmentListScreenContentState
       builder: (dialogContext) => CustomDialog(
         config: CustomDialogConfig(
           title: 'Delete Commitment?',
-          message: 'Are you sure you want to delete this commitment? '
+          message:
+              'Are you sure you want to delete this commitment? '
               'All associated tasks will be deleted. This cannot be undone.',
           icon: Icons.delete_outline,
           iconColor: AppColors.secondary,

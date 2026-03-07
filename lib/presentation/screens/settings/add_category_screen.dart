@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/constant/enum/category_enum.dart';
 import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/presentation/blocs/category/category_bloc.dart';
@@ -55,8 +56,8 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
       listener: (context, state) {
         if (state is CategoryCreated) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Category added successfully'),
+            SnackBar(
+              content: Text('categories.added'.tr),
               backgroundColor: AppColors.success,
             ),
           );
@@ -71,7 +72,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Add Category')),
+        appBar: AppBar(title: Text('categories.add'.tr)),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(
@@ -94,7 +95,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
                 const SizedBox(height: 24),
 
                 // Category Type — driven by AddCategoryFormBloc, no setState
-                Text('Category Type', style: AppTextStyles.bodySemiBold),
+                Text('categories.type'.tr, style: AppTextStyles.bodySemiBold),
                 const SizedBox(height: 12),
                 BlocBuilder<AddCategoryFormBloc, AddCategoryFormState>(
                   builder: (context, formState) {
@@ -121,7 +122,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
                         child: Column(
                           children: [
                             RadioListTile<CategoryType>(
-                              title: const Row(
+                              title: Row(
                                 children: [
                                   Icon(
                                     Icons.arrow_downward,
@@ -129,31 +130,31 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
                                     size: 20,
                                   ),
                                   SizedBox(width: 8),
-                                  Text('Income'),
+                                  Text('categories.income'.tr),
                                 ],
                               ),
-                              subtitle: const Text('For money received'),
+                              subtitle: Text('categories.for_money_received'.tr),
                               value: CategoryType.income,
                             ),
                             const Divider(height: 1),
                             RadioListTile<CategoryType>(
-                              title: const Row(
+                              title: Row(
                                 children: [
                                   Icon(
-                                    Icons.arrow_upward,
+                                    Icons.arrow_downward,
                                     color: AppColors.expense,
                                     size: 20,
                                   ),
                                   SizedBox(width: 8),
-                                  Text('Expense'),
+                                  Text('categories.expense'.tr),
                                 ],
                               ),
-                              subtitle: const Text('For money spent'),
+                              subtitle: Text('categories.for_money_spent'.tr),
                               value: CategoryType.expense,
                             ),
                             const Divider(height: 1),
                             RadioListTile<CategoryType>(
-                              title: const Row(
+                              title: Row(
                                 children: [
                                   Icon(
                                     Icons.swap_horiz,
@@ -161,11 +162,11 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
                                     size: 20,
                                   ),
                                   SizedBox(width: 8),
-                                  Text('Both'),
+                                  Text('categories.both'.tr),
                                 ],
                               ),
-                              subtitle: const Text(
-                                'For both income and expense',
+                              subtitle: Text(
+                                'categories.for_both'.tr,
                               ),
                               value: CategoryType.both,
                             ),
@@ -178,7 +179,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
                 const SizedBox(height: 24),
 
                 // Icon Selection — driven by AddCategoryFormBloc, no setState
-                Text('Select Icon', style: AppTextStyles.bodySemiBold),
+                Text('categories.select_icon'.tr, style: AppTextStyles.bodySemiBold),
                 const SizedBox(height: 12),
                 BlocBuilder<AddCategoryFormBloc, AddCategoryFormState>(
                   builder: (context, formState) {

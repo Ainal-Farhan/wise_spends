@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
@@ -14,7 +15,7 @@ Future<ThemeMode?> showThemeSelectorDialog({
     context: context,
     builder: (dialogContext) => CustomDialog(
       config: CustomDialogConfig(
-        title: 'Theme',
+        title: 'settings.theme'.tr,
         icon: Icons.palette_outlined,
         iconColor: AppColors.primary,
         content: Column(
@@ -32,7 +33,7 @@ Future<ThemeMode?> showThemeSelectorDialog({
         ),
         buttons: [
           CustomDialogButton(
-            text: 'Cancel',
+            text: 'general.cancel'.tr,
             onPressed: () => Navigator.pop(dialogContext),
           ),
         ],

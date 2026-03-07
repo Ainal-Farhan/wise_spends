@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
@@ -175,7 +176,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                     _buildQuickActions(context),
                     const SizedBox(height: AppSpacing.xxl),
                     SectionHeader(
-                      title: 'Recent Transactions',
+                      title: 'transaction.recent'.tr,
                       onSeeAll: () {
                         AppRouter.navigateTo(
                           context,
@@ -230,9 +231,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning 👋';
-    if (hour < 17) return 'Good afternoon 👋';
-    return 'Good evening 👋';
+    if (hour < 12) return '${'home.greeting_morning'.tr} 👋';
+    if (hour < 17) return '${'home.greeting_afternoon'.tr} 👋';
+    return '${'home.greeting_evening'.tr} 👋';
   }
 
   Widget _buildBalanceOverview(BuildContext context) {
@@ -310,17 +311,17 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.account_balance,
                 color: Colors.white70,
                 size: AppIconSize.lg,
               ),
               SizedBox(width: AppSpacing.sm),
               Text(
-                'Total Balance',
-                style: TextStyle(
+                'general.balance'.tr,
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -345,7 +346,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Quick Actions', style: AppTextStyles.h3),
+        Text('home.quick_actions'.tr, style: AppTextStyles.h3),
         const SizedBox(height: AppSpacing.md),
         Row(
           children: [
@@ -375,7 +376,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               child: _buildQuickActionItem(
                 context,
                 icon: Icons.swap_horiz_rounded,
-                label: 'Transfer',
+                label: 'home.transfer'.tr,
                 color: AppColors.transfer,
                 onTap: () => _navigateToAddTransaction(
                   context,
@@ -417,7 +418,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               child: _buildQuickActionItem(
                 context,
                 icon: Icons.task_alt,
-                label: 'Tasks',
+                label: 'home.tasks'.tr,
                 color: AppColors.tertiary,
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.commitmentTask);
@@ -520,7 +521,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             color: AppColors.secondary,
           ),
           const SizedBox(height: AppSpacing.xxl),
-          Text('Oops! Something went wrong', style: AppTextStyles.h3),
+          Text('home.something_went_wrong'.tr, style: AppTextStyles.h3),
           const SizedBox(height: AppSpacing.sm),
           Text(
             message,
@@ -570,7 +571,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               ),
             ),
             const SizedBox(height: AppSpacing.xxl),
-            Text('Add Transaction', style: AppTextStyles.h2),
+            Text('transaction.add'.tr, style: AppTextStyles.h2),
             const SizedBox(height: AppSpacing.lg),
             _buildTransactionTypeOption(
               context,

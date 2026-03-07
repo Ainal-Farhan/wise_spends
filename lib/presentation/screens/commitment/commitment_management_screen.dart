@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -11,7 +12,7 @@ class CommitmentManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Commitments')),
+      appBar: AppBar(title: Text('commitments.title'.tr)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -71,7 +72,7 @@ class CommitmentManagementScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('What are Commitments?', style: AppTextStyles.h3),
+                  Text('commitments.what_are'.tr, style: AppTextStyles.h3),
                   const SizedBox(height: 12),
                   Text(
                     'Commitments are recurring expenses that you pay regularly, such as:',

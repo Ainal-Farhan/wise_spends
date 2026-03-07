@@ -356,7 +356,7 @@ class _CreateBudgetPlanScreenContentState
           const SizedBox(height: 24),
 
           // Start Date
-          Text('Start Date', style: AppTextStyles.bodySemiBold),
+          Text('budget_plans.start_date_label'.tr, style: AppTextStyles.bodySemiBold),
           const SizedBox(height: 8),
           InkWell(
             onTap: () async {
@@ -397,7 +397,7 @@ class _CreateBudgetPlanScreenContentState
           const SizedBox(height: 16),
 
           // Target Date
-          Text('Target Date', style: AppTextStyles.bodySemiBold),
+          Text('budget_plans.target_date_label'.tr, style: AppTextStyles.bodySemiBold),
           const SizedBox(height: 8),
           InkWell(
             onTap: () async {
@@ -449,7 +449,7 @@ class _CreateBudgetPlanScreenContentState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Milestones (Optional)', style: AppTextStyles.bodySemiBold),
+          Text('budget_plans.milestones_optional'.tr, style: AppTextStyles.bodySemiBold),
           const SizedBox(height: 8),
           Text(
             'Break down your goal into smaller milestones',
@@ -542,7 +542,7 @@ class _CreateBudgetPlanScreenContentState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Milestone'),
+        title: Text('budget_plans.add_milestone_title'.tr),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -592,8 +592,8 @@ class _CreateBudgetPlanScreenContentState
 
     if (state.name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a plan name'),
+        SnackBar(
+          content: Text('budget_plans.enter_plan_name'.tr),
           backgroundColor: AppColors.error,
         ),
       );
@@ -602,8 +602,8 @@ class _CreateBudgetPlanScreenContentState
 
     if (state.targetAmount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a target amount'),
+        SnackBar(
+          content: Text('budget_plans.enter_target'.tr),
           backgroundColor: AppColors.error,
         ),
       );
@@ -613,8 +613,8 @@ class _CreateBudgetPlanScreenContentState
     // Navigate back and reload
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Budget plan created successfully'),
+      SnackBar(
+        content: Text('budget_plans.created'.tr),
         backgroundColor: AppColors.success,
       ),
     );

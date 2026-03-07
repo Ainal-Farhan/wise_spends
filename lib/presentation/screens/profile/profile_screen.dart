@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
 import 'package:wise_spends/presentation/blocs/profile/profile_bloc.dart';
@@ -57,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     const Icon(Icons.check_circle, color: Colors.white),
                     const SizedBox(width: AppSpacing.sm),
-                    const Text('Profile updated successfully'),
+                    Text('profile.updated_success'.tr),
                   ],
                 ),
                 backgroundColor: AppColors.success,
@@ -120,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfileForm(BuildContext context, UserProfile profile) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text('profile.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.more_vert),
@@ -142,22 +143,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Personal Information Section
               _buildSectionHeader(
-                title: 'Personal Information',
-                subtitle: 'Update your personal details',
+                title: 'profile.personal_info'.tr,
+                subtitle: 'profile.personal_info_desc'.tr,
                 icon: Icons.person_outline,
               ),
               const SizedBox(height: AppSpacing.lg),
 
               AppTextField(
-                label: 'Full Name *',
+                label: 'profile.full_name'.tr,
                 controller: _nameController,
                 prefixIcon: Icons.person_outline,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
+                    return 'profile.full_name_required'.tr;
                   }
                   if (value.length < 2) {
-                    return 'Name must be at least 2 characters';
+                    return 'profile.full_name_short'.tr;
                   }
                   return null;
                 },
@@ -165,15 +166,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: AppSpacing.lg),
 
               AppTextField(
-                label: 'Email Address',
+                label: 'profile.email_address'.tr,
                 controller: _emailController,
                 prefixIcon: Icons.email_outlined,
                 keyboardType: AppTextFieldKeyboardType.email,
                 validator: (value) {
                   if (value != null && value.isNotEmpty) {
-                    if (!value.contains('@') || !value.contains('.')) {
-                      return 'Please enter a valid email';
-                    }
+                    return 'profile.email_invalid'.tr;
                   }
                   return null;
                 },
@@ -181,15 +180,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: AppSpacing.lg),
 
               AppTextField(
-                label: 'Phone Number',
+                label: 'profile.phone_number'.tr,
                 controller: _phoneController,
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: AppTextFieldKeyboardType.phone,
                 validator: (value) {
                   if (value != null && value.isNotEmpty) {
-                    if (value.length < 10) {
-                      return 'Please enter a valid phone number';
-                    }
+                    return 'profile.phone_invalid'.tr;
                   }
                   return null;
                 },
@@ -197,25 +194,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: AppSpacing.lg),
 
               AppTextField(
-                label: 'Occupation',
+                label: 'profile.occupation'.tr,
                 controller: _occupationController,
                 prefixIcon: Icons.work_outline,
-                hint: 'e.g., Software Engineer, Student',
+                hint: 'profile.occupation_hint'.tr,
               ),
               const SizedBox(height: AppSpacing.lg),
 
               AppTextField(
-                label: 'Address',
+                label: 'profile.address'.tr,
                 controller: _addressController,
                 prefixIcon: Icons.home_outlined,
-                hint: 'e.g., 123 Main St, Kuala Lumpur',
+                hint: 'profile.address_hint'.tr,
                 maxLines: 2,
               ),
               const SizedBox(height: AppSpacing.xxl),
 
               // Save Button
               AppButton.primary(
-                label: 'Save Changes',
+                label: 'profile.save_changes'.tr,
                 onPressed: () => _updateProfile(context),
                 isFullWidth: true,
                 icon: Icons.save_outlined,
@@ -224,8 +221,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Account Information Section
               _buildSectionHeader(
-                title: 'Account Information',
-                subtitle: 'Your account details',
+                title: 'profile.account_info'.tr,
+                subtitle: 'profile.account_info_desc'.tr,
                 icon: Icons.info_outline,
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -444,19 +441,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildInfoRow(
-            'Member Since:',
+            'profile.member_since'.tr,
             _formatDate(profile.dateCreated),
             Icons.calendar_today_outlined,
           ),
           const Divider(height: AppSpacing.xl),
           _buildInfoRow(
-            'Last Updated:',
+            'profile.last_updated'.tr,
             _formatDate(profile.dateUpdated),
             Icons.update_outlined,
           ),
           const Divider(height: AppSpacing.xl),
           _buildInfoRow(
-            'User ID:',
+            'profile.user_id'.tr,
             profile.id,
             Icons.badge_outlined,
             isMonospace: true,
@@ -530,7 +527,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
-                'Danger Zone',
+                'profile.danger_zone'.tr,
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                   color: AppColors.secondary,
@@ -540,14 +537,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'Irreversible actions regarding your account',
+            'profile.danger_zone_desc'.tr,
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
           AppButton.destructive(
-            label: 'Delete Account',
+            label: 'profile.delete_account'.tr,
             onPressed: () => _showDeleteAccountDialog(context),
             isFullWidth: true,
           ),
@@ -590,8 +587,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context.read<ProfileBloc>().add(UpdateProfileEvent(updatedProfile));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fix the errors in the form'),
+        SnackBar(
+          content: Text('profile.fix_errors'.tr),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
         ),
@@ -607,7 +604,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Take a photo'),
+              title: Text('profile.take_photo'.tr),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);
@@ -615,7 +612,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from gallery'),
+              title: Text('profile.choose_gallery'.tr),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
@@ -624,9 +621,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (_profileImage != null)
               ListTile(
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: const Text(
-                  'Remove photo',
-                  style: TextStyle(color: Colors.red),
+                title: Text(
+                  'profile.remove_photo'.tr,
+                  style: const TextStyle(color: Colors.red),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -653,7 +650,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to pick image: $e'),
+            content: Text('profile.failed_pick_image'.trWith({'error': e.toString()})),
             backgroundColor: AppColors.error,
           ),
         );
@@ -673,7 +670,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.lock_outline),
-              title: const Text('Change Password'),
+              title: Text('profile.change_password'.tr),
               onTap: () {
                 Navigator.pop(context);
                 _showChangePasswordDialog(context);
@@ -681,7 +678,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.share_outlined),
-              title: const Text('Share Profile'),
+              title: Text('profile.share_profile'.tr),
               onTap: () {
                 Navigator.pop(context);
                 _showShareProfile(context, profile);
@@ -689,10 +686,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.download_outlined),
-              title: const Text('Export Profile Data'),
+              title: Text('profile.export_profile'.tr),
               onTap: () {
                 Navigator.pop(context);
-                _showComingSoonMessage(context, 'Export Profile Data');
+                _showComingSoonMessage(context, 'profile.export_profile'.tr);
               },
             ),
           ],
@@ -710,28 +707,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (dialogContext) => CustomDialog(
         config: CustomDialogConfig(
-          title: 'Change Password',
+          title: 'profile.change_password'.tr,
           icon: Icons.lock_outline,
           iconColor: AppColors.tertiary,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               AppTextField(
-                label: 'Current Password',
+                label: 'profile.current_password'.tr,
                 controller: currentPasswordController,
                 prefixIcon: Icons.lock_outline,
                 obscureText: true,
               ),
               const SizedBox(height: AppSpacing.lg),
               AppTextField(
-                label: 'New Password',
+                label: 'profile.new_password'.tr,
                 controller: newPasswordController,
                 prefixIcon: Icons.lock_outlined,
                 obscureText: true,
               ),
               const SizedBox(height: AppSpacing.lg),
               AppTextField(
-                label: 'Confirm New Password',
+                label: 'profile.confirm_password'.tr,
                 controller: confirmPasswordController,
                 prefixIcon: Icons.lock_outlined,
                 obscureText: true,
@@ -740,15 +737,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           buttons: [
             CustomDialogButton(
-              text: 'Cancel',
+              text: 'general.cancel'.tr,
               onPressed: () => Navigator.pop(dialogContext),
             ),
             CustomDialogButton(
-              text: 'Change',
+              text: 'general.edit'.tr,
               isDefault: true,
               onPressed: () {
                 Navigator.pop(dialogContext);
-                _showComingSoonMessage(context, 'Password Change');
+                _showComingSoonMessage(context, 'profile.password_change'.tr);
               },
             ),
           ],
@@ -765,22 +762,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Colors.transparent,
         child: CustomDialog(
           config: CustomDialogConfig(
-            title: 'Delete Account?',
-            message:
-                'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
+            title: 'profile.delete_account'.tr,
+            message: 'profile.delete_account_confirm'.tr,
             icon: Icons.warning_amber_rounded,
             iconColor: AppColors.secondary,
             buttons: [
               CustomDialogButton(
-                text: 'Cancel',
+                text: 'general.cancel'.tr,
                 onPressed: () => Navigator.pop(dialogContext),
               ),
               CustomDialogButton(
-                text: 'Delete Account',
+                text: 'profile.delete_account'.tr,
                 isDestructive: true,
                 onPressed: () {
                   Navigator.pop(dialogContext);
-                  _showComingSoonMessage(context, 'Account Deletion');
+                  _showComingSoonMessage(context, 'profile.account_deletion'.tr);
                 },
               ),
             ],
@@ -796,10 +792,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         content: Text('Profile: ${profile.name}'),
         backgroundColor: AppColors.info,
         action: SnackBarAction(
-          label: 'Share',
+          label: 'Share'.tr,
           textColor: Colors.white,
           onPressed: () {
-            _showComingSoonMessage(context, 'Share Profile');
+            _showComingSoonMessage(context, 'profile.share_profile'.tr);
           },
         ),
       ),
@@ -814,7 +810,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const Icon(Icons.construction_outlined, color: Colors.white),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: Text('$feature feature coming soon!'),
+              child: Text(
+                'settings.feature_coming_soon'.trWith({'feature': feature}),
+              ),
             ),
           ],
         ),
@@ -829,7 +827,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildErrorState(BuildContext context, String message) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text('profile.title'.tr)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -840,7 +838,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: AppColors.secondary,
             ),
             const SizedBox(height: AppSpacing.xxl),
-            Text('Oops! Something went wrong', style: AppTextStyles.h3),
+            Text('profile.something_wrong'.tr, style: AppTextStyles.h3),
             const SizedBox(height: AppSpacing.sm),
             Text(
               message,
@@ -853,7 +851,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               width: 200,
               child: AppButton.primary(
-                label: 'Retry',
+                label: 'general.retry'.tr,
                 onPressed: () {
                   context.read<ProfileBloc>().add(LoadProfileEvent());
                 },
@@ -882,7 +880,7 @@ class _ProfileScreenLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text('profile.title'.tr)),
       body: const Center(child: CircularProgressIndicator()),
     );
   }

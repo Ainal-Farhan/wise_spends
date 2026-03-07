@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -72,7 +73,7 @@ class _EditCommitmentScreenContentState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Commitment')),
+      appBar: AppBar(title: Text('commitments.edit_commitment'.tr)),
       body: BlocConsumer<CommitmentBloc, CommitmentState>(
         listener: (context, state) {
           if (state is CommitmentStateSuccess) {
@@ -219,7 +220,7 @@ class _EditCommitmentScreenContentState
             const SizedBox(height: 24),
 
             // Frequency
-            Text('Frequency', style: AppTextStyles.bodySemiBold),
+            Text('commitments.frequency'.tr, style: AppTextStyles.bodySemiBold),
             const SizedBox(height: 8),
             BlocBuilder<AddCommitmentFormBloc, AddCommitmentFormState>(
               builder: (context, formState) {
@@ -243,21 +244,21 @@ class _EditCommitmentScreenContentState
                       ),
                       prefixIcon: Icon(Icons.calendar_today, size: 20),
                     ),
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                         value: 'monthly',
-                        child: Text('Monthly'),
+                        child: Text('commitments.monthly'.tr),
                       ),
                       DropdownMenuItem(
                         value: 'quarterly',
-                        child: Text('Quarterly'),
+                        child: Text('commitments.quarterly'.tr),
                       ),
-                      DropdownMenuItem(value: 'yearly', child: Text('Yearly')),
+                      DropdownMenuItem(value: 'yearly', child: Text('commitments.yearly'.tr)),
                       DropdownMenuItem(
                         value: 'biweekly',
-                        child: Text('Bi-weekly'),
+                        child: Text('commitments.bi_weekly'.tr),
                       ),
-                      DropdownMenuItem(value: 'weekly', child: Text('Weekly')),
+                      DropdownMenuItem(value: 'weekly', child: Text('commitments.weekly'.tr)),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -293,9 +294,9 @@ class _EditCommitmentScreenContentState
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                     ),
                   ),
-                  hint: const Text('Select savings account'),
+                  hint: Text('commitments.select_savings'.tr),
                   items: [
-                    const DropdownMenuItem(value: null, child: Text('None')),
+                    DropdownMenuItem(value: null, child: Text('commitments.none'.tr)),
                     ...savingVOList.map((saving) {
                       return DropdownMenuItem<String>(
                         value: saving.saving.id as String,
@@ -359,7 +360,7 @@ class _EditCommitmentScreenContentState
     if (selectedSavingId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Please select a savings account'),
+          content: Text('commitments.select_savings_required'.tr),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(

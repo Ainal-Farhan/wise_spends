@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
 import 'package:wise_spends/shared/components/components.dart';
@@ -42,7 +43,7 @@ class _CommitmentTaskScreenContentState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Commitment Tasks'),
+        title: Text('commitment_tasks.title'.tr),
         leading: IconButton(
           icon: const Icon(Icons.home),
           onPressed: () => Navigator.of(
@@ -144,7 +145,7 @@ class _CommitmentTaskScreenContentState
                       color: AppColors.secondary,
                     ),
                     const SizedBox(height: 16),
-                    Text('Oops! Something went wrong', style: AppTextStyles.h3),
+                    Text('commitment_tasks.something_wrong'.tr, style: AppTextStyles.h3),
                     const SizedBox(height: 8),
                     Text(
                       state.message,
@@ -279,7 +280,7 @@ class _CommitmentTaskScreenContentState
           children: [
             Icon(Icons.checklist_outlined, size: 80, color: AppColors.textHint),
             const SizedBox(height: 16),
-            Text('No tasks found', style: AppTextStyles.h3),
+            Text('commitment_tasks.no_tasks'.tr, style: AppTextStyles.h3),
             const SizedBox(height: 8),
             Text(
               filterStatus == 'all'
@@ -386,18 +387,18 @@ class _CommitmentTaskScreenContentState
               if (value == 'complete') _confirmCompleteTask(task);
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'edit',
                 child: Row(
                   children: [
                     Icon(Icons.edit, size: 18),
                     SizedBox(width: 8),
-                    Text('Edit'),
+                    Text('commitment_tasks.edit'.tr),
                   ],
                 ),
               ),
               if (!isDone)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'complete',
                   child: Row(
                     children: [
@@ -407,11 +408,11 @@ class _CommitmentTaskScreenContentState
                         color: AppColors.success,
                       ),
                       SizedBox(width: 8),
-                      Text('Mark Complete'),
+                      Text('commitment_tasks.mark_complete'.tr),
                     ],
                   ),
                 ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: Row(
                   children: [
@@ -524,9 +525,9 @@ class _CommitmentTaskScreenContentState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Close',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              'general.close'.tr,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           if (!isDone)
@@ -539,7 +540,7 @@ class _CommitmentTaskScreenContentState
                 backgroundColor: AppColors.success,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Mark Complete'),
+              child: Text('commitment_tasks.mark_complete'.tr),
             ),
         ],
       ),
@@ -619,7 +620,7 @@ class _CommitmentTaskScreenContentState
                           borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                       ),
-                      hint: const Text('Select source account'),
+                      hint: Text('commitment_tasks.select_source'.tr),
                       items: savings
                           .map(
                             (s) => DropdownMenuItem(
@@ -641,7 +642,7 @@ class _CommitmentTaskScreenContentState
                           borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                       ),
-                      hint: const Text('Select target account'),
+                      hint: Text('commitment_tasks.select_target'.tr),
                       items: savings
                           .map(
                             (s) => DropdownMenuItem(
@@ -669,7 +670,7 @@ class _CommitmentTaskScreenContentState
                           borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                       ),
-                      hint: const Text('Select source account'),
+                      hint: Text('commitment_tasks.select_source'.tr),
                       items: savings
                           .map(
                             (s) => DropdownMenuItem(
@@ -692,8 +693,8 @@ class _CommitmentTaskScreenContentState
                         ),
                       ),
                       hint: payees.isEmpty
-                          ? const Text('No payees found')
-                          : const Text('Select payee'),
+                          ? Text('commitment_tasks.no_payees'.tr)
+                          : Text('commitment_tasks.select_payee'.tr),
                       items: payees
                           .map(
                             (p) => DropdownMenuItem(
@@ -797,9 +798,9 @@ class _CommitmentTaskScreenContentState
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: AppColors.textSecondary),
+                child: Text(
+                  'general.cancel'.tr,
+                  style: const TextStyle(color: AppColors.textSecondary),
                 ),
               ),
               ElevatedButton(
@@ -909,9 +910,9 @@ class _CommitmentTaskScreenContentState
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: const Text(
+        title: Text(
           'Complete Task?',
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
@@ -920,9 +921,9 @@ class _CommitmentTaskScreenContentState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Mark this task as completed? This will update your savings balance.',
-              style: TextStyle(color: AppColors.textSecondary),
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 12),
             _buildDetailRow('Type', _labelForType(task.type)),
@@ -940,9 +941,9 @@ class _CommitmentTaskScreenContentState
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              'general.cancel'.tr,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -956,7 +957,7 @@ class _CommitmentTaskScreenContentState
               backgroundColor: AppColors.success,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Complete'),
+            child: Text('commitment_tasks.complete'.tr),
           ),
         ],
       ),
@@ -968,23 +969,23 @@ class _CommitmentTaskScreenContentState
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: const Text(
+        title: Text(
           'Delete Task?',
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
-        content: const Text(
+        content: Text(
           'Are you sure you want to delete this task? This cannot be undone.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+            child: Text(
+              'general.cancel'.tr,
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
@@ -998,7 +999,7 @@ class _CommitmentTaskScreenContentState
               backgroundColor: AppColors.secondary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete'),
+            child: Text('general.delete'.tr),
           ),
         ],
       ),
@@ -1057,24 +1058,24 @@ class _CommitmentTaskScreenContentState
       context: context,
       builder: (dialogContext) => AlertDialog(
         backgroundColor: AppColors.surface,
-        title: const Text(
+        title: Text(
           'About Commitment Tasks',
-          style: TextStyle(
+          style: const TextStyle(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
           ),
         ),
-        content: const Text(
+        content: Text(
           'Commitment Tasks are generated when you distribute a commitment. '
           'Each task represents one payment — internal transfer between your savings, '
           'a payment to an external party, or a cash payment. '
           'Mark tasks complete to update your savings balance.',
-          style: TextStyle(color: AppColors.textSecondary),
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
+            child: Text(
               'Got it',
               style: TextStyle(color: AppColors.primary),
             ),

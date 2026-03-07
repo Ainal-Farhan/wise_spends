@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo.dart';
 import 'package:wise_spends/presentation/blocs/commitment/commitment_bloc.dart';
@@ -203,7 +204,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
               TextButton.icon(
                 onPressed: () => _showDetailForm(context, state, detail),
                 icon: const Icon(Icons.edit_outlined, size: 16),
-                label: const Text('Edit'),
+                label: Text('general.edit'.tr),
                 style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               ),
               TextButton.icon(
@@ -226,7 +227,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                   }
                 },
                 icon: const Icon(Icons.delete_outline, size: 16),
-                label: const Text('Delete'),
+                label: Text('general.delete'.tr),
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),
               ),
             ],
@@ -283,7 +284,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
               color: AppColors.textHint,
             ),
             const SizedBox(height: 16),
-            Text('No details yet', style: AppTextStyles.h3),
+            Text('commitments.no_details'.tr, style: AppTextStyles.h3),
             const SizedBox(height: 8),
             Text(
               'Add details to define how this commitment will be paid out on distribute.',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -31,7 +32,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Payees'),
+        title: Text('payees.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -120,7 +121,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                     color: AppColors.secondary,
                   ),
                   const SizedBox(height: 16),
-                  Text('Oops! Something went wrong', style: AppTextStyles.h3),
+                  Text('payees.something_wrong'.tr, style: AppTextStyles.h3),
                   const SizedBox(height: 8),
                   Text(
                     state.message,
@@ -158,7 +159,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
           children: [
             Icon(Icons.people_outline, size: 80, color: AppColors.textHint),
             const SizedBox(height: 16),
-            Text('No payees yet', style: AppTextStyles.h3),
+            Text('payees.no_payees'.tr, style: AppTextStyles.h3),
             const SizedBox(height: 8),
             Text(
               'Add payees to manage your third-party payment recipients',
@@ -243,13 +244,13 @@ class _PayeeManagementScreenContent extends StatelessWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'edit',
                 child: Row(
                   children: [
                     Icon(Icons.edit, size: 18),
                     SizedBox(width: 8),
-                    Text('Edit'),
+                    Text('payees.edit'.tr),
                   ],
                 ),
               ),
@@ -331,8 +332,8 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                 final name = nameController.text.trim();
                 if (name.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please enter a payee name'),
+                    SnackBar(
+                      content: Text('payees.enter_name'.tr),
                       backgroundColor: AppColors.error,
                     ),
                   );
@@ -417,8 +418,8 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                 final name = nameController.text.trim();
                 if (name.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please enter a payee name'),
+                    SnackBar(
+                      content: Text('payees.enter_name'.tr),
                       backgroundColor: AppColors.error,
                     ),
                   );

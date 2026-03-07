@@ -70,16 +70,16 @@ class _BudgetPlanDetailScreenContentState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Budget Plan'),
+        title: Text('budget_plans.title'.tr),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) => _handleMenuAction(value),
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'edit',
-                child: ListTile(leading: Icon(Icons.edit), title: Text('Edit')),
+                child: ListTile(leading: Icon(Icons.edit), title: Text('general.edit'.tr)),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
                   leading: Icon(
@@ -87,8 +87,8 @@ class _BudgetPlanDetailScreenContentState
                     color: WiseSpendsColors.secondary,
                   ),
                   title: Text(
-                    'Delete',
-                    style: TextStyle(color: WiseSpendsColors.secondary),
+                    'general.delete'.tr,
+                    style: const TextStyle(color: WiseSpendsColors.secondary),
                   ),
                 ),
               ),
@@ -591,7 +591,7 @@ class _BudgetPlanDetailScreenContentState
 
   Widget _buildDepositsList(List<dynamic> deposits) {
     if (deposits.isEmpty) {
-      return const Center(child: Text('No deposits yet'));
+      return Center(child: Text('budget_plans.no_deposits'.tr));
     }
 
     return ListView.separated(
@@ -625,7 +625,7 @@ class _BudgetPlanDetailScreenContentState
 
   Widget _buildSpendingList(List<dynamic> transactions) {
     if (transactions.isEmpty) {
-      return const Center(child: Text('No spending yet'));
+      return Center(child: Text('budget_plans.no_spending'.tr));
     }
 
     return ListView.separated(
@@ -856,14 +856,12 @@ class _BudgetPlanDetailScreenContentState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Plan?'),
-        content: const Text(
-          'Are you sure you want to delete this plan? All related data will be deleted.',
-        ),
+        title: Text('budget_plans.delete_plan'.tr),
+        content: Text('budget_plans.delete_plan_msg'.tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('general.cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -873,7 +871,7 @@ class _BudgetPlanDetailScreenContentState
             style: ElevatedButton.styleFrom(
               backgroundColor: WiseSpendsColors.secondary,
             ),
-            child: const Text('Delete'),
+            child: Text('general.delete'.tr),
           ),
         ],
       ),
@@ -903,7 +901,7 @@ class _BudgetPlanDetailScreenContentState
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Add Milestone'),
+          title: Text('budget_plans.add_milestone_title'.tr),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -953,7 +951,7 @@ class _BudgetPlanDetailScreenContentState
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
+              child: Text('general.cancel'.tr),
             ),
             ElevatedButton(
               onPressed: () {
@@ -971,7 +969,7 @@ class _BudgetPlanDetailScreenContentState
                   Navigator.pop(context);
                 }
               },
-              child: const Text('Add'),
+              child: Text('general.add'.tr),
             ),
           ],
         ),
@@ -987,12 +985,12 @@ class _BudgetPlanDetailScreenContentState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Complete Milestone?'),
-        content: const Text('Mark this milestone as completed?'),
+        title: Text('budget_plans.complete_milestone'.tr),
+        content: Text('budget_plans.complete_milestone_msg'.tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('general.cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1004,7 +1002,7 @@ class _BudgetPlanDetailScreenContentState
             style: ElevatedButton.styleFrom(
               backgroundColor: WiseSpendsColors.success,
             ),
-            child: const Text('Complete'),
+            child: Text('budget_plans.complete'.tr),
           ),
         ],
       ),
@@ -1019,14 +1017,12 @@ class _BudgetPlanDetailScreenContentState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Unlink Account?'),
-        content: const Text(
-          'This will remove the link between this account and the budget plan.',
-        ),
+        title: Text('budget_plans.unlink_account'.tr),
+        content: Text('budget_plans.unlink_account_msg'.tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('general.cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1038,7 +1034,7 @@ class _BudgetPlanDetailScreenContentState
             style: ElevatedButton.styleFrom(
               backgroundColor: WiseSpendsColors.secondary,
             ),
-            child: const Text('Unlink'),
+            child: Text('budget_plans.unlink'.tr),
           ),
         ],
       ),

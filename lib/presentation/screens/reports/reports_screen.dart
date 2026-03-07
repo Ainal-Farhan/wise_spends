@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
@@ -28,7 +29,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reports'),
+        title: Text('reports.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.download_outlined),
@@ -51,10 +52,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 );
                 await exportService.shareExport(filePath);
 
-                if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Report exported successfully'),
+                  SnackBar(
+                    content: Text('reports.export_success'.tr),
                     backgroundColor: AppColors.success,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -63,7 +63,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Export failed: ${e.toString()}'),
+                    content: Text('reports.export_failed'.trWith({'error': e.toString()})),
                     backgroundColor: AppColors.error,
                     behavior: SnackBarBehavior.floating,
                   ),

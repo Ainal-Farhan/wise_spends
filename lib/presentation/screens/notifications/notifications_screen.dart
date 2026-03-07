@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
@@ -21,14 +22,14 @@ class NotificationsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text('home.notifications'.tr),
         actions: [
           if (notifications.isNotEmpty)
             TextButton(
               onPressed: () {
                 // Clear all notifications
               },
-              child: const Text('Clear All'),
+              child: Text('notifications.clear_all'.tr),
             ),
         ],
       ),

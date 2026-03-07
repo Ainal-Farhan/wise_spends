@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
 import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
 import 'package:wise_spends/presentation/blocs/budget/budget_bloc.dart';
@@ -47,7 +48,7 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Budgets'),
+        title: Text('budgets.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -357,7 +358,7 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
                   color: AppColors.primary,
                 ),
               ),
-              title: const Text('Edit Budget'),
+              title: Text('budgets.edit_budget'.tr),
               onTap: () {
                 Navigator.pop(context);
                 _showEditBudgetDialog(context, budget);
@@ -377,9 +378,9 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
                   color: AppColors.secondary,
                 ),
               ),
-              title: const Text(
+              title: Text(
                 'Delete Budget',
-                style: TextStyle(color: AppColors.secondary),
+                style: const TextStyle(color: AppColors.secondary),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -416,8 +417,8 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
                   DeleteBudgetEvent(budget.id.toString()),
                 );
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Budget deleted successfully'),
+                  SnackBar(
+                    content: Text('budgets.delete_success'.tr),
                     behavior: SnackBarBehavior.floating,
                     backgroundColor: AppColors.success,
                   ),
@@ -432,8 +433,8 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
 
   void _showEditBudgetDialog(BuildContext context, dynamic budget) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Edit budget feature coming soon'),
+      SnackBar(
+        content: Text('budgets.edit_coming_soon'.tr),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -441,8 +442,8 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
 
   void _showCreateBudgetDialog(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Create budget feature coming soon'),
+      SnackBar(
+        content: Text('budgets.create_coming_soon'.tr),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -527,7 +528,7 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
               ),
             ),
             const SizedBox(height: AppSpacing.xxl),
-            Text('Filter by Period', style: AppTextStyles.h2),
+            Text('budgets.filter_by_period'.tr, style: AppTextStyles.h2),
             const SizedBox(height: AppSpacing.lg),
             _buildFilterOption(label: 'All Periods', period: null),
             _buildFilterOption(label: 'Daily', period: BudgetPeriod.daily),

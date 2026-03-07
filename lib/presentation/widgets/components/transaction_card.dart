@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'package:wise_spends/presentation/widgets/components/amount_display.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
@@ -272,14 +273,14 @@ class SwipeableTransactionCard extends StatelessWidget {
         onDelete?.call();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Transaction deleted'),
+            content: Text('transaction.deleted'.tr),
             backgroundColor: WiseSpendsColors.textPrimary,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
             ),
             action: SnackBarAction(
-              label: 'Undo',
+              label: 'Undo'.tr,
               textColor: Colors.white,
               onPressed: () {
                 // Undo is handled by parent BLoC listener

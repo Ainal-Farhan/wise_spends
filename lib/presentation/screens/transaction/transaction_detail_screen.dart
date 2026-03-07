@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
@@ -37,11 +38,11 @@ class TransactionDetailScreen extends StatelessWidget {
             );
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Row(
+                content: Row(
                   children: [
-                    Icon(Icons.check_circle, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text('Transaction deleted successfully'),
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text('transaction.detail.deleted'.tr),
                   ],
                 ),
                 backgroundColor: AppColors.success,
@@ -68,7 +69,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transaction Details'),
+        title: Text('transaction.detail.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -500,23 +501,23 @@ class _TransactionDetailScreenContent extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: AppColors.error),
-            SizedBox(width: AppSpacing.md),
-            Text('Delete Transaction'),
+            const Icon(Icons.warning_amber_rounded, color: AppColors.error),
+            const SizedBox(width: AppSpacing.md),
+            Text('transaction.detail.delete_title'.tr),
           ],
         ),
-        content: const Text(
-          'Are you sure you want to delete this transaction? This cannot be undone.',
+        content: Text(
+          'transaction.delete_confirm'.tr,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: Text('general.cancel'.tr),
           ),
           AppButton.destructive(
-            label: 'Delete',
+            label: 'general.delete'.tr,
             onPressed: () {
               context.read<TransactionBloc>().add(
                 DeleteTransactionEvent(transactionId),

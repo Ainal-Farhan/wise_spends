@@ -107,9 +107,9 @@ class _LoginContentState extends State<LoginContent>
       padding: const EdgeInsets.symmetric(horizontal: 110),
       child: TextButton(
         onPressed: () {},
-        child: const Text(
+        child: Text(
           'Forgot Password?',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: kSecondaryColor,

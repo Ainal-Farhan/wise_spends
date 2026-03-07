@@ -543,7 +543,7 @@ class _BudgetPlansListScreenContentState
           children: [
             ListTile(
               leading: const Icon(Icons.edit_outlined),
-              title: const Text('Edit Plan'),
+              title: Text('budget_plans.edit_plan'.tr),
               onTap: () {
                 Navigator.pop(context);
                 // Navigate to edit plan screen
@@ -556,7 +556,7 @@ class _BudgetPlansListScreenContentState
             ),
             ListTile(
               leading: const Icon(Icons.file_download_outlined),
-              title: const Text('Export Plan'),
+              title: Text('budget_plans.export_plan'.tr),
               onTap: () async {
                 Navigator.pop(context);
                 try {
@@ -571,8 +571,8 @@ class _BudgetPlansListScreenContentState
                     await exportService.shareExport(filePath);
 
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Plan exported successfully'),
+                      SnackBar(
+                        content: Text('budget_plans.plan_exported'.tr),
                         backgroundColor: WiseSpendsColors.success,
                       ),
                     );
@@ -580,7 +580,7 @@ class _BudgetPlansListScreenContentState
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Export failed: ${e.toString()}'),
+                      content: Text('budget_plans.export_failed'.trWith({'error': e.toString()})),
                       backgroundColor: WiseSpendsColors.error,
                     ),
                   );
@@ -592,9 +592,9 @@ class _BudgetPlansListScreenContentState
                 Icons.delete_outline,
                 color: WiseSpendsColors.secondary,
               ),
-              title: const Text(
-                'Delete Plan',
-                style: TextStyle(color: WiseSpendsColors.secondary),
+              title: Text(
+                'general.delete'.tr,
+                style: const TextStyle(color: WiseSpendsColors.secondary),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -611,14 +611,12 @@ class _BudgetPlansListScreenContentState
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Plan?'),
-        content: const Text(
-          'Are you sure you want to delete this plan? Linked transactions will be unlinked but not deleted.',
-        ),
+        title: Text('budget_plans.delete_plan'.tr),
+        content: Text('budget_plans.delete_plan_msg'.tr),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text('general.cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
@@ -630,7 +628,7 @@ class _BudgetPlansListScreenContentState
             style: ElevatedButton.styleFrom(
               backgroundColor: WiseSpendsColors.secondary,
             ),
-            child: const Text('Delete'),
+            child: Text('general.delete'.tr),
           ),
         ],
       ),

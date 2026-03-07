@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
@@ -113,12 +114,12 @@ class _EditTransactionBody extends StatelessWidget {
   }
 
   Scaffold _loadingScaffold() => Scaffold(
-    appBar: AppBar(title: const Text('Edit Transaction')),
+    appBar: AppBar(title: Text('transaction.edit'.tr)),
     body: const Center(child: CircularProgressIndicator()),
   );
 
   Scaffold _errorScaffold(BuildContext context, String message) => Scaffold(
-    appBar: AppBar(title: const Text('Edit Transaction')),
+    appBar: AppBar(title: Text('transaction.edit'.tr)),
     body: Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
