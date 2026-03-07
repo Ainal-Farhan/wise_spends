@@ -25,6 +25,7 @@ class WiseSpendsColors {
   static const Color tertiaryLight = Color(0xFF90CAF9);
   static const Color tertiaryDark = Color(0xFF1976D2);
   static const Color tertiaryContainer = Color(0xFFBBDEFB);
+  static const Color commitmentContainer = Color(0xFFFEF3C7);
   static const Color onTertiary = Color(0xFFFFFFFF);
 
   // Neutral colors
@@ -48,9 +49,9 @@ class WiseSpendsColors {
   static const Color info = Color(0xFF42A5F5);
 
   // Budget progress colors
-  static const Color budgetGood = Color(0xFF4CAF50);    // <60%
+  static const Color budgetGood = Color(0xFF4CAF50); // <60%
   static const Color budgetWarning = Color(0xFFFFA726); // 60-85%
-  static const Color budgetDanger = Color(0xFFFF6B6B);  // >85%
+  static const Color budgetDanger = Color(0xFFFF6B6B); // >85%
 
   // Dark theme colors
   static const Color darkSurface = Color(0xFF1E1E1E);
@@ -286,12 +287,8 @@ ThemeData getLightTheme() {
         foregroundColor: WiseSpendsColors.onPrimary,
         minimumSize: const Size(64, 48),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        textStyle: textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -299,13 +296,9 @@ ThemeData getLightTheme() {
         minimumSize: const Size(64, 48),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         side: const BorderSide(color: WiseSpendsColors.primary),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         foregroundColor: WiseSpendsColors.primary,
-        textStyle: textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
@@ -313,9 +306,7 @@ ThemeData getLightTheme() {
         minimumSize: const Size(64, 48),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         foregroundColor: WiseSpendsColors.primary,
-        textStyle: textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -356,9 +347,7 @@ ThemeData getLightTheme() {
       labelStyle: textTheme.bodyMedium?.copyWith(
         color: WiseSpendsColors.textSecondary,
       ),
-      errorStyle: textTheme.bodySmall?.copyWith(
-        color: WiseSpendsColors.error,
-      ),
+      errorStyle: textTheme.bodySmall?.copyWith(color: WiseSpendsColors.error),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: WiseSpendsColors.surface,
@@ -367,9 +356,7 @@ ThemeData getLightTheme() {
         color: WiseSpendsColors.textPrimary,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       selectedColor: WiseSpendsColors.primaryContainer,
       secondarySelectedColor: WiseSpendsColors.primaryContainer,
     ),
@@ -380,12 +367,8 @@ ThemeData getLightTheme() {
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: WiseSpendsColors.textPrimary,
-      contentTextStyle: textTheme.bodyMedium?.copyWith(
-        color: Colors.white,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      contentTextStyle: textTheme.bodyMedium?.copyWith(color: Colors.white),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       behavior: SnackBarBehavior.floating,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -398,9 +381,7 @@ ThemeData getLightTheme() {
     dialogTheme: DialogThemeData(
       backgroundColor: WiseSpendsColors.background,
       elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       titleTextStyle: textTheme.headlineSmall?.copyWith(
         fontWeight: FontWeight.w600,
       ),
@@ -432,10 +413,7 @@ ThemeData getDarkTheme() {
         color: Colors.white,
         fontWeight: FontWeight.w600,
       ),
-      iconTheme: const IconThemeData(
-        color: Colors.white,
-        size: 24,
-      ),
+      iconTheme: const IconThemeData(color: Colors.white, size: 24),
     ),
     cardTheme: CardThemeData(
       elevation: 0,
@@ -453,12 +431,8 @@ ThemeData getDarkTheme() {
         foregroundColor: Colors.white,
         minimumSize: const Size(64, 48),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        textStyle: textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -466,13 +440,9 @@ ThemeData getDarkTheme() {
         minimumSize: const Size(64, 48),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         side: const BorderSide(color: WiseSpendsColors.primary),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         foregroundColor: WiseSpendsColors.primaryLight,
-        textStyle: textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
@@ -480,9 +450,7 @@ ThemeData getDarkTheme() {
         minimumSize: const Size(64, 48),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         foregroundColor: WiseSpendsColors.primaryLight,
-        textStyle: textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -523,20 +491,14 @@ ThemeData getDarkTheme() {
       labelStyle: textTheme.bodyMedium?.copyWith(
         color: WiseSpendsColors.textSecondary,
       ),
-      errorStyle: textTheme.bodySmall?.copyWith(
-        color: WiseSpendsColors.error,
-      ),
+      errorStyle: textTheme.bodySmall?.copyWith(color: WiseSpendsColors.error),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: WiseSpendsColors.darkSurface,
       deleteIconColor: WiseSpendsColors.textSecondary,
-      labelStyle: textTheme.labelMedium?.copyWith(
-        color: Colors.white,
-      ),
+      labelStyle: textTheme.labelMedium?.copyWith(color: Colors.white),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       selectedColor: WiseSpendsColors.primaryDark,
       secondarySelectedColor: WiseSpendsColors.primaryDark,
     ),
@@ -550,9 +512,7 @@ ThemeData getDarkTheme() {
       contentTextStyle: textTheme.bodyMedium?.copyWith(
         color: WiseSpendsColors.textPrimary,
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       behavior: SnackBarBehavior.floating,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -565,9 +525,7 @@ ThemeData getDarkTheme() {
     dialogTheme: DialogThemeData(
       backgroundColor: WiseSpendsColors.darkCard,
       elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       titleTextStyle: textTheme.headlineSmall?.copyWith(
         fontWeight: FontWeight.w600,
       ),

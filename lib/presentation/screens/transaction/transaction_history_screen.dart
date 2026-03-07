@@ -62,210 +62,176 @@ class _TransactionHistoryScreenContentState
   Widget build(BuildContext context) {
     final loc = LocalizationService();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(loc.get('transaction.history')),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => _showSearchBottomSheet(context),
-            tooltip: loc.get('general.search'),
-            constraints: const BoxConstraints(
-              minWidth: AppTouchTarget.min,
-              minHeight: AppTouchTarget.min,
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () => _showFilterBottomSheet(context),
-            tooltip: loc.get('general.filter'),
-            constraints: const BoxConstraints(
-              minWidth: AppTouchTarget.min,
-              minHeight: AppTouchTarget.min,
-            ),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          context.read<TransactionBloc>().add(RefreshTransactionsEvent());
-        },
-        child: CustomScrollView(
-          slivers: [
-            // Filter chips
-            SliverToBoxAdapter(child: _buildFilterChips()),
+    return BlocListener<TransactionBloc, TransactionState>(
+      listener: (context, state) {
+        _searchController.clear();
 
-            // Search query indicator
-            SliverToBoxAdapter(child: _buildSearchIndicator()),
-
-            // Transaction list
-            SliverPadding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              sliver: BlocBuilder<TransactionBloc, TransactionState>(
-                builder: (context, state) {
-                  if (state is TransactionLoading) {
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) => const ShimmerTransactionItem(),
-                        childCount: 10,
-                      ),
-                    );
-                  } else if (state is TransactionLoaded) {
-                    final transactions = state.transactions;
-                    final filterType = state.filterType;
-                    final searchQuery = state.searchQuery;
-
-                    if (transactions.isEmpty) {
-                      return SliverToBoxAdapter(
-                        child: NoTransactionsEmptyState(
-                          onAddTransaction: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.addTransaction,
-                              arguments: AddTransactionArgs(),
-                            );
-                          },
-                        ),
-                      );
-                    }
-
-                    // Apply filters
-                    var filtered = _applyFilters(
-                      transactions,
-                      filterType,
-                      searchQuery,
-                    );
-
-                    if (filtered.isEmpty) {
-                      return const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.all(AppSpacing.xxxl),
-                          child: NoSearchResultsEmptyState(),
-                        ),
-                      );
-                    }
-
-                    // Group by date
-                    return _buildGroupedList(filtered);
-                  } else if (state is TransactionsFilteredLoaded) {
-                    final transactions = state.transactions;
-                    final filterType = state.filterType;
-
-                    if (transactions.isEmpty) {
-                      return SliverToBoxAdapter(
-                        child: NoTransactionsEmptyState(
-                          onAddTransaction: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.addTransaction,
-                              arguments: AddTransactionArgs(),
-                            );
-                          },
-                        ),
-                      );
-                    }
-
-                    // Apply filters
-                    var filtered = _applyFilters(
-                      transactions,
-                      filterType,
-                      null,
-                    );
-
-                    if (filtered.isEmpty) {
-                      return const SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.all(AppSpacing.xxxl),
-                          child: NoSearchResultsEmptyState(),
-                        ),
-                      );
-                    }
-
-                    // Group by date
-                    return _buildGroupedList(filtered);
-                  } else if (state is TransactionError) {
-                    return SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.xxxl),
-                        child: ErrorStateWidget(
-                          message: state.message,
-                          onAction: () {
-                            context.read<TransactionBloc>().add(
-                              LoadTransactionsEvent(),
-                            );
-                          },
-                        ),
-                      ),
-                    );
-                  }
-                  return const SliverToBoxAdapter(child: SizedBox.shrink());
-                },
+        if (state is TransactionLoaded) {
+          _searchController.text = state.searchQuery ?? '';
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(loc.get('transaction.history')),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () => _showSearchBottomSheet(context),
+              tooltip: loc.get('general.search'),
+              constraints: const BoxConstraints(
+                minWidth: AppTouchTarget.min,
+                minHeight: AppTouchTarget.min,
               ),
             ),
-
-            // Bottom padding for FAB
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () => _showFilterBottomSheet(context),
+              tooltip: loc.get('general.filter'),
+              constraints: const BoxConstraints(
+                minWidth: AppTouchTarget.min,
+                minHeight: AppTouchTarget.min,
+              ),
+            ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(
-            context,
-            AppRoutes.addTransaction,
-            arguments: AddTransactionArgs(),
-          );
-        },
-        elevation: AppElevation.sm,
-        child: const Icon(Icons.add),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            context.read<TransactionBloc>().add(RefreshTransactionsEvent());
+          },
+          child: CustomScrollView(
+            slivers: [
+              // Filter chips
+              SliverToBoxAdapter(child: _buildFilterChips()),
+
+              // Search query indicator
+              SliverToBoxAdapter(child: _buildActiveFiltersBar()),
+
+              // Transaction list
+              SliverPadding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                sliver: BlocBuilder<TransactionBloc, TransactionState>(
+                  builder: (context, state) {
+                    if (state is TransactionLoading) {
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => const ShimmerTransactionItem(),
+                          childCount: 10,
+                        ),
+                      );
+                    } else if (state is TransactionLoaded) {
+                      final transactions = state.transactions;
+                      final filterType = state.filterType;
+                      final searchQuery = state.searchQuery;
+
+                      if (transactions.isEmpty) {
+                        return SliverToBoxAdapter(
+                          child: NoTransactionsEmptyState(
+                            onAddTransaction: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.addTransaction,
+                                arguments: AddTransactionArgs(),
+                              );
+                            },
+                          ),
+                        );
+                      }
+
+                      // Apply filters
+                      var filtered = _applyFilters(
+                        transactions,
+                        filterType,
+                        searchQuery,
+                      );
+
+                      if (filtered.isEmpty) {
+                        return const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.all(AppSpacing.xxxl),
+                            child: NoSearchResultsEmptyState(),
+                          ),
+                        );
+                      }
+
+                      // Group by date
+                      return _buildGroupedList(filtered);
+                    } else if (state is TransactionsFilteredLoaded) {
+                      final transactions = state.transactions;
+                      final filterType = state.filterType;
+
+                      if (transactions.isEmpty) {
+                        return SliverToBoxAdapter(
+                          child: NoTransactionsEmptyState(
+                            onAddTransaction: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.addTransaction,
+                                arguments: AddTransactionArgs(),
+                              );
+                            },
+                          ),
+                        );
+                      }
+
+                      // Apply filters
+                      var filtered = _applyFilters(
+                        transactions,
+                        filterType,
+                        null,
+                      );
+
+                      if (filtered.isEmpty) {
+                        return const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.all(AppSpacing.xxxl),
+                            child: NoSearchResultsEmptyState(),
+                          ),
+                        );
+                      }
+
+                      // Group by date
+                      return _buildGroupedList(filtered);
+                    } else if (state is TransactionError) {
+                      return SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.xxxl),
+                          child: ErrorStateWidget(
+                            message: state.message,
+                            onAction: () {
+                              context.read<TransactionBloc>().add(
+                                LoadTransactionsEvent(),
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                    return const SliverToBoxAdapter(child: SizedBox.shrink());
+                  },
+                ),
+              ),
+
+              // Bottom padding for FAB
+              const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(
+              context,
+              AppRoutes.addTransaction,
+              arguments: AddTransactionArgs(),
+            );
+          },
+          elevation: AppElevation.sm,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
 
   Widget _buildFilterChips() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.md,
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _buildFilterChip(
-              label: 'All',
-              type: null,
-              icon: Icons.all_inclusive,
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            _buildFilterChip(
-              label: 'Income',
-              type: TransactionType.income,
-              icon: Icons.arrow_downward,
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            _buildFilterChip(
-              label: 'Expense',
-              type: TransactionType.expense,
-              icon: Icons.arrow_upward,
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            _buildFilterChip(
-              label: 'Transfer',
-              type: TransactionType.transfer,
-              icon: Icons.swap_horiz,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterChip({
-    required String label,
-    required TransactionType? type,
-    required IconData icon,
-  }) {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         TransactionType? currentFilterType;
@@ -275,105 +241,44 @@ class _TransactionHistoryScreenContentState
           currentFilterType = state.filterType;
         }
 
-        final isSelected = currentFilterType == type;
-        final color = _getColorForType(type);
-
-        return FilterChip(
-          label: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: AppIconSize.xs,
-                color: isSelected ? Colors.white : color,
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              Text(label),
-            ],
-          ),
-          selected: isSelected,
-          onSelected: (selected) {
-            context.read<TransactionBloc>().add(
-              FilterTransactionsByTypeEvent(selected ? type : null),
-            );
-          },
-          selectedColor: color,
-          checkmarkColor: Colors.white,
-          labelStyle: AppTextStyles.labelMedium.copyWith(
-            color: isSelected ? Colors.white : color,
-          ),
+        return Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.xs,
-          ),
-        );
-      },
-    );
-  }
-
-  Color _getColorForType(TransactionType? type) {
-    switch (type) {
-      case TransactionType.income:
-        return AppColors.income;
-      case TransactionType.expense:
-        return AppColors.expense;
-      case TransactionType.transfer:
-      case TransactionType.commitment:
-        return AppColors.transfer;
-      case null:
-        return AppColors.textSecondary;
-    }
-  }
-
-  Widget _buildSearchIndicator() {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        String? searchQuery;
-        if (state is TransactionLoaded) {
-          searchQuery = state.searchQuery;
-        }
-
-        if (searchQuery == null || searchQuery.isEmpty) {
-          return const SizedBox.shrink();
-        }
-
-        return Container(
-          margin: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
-            vertical: AppSpacing.xs,
-          ),
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          decoration: BoxDecoration(
-            color: AppColors.primaryContainer,
-            borderRadius: BorderRadius.circular(AppRadius.sm),
+            vertical: AppSpacing.md,
           ),
           child: Row(
             children: [
-              const Icon(
-                Icons.search,
-                size: AppIconSize.sm,
-                color: AppColors.primary,
-              ),
-              const SizedBox(width: AppSpacing.sm),
+              // "All" chip
               Expanded(
-                child: Text(
-                  'Searching for "$searchQuery"',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.primary,
+                child: _FilterTab(
+                  label: 'All',
+                  icon: Icons.all_inclusive,
+                  color: AppColors.textSecondary,
+                  isSelected: currentFilterType == null,
+                  onTap: () => context.read<TransactionBloc>().add(
+                    FilterTransactionsByTypeEvent(null),
                   ),
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.clear, size: AppIconSize.xs),
-                onPressed: () {
-                  context.read<TransactionBloc>().add(ClearSearchEvent());
-                  _searchController.clear();
-                },
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(
-                  minWidth: AppTouchTarget.min,
-                  minHeight: AppTouchTarget.min,
-                ),
+              const SizedBox(width: AppSpacing.xs),
+              // One chip per TransactionType
+              ...TransactionType.values.expand(
+                (type) => [
+                  Expanded(
+                    child: _FilterTab(
+                      label: type.label,
+                      icon: type.icon,
+                      color: type.color,
+                      isSelected: currentFilterType == type,
+                      onTap: () => context.read<TransactionBloc>().add(
+                        FilterTransactionsByTypeEvent(
+                          currentFilterType == type ? null : type,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                ],
               ),
             ],
           ),
@@ -441,9 +346,11 @@ class _TransactionHistoryScreenContentState
                 title: transaction.title,
                 amount: transaction.amount,
                 type: transaction.type,
-                icon: CategoryIconMapper.getIconForCategory(
-                  transaction.categoryId ?? '',
-                ),
+                icon: transaction.categoryId != null
+                    ? CategoryIconMapper.getIconForCategory(
+                        transaction.categoryId ?? '',
+                      )
+                    : transaction.type.icon,
                 date: transaction.date,
                 note: transaction.note,
                 onTap: () {
@@ -474,6 +381,13 @@ class _TransactionHistoryScreenContentState
     final totalExpense = transactions
         .where((t) => t.type == TransactionType.expense)
         .fold(0.0, (sum, t) => sum + t.amount);
+    final totalTransfer = transactions
+        .where((t) => t.type == TransactionType.transfer)
+        .fold(0.0, (sum, t) => sum + t.amount);
+    final totalCommitment = transactions
+        .where((t) => t.type == TransactionType.commitment)
+        .fold(0.0, (sum, t) => sum + t.amount);
+
     final netAmount = totalIncome - totalExpense;
 
     return Container(
@@ -501,6 +415,7 @@ class _TransactionHistoryScreenContentState
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              // Net amount (income - expense)
               Text(
                 NumberFormat.currency(
                   symbol: 'RM',
@@ -510,10 +425,59 @@ class _TransactionHistoryScreenContentState
                   color: netAmount >= 0 ? AppColors.income : AppColors.expense,
                 ),
               ),
+
+              // Income / expense breakdown
               if (totalIncome > 0 || totalExpense > 0)
                 Text(
-                  '↑${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(totalIncome)} ↓${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(totalExpense)}',
+                  '↑${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(totalIncome)}'
+                  ' ↓${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(totalExpense)}',
                   style: AppTextStyles.captionSmall,
+                ),
+
+              // Transfer row — only when present
+              if (totalTransfer > 0)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      TransactionType.transfer.icon,
+                      size: 10,
+                      color: TransactionType.transfer.color,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      NumberFormat.currency(
+                        symbol: 'RM',
+                        decimalDigits: 2,
+                      ).format(totalTransfer),
+                      style: AppTextStyles.captionSmall.copyWith(
+                        color: TransactionType.transfer.color,
+                      ),
+                    ),
+                  ],
+                ),
+
+              // Commitment row — only when present
+              if (totalCommitment > 0)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      TransactionType.commitment.icon,
+                      size: 10,
+                      color: TransactionType.commitment.color,
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      NumberFormat.currency(
+                        symbol: 'RM',
+                        decimalDigits: 2,
+                      ).format(totalCommitment),
+                      style: AppTextStyles.captionSmall.copyWith(
+                        color: TransactionType.commitment.color,
+                      ),
+                    ),
+                  ],
                 ),
             ],
           ),
@@ -541,81 +505,324 @@ class _TransactionHistoryScreenContentState
     }
   }
 
-  void _showFilterBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppRadius.xxl),
+  Widget _buildActiveFiltersBar() {
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        if (state is! TransactionLoaded) return const SizedBox.shrink();
+        if (!state.hasActiveFilters) return const SizedBox.shrink();
+
+        return Container(
+          margin: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.xs,
           ),
-        ),
-        padding: const EdgeInsets.all(AppSpacing.xxl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.divider,
-                  borderRadius: BorderRadius.circular(2),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.primaryContainer,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.filter_alt, size: 14, color: AppColors.primary),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: Wrap(
+                  spacing: AppSpacing.xs,
+                  children: [
+                    if (state.filterType != null)
+                      _ActiveFilterChip(
+                        label: state.filterType!.label,
+                        color: state.filterType!.color,
+                        onRemove: () => context.read<TransactionBloc>().add(
+                          FilterTransactionsByTypeEvent(null),
+                        ),
+                      ),
+                    if (state.dateRangeLabel != null)
+                      _ActiveFilterChip(
+                        label: state.dateRangeLabel!,
+                        color: AppColors.primary,
+                        onRemove: () => context.read<TransactionBloc>().add(
+                          FilterTransactionsByDateRangeEvent(),
+                        ),
+                      ),
+                    if (state.searchQuery != null &&
+                        state.searchQuery!.isNotEmpty)
+                      _ActiveFilterChip(
+                        label: '"${state.searchQuery}"',
+                        color: AppColors.primary,
+                        onRemove: () {
+                          context.read<TransactionBloc>().add(
+                            ClearSearchEvent(),
+                          );
+                          _searchController.clear();
+                        },
+                      ),
+                  ],
                 ),
               ),
+              TextButton(
+                onPressed: () {
+                  _searchController.clear();
+                  context.read<TransactionBloc>().add(ClearFiltersEvent());
+                },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  'Clear all',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showFilterBottomSheet(BuildContext context) {
+    final bloc = context.read<TransactionBloc>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => BlocProvider.value(
+        value: bloc,
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (ctx, scrollController) => Container(
+            decoration: const BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(AppRadius.xxl),
+              ),
             ),
-            const SizedBox(height: AppSpacing.xxl),
-            Text('Filter Transactions', style: AppTextStyles.h2),
-            const SizedBox(height: AppSpacing.lg),
-            _buildFilterOption(
-              context,
-              label: 'All Transactions',
-              type: null,
-              icon: Icons.all_inclusive,
-              color: AppColors.textSecondary,
+            child: Column(
+              children: [
+                // ── Handle ────────────────────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.divider,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+
+                // ── Scrollable body ───────────────────────────────────────
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.xxl,
+                      0,
+                      AppSpacing.xxl,
+                      AppSpacing.xxl,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ── Date Range ──────────────────────────────────
+                        Text('Date Range', style: AppTextStyles.h3),
+                        const SizedBox(height: AppSpacing.sm),
+                        Wrap(
+                          spacing: AppSpacing.sm,
+                          runSpacing: AppSpacing.sm,
+                          children: [
+                            _buildDateRangeOption(ctx, bloc, 'Today', () {
+                              final now = DateTime.now();
+                              bloc.add(
+                                FilterTransactionsByDateRangeEvent(
+                                  from: DateTime(now.year, now.month, now.day),
+                                  to: DateTime(
+                                    now.year,
+                                    now.month,
+                                    now.day,
+                                    23,
+                                    59,
+                                    59,
+                                  ),
+                                  rangeLabel: 'Today',
+                                ),
+                              );
+                            }),
+                            _buildDateRangeOption(ctx, bloc, 'This Week', () {
+                              final now = DateTime.now();
+                              final start = now.subtract(
+                                Duration(days: now.weekday - 1),
+                              );
+                              bloc.add(
+                                FilterTransactionsByDateRangeEvent(
+                                  from: DateTime(
+                                    start.year,
+                                    start.month,
+                                    start.day,
+                                  ),
+                                  to: now,
+                                  rangeLabel: 'This Week',
+                                ),
+                              );
+                            }),
+                            _buildDateRangeOption(ctx, bloc, 'This Month', () {
+                              final now = DateTime.now();
+                              bloc.add(
+                                FilterTransactionsByDateRangeEvent(
+                                  from: DateTime(now.year, now.month, 1),
+                                  to: now,
+                                  rangeLabel: 'This Month',
+                                ),
+                              );
+                            }),
+                            _buildDateRangeOption(
+                              ctx,
+                              bloc,
+                              'Custom Range',
+                              () async {
+                                Navigator.pop(ctx);
+                                final picked = await showDateRangePicker(
+                                  context: context,
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime.now(),
+                                  builder: (context, child) => Theme(
+                                    data: Theme.of(context),
+                                    child: child!,
+                                  ),
+                                );
+                                if (picked != null) {
+                                  bloc.add(
+                                    FilterTransactionsByDateRangeEvent(
+                                      from: picked.start,
+                                      to: DateTime(
+                                        picked.end.year,
+                                        picked.end.month,
+                                        picked.end.day,
+                                        23,
+                                        59,
+                                        59,
+                                      ),
+                                      rangeLabel:
+                                          '${DateFormat('MMM d').format(picked.start)} – '
+                                          '${DateFormat('MMM d').format(picked.end)}',
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: AppSpacing.xxl),
+
+                        // ── Transaction Type ────────────────────────────
+                        Text('Transaction Type', style: AppTextStyles.h3),
+                        const SizedBox(height: AppSpacing.sm),
+                        _buildFilterOption(
+                          ctx,
+                          label: 'All Transactions',
+                          type: null,
+                          icon: Icons.all_inclusive,
+                          color: AppColors.textSecondary,
+                        ),
+                        ...TransactionType.values.expand(
+                          (t) => [
+                            _buildFilterOption(
+                              ctx,
+                              label: t.label,
+                              type: t,
+                              icon: t.icon,
+                              color: t.color,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                          ],
+                        ),
+
+                        const SizedBox(height: AppSpacing.lg),
+
+                        // ── Clear all button ────────────────────────────
+                        AppButton.secondary(
+                          label: 'Clear All Filters',
+                          onPressed: () {
+                            bloc.add(ClearFiltersEvent());
+                            Navigator.pop(ctx);
+                          },
+                          isFullWidth: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            _buildFilterOption(
-              context,
-              label: 'Income',
-              type: TransactionType.income,
-              icon: Icons.arrow_downward,
-              color: AppColors.income,
-            ),
-            _buildFilterOption(
-              context,
-              label: 'Expense',
-              type: TransactionType.expense,
-              icon: Icons.arrow_upward,
-              color: AppColors.expense,
-            ),
-            _buildFilterOption(
-              context,
-              label: 'Transfer',
-              type: TransactionType.transfer,
-              icon: Icons.swap_horiz,
-              color: AppColors.transfer,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            AppButton.secondary(
-              label: 'Clear Filter',
-              onPressed: () {
-                context.read<TransactionBloc>().add(
-                  FilterTransactionsByTypeEvent(null),
-                );
-                Navigator.pop(context);
-              },
-              isFullWidth: true,
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildDateRangeOption(
+    BuildContext ctx,
+    TransactionBloc bloc,
+    String label,
+    VoidCallback onTap,
+  ) {
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        final isSelected =
+            state is TransactionLoaded && state.dateRangeLabel == label;
+
+        return GestureDetector(
+          onTap: () {
+            onTap();
+            if (label != 'Custom Range') Navigator.pop(ctx);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppColors.primary
+                  : AppColors.primary.withValues(alpha: 0.07),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(
+                color: isSelected
+                    ? AppColors.primary
+                    : AppColors.primary.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Text(
+              label,
+              style: AppTextStyles.labelMedium.copyWith(
+                color: isSelected ? Colors.white : AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildFilterOption(
-    BuildContext context, {
+    BuildContext ctx, {
     required String label,
     required TransactionType? type,
     required IconData icon,
@@ -624,15 +831,7 @@ class _TransactionHistoryScreenContentState
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         TransactionType? currentFilterType;
-        if (state is TransactionLoaded) {
-          currentFilterType = state.filterType;
-        } else if (state is TransactionsFilteredLoaded) {
-          currentFilterType = state.filterType;
-        }
-
-        if (state is TransactionsFilteredLoaded) {
-          currentFilterType = state.filterType;
-        }
+        if (state is TransactionLoaded) currentFilterType = state.filterType;
 
         final isSelected = currentFilterType == type;
 
@@ -668,75 +867,188 @@ class _TransactionHistoryScreenContentState
   }
 
   void _showSearchBottomSheet(BuildContext context) {
+    final bloc = context.read<TransactionBloc>();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: AppColors.background,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppRadius.xxl),
+      builder: (ctx) => BlocProvider.value(
+        value: bloc,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(AppRadius.xxl),
+            ),
+          ),
+          padding: EdgeInsets.only(
+            left: AppSpacing.xxl,
+            right: AppSpacing.xxl,
+            top: AppSpacing.xxl,
+            bottom: AppSpacing.xxl + MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.divider,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+              Text('Search Transactions', style: AppTextStyles.h2),
+              const SizedBox(height: AppSpacing.lg),
+              AppTextField(
+                controller: _searchController,
+                label: 'Search',
+                hint: 'Search by title or note',
+                prefixIcon: Icons.search,
+                showClearButton: true,
+                autofocus: true,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButton.secondary(
+                      label: 'Clear',
+                      onPressed: () {
+                        _searchController.clear();
+                        context.read<TransactionBloc>().add(ClearSearchEvent());
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: AppButton.primary(
+                      label: 'Done',
+                      onPressed: () {
+                        context.read<TransactionBloc>().add(
+                          SearchTransactionsEvent(_searchController.text),
+                        );
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        padding: EdgeInsets.only(
-          left: AppSpacing.xxl,
-          right: AppSpacing.xxl,
-          top: AppSpacing.xxl,
-          bottom: AppSpacing.xxl + MediaQuery.of(context).viewInsets.bottom,
+      ),
+    );
+  }
+}
+
+class _FilterTab extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _FilterTab({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        decoration: BoxDecoration(
+          color: isSelected ? color : color.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(
+            color: isSelected ? color : color.withValues(alpha: 0.2),
+            width: isSelected ? 1.5 : 1,
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.divider,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+            Icon(icon, size: 16, color: isSelected ? Colors.white : color),
+            const SizedBox(height: 3),
+            Text(
+              // Shorten labels to fit narrow columns
+              _shortLabel(label),
+              style: AppTextStyles.labelSmall.copyWith(
+                color: isSelected ? Colors.white : color,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               ),
-            ),
-            const SizedBox(height: AppSpacing.xxl),
-            Text('Search Transactions', style: AppTextStyles.h2),
-            const SizedBox(height: AppSpacing.lg),
-            AppTextField(
-              controller: _searchController,
-              label: 'Search',
-              hint: 'Search by title or note',
-              prefixIcon: Icons.search,
-              showClearButton: true,
-              autofocus: true,
-              onChanged: (value) {
-                context.read<TransactionBloc>().add(
-                  SearchTransactionsEvent(value),
-                );
-              },
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              children: [
-                Expanded(
-                  child: AppButton.secondary(
-                    label: 'Clear',
-                    onPressed: () {
-                      _searchController.clear();
-                      context.read<TransactionBloc>().add(ClearSearchEvent());
-                    },
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: AppButton.primary(
-                    label: 'Done',
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ),
-              ],
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  String _shortLabel(String label) {
+    switch (label) {
+      case 'Income':
+        return 'Income';
+      case 'Expense':
+        return 'Expense';
+      case 'Transfer':
+        return 'Transfer';
+      case 'Commitment':
+        return 'Commit';
+      default:
+        return label;
+    }
+  }
+}
+
+class _ActiveFilterChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final VoidCallback onRemove;
+
+  const _ActiveFilterChip({
+    required this.label,
+    required this.color,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: onRemove,
+            child: Icon(Icons.close, size: 12, color: color),
+          ),
+        ],
       ),
     );
   }

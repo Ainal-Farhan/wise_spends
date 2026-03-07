@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/data/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/data/db/domain/saving/saving_table.dart';
-import 'package:wise_spends/data/db/tables/category_table.dart';
+import 'package:wise_spends/data/db/domain/transaction/category_table.dart';
 
 @DataClassName('RecurringTransaction')
 class RecurringTransactionTable extends BaseEntityTable {

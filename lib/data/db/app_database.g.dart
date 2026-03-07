@@ -3,804 +3,6 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $CategoryTableTable extends CategoryTable
-    with TableInfo<$CategoryTableTable, TrnsctnCategory> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $CategoryTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    clientDefault: () => UuidGenerator().v4(),
-  );
-  static const VerificationMeta _createdByMeta = const VerificationMeta(
-    'createdBy',
-  );
-  @override
-  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
-    'created_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
-    'dateCreated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-    'date_created',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
-    'dateUpdated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-    'date_updated',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
-    'lastModifiedBy',
-  );
-  @override
-  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
-    'last_modified_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 1,
-      maxTextLength: 100,
-    ),
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _iconCodePointMeta = const VerificationMeta(
-    'iconCodePoint',
-  );
-  @override
-  late final GeneratedColumn<String> iconCodePoint = GeneratedColumn<String>(
-    'icon_code_point',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _iconFontFamilyMeta = const VerificationMeta(
-    'iconFontFamily',
-  );
-  @override
-  late final GeneratedColumn<String> iconFontFamily = GeneratedColumn<String>(
-    'icon_font_family',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('MaterialIcons'),
-  );
-  static const VerificationMeta _isIncomeMeta = const VerificationMeta(
-    'isIncome',
-  );
-  @override
-  late final GeneratedColumn<bool> isIncome = GeneratedColumn<bool>(
-    'is_income',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_income" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _isExpenseMeta = const VerificationMeta(
-    'isExpense',
-  );
-  @override
-  late final GeneratedColumn<bool> isExpense = GeneratedColumn<bool>(
-    'is_expense',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_expense" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _orderIndexMeta = const VerificationMeta(
-    'orderIndex',
-  );
-  @override
-  late final GeneratedColumn<int> orderIndex = GeneratedColumn<int>(
-    'order_index',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _isActiveMeta = const VerificationMeta(
-    'isActive',
-  );
-  @override
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
-    'is_active',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_active" IN (0, 1))',
-    ),
-    defaultValue: const Constant(true),
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    name,
-    iconCodePoint,
-    iconFontFamily,
-    isIncome,
-    isExpense,
-    orderIndex,
-    isActive,
-    createdAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'category_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<TrnsctnCategory> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdByMeta);
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-        _dateCreatedMeta,
-        dateCreated.isAcceptableOrUnknown(
-          data['date_created']!,
-          _dateCreatedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-        _dateUpdatedMeta,
-        dateUpdated.isAcceptableOrUnknown(
-          data['date_updated']!,
-          _dateUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('last_modified_by')) {
-      context.handle(
-        _lastModifiedByMeta,
-        lastModifiedBy.isAcceptableOrUnknown(
-          data['last_modified_by']!,
-          _lastModifiedByMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastModifiedByMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('icon_code_point')) {
-      context.handle(
-        _iconCodePointMeta,
-        iconCodePoint.isAcceptableOrUnknown(
-          data['icon_code_point']!,
-          _iconCodePointMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_iconCodePointMeta);
-    }
-    if (data.containsKey('icon_font_family')) {
-      context.handle(
-        _iconFontFamilyMeta,
-        iconFontFamily.isAcceptableOrUnknown(
-          data['icon_font_family']!,
-          _iconFontFamilyMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_income')) {
-      context.handle(
-        _isIncomeMeta,
-        isIncome.isAcceptableOrUnknown(data['is_income']!, _isIncomeMeta),
-      );
-    }
-    if (data.containsKey('is_expense')) {
-      context.handle(
-        _isExpenseMeta,
-        isExpense.isAcceptableOrUnknown(data['is_expense']!, _isExpenseMeta),
-      );
-    }
-    if (data.containsKey('order_index')) {
-      context.handle(
-        _orderIndexMeta,
-        orderIndex.isAcceptableOrUnknown(data['order_index']!, _orderIndexMeta),
-      );
-    }
-    if (data.containsKey('is_active')) {
-      context.handle(
-        _isActiveMeta,
-        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
-      );
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-    {name},
-  ];
-  @override
-  TrnsctnCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return TrnsctnCategory(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      createdBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_by'],
-      )!,
-      dateCreated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_created'],
-      )!,
-      dateUpdated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_updated'],
-      )!,
-      lastModifiedBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_modified_by'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      iconCodePoint: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}icon_code_point'],
-      )!,
-      iconFontFamily: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}icon_font_family'],
-      )!,
-      isIncome: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_income'],
-      )!,
-      isExpense: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_expense'],
-      )!,
-      orderIndex: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}order_index'],
-      )!,
-      isActive: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_active'],
-      )!,
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-    );
-  }
-
-  @override
-  $CategoryTableTable createAlias(String alias) {
-    return $CategoryTableTable(attachedDatabase, alias);
-  }
-}
-
-class TrnsctnCategory extends DataClass implements Insertable<TrnsctnCategory> {
-  final String id;
-  final String createdBy;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final String lastModifiedBy;
-
-  /// Display name shown in the UI and used for deduplication via [uniqueKeys].
-  final String name;
-
-  /// Icon identifier passed to [CategoryIconMapper].
-  /// Stores the codepoint string (e.g. 'e318') rather than the int so it
-  /// round-trips cleanly through JSON and the DB without casting.
-  final String iconCodePoint;
-
-  /// Font family for the icon — defaults to MaterialIcons.
-  final String iconFontFamily;
-
-  /// True when this category applies to income transactions.
-  final bool isIncome;
-
-  /// True when this category applies to expense transactions.
-  final bool isExpense;
-
-  /// Controls display order in the category grid.
-  final int orderIndex;
-
-  /// Soft-delete flag — inactive categories are hidden from pickers
-  /// but kept so existing transactions retain their category reference.
-  final bool isActive;
-
-  /// When this category was first created. Separate from [dateUpdated]
-  /// (provided by [BaseEntityTable]) which tracks the last modification.
-  final DateTime createdAt;
-  const TrnsctnCategory({
-    required this.id,
-    required this.createdBy,
-    required this.dateCreated,
-    required this.dateUpdated,
-    required this.lastModifiedBy,
-    required this.name,
-    required this.iconCodePoint,
-    required this.iconFontFamily,
-    required this.isIncome,
-    required this.isExpense,
-    required this.orderIndex,
-    required this.isActive,
-    required this.createdAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['created_by'] = Variable<String>(createdBy);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['name'] = Variable<String>(name);
-    map['icon_code_point'] = Variable<String>(iconCodePoint);
-    map['icon_font_family'] = Variable<String>(iconFontFamily);
-    map['is_income'] = Variable<bool>(isIncome);
-    map['is_expense'] = Variable<bool>(isExpense);
-    map['order_index'] = Variable<int>(orderIndex);
-    map['is_active'] = Variable<bool>(isActive);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    return map;
-  }
-
-  CategoryTableCompanion toCompanion(bool nullToAbsent) {
-    return CategoryTableCompanion(
-      id: Value(id),
-      createdBy: Value(createdBy),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      lastModifiedBy: Value(lastModifiedBy),
-      name: Value(name),
-      iconCodePoint: Value(iconCodePoint),
-      iconFontFamily: Value(iconFontFamily),
-      isIncome: Value(isIncome),
-      isExpense: Value(isExpense),
-      orderIndex: Value(orderIndex),
-      isActive: Value(isActive),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory TrnsctnCategory.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return TrnsctnCategory(
-      id: serializer.fromJson<String>(json['id']),
-      createdBy: serializer.fromJson<String>(json['createdBy']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      name: serializer.fromJson<String>(json['name']),
-      iconCodePoint: serializer.fromJson<String>(json['iconCodePoint']),
-      iconFontFamily: serializer.fromJson<String>(json['iconFontFamily']),
-      isIncome: serializer.fromJson<bool>(json['isIncome']),
-      isExpense: serializer.fromJson<bool>(json['isExpense']),
-      orderIndex: serializer.fromJson<int>(json['orderIndex']),
-      isActive: serializer.fromJson<bool>(json['isActive']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'createdBy': serializer.toJson<String>(createdBy),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'name': serializer.toJson<String>(name),
-      'iconCodePoint': serializer.toJson<String>(iconCodePoint),
-      'iconFontFamily': serializer.toJson<String>(iconFontFamily),
-      'isIncome': serializer.toJson<bool>(isIncome),
-      'isExpense': serializer.toJson<bool>(isExpense),
-      'orderIndex': serializer.toJson<int>(orderIndex),
-      'isActive': serializer.toJson<bool>(isActive),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-    };
-  }
-
-  TrnsctnCategory copyWith({
-    String? id,
-    String? createdBy,
-    DateTime? dateCreated,
-    DateTime? dateUpdated,
-    String? lastModifiedBy,
-    String? name,
-    String? iconCodePoint,
-    String? iconFontFamily,
-    bool? isIncome,
-    bool? isExpense,
-    int? orderIndex,
-    bool? isActive,
-    DateTime? createdAt,
-  }) => TrnsctnCategory(
-    id: id ?? this.id,
-    createdBy: createdBy ?? this.createdBy,
-    dateCreated: dateCreated ?? this.dateCreated,
-    dateUpdated: dateUpdated ?? this.dateUpdated,
-    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-    name: name ?? this.name,
-    iconCodePoint: iconCodePoint ?? this.iconCodePoint,
-    iconFontFamily: iconFontFamily ?? this.iconFontFamily,
-    isIncome: isIncome ?? this.isIncome,
-    isExpense: isExpense ?? this.isExpense,
-    orderIndex: orderIndex ?? this.orderIndex,
-    isActive: isActive ?? this.isActive,
-    createdAt: createdAt ?? this.createdAt,
-  );
-  TrnsctnCategory copyWithCompanion(CategoryTableCompanion data) {
-    return TrnsctnCategory(
-      id: data.id.present ? data.id.value : this.id,
-      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
-      dateCreated: data.dateCreated.present
-          ? data.dateCreated.value
-          : this.dateCreated,
-      dateUpdated: data.dateUpdated.present
-          ? data.dateUpdated.value
-          : this.dateUpdated,
-      lastModifiedBy: data.lastModifiedBy.present
-          ? data.lastModifiedBy.value
-          : this.lastModifiedBy,
-      name: data.name.present ? data.name.value : this.name,
-      iconCodePoint: data.iconCodePoint.present
-          ? data.iconCodePoint.value
-          : this.iconCodePoint,
-      iconFontFamily: data.iconFontFamily.present
-          ? data.iconFontFamily.value
-          : this.iconFontFamily,
-      isIncome: data.isIncome.present ? data.isIncome.value : this.isIncome,
-      isExpense: data.isExpense.present ? data.isExpense.value : this.isExpense,
-      orderIndex: data.orderIndex.present
-          ? data.orderIndex.value
-          : this.orderIndex,
-      isActive: data.isActive.present ? data.isActive.value : this.isActive,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('TrnsctnCategory(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('name: $name, ')
-          ..write('iconCodePoint: $iconCodePoint, ')
-          ..write('iconFontFamily: $iconFontFamily, ')
-          ..write('isIncome: $isIncome, ')
-          ..write('isExpense: $isExpense, ')
-          ..write('orderIndex: $orderIndex, ')
-          ..write('isActive: $isActive, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    name,
-    iconCodePoint,
-    iconFontFamily,
-    isIncome,
-    isExpense,
-    orderIndex,
-    isActive,
-    createdAt,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is TrnsctnCategory &&
-          other.id == this.id &&
-          other.createdBy == this.createdBy &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.lastModifiedBy == this.lastModifiedBy &&
-          other.name == this.name &&
-          other.iconCodePoint == this.iconCodePoint &&
-          other.iconFontFamily == this.iconFontFamily &&
-          other.isIncome == this.isIncome &&
-          other.isExpense == this.isExpense &&
-          other.orderIndex == this.orderIndex &&
-          other.isActive == this.isActive &&
-          other.createdAt == this.createdAt);
-}
-
-class CategoryTableCompanion extends UpdateCompanion<TrnsctnCategory> {
-  final Value<String> id;
-  final Value<String> createdBy;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<String> lastModifiedBy;
-  final Value<String> name;
-  final Value<String> iconCodePoint;
-  final Value<String> iconFontFamily;
-  final Value<bool> isIncome;
-  final Value<bool> isExpense;
-  final Value<int> orderIndex;
-  final Value<bool> isActive;
-  final Value<DateTime> createdAt;
-  final Value<int> rowid;
-  const CategoryTableCompanion({
-    this.id = const Value.absent(),
-    this.createdBy = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.lastModifiedBy = const Value.absent(),
-    this.name = const Value.absent(),
-    this.iconCodePoint = const Value.absent(),
-    this.iconFontFamily = const Value.absent(),
-    this.isIncome = const Value.absent(),
-    this.isExpense = const Value.absent(),
-    this.orderIndex = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  CategoryTableCompanion.insert({
-    this.id = const Value.absent(),
-    required String createdBy,
-    this.dateCreated = const Value.absent(),
-    required DateTime dateUpdated,
-    required String lastModifiedBy,
-    required String name,
-    required String iconCodePoint,
-    this.iconFontFamily = const Value.absent(),
-    this.isIncome = const Value.absent(),
-    this.isExpense = const Value.absent(),
-    this.orderIndex = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : createdBy = Value(createdBy),
-       dateUpdated = Value(dateUpdated),
-       lastModifiedBy = Value(lastModifiedBy),
-       name = Value(name),
-       iconCodePoint = Value(iconCodePoint);
-  static Insertable<TrnsctnCategory> custom({
-    Expression<String>? id,
-    Expression<String>? createdBy,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<String>? lastModifiedBy,
-    Expression<String>? name,
-    Expression<String>? iconCodePoint,
-    Expression<String>? iconFontFamily,
-    Expression<bool>? isIncome,
-    Expression<bool>? isExpense,
-    Expression<int>? orderIndex,
-    Expression<bool>? isActive,
-    Expression<DateTime>? createdAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (createdBy != null) 'created_by': createdBy,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
-      if (name != null) 'name': name,
-      if (iconCodePoint != null) 'icon_code_point': iconCodePoint,
-      if (iconFontFamily != null) 'icon_font_family': iconFontFamily,
-      if (isIncome != null) 'is_income': isIncome,
-      if (isExpense != null) 'is_expense': isExpense,
-      if (orderIndex != null) 'order_index': orderIndex,
-      if (isActive != null) 'is_active': isActive,
-      if (createdAt != null) 'created_at': createdAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  CategoryTableCompanion copyWith({
-    Value<String>? id,
-    Value<String>? createdBy,
-    Value<DateTime>? dateCreated,
-    Value<DateTime>? dateUpdated,
-    Value<String>? lastModifiedBy,
-    Value<String>? name,
-    Value<String>? iconCodePoint,
-    Value<String>? iconFontFamily,
-    Value<bool>? isIncome,
-    Value<bool>? isExpense,
-    Value<int>? orderIndex,
-    Value<bool>? isActive,
-    Value<DateTime>? createdAt,
-    Value<int>? rowid,
-  }) {
-    return CategoryTableCompanion(
-      id: id ?? this.id,
-      createdBy: createdBy ?? this.createdBy,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-      name: name ?? this.name,
-      iconCodePoint: iconCodePoint ?? this.iconCodePoint,
-      iconFontFamily: iconFontFamily ?? this.iconFontFamily,
-      isIncome: isIncome ?? this.isIncome,
-      isExpense: isExpense ?? this.isExpense,
-      orderIndex: orderIndex ?? this.orderIndex,
-      isActive: isActive ?? this.isActive,
-      createdAt: createdAt ?? this.createdAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (createdBy.present) {
-      map['created_by'] = Variable<String>(createdBy.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (lastModifiedBy.present) {
-      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (iconCodePoint.present) {
-      map['icon_code_point'] = Variable<String>(iconCodePoint.value);
-    }
-    if (iconFontFamily.present) {
-      map['icon_font_family'] = Variable<String>(iconFontFamily.value);
-    }
-    if (isIncome.present) {
-      map['is_income'] = Variable<bool>(isIncome.value);
-    }
-    if (isExpense.present) {
-      map['is_expense'] = Variable<bool>(isExpense.value);
-    }
-    if (orderIndex.present) {
-      map['order_index'] = Variable<int>(orderIndex.value);
-    }
-    if (isActive.present) {
-      map['is_active'] = Variable<bool>(isActive.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CategoryTableCompanion(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('name: $name, ')
-          ..write('iconCodePoint: $iconCodePoint, ')
-          ..write('iconFontFamily: $iconFontFamily, ')
-          ..write('isIncome: $isIncome, ')
-          ..write('isExpense: $isExpense, ')
-          ..write('orderIndex: $orderIndex, ')
-          ..write('isActive: $isActive, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $BudgetsTable extends Budgets with TableInfo<$BudgetsTable, Budget> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -5132,12 +4334,12 @@ class BudgetPlanDepositsCompanion extends UpdateCompanion<BudgetPlanDeposit> {
   }
 }
 
-class $GroupReferenceTableTable extends GroupReferenceTable
-    with TableInfo<$GroupReferenceTableTable, MstrdtGroupReference> {
+class $CategoryTableTable extends CategoryTable
+    with TableInfo<$CategoryTableTable, TrnsctnCategory> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $GroupReferenceTableTable(this.attachedDatabase, [this._alias]);
+  $CategoryTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -5193,497 +4395,83 @@ class $GroupReferenceTableTable extends GroupReferenceTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String> label = GeneratedColumn<String>(
-    'label',
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 100,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _iconCodePointMeta = const VerificationMeta(
+    'iconCodePoint',
+  );
+  @override
+  late final GeneratedColumn<String> iconCodePoint = GeneratedColumn<String>(
+    'icon_code_point',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _valueMeta = const VerificationMeta('value');
-  @override
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-    'value',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
+  static const VerificationMeta _iconFontFamilyMeta = const VerificationMeta(
+    'iconFontFamily',
   );
   @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    label,
-    value,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'group_reference_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<MstrdtGroupReference> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdByMeta);
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-        _dateCreatedMeta,
-        dateCreated.isAcceptableOrUnknown(
-          data['date_created']!,
-          _dateCreatedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-        _dateUpdatedMeta,
-        dateUpdated.isAcceptableOrUnknown(
-          data['date_updated']!,
-          _dateUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('last_modified_by')) {
-      context.handle(
-        _lastModifiedByMeta,
-        lastModifiedBy.isAcceptableOrUnknown(
-          data['last_modified_by']!,
-          _lastModifiedByMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastModifiedByMeta);
-    }
-    if (data.containsKey('label')) {
-      context.handle(
-        _labelMeta,
-        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_labelMeta);
-    }
-    if (data.containsKey('value')) {
-      context.handle(
-        _valueMeta,
-        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_valueMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  MstrdtGroupReference map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MstrdtGroupReference(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      createdBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_by'],
-      )!,
-      dateCreated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_created'],
-      )!,
-      dateUpdated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_updated'],
-      )!,
-      lastModifiedBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_modified_by'],
-      )!,
-      label: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}label'],
-      )!,
-      value: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}value'],
-      )!,
-    );
-  }
-
-  @override
-  $GroupReferenceTableTable createAlias(String alias) {
-    return $GroupReferenceTableTable(attachedDatabase, alias);
-  }
-}
-
-class MstrdtGroupReference extends DataClass
-    implements Insertable<MstrdtGroupReference> {
-  final String id;
-  final String createdBy;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final String lastModifiedBy;
-  final String label;
-  final String value;
-  const MstrdtGroupReference({
-    required this.id,
-    required this.createdBy,
-    required this.dateCreated,
-    required this.dateUpdated,
-    required this.lastModifiedBy,
-    required this.label,
-    required this.value,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['created_by'] = Variable<String>(createdBy);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['label'] = Variable<String>(label);
-    map['value'] = Variable<String>(value);
-    return map;
-  }
-
-  GroupReferenceTableCompanion toCompanion(bool nullToAbsent) {
-    return GroupReferenceTableCompanion(
-      id: Value(id),
-      createdBy: Value(createdBy),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      lastModifiedBy: Value(lastModifiedBy),
-      label: Value(label),
-      value: Value(value),
-    );
-  }
-
-  factory MstrdtGroupReference.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MstrdtGroupReference(
-      id: serializer.fromJson<String>(json['id']),
-      createdBy: serializer.fromJson<String>(json['createdBy']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      label: serializer.fromJson<String>(json['label']),
-      value: serializer.fromJson<String>(json['value']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'createdBy': serializer.toJson<String>(createdBy),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'label': serializer.toJson<String>(label),
-      'value': serializer.toJson<String>(value),
-    };
-  }
-
-  MstrdtGroupReference copyWith({
-    String? id,
-    String? createdBy,
-    DateTime? dateCreated,
-    DateTime? dateUpdated,
-    String? lastModifiedBy,
-    String? label,
-    String? value,
-  }) => MstrdtGroupReference(
-    id: id ?? this.id,
-    createdBy: createdBy ?? this.createdBy,
-    dateCreated: dateCreated ?? this.dateCreated,
-    dateUpdated: dateUpdated ?? this.dateUpdated,
-    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-    label: label ?? this.label,
-    value: value ?? this.value,
-  );
-  MstrdtGroupReference copyWithCompanion(GroupReferenceTableCompanion data) {
-    return MstrdtGroupReference(
-      id: data.id.present ? data.id.value : this.id,
-      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
-      dateCreated: data.dateCreated.present
-          ? data.dateCreated.value
-          : this.dateCreated,
-      dateUpdated: data.dateUpdated.present
-          ? data.dateUpdated.value
-          : this.dateUpdated,
-      lastModifiedBy: data.lastModifiedBy.present
-          ? data.lastModifiedBy.value
-          : this.lastModifiedBy,
-      label: data.label.present ? data.label.value : this.label,
-      value: data.value.present ? data.value.value : this.value,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('MstrdtGroupReference(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('label: $label, ')
-          ..write('value: $value')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    label,
-    value,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is MstrdtGroupReference &&
-          other.id == this.id &&
-          other.createdBy == this.createdBy &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.lastModifiedBy == this.lastModifiedBy &&
-          other.label == this.label &&
-          other.value == this.value);
-}
-
-class GroupReferenceTableCompanion
-    extends UpdateCompanion<MstrdtGroupReference> {
-  final Value<String> id;
-  final Value<String> createdBy;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<String> lastModifiedBy;
-  final Value<String> label;
-  final Value<String> value;
-  final Value<int> rowid;
-  const GroupReferenceTableCompanion({
-    this.id = const Value.absent(),
-    this.createdBy = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.lastModifiedBy = const Value.absent(),
-    this.label = const Value.absent(),
-    this.value = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  GroupReferenceTableCompanion.insert({
-    this.id = const Value.absent(),
-    required String createdBy,
-    this.dateCreated = const Value.absent(),
-    required DateTime dateUpdated,
-    required String lastModifiedBy,
-    required String label,
-    required String value,
-    this.rowid = const Value.absent(),
-  }) : createdBy = Value(createdBy),
-       dateUpdated = Value(dateUpdated),
-       lastModifiedBy = Value(lastModifiedBy),
-       label = Value(label),
-       value = Value(value);
-  static Insertable<MstrdtGroupReference> custom({
-    Expression<String>? id,
-    Expression<String>? createdBy,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<String>? lastModifiedBy,
-    Expression<String>? label,
-    Expression<String>? value,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (createdBy != null) 'created_by': createdBy,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
-      if (label != null) 'label': label,
-      if (value != null) 'value': value,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  GroupReferenceTableCompanion copyWith({
-    Value<String>? id,
-    Value<String>? createdBy,
-    Value<DateTime>? dateCreated,
-    Value<DateTime>? dateUpdated,
-    Value<String>? lastModifiedBy,
-    Value<String>? label,
-    Value<String>? value,
-    Value<int>? rowid,
-  }) {
-    return GroupReferenceTableCompanion(
-      id: id ?? this.id,
-      createdBy: createdBy ?? this.createdBy,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-      label: label ?? this.label,
-      value: value ?? this.value,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (createdBy.present) {
-      map['created_by'] = Variable<String>(createdBy.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (lastModifiedBy.present) {
-      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
-    }
-    if (label.present) {
-      map['label'] = Variable<String>(label.value);
-    }
-    if (value.present) {
-      map['value'] = Variable<String>(value.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('GroupReferenceTableCompanion(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('label: $label, ')
-          ..write('value: $value, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $ReferenceTableTable extends ReferenceTable
-    with TableInfo<$ReferenceTableTable, MstrdtReference> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $ReferenceTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
+  late final GeneratedColumn<String> iconFontFamily = GeneratedColumn<String>(
+    'icon_font_family',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    clientDefault: () => UuidGenerator().v4(),
+    defaultValue: const Constant('MaterialIcons'),
   );
-  static const VerificationMeta _createdByMeta = const VerificationMeta(
-    'createdBy',
-  );
-  @override
-  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
-    'created_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
-    'dateCreated',
+  static const VerificationMeta _isIncomeMeta = const VerificationMeta(
+    'isIncome',
   );
   @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-    'date_created',
+  late final GeneratedColumn<bool> isIncome = GeneratedColumn<bool>(
+    'is_income',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.bool,
     requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_income" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
   );
-  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
-    'dateUpdated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-    'date_updated',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
-    'lastModifiedBy',
+  static const VerificationMeta _isExpenseMeta = const VerificationMeta(
+    'isExpense',
   );
   @override
-  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
-    'last_modified_by',
+  late final GeneratedColumn<bool> isExpense = GeneratedColumn<bool>(
+    'is_expense',
     aliasedName,
     false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_expense" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
   );
-  static const VerificationMeta _labelMeta = const VerificationMeta('label');
-  @override
-  late final GeneratedColumn<String> label = GeneratedColumn<String>(
-    'label',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
+  static const VerificationMeta _orderIndexMeta = const VerificationMeta(
+    'orderIndex',
   );
-  static const VerificationMeta _valueMeta = const VerificationMeta('value');
   @override
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-    'value',
+  late final GeneratedColumn<int> orderIndex = GeneratedColumn<int>(
+    'order_index',
     aliasedName,
     false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _isActiveMeta = const VerificationMeta(
     'isActive',
@@ -5698,35 +4486,19 @@ class $ReferenceTableTable extends ReferenceTable
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'CHECK ("is_active" IN (0, 1))',
     ),
-    defaultValue: const Constant(false),
+    defaultValue: const Constant(true),
   );
-  static const VerificationMeta _belongToMeta = const VerificationMeta(
-    'belongTo',
-  );
-  @override
-  late final GeneratedColumn<String> belongTo = GeneratedColumn<String>(
-    'belong_to',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES reference_table (id)',
-    ),
-  );
-  static const VerificationMeta _groupIdMeta = const VerificationMeta(
-    'groupId',
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
   );
   @override
-  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
-    'group_id',
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES group_reference_table (id)',
-    ),
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -5735,20 +4507,23 @@ class $ReferenceTableTable extends ReferenceTable
     dateCreated,
     dateUpdated,
     lastModifiedBy,
-    label,
-    value,
+    name,
+    iconCodePoint,
+    iconFontFamily,
+    isIncome,
+    isExpense,
+    orderIndex,
     isActive,
-    belongTo,
-    groupId,
+    createdAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'reference_table';
+  static const String $name = 'category_table';
   @override
   VerificationContext validateIntegrity(
-    Insertable<MstrdtReference> instance, {
+    Insertable<TrnsctnCategory> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -5795,21 +4570,51 @@ class $ReferenceTableTable extends ReferenceTable
     } else if (isInserting) {
       context.missing(_lastModifiedByMeta);
     }
-    if (data.containsKey('label')) {
+    if (data.containsKey('name')) {
       context.handle(
-        _labelMeta,
-        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
       );
     } else if (isInserting) {
-      context.missing(_labelMeta);
+      context.missing(_nameMeta);
     }
-    if (data.containsKey('value')) {
+    if (data.containsKey('icon_code_point')) {
       context.handle(
-        _valueMeta,
-        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+        _iconCodePointMeta,
+        iconCodePoint.isAcceptableOrUnknown(
+          data['icon_code_point']!,
+          _iconCodePointMeta,
+        ),
       );
     } else if (isInserting) {
-      context.missing(_valueMeta);
+      context.missing(_iconCodePointMeta);
+    }
+    if (data.containsKey('icon_font_family')) {
+      context.handle(
+        _iconFontFamilyMeta,
+        iconFontFamily.isAcceptableOrUnknown(
+          data['icon_font_family']!,
+          _iconFontFamilyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_income')) {
+      context.handle(
+        _isIncomeMeta,
+        isIncome.isAcceptableOrUnknown(data['is_income']!, _isIncomeMeta),
+      );
+    }
+    if (data.containsKey('is_expense')) {
+      context.handle(
+        _isExpenseMeta,
+        isExpense.isAcceptableOrUnknown(data['is_expense']!, _isExpenseMeta),
+      );
+    }
+    if (data.containsKey('order_index')) {
+      context.handle(
+        _orderIndexMeta,
+        orderIndex.isAcceptableOrUnknown(data['order_index']!, _orderIndexMeta),
+      );
     }
     if (data.containsKey('is_active')) {
       context.handle(
@@ -5817,21 +4622,11 @@ class $ReferenceTableTable extends ReferenceTable
         isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
       );
     }
-    if (data.containsKey('belong_to')) {
+    if (data.containsKey('created_at')) {
       context.handle(
-        _belongToMeta,
-        belongTo.isAcceptableOrUnknown(data['belong_to']!, _belongToMeta),
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
       );
-    } else if (isInserting) {
-      context.missing(_belongToMeta);
-    }
-    if (data.containsKey('group_id')) {
-      context.handle(
-        _groupIdMeta,
-        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_groupIdMeta);
     }
     return context;
   }
@@ -5839,9 +4634,13 @@ class $ReferenceTableTable extends ReferenceTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MstrdtReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {name},
+  ];
+  @override
+  TrnsctnCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MstrdtReference(
+    return TrnsctnCategory(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -5862,57 +4661,95 @@ class $ReferenceTableTable extends ReferenceTable
         DriftSqlType.string,
         data['${effectivePrefix}last_modified_by'],
       )!,
-      label: attachedDatabase.typeMapping.read(
+      name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}label'],
+        data['${effectivePrefix}name'],
       )!,
-      value: attachedDatabase.typeMapping.read(
+      iconCodePoint: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}value'],
+        data['${effectivePrefix}icon_code_point'],
+      )!,
+      iconFontFamily: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}icon_font_family'],
+      )!,
+      isIncome: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_income'],
+      )!,
+      isExpense: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_expense'],
+      )!,
+      orderIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}order_index'],
       )!,
       isActive: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_active'],
       )!,
-      belongTo: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}belong_to'],
-      )!,
-      groupId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}group_id'],
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
       )!,
     );
   }
 
   @override
-  $ReferenceTableTable createAlias(String alias) {
-    return $ReferenceTableTable(attachedDatabase, alias);
+  $CategoryTableTable createAlias(String alias) {
+    return $CategoryTableTable(attachedDatabase, alias);
   }
 }
 
-class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
+class TrnsctnCategory extends DataClass implements Insertable<TrnsctnCategory> {
   final String id;
   final String createdBy;
   final DateTime dateCreated;
   final DateTime dateUpdated;
   final String lastModifiedBy;
-  final String label;
-  final String value;
+
+  /// Display name shown in the UI and used for deduplication via [uniqueKeys].
+  final String name;
+
+  /// Icon identifier passed to [CategoryIconMapper].
+  /// Stores the codepoint string (e.g. 'e318') rather than the int so it
+  /// round-trips cleanly through JSON and the DB without casting.
+  final String iconCodePoint;
+
+  /// Font family for the icon — defaults to MaterialIcons.
+  final String iconFontFamily;
+
+  /// True when this category applies to income transactions.
+  final bool isIncome;
+
+  /// True when this category applies to expense transactions.
+  final bool isExpense;
+
+  /// Controls display order in the category grid.
+  final int orderIndex;
+
+  /// Soft-delete flag — inactive categories are hidden from pickers
+  /// but kept so existing transactions retain their category reference.
   final bool isActive;
-  final String belongTo;
-  final String groupId;
-  const MstrdtReference({
+
+  /// When this category was first created. Separate from [dateUpdated]
+  /// (provided by [BaseEntityTable]) which tracks the last modification.
+  final DateTime createdAt;
+  const TrnsctnCategory({
     required this.id,
     required this.createdBy,
     required this.dateCreated,
     required this.dateUpdated,
     required this.lastModifiedBy,
-    required this.label,
-    required this.value,
+    required this.name,
+    required this.iconCodePoint,
+    required this.iconFontFamily,
+    required this.isIncome,
+    required this.isExpense,
+    required this.orderIndex,
     required this.isActive,
-    required this.belongTo,
-    required this.groupId,
+    required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -5922,45 +4759,54 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
     map['date_created'] = Variable<DateTime>(dateCreated);
     map['date_updated'] = Variable<DateTime>(dateUpdated);
     map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['label'] = Variable<String>(label);
-    map['value'] = Variable<String>(value);
+    map['name'] = Variable<String>(name);
+    map['icon_code_point'] = Variable<String>(iconCodePoint);
+    map['icon_font_family'] = Variable<String>(iconFontFamily);
+    map['is_income'] = Variable<bool>(isIncome);
+    map['is_expense'] = Variable<bool>(isExpense);
+    map['order_index'] = Variable<int>(orderIndex);
     map['is_active'] = Variable<bool>(isActive);
-    map['belong_to'] = Variable<String>(belongTo);
-    map['group_id'] = Variable<String>(groupId);
+    map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
-  ReferenceTableCompanion toCompanion(bool nullToAbsent) {
-    return ReferenceTableCompanion(
+  CategoryTableCompanion toCompanion(bool nullToAbsent) {
+    return CategoryTableCompanion(
       id: Value(id),
       createdBy: Value(createdBy),
       dateCreated: Value(dateCreated),
       dateUpdated: Value(dateUpdated),
       lastModifiedBy: Value(lastModifiedBy),
-      label: Value(label),
-      value: Value(value),
+      name: Value(name),
+      iconCodePoint: Value(iconCodePoint),
+      iconFontFamily: Value(iconFontFamily),
+      isIncome: Value(isIncome),
+      isExpense: Value(isExpense),
+      orderIndex: Value(orderIndex),
       isActive: Value(isActive),
-      belongTo: Value(belongTo),
-      groupId: Value(groupId),
+      createdAt: Value(createdAt),
     );
   }
 
-  factory MstrdtReference.fromJson(
+  factory TrnsctnCategory.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MstrdtReference(
+    return TrnsctnCategory(
       id: serializer.fromJson<String>(json['id']),
       createdBy: serializer.fromJson<String>(json['createdBy']),
       dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
       lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      label: serializer.fromJson<String>(json['label']),
-      value: serializer.fromJson<String>(json['value']),
+      name: serializer.fromJson<String>(json['name']),
+      iconCodePoint: serializer.fromJson<String>(json['iconCodePoint']),
+      iconFontFamily: serializer.fromJson<String>(json['iconFontFamily']),
+      isIncome: serializer.fromJson<bool>(json['isIncome']),
+      isExpense: serializer.fromJson<bool>(json['isExpense']),
+      orderIndex: serializer.fromJson<int>(json['orderIndex']),
       isActive: serializer.fromJson<bool>(json['isActive']),
-      belongTo: serializer.fromJson<String>(json['belongTo']),
-      groupId: serializer.fromJson<String>(json['groupId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
   @override
@@ -5972,39 +4818,48 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
       'dateCreated': serializer.toJson<DateTime>(dateCreated),
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
       'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'label': serializer.toJson<String>(label),
-      'value': serializer.toJson<String>(value),
+      'name': serializer.toJson<String>(name),
+      'iconCodePoint': serializer.toJson<String>(iconCodePoint),
+      'iconFontFamily': serializer.toJson<String>(iconFontFamily),
+      'isIncome': serializer.toJson<bool>(isIncome),
+      'isExpense': serializer.toJson<bool>(isExpense),
+      'orderIndex': serializer.toJson<int>(orderIndex),
       'isActive': serializer.toJson<bool>(isActive),
-      'belongTo': serializer.toJson<String>(belongTo),
-      'groupId': serializer.toJson<String>(groupId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
-  MstrdtReference copyWith({
+  TrnsctnCategory copyWith({
     String? id,
     String? createdBy,
     DateTime? dateCreated,
     DateTime? dateUpdated,
     String? lastModifiedBy,
-    String? label,
-    String? value,
+    String? name,
+    String? iconCodePoint,
+    String? iconFontFamily,
+    bool? isIncome,
+    bool? isExpense,
+    int? orderIndex,
     bool? isActive,
-    String? belongTo,
-    String? groupId,
-  }) => MstrdtReference(
+    DateTime? createdAt,
+  }) => TrnsctnCategory(
     id: id ?? this.id,
     createdBy: createdBy ?? this.createdBy,
     dateCreated: dateCreated ?? this.dateCreated,
     dateUpdated: dateUpdated ?? this.dateUpdated,
     lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-    label: label ?? this.label,
-    value: value ?? this.value,
+    name: name ?? this.name,
+    iconCodePoint: iconCodePoint ?? this.iconCodePoint,
+    iconFontFamily: iconFontFamily ?? this.iconFontFamily,
+    isIncome: isIncome ?? this.isIncome,
+    isExpense: isExpense ?? this.isExpense,
+    orderIndex: orderIndex ?? this.orderIndex,
     isActive: isActive ?? this.isActive,
-    belongTo: belongTo ?? this.belongTo,
-    groupId: groupId ?? this.groupId,
+    createdAt: createdAt ?? this.createdAt,
   );
-  MstrdtReference copyWithCompanion(ReferenceTableCompanion data) {
-    return MstrdtReference(
+  TrnsctnCategory copyWithCompanion(CategoryTableCompanion data) {
+    return TrnsctnCategory(
       id: data.id.present ? data.id.value : this.id,
       createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       dateCreated: data.dateCreated.present
@@ -6016,27 +4871,39 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
       lastModifiedBy: data.lastModifiedBy.present
           ? data.lastModifiedBy.value
           : this.lastModifiedBy,
-      label: data.label.present ? data.label.value : this.label,
-      value: data.value.present ? data.value.value : this.value,
+      name: data.name.present ? data.name.value : this.name,
+      iconCodePoint: data.iconCodePoint.present
+          ? data.iconCodePoint.value
+          : this.iconCodePoint,
+      iconFontFamily: data.iconFontFamily.present
+          ? data.iconFontFamily.value
+          : this.iconFontFamily,
+      isIncome: data.isIncome.present ? data.isIncome.value : this.isIncome,
+      isExpense: data.isExpense.present ? data.isExpense.value : this.isExpense,
+      orderIndex: data.orderIndex.present
+          ? data.orderIndex.value
+          : this.orderIndex,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
-      belongTo: data.belongTo.present ? data.belongTo.value : this.belongTo,
-      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('MstrdtReference(')
+    return (StringBuffer('TrnsctnCategory(')
           ..write('id: $id, ')
           ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
           ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('label: $label, ')
-          ..write('value: $value, ')
+          ..write('name: $name, ')
+          ..write('iconCodePoint: $iconCodePoint, ')
+          ..write('iconFontFamily: $iconFontFamily, ')
+          ..write('isIncome: $isIncome, ')
+          ..write('isExpense: $isExpense, ')
+          ..write('orderIndex: $orderIndex, ')
           ..write('isActive: $isActive, ')
-          ..write('belongTo: $belongTo, ')
-          ..write('groupId: $groupId')
+          ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
@@ -6048,83 +4915,99 @@ class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
     dateCreated,
     dateUpdated,
     lastModifiedBy,
-    label,
-    value,
+    name,
+    iconCodePoint,
+    iconFontFamily,
+    isIncome,
+    isExpense,
+    orderIndex,
     isActive,
-    belongTo,
-    groupId,
+    createdAt,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is MstrdtReference &&
+      (other is TrnsctnCategory &&
           other.id == this.id &&
           other.createdBy == this.createdBy &&
           other.dateCreated == this.dateCreated &&
           other.dateUpdated == this.dateUpdated &&
           other.lastModifiedBy == this.lastModifiedBy &&
-          other.label == this.label &&
-          other.value == this.value &&
+          other.name == this.name &&
+          other.iconCodePoint == this.iconCodePoint &&
+          other.iconFontFamily == this.iconFontFamily &&
+          other.isIncome == this.isIncome &&
+          other.isExpense == this.isExpense &&
+          other.orderIndex == this.orderIndex &&
           other.isActive == this.isActive &&
-          other.belongTo == this.belongTo &&
-          other.groupId == this.groupId);
+          other.createdAt == this.createdAt);
 }
 
-class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
+class CategoryTableCompanion extends UpdateCompanion<TrnsctnCategory> {
   final Value<String> id;
   final Value<String> createdBy;
   final Value<DateTime> dateCreated;
   final Value<DateTime> dateUpdated;
   final Value<String> lastModifiedBy;
-  final Value<String> label;
-  final Value<String> value;
+  final Value<String> name;
+  final Value<String> iconCodePoint;
+  final Value<String> iconFontFamily;
+  final Value<bool> isIncome;
+  final Value<bool> isExpense;
+  final Value<int> orderIndex;
   final Value<bool> isActive;
-  final Value<String> belongTo;
-  final Value<String> groupId;
+  final Value<DateTime> createdAt;
   final Value<int> rowid;
-  const ReferenceTableCompanion({
+  const CategoryTableCompanion({
     this.id = const Value.absent(),
     this.createdBy = const Value.absent(),
     this.dateCreated = const Value.absent(),
     this.dateUpdated = const Value.absent(),
     this.lastModifiedBy = const Value.absent(),
-    this.label = const Value.absent(),
-    this.value = const Value.absent(),
+    this.name = const Value.absent(),
+    this.iconCodePoint = const Value.absent(),
+    this.iconFontFamily = const Value.absent(),
+    this.isIncome = const Value.absent(),
+    this.isExpense = const Value.absent(),
+    this.orderIndex = const Value.absent(),
     this.isActive = const Value.absent(),
-    this.belongTo = const Value.absent(),
-    this.groupId = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  ReferenceTableCompanion.insert({
+  CategoryTableCompanion.insert({
     this.id = const Value.absent(),
     required String createdBy,
     this.dateCreated = const Value.absent(),
     required DateTime dateUpdated,
     required String lastModifiedBy,
-    required String label,
-    required String value,
+    required String name,
+    required String iconCodePoint,
+    this.iconFontFamily = const Value.absent(),
+    this.isIncome = const Value.absent(),
+    this.isExpense = const Value.absent(),
+    this.orderIndex = const Value.absent(),
     this.isActive = const Value.absent(),
-    required String belongTo,
-    required String groupId,
+    this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdBy = Value(createdBy),
        dateUpdated = Value(dateUpdated),
        lastModifiedBy = Value(lastModifiedBy),
-       label = Value(label),
-       value = Value(value),
-       belongTo = Value(belongTo),
-       groupId = Value(groupId);
-  static Insertable<MstrdtReference> custom({
+       name = Value(name),
+       iconCodePoint = Value(iconCodePoint);
+  static Insertable<TrnsctnCategory> custom({
     Expression<String>? id,
     Expression<String>? createdBy,
     Expression<DateTime>? dateCreated,
     Expression<DateTime>? dateUpdated,
     Expression<String>? lastModifiedBy,
-    Expression<String>? label,
-    Expression<String>? value,
+    Expression<String>? name,
+    Expression<String>? iconCodePoint,
+    Expression<String>? iconFontFamily,
+    Expression<bool>? isIncome,
+    Expression<bool>? isExpense,
+    Expression<int>? orderIndex,
     Expression<bool>? isActive,
-    Expression<String>? belongTo,
-    Expression<String>? groupId,
+    Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -6133,39 +5016,48 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
       if (dateCreated != null) 'date_created': dateCreated,
       if (dateUpdated != null) 'date_updated': dateUpdated,
       if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
-      if (label != null) 'label': label,
-      if (value != null) 'value': value,
+      if (name != null) 'name': name,
+      if (iconCodePoint != null) 'icon_code_point': iconCodePoint,
+      if (iconFontFamily != null) 'icon_font_family': iconFontFamily,
+      if (isIncome != null) 'is_income': isIncome,
+      if (isExpense != null) 'is_expense': isExpense,
+      if (orderIndex != null) 'order_index': orderIndex,
       if (isActive != null) 'is_active': isActive,
-      if (belongTo != null) 'belong_to': belongTo,
-      if (groupId != null) 'group_id': groupId,
+      if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  ReferenceTableCompanion copyWith({
+  CategoryTableCompanion copyWith({
     Value<String>? id,
     Value<String>? createdBy,
     Value<DateTime>? dateCreated,
     Value<DateTime>? dateUpdated,
     Value<String>? lastModifiedBy,
-    Value<String>? label,
-    Value<String>? value,
+    Value<String>? name,
+    Value<String>? iconCodePoint,
+    Value<String>? iconFontFamily,
+    Value<bool>? isIncome,
+    Value<bool>? isExpense,
+    Value<int>? orderIndex,
     Value<bool>? isActive,
-    Value<String>? belongTo,
-    Value<String>? groupId,
+    Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
-    return ReferenceTableCompanion(
+    return CategoryTableCompanion(
       id: id ?? this.id,
       createdBy: createdBy ?? this.createdBy,
       dateCreated: dateCreated ?? this.dateCreated,
       dateUpdated: dateUpdated ?? this.dateUpdated,
       lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-      label: label ?? this.label,
-      value: value ?? this.value,
+      name: name ?? this.name,
+      iconCodePoint: iconCodePoint ?? this.iconCodePoint,
+      iconFontFamily: iconFontFamily ?? this.iconFontFamily,
+      isIncome: isIncome ?? this.isIncome,
+      isExpense: isExpense ?? this.isExpense,
+      orderIndex: orderIndex ?? this.orderIndex,
       isActive: isActive ?? this.isActive,
-      belongTo: belongTo ?? this.belongTo,
-      groupId: groupId ?? this.groupId,
+      createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -6188,20 +5080,29 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
     if (lastModifiedBy.present) {
       map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
     }
-    if (label.present) {
-      map['label'] = Variable<String>(label.value);
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
     }
-    if (value.present) {
-      map['value'] = Variable<String>(value.value);
+    if (iconCodePoint.present) {
+      map['icon_code_point'] = Variable<String>(iconCodePoint.value);
+    }
+    if (iconFontFamily.present) {
+      map['icon_font_family'] = Variable<String>(iconFontFamily.value);
+    }
+    if (isIncome.present) {
+      map['is_income'] = Variable<bool>(isIncome.value);
+    }
+    if (isExpense.present) {
+      map['is_expense'] = Variable<bool>(isExpense.value);
+    }
+    if (orderIndex.present) {
+      map['order_index'] = Variable<int>(orderIndex.value);
     }
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
     }
-    if (belongTo.present) {
-      map['belong_to'] = Variable<String>(belongTo.value);
-    }
-    if (groupId.present) {
-      map['group_id'] = Variable<String>(groupId.value);
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -6211,1347 +5112,20 @@ class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
 
   @override
   String toString() {
-    return (StringBuffer('ReferenceTableCompanion(')
+    return (StringBuffer('CategoryTableCompanion(')
           ..write('id: $id, ')
           ..write('createdBy: $createdBy, ')
           ..write('dateCreated: $dateCreated, ')
           ..write('dateUpdated: $dateUpdated, ')
           ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('label: $label, ')
-          ..write('value: $value, ')
+          ..write('name: $name, ')
+          ..write('iconCodePoint: $iconCodePoint, ')
+          ..write('iconFontFamily: $iconFontFamily, ')
+          ..write('isIncome: $isIncome, ')
+          ..write('isExpense: $isExpense, ')
+          ..write('orderIndex: $orderIndex, ')
           ..write('isActive: $isActive, ')
-          ..write('belongTo: $belongTo, ')
-          ..write('groupId: $groupId, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $ReferenceDataTableTable extends ReferenceDataTable
-    with TableInfo<$ReferenceDataTableTable, MstrdtReferenceData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $ReferenceDataTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    clientDefault: () => UuidGenerator().v4(),
-  );
-  static const VerificationMeta _createdByMeta = const VerificationMeta(
-    'createdBy',
-  );
-  @override
-  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
-    'created_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
-    'dateCreated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-    'date_created',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
-    'dateUpdated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-    'date_updated',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
-    'lastModifiedBy',
-  );
-  @override
-  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
-    'last_modified_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _labelMeta = const VerificationMeta('label');
-  @override
-  late final GeneratedColumn<String> label = GeneratedColumn<String>(
-    'label',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _groupLabelMeta = const VerificationMeta(
-    'groupLabel',
-  );
-  @override
-  late final GeneratedColumn<String> groupLabel = GeneratedColumn<String>(
-    'group_label',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _valueMeta = const VerificationMeta('value');
-  @override
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-    'value',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _groupValueMeta = const VerificationMeta(
-    'groupValue',
-  );
-  @override
-  late final GeneratedColumn<String> groupValue = GeneratedColumn<String>(
-    'group_value',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _referenceIdMeta = const VerificationMeta(
-    'referenceId',
-  );
-  @override
-  late final GeneratedColumn<String> referenceId = GeneratedColumn<String>(
-    'reference_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES reference_table (id)',
-    ),
-  );
-  static const VerificationMeta _isHasNextMeta = const VerificationMeta(
-    'isHasNext',
-  );
-  @override
-  late final GeneratedColumn<bool> isHasNext = GeneratedColumn<bool>(
-    'is_has_next',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_has_next" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _nextReferenceDataIdMeta =
-      const VerificationMeta('nextReferenceDataId');
-  @override
-  late final GeneratedColumn<String> nextReferenceDataId =
-      GeneratedColumn<String>(
-        'next_reference_data_id',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES reference_data_table (id)',
-        ),
-      );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    label,
-    groupLabel,
-    value,
-    groupValue,
-    referenceId,
-    isHasNext,
-    nextReferenceDataId,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'reference_data_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<MstrdtReferenceData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdByMeta);
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-        _dateCreatedMeta,
-        dateCreated.isAcceptableOrUnknown(
-          data['date_created']!,
-          _dateCreatedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-        _dateUpdatedMeta,
-        dateUpdated.isAcceptableOrUnknown(
-          data['date_updated']!,
-          _dateUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('last_modified_by')) {
-      context.handle(
-        _lastModifiedByMeta,
-        lastModifiedBy.isAcceptableOrUnknown(
-          data['last_modified_by']!,
-          _lastModifiedByMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastModifiedByMeta);
-    }
-    if (data.containsKey('label')) {
-      context.handle(
-        _labelMeta,
-        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_labelMeta);
-    }
-    if (data.containsKey('group_label')) {
-      context.handle(
-        _groupLabelMeta,
-        groupLabel.isAcceptableOrUnknown(data['group_label']!, _groupLabelMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_groupLabelMeta);
-    }
-    if (data.containsKey('value')) {
-      context.handle(
-        _valueMeta,
-        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_valueMeta);
-    }
-    if (data.containsKey('group_value')) {
-      context.handle(
-        _groupValueMeta,
-        groupValue.isAcceptableOrUnknown(data['group_value']!, _groupValueMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_groupValueMeta);
-    }
-    if (data.containsKey('reference_id')) {
-      context.handle(
-        _referenceIdMeta,
-        referenceId.isAcceptableOrUnknown(
-          data['reference_id']!,
-          _referenceIdMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_has_next')) {
-      context.handle(
-        _isHasNextMeta,
-        isHasNext.isAcceptableOrUnknown(data['is_has_next']!, _isHasNextMeta),
-      );
-    }
-    if (data.containsKey('next_reference_data_id')) {
-      context.handle(
-        _nextReferenceDataIdMeta,
-        nextReferenceDataId.isAcceptableOrUnknown(
-          data['next_reference_data_id']!,
-          _nextReferenceDataIdMeta,
-        ),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  MstrdtReferenceData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MstrdtReferenceData(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      createdBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_by'],
-      )!,
-      dateCreated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_created'],
-      )!,
-      dateUpdated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_updated'],
-      )!,
-      lastModifiedBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_modified_by'],
-      )!,
-      label: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}label'],
-      )!,
-      groupLabel: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}group_label'],
-      )!,
-      value: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}value'],
-      )!,
-      groupValue: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}group_value'],
-      )!,
-      referenceId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}reference_id'],
-      ),
-      isHasNext: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_has_next'],
-      )!,
-      nextReferenceDataId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}next_reference_data_id'],
-      ),
-    );
-  }
-
-  @override
-  $ReferenceDataTableTable createAlias(String alias) {
-    return $ReferenceDataTableTable(attachedDatabase, alias);
-  }
-}
-
-class MstrdtReferenceData extends DataClass
-    implements Insertable<MstrdtReferenceData> {
-  final String id;
-  final String createdBy;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final String lastModifiedBy;
-  final String label;
-  final String groupLabel;
-  final String value;
-  final String groupValue;
-  final String? referenceId;
-  final bool isHasNext;
-  final String? nextReferenceDataId;
-  const MstrdtReferenceData({
-    required this.id,
-    required this.createdBy,
-    required this.dateCreated,
-    required this.dateUpdated,
-    required this.lastModifiedBy,
-    required this.label,
-    required this.groupLabel,
-    required this.value,
-    required this.groupValue,
-    this.referenceId,
-    required this.isHasNext,
-    this.nextReferenceDataId,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['created_by'] = Variable<String>(createdBy);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['label'] = Variable<String>(label);
-    map['group_label'] = Variable<String>(groupLabel);
-    map['value'] = Variable<String>(value);
-    map['group_value'] = Variable<String>(groupValue);
-    if (!nullToAbsent || referenceId != null) {
-      map['reference_id'] = Variable<String>(referenceId);
-    }
-    map['is_has_next'] = Variable<bool>(isHasNext);
-    if (!nullToAbsent || nextReferenceDataId != null) {
-      map['next_reference_data_id'] = Variable<String>(nextReferenceDataId);
-    }
-    return map;
-  }
-
-  ReferenceDataTableCompanion toCompanion(bool nullToAbsent) {
-    return ReferenceDataTableCompanion(
-      id: Value(id),
-      createdBy: Value(createdBy),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      lastModifiedBy: Value(lastModifiedBy),
-      label: Value(label),
-      groupLabel: Value(groupLabel),
-      value: Value(value),
-      groupValue: Value(groupValue),
-      referenceId: referenceId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(referenceId),
-      isHasNext: Value(isHasNext),
-      nextReferenceDataId: nextReferenceDataId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(nextReferenceDataId),
-    );
-  }
-
-  factory MstrdtReferenceData.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MstrdtReferenceData(
-      id: serializer.fromJson<String>(json['id']),
-      createdBy: serializer.fromJson<String>(json['createdBy']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      label: serializer.fromJson<String>(json['label']),
-      groupLabel: serializer.fromJson<String>(json['groupLabel']),
-      value: serializer.fromJson<String>(json['value']),
-      groupValue: serializer.fromJson<String>(json['groupValue']),
-      referenceId: serializer.fromJson<String?>(json['referenceId']),
-      isHasNext: serializer.fromJson<bool>(json['isHasNext']),
-      nextReferenceDataId: serializer.fromJson<String?>(
-        json['nextReferenceDataId'],
-      ),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'createdBy': serializer.toJson<String>(createdBy),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'label': serializer.toJson<String>(label),
-      'groupLabel': serializer.toJson<String>(groupLabel),
-      'value': serializer.toJson<String>(value),
-      'groupValue': serializer.toJson<String>(groupValue),
-      'referenceId': serializer.toJson<String?>(referenceId),
-      'isHasNext': serializer.toJson<bool>(isHasNext),
-      'nextReferenceDataId': serializer.toJson<String?>(nextReferenceDataId),
-    };
-  }
-
-  MstrdtReferenceData copyWith({
-    String? id,
-    String? createdBy,
-    DateTime? dateCreated,
-    DateTime? dateUpdated,
-    String? lastModifiedBy,
-    String? label,
-    String? groupLabel,
-    String? value,
-    String? groupValue,
-    Value<String?> referenceId = const Value.absent(),
-    bool? isHasNext,
-    Value<String?> nextReferenceDataId = const Value.absent(),
-  }) => MstrdtReferenceData(
-    id: id ?? this.id,
-    createdBy: createdBy ?? this.createdBy,
-    dateCreated: dateCreated ?? this.dateCreated,
-    dateUpdated: dateUpdated ?? this.dateUpdated,
-    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-    label: label ?? this.label,
-    groupLabel: groupLabel ?? this.groupLabel,
-    value: value ?? this.value,
-    groupValue: groupValue ?? this.groupValue,
-    referenceId: referenceId.present ? referenceId.value : this.referenceId,
-    isHasNext: isHasNext ?? this.isHasNext,
-    nextReferenceDataId: nextReferenceDataId.present
-        ? nextReferenceDataId.value
-        : this.nextReferenceDataId,
-  );
-  MstrdtReferenceData copyWithCompanion(ReferenceDataTableCompanion data) {
-    return MstrdtReferenceData(
-      id: data.id.present ? data.id.value : this.id,
-      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
-      dateCreated: data.dateCreated.present
-          ? data.dateCreated.value
-          : this.dateCreated,
-      dateUpdated: data.dateUpdated.present
-          ? data.dateUpdated.value
-          : this.dateUpdated,
-      lastModifiedBy: data.lastModifiedBy.present
-          ? data.lastModifiedBy.value
-          : this.lastModifiedBy,
-      label: data.label.present ? data.label.value : this.label,
-      groupLabel: data.groupLabel.present
-          ? data.groupLabel.value
-          : this.groupLabel,
-      value: data.value.present ? data.value.value : this.value,
-      groupValue: data.groupValue.present
-          ? data.groupValue.value
-          : this.groupValue,
-      referenceId: data.referenceId.present
-          ? data.referenceId.value
-          : this.referenceId,
-      isHasNext: data.isHasNext.present ? data.isHasNext.value : this.isHasNext,
-      nextReferenceDataId: data.nextReferenceDataId.present
-          ? data.nextReferenceDataId.value
-          : this.nextReferenceDataId,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('MstrdtReferenceData(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('label: $label, ')
-          ..write('groupLabel: $groupLabel, ')
-          ..write('value: $value, ')
-          ..write('groupValue: $groupValue, ')
-          ..write('referenceId: $referenceId, ')
-          ..write('isHasNext: $isHasNext, ')
-          ..write('nextReferenceDataId: $nextReferenceDataId')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    label,
-    groupLabel,
-    value,
-    groupValue,
-    referenceId,
-    isHasNext,
-    nextReferenceDataId,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is MstrdtReferenceData &&
-          other.id == this.id &&
-          other.createdBy == this.createdBy &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.lastModifiedBy == this.lastModifiedBy &&
-          other.label == this.label &&
-          other.groupLabel == this.groupLabel &&
-          other.value == this.value &&
-          other.groupValue == this.groupValue &&
-          other.referenceId == this.referenceId &&
-          other.isHasNext == this.isHasNext &&
-          other.nextReferenceDataId == this.nextReferenceDataId);
-}
-
-class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
-  final Value<String> id;
-  final Value<String> createdBy;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<String> lastModifiedBy;
-  final Value<String> label;
-  final Value<String> groupLabel;
-  final Value<String> value;
-  final Value<String> groupValue;
-  final Value<String?> referenceId;
-  final Value<bool> isHasNext;
-  final Value<String?> nextReferenceDataId;
-  final Value<int> rowid;
-  const ReferenceDataTableCompanion({
-    this.id = const Value.absent(),
-    this.createdBy = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.lastModifiedBy = const Value.absent(),
-    this.label = const Value.absent(),
-    this.groupLabel = const Value.absent(),
-    this.value = const Value.absent(),
-    this.groupValue = const Value.absent(),
-    this.referenceId = const Value.absent(),
-    this.isHasNext = const Value.absent(),
-    this.nextReferenceDataId = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  ReferenceDataTableCompanion.insert({
-    this.id = const Value.absent(),
-    required String createdBy,
-    this.dateCreated = const Value.absent(),
-    required DateTime dateUpdated,
-    required String lastModifiedBy,
-    required String label,
-    required String groupLabel,
-    required String value,
-    required String groupValue,
-    this.referenceId = const Value.absent(),
-    this.isHasNext = const Value.absent(),
-    this.nextReferenceDataId = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : createdBy = Value(createdBy),
-       dateUpdated = Value(dateUpdated),
-       lastModifiedBy = Value(lastModifiedBy),
-       label = Value(label),
-       groupLabel = Value(groupLabel),
-       value = Value(value),
-       groupValue = Value(groupValue);
-  static Insertable<MstrdtReferenceData> custom({
-    Expression<String>? id,
-    Expression<String>? createdBy,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<String>? lastModifiedBy,
-    Expression<String>? label,
-    Expression<String>? groupLabel,
-    Expression<String>? value,
-    Expression<String>? groupValue,
-    Expression<String>? referenceId,
-    Expression<bool>? isHasNext,
-    Expression<String>? nextReferenceDataId,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (createdBy != null) 'created_by': createdBy,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
-      if (label != null) 'label': label,
-      if (groupLabel != null) 'group_label': groupLabel,
-      if (value != null) 'value': value,
-      if (groupValue != null) 'group_value': groupValue,
-      if (referenceId != null) 'reference_id': referenceId,
-      if (isHasNext != null) 'is_has_next': isHasNext,
-      if (nextReferenceDataId != null)
-        'next_reference_data_id': nextReferenceDataId,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  ReferenceDataTableCompanion copyWith({
-    Value<String>? id,
-    Value<String>? createdBy,
-    Value<DateTime>? dateCreated,
-    Value<DateTime>? dateUpdated,
-    Value<String>? lastModifiedBy,
-    Value<String>? label,
-    Value<String>? groupLabel,
-    Value<String>? value,
-    Value<String>? groupValue,
-    Value<String?>? referenceId,
-    Value<bool>? isHasNext,
-    Value<String?>? nextReferenceDataId,
-    Value<int>? rowid,
-  }) {
-    return ReferenceDataTableCompanion(
-      id: id ?? this.id,
-      createdBy: createdBy ?? this.createdBy,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-      label: label ?? this.label,
-      groupLabel: groupLabel ?? this.groupLabel,
-      value: value ?? this.value,
-      groupValue: groupValue ?? this.groupValue,
-      referenceId: referenceId ?? this.referenceId,
-      isHasNext: isHasNext ?? this.isHasNext,
-      nextReferenceDataId: nextReferenceDataId ?? this.nextReferenceDataId,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (createdBy.present) {
-      map['created_by'] = Variable<String>(createdBy.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (lastModifiedBy.present) {
-      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
-    }
-    if (label.present) {
-      map['label'] = Variable<String>(label.value);
-    }
-    if (groupLabel.present) {
-      map['group_label'] = Variable<String>(groupLabel.value);
-    }
-    if (value.present) {
-      map['value'] = Variable<String>(value.value);
-    }
-    if (groupValue.present) {
-      map['group_value'] = Variable<String>(groupValue.value);
-    }
-    if (referenceId.present) {
-      map['reference_id'] = Variable<String>(referenceId.value);
-    }
-    if (isHasNext.present) {
-      map['is_has_next'] = Variable<bool>(isHasNext.value);
-    }
-    if (nextReferenceDataId.present) {
-      map['next_reference_data_id'] = Variable<String>(
-        nextReferenceDataId.value,
-      );
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ReferenceDataTableCompanion(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('label: $label, ')
-          ..write('groupLabel: $groupLabel, ')
-          ..write('value: $value, ')
-          ..write('groupValue: $groupValue, ')
-          ..write('referenceId: $referenceId, ')
-          ..write('isHasNext: $isHasNext, ')
-          ..write('nextReferenceDataId: $nextReferenceDataId, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $ExpenseTableTable extends ExpenseTable
-    with TableInfo<$ExpenseTableTable, ExpnsExpense> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $ExpenseTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    clientDefault: () => UuidGenerator().v4(),
-  );
-  static const VerificationMeta _createdByMeta = const VerificationMeta(
-    'createdBy',
-  );
-  @override
-  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
-    'created_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
-    'dateCreated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-    'date_created',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
-    'dateUpdated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-    'date_updated',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
-    'lastModifiedBy',
-  );
-  @override
-  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
-    'last_modified_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
-  @override
-  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
-    'amount',
-    aliasedName,
-    false,
-    type: DriftSqlType.double,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta(
-    'description',
-  );
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-    'description',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _expenseDateMeta = const VerificationMeta(
-    'expenseDate',
-  );
-  @override
-  late final GeneratedColumn<DateTime> expenseDate = GeneratedColumn<DateTime>(
-    'expense_date',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _referenceDataIdMeta = const VerificationMeta(
-    'referenceDataId',
-  );
-  @override
-  late final GeneratedColumn<String> referenceDataId = GeneratedColumn<String>(
-    'reference_data_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES reference_data_table (id)',
-    ),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    amount,
-    description,
-    expenseDate,
-    referenceDataId,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'expense_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<ExpnsExpense> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdByMeta);
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-        _dateCreatedMeta,
-        dateCreated.isAcceptableOrUnknown(
-          data['date_created']!,
-          _dateCreatedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-        _dateUpdatedMeta,
-        dateUpdated.isAcceptableOrUnknown(
-          data['date_updated']!,
-          _dateUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('last_modified_by')) {
-      context.handle(
-        _lastModifiedByMeta,
-        lastModifiedBy.isAcceptableOrUnknown(
-          data['last_modified_by']!,
-          _lastModifiedByMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastModifiedByMeta);
-    }
-    if (data.containsKey('amount')) {
-      context.handle(
-        _amountMeta,
-        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_amountMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-        _descriptionMeta,
-        description.isAcceptableOrUnknown(
-          data['description']!,
-          _descriptionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('expense_date')) {
-      context.handle(
-        _expenseDateMeta,
-        expenseDate.isAcceptableOrUnknown(
-          data['expense_date']!,
-          _expenseDateMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_expenseDateMeta);
-    }
-    if (data.containsKey('reference_data_id')) {
-      context.handle(
-        _referenceDataIdMeta,
-        referenceDataId.isAcceptableOrUnknown(
-          data['reference_data_id']!,
-          _referenceDataIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_referenceDataIdMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  ExpnsExpense map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ExpnsExpense(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      createdBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_by'],
-      )!,
-      dateCreated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_created'],
-      )!,
-      dateUpdated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_updated'],
-      )!,
-      lastModifiedBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_modified_by'],
-      )!,
-      amount: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}amount'],
-      )!,
-      description: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description'],
-      ),
-      expenseDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}expense_date'],
-      )!,
-      referenceDataId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}reference_data_id'],
-      )!,
-    );
-  }
-
-  @override
-  $ExpenseTableTable createAlias(String alias) {
-    return $ExpenseTableTable(attachedDatabase, alias);
-  }
-}
-
-class ExpnsExpense extends DataClass implements Insertable<ExpnsExpense> {
-  final String id;
-  final String createdBy;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final String lastModifiedBy;
-  final double amount;
-  final String? description;
-  final DateTime expenseDate;
-  final String referenceDataId;
-  const ExpnsExpense({
-    required this.id,
-    required this.createdBy,
-    required this.dateCreated,
-    required this.dateUpdated,
-    required this.lastModifiedBy,
-    required this.amount,
-    this.description,
-    required this.expenseDate,
-    required this.referenceDataId,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['created_by'] = Variable<String>(createdBy);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['amount'] = Variable<double>(amount);
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
-    }
-    map['expense_date'] = Variable<DateTime>(expenseDate);
-    map['reference_data_id'] = Variable<String>(referenceDataId);
-    return map;
-  }
-
-  ExpenseTableCompanion toCompanion(bool nullToAbsent) {
-    return ExpenseTableCompanion(
-      id: Value(id),
-      createdBy: Value(createdBy),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      lastModifiedBy: Value(lastModifiedBy),
-      amount: Value(amount),
-      description: description == null && nullToAbsent
-          ? const Value.absent()
-          : Value(description),
-      expenseDate: Value(expenseDate),
-      referenceDataId: Value(referenceDataId),
-    );
-  }
-
-  factory ExpnsExpense.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ExpnsExpense(
-      id: serializer.fromJson<String>(json['id']),
-      createdBy: serializer.fromJson<String>(json['createdBy']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      amount: serializer.fromJson<double>(json['amount']),
-      description: serializer.fromJson<String?>(json['description']),
-      expenseDate: serializer.fromJson<DateTime>(json['expenseDate']),
-      referenceDataId: serializer.fromJson<String>(json['referenceDataId']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'createdBy': serializer.toJson<String>(createdBy),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'amount': serializer.toJson<double>(amount),
-      'description': serializer.toJson<String?>(description),
-      'expenseDate': serializer.toJson<DateTime>(expenseDate),
-      'referenceDataId': serializer.toJson<String>(referenceDataId),
-    };
-  }
-
-  ExpnsExpense copyWith({
-    String? id,
-    String? createdBy,
-    DateTime? dateCreated,
-    DateTime? dateUpdated,
-    String? lastModifiedBy,
-    double? amount,
-    Value<String?> description = const Value.absent(),
-    DateTime? expenseDate,
-    String? referenceDataId,
-  }) => ExpnsExpense(
-    id: id ?? this.id,
-    createdBy: createdBy ?? this.createdBy,
-    dateCreated: dateCreated ?? this.dateCreated,
-    dateUpdated: dateUpdated ?? this.dateUpdated,
-    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-    amount: amount ?? this.amount,
-    description: description.present ? description.value : this.description,
-    expenseDate: expenseDate ?? this.expenseDate,
-    referenceDataId: referenceDataId ?? this.referenceDataId,
-  );
-  ExpnsExpense copyWithCompanion(ExpenseTableCompanion data) {
-    return ExpnsExpense(
-      id: data.id.present ? data.id.value : this.id,
-      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
-      dateCreated: data.dateCreated.present
-          ? data.dateCreated.value
-          : this.dateCreated,
-      dateUpdated: data.dateUpdated.present
-          ? data.dateUpdated.value
-          : this.dateUpdated,
-      lastModifiedBy: data.lastModifiedBy.present
-          ? data.lastModifiedBy.value
-          : this.lastModifiedBy,
-      amount: data.amount.present ? data.amount.value : this.amount,
-      description: data.description.present
-          ? data.description.value
-          : this.description,
-      expenseDate: data.expenseDate.present
-          ? data.expenseDate.value
-          : this.expenseDate,
-      referenceDataId: data.referenceDataId.present
-          ? data.referenceDataId.value
-          : this.referenceDataId,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ExpnsExpense(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('amount: $amount, ')
-          ..write('description: $description, ')
-          ..write('expenseDate: $expenseDate, ')
-          ..write('referenceDataId: $referenceDataId')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    amount,
-    description,
-    expenseDate,
-    referenceDataId,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is ExpnsExpense &&
-          other.id == this.id &&
-          other.createdBy == this.createdBy &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.lastModifiedBy == this.lastModifiedBy &&
-          other.amount == this.amount &&
-          other.description == this.description &&
-          other.expenseDate == this.expenseDate &&
-          other.referenceDataId == this.referenceDataId);
-}
-
-class ExpenseTableCompanion extends UpdateCompanion<ExpnsExpense> {
-  final Value<String> id;
-  final Value<String> createdBy;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<String> lastModifiedBy;
-  final Value<double> amount;
-  final Value<String?> description;
-  final Value<DateTime> expenseDate;
-  final Value<String> referenceDataId;
-  final Value<int> rowid;
-  const ExpenseTableCompanion({
-    this.id = const Value.absent(),
-    this.createdBy = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.lastModifiedBy = const Value.absent(),
-    this.amount = const Value.absent(),
-    this.description = const Value.absent(),
-    this.expenseDate = const Value.absent(),
-    this.referenceDataId = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  ExpenseTableCompanion.insert({
-    this.id = const Value.absent(),
-    required String createdBy,
-    this.dateCreated = const Value.absent(),
-    required DateTime dateUpdated,
-    required String lastModifiedBy,
-    required double amount,
-    this.description = const Value.absent(),
-    required DateTime expenseDate,
-    required String referenceDataId,
-    this.rowid = const Value.absent(),
-  }) : createdBy = Value(createdBy),
-       dateUpdated = Value(dateUpdated),
-       lastModifiedBy = Value(lastModifiedBy),
-       amount = Value(amount),
-       expenseDate = Value(expenseDate),
-       referenceDataId = Value(referenceDataId);
-  static Insertable<ExpnsExpense> custom({
-    Expression<String>? id,
-    Expression<String>? createdBy,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<String>? lastModifiedBy,
-    Expression<double>? amount,
-    Expression<String>? description,
-    Expression<DateTime>? expenseDate,
-    Expression<String>? referenceDataId,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (createdBy != null) 'created_by': createdBy,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
-      if (amount != null) 'amount': amount,
-      if (description != null) 'description': description,
-      if (expenseDate != null) 'expense_date': expenseDate,
-      if (referenceDataId != null) 'reference_data_id': referenceDataId,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  ExpenseTableCompanion copyWith({
-    Value<String>? id,
-    Value<String>? createdBy,
-    Value<DateTime>? dateCreated,
-    Value<DateTime>? dateUpdated,
-    Value<String>? lastModifiedBy,
-    Value<double>? amount,
-    Value<String?>? description,
-    Value<DateTime>? expenseDate,
-    Value<String>? referenceDataId,
-    Value<int>? rowid,
-  }) {
-    return ExpenseTableCompanion(
-      id: id ?? this.id,
-      createdBy: createdBy ?? this.createdBy,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-      amount: amount ?? this.amount,
-      description: description ?? this.description,
-      expenseDate: expenseDate ?? this.expenseDate,
-      referenceDataId: referenceDataId ?? this.referenceDataId,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (createdBy.present) {
-      map['created_by'] = Variable<String>(createdBy.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (lastModifiedBy.present) {
-      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
-    }
-    if (amount.present) {
-      map['amount'] = Variable<double>(amount.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (expenseDate.present) {
-      map['expense_date'] = Variable<DateTime>(expenseDate.value);
-    }
-    if (referenceDataId.present) {
-      map['reference_data_id'] = Variable<String>(referenceDataId.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ExpenseTableCompanion(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('amount: $amount, ')
-          ..write('description: $description, ')
-          ..write('expenseDate: $expenseDate, ')
-          ..write('referenceDataId: $referenceDataId, ')
+          ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -10519,18 +8093,32 @@ class $TransactionTableTable extends TransactionTable
       'REFERENCES saving_table (id)',
     ),
   );
-  static const VerificationMeta _expenseIdMeta = const VerificationMeta(
-    'expenseId',
+  static const VerificationMeta _destinationSavingIdMeta =
+      const VerificationMeta('destinationSavingId');
+  @override
+  late final GeneratedColumn<String> destinationSavingId =
+      GeneratedColumn<String>(
+        'destination_saving_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES saving_table (id)',
+        ),
+      );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
   );
   @override
-  late final GeneratedColumn<String> expenseId = GeneratedColumn<String>(
-    'expense_id',
+  late final GeneratedColumn<String> categoryId = GeneratedColumn<String>(
+    'category_id',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES expense_table (id)',
+      'REFERENCES category_table (id)',
     ),
   );
   static const VerificationMeta _commitmentTaskIdMeta = const VerificationMeta(
@@ -10560,28 +8148,6 @@ class $TransactionTableTable extends TransactionTable
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES payee_table (id)',
     ),
-  );
-  static const VerificationMeta _transferGroupIdMeta = const VerificationMeta(
-    'transferGroupId',
-  );
-  @override
-  late final GeneratedColumn<String> transferGroupId = GeneratedColumn<String>(
-    'transfer_group_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _transferTypeMeta = const VerificationMeta(
-    'transferType',
-  );
-  @override
-  late final GeneratedColumn<String> transferType = GeneratedColumn<String>(
-    'transfer_type',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
   );
   static const VerificationMeta _transactionDateTimeMeta =
       const VerificationMeta('transactionDateTime');
@@ -10614,11 +8180,10 @@ class $TransactionTableTable extends TransactionTable
     description,
     amount,
     savingId,
-    expenseId,
+    destinationSavingId,
+    categoryId,
     commitmentTaskId,
     payeeId,
-    transferGroupId,
-    transferType,
     transactionDateTime,
     note,
   ];
@@ -10701,10 +8266,19 @@ class $TransactionTableTable extends TransactionTable
     } else if (isInserting) {
       context.missing(_savingIdMeta);
     }
-    if (data.containsKey('expense_id')) {
+    if (data.containsKey('destination_saving_id')) {
       context.handle(
-        _expenseIdMeta,
-        expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta),
+        _destinationSavingIdMeta,
+        destinationSavingId.isAcceptableOrUnknown(
+          data['destination_saving_id']!,
+          _destinationSavingIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
       );
     }
     if (data.containsKey('commitment_task_id')) {
@@ -10720,24 +8294,6 @@ class $TransactionTableTable extends TransactionTable
       context.handle(
         _payeeIdMeta,
         payeeId.isAcceptableOrUnknown(data['payee_id']!, _payeeIdMeta),
-      );
-    }
-    if (data.containsKey('transfer_group_id')) {
-      context.handle(
-        _transferGroupIdMeta,
-        transferGroupId.isAcceptableOrUnknown(
-          data['transfer_group_id']!,
-          _transferGroupIdMeta,
-        ),
-      );
-    }
-    if (data.containsKey('transfer_type')) {
-      context.handle(
-        _transferTypeMeta,
-        transferType.isAcceptableOrUnknown(
-          data['transfer_type']!,
-          _transferTypeMeta,
-        ),
       );
     }
     if (data.containsKey('transaction_date_time')) {
@@ -10802,9 +8358,13 @@ class $TransactionTableTable extends TransactionTable
         DriftSqlType.string,
         data['${effectivePrefix}saving_id'],
       )!,
-      expenseId: attachedDatabase.typeMapping.read(
+      destinationSavingId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}expense_id'],
+        data['${effectivePrefix}destination_saving_id'],
+      ),
+      categoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_id'],
       ),
       commitmentTaskId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -10813,14 +8373,6 @@ class $TransactionTableTable extends TransactionTable
       payeeId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}payee_id'],
-      ),
-      transferGroupId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}transfer_group_id'],
-      ),
-      transferType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}transfer_type'],
       ),
       transactionDateTime: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -10852,43 +8404,29 @@ class TrnsctnTransaction extends DataClass
   final TransactionType type;
   final String description;
 
-  /// Always positive — direction is determined by [type] and [transferType].
+  /// Always positive — direction is determined by [type].
   final double amount;
 
-  /// The savings account this transaction belongs to.
+  /// Source savings account — where money comes FROM.
+  /// For income: account receiving money.
+  /// For expense: account being debited.
+  /// For transfer/commitment: the source account.
   final String savingId;
 
-  /// Linked expense record, if applicable.
-  final String? expenseId;
+  /// Destination savings account — where money goes TO.
+  /// Only set for transfer and commitment transactions. Null otherwise.
+  final String? destinationSavingId;
 
-  /// FK to the [CommitmentTaskTable] row that triggered this transaction.
-  ///
-  /// Null for transactions not originating from a commitment task.
-  /// Populated when [CommitmentManager.updateStatusCommitmentTask] completes
-  /// a task and creates the corresponding transaction record.
-  ///
-  /// This allows:
-  ///   - Tracing any transaction back to its source commitment task.
-  ///   - Preventing duplicate transactions if complete is tapped twice.
-  ///   - Displaying commitment context on the transaction detail screen.
+  /// FK to [CategoryTable].
+  /// Null for transfer and commitment transactions.
+  final String? categoryId;
+
+  /// FK to [CommitmentTaskTable] — set when this transaction was created
+  /// by completing a commitment task.
   final String? commitmentTaskId;
 
   /// FK to [PayeeTable] — only set for third-party payment transactions.
-  ///
-  /// Storing this on the transaction (not just on the task) means:
-  ///   - The transaction history screen can show who was paid without
-  ///     joining back to the task table.
-  ///   - If the task is deleted later, the payee info is still on the record.
   final String? payeeId;
-
-  /// Groups the two transaction rows of an internal transfer (debit + credit).
-  /// Both rows share the same [transferGroupId] so they can be displayed
-  /// as a single logical transfer in the UI and reversed together if needed.
-  final String? transferGroupId;
-
-  /// 'debit' | 'credit' — which side of the transfer this row represents.
-  /// Only set when [transferGroupId] is non-null.
-  final String? transferType;
   final DateTime? transactionDateTime;
   final String? note;
   const TrnsctnTransaction({
@@ -10901,11 +8439,10 @@ class TrnsctnTransaction extends DataClass
     required this.description,
     required this.amount,
     required this.savingId,
-    this.expenseId,
+    this.destinationSavingId,
+    this.categoryId,
     this.commitmentTaskId,
     this.payeeId,
-    this.transferGroupId,
-    this.transferType,
     this.transactionDateTime,
     this.note,
   });
@@ -10925,20 +8462,17 @@ class TrnsctnTransaction extends DataClass
     map['description'] = Variable<String>(description);
     map['amount'] = Variable<double>(amount);
     map['saving_id'] = Variable<String>(savingId);
-    if (!nullToAbsent || expenseId != null) {
-      map['expense_id'] = Variable<String>(expenseId);
+    if (!nullToAbsent || destinationSavingId != null) {
+      map['destination_saving_id'] = Variable<String>(destinationSavingId);
+    }
+    if (!nullToAbsent || categoryId != null) {
+      map['category_id'] = Variable<String>(categoryId);
     }
     if (!nullToAbsent || commitmentTaskId != null) {
       map['commitment_task_id'] = Variable<String>(commitmentTaskId);
     }
     if (!nullToAbsent || payeeId != null) {
       map['payee_id'] = Variable<String>(payeeId);
-    }
-    if (!nullToAbsent || transferGroupId != null) {
-      map['transfer_group_id'] = Variable<String>(transferGroupId);
-    }
-    if (!nullToAbsent || transferType != null) {
-      map['transfer_type'] = Variable<String>(transferType);
     }
     if (!nullToAbsent || transactionDateTime != null) {
       map['transaction_date_time'] = Variable<DateTime>(transactionDateTime);
@@ -10960,21 +8494,18 @@ class TrnsctnTransaction extends DataClass
       description: Value(description),
       amount: Value(amount),
       savingId: Value(savingId),
-      expenseId: expenseId == null && nullToAbsent
+      destinationSavingId: destinationSavingId == null && nullToAbsent
           ? const Value.absent()
-          : Value(expenseId),
+          : Value(destinationSavingId),
+      categoryId: categoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryId),
       commitmentTaskId: commitmentTaskId == null && nullToAbsent
           ? const Value.absent()
           : Value(commitmentTaskId),
       payeeId: payeeId == null && nullToAbsent
           ? const Value.absent()
           : Value(payeeId),
-      transferGroupId: transferGroupId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(transferGroupId),
-      transferType: transferType == null && nullToAbsent
-          ? const Value.absent()
-          : Value(transferType),
       transactionDateTime: transactionDateTime == null && nullToAbsent
           ? const Value.absent()
           : Value(transactionDateTime),
@@ -10999,11 +8530,12 @@ class TrnsctnTransaction extends DataClass
       description: serializer.fromJson<String>(json['description']),
       amount: serializer.fromJson<double>(json['amount']),
       savingId: serializer.fromJson<String>(json['savingId']),
-      expenseId: serializer.fromJson<String?>(json['expenseId']),
+      destinationSavingId: serializer.fromJson<String?>(
+        json['destinationSavingId'],
+      ),
+      categoryId: serializer.fromJson<String?>(json['categoryId']),
       commitmentTaskId: serializer.fromJson<String?>(json['commitmentTaskId']),
       payeeId: serializer.fromJson<String?>(json['payeeId']),
-      transferGroupId: serializer.fromJson<String?>(json['transferGroupId']),
-      transferType: serializer.fromJson<String?>(json['transferType']),
       transactionDateTime: serializer.fromJson<DateTime?>(
         json['transactionDateTime'],
       ),
@@ -11025,11 +8557,10 @@ class TrnsctnTransaction extends DataClass
       'description': serializer.toJson<String>(description),
       'amount': serializer.toJson<double>(amount),
       'savingId': serializer.toJson<String>(savingId),
-      'expenseId': serializer.toJson<String?>(expenseId),
+      'destinationSavingId': serializer.toJson<String?>(destinationSavingId),
+      'categoryId': serializer.toJson<String?>(categoryId),
       'commitmentTaskId': serializer.toJson<String?>(commitmentTaskId),
       'payeeId': serializer.toJson<String?>(payeeId),
-      'transferGroupId': serializer.toJson<String?>(transferGroupId),
-      'transferType': serializer.toJson<String?>(transferType),
       'transactionDateTime': serializer.toJson<DateTime?>(transactionDateTime),
       'note': serializer.toJson<String?>(note),
     };
@@ -11045,11 +8576,10 @@ class TrnsctnTransaction extends DataClass
     String? description,
     double? amount,
     String? savingId,
-    Value<String?> expenseId = const Value.absent(),
+    Value<String?> destinationSavingId = const Value.absent(),
+    Value<String?> categoryId = const Value.absent(),
     Value<String?> commitmentTaskId = const Value.absent(),
     Value<String?> payeeId = const Value.absent(),
-    Value<String?> transferGroupId = const Value.absent(),
-    Value<String?> transferType = const Value.absent(),
     Value<DateTime?> transactionDateTime = const Value.absent(),
     Value<String?> note = const Value.absent(),
   }) => TrnsctnTransaction(
@@ -11062,15 +8592,14 @@ class TrnsctnTransaction extends DataClass
     description: description ?? this.description,
     amount: amount ?? this.amount,
     savingId: savingId ?? this.savingId,
-    expenseId: expenseId.present ? expenseId.value : this.expenseId,
+    destinationSavingId: destinationSavingId.present
+        ? destinationSavingId.value
+        : this.destinationSavingId,
+    categoryId: categoryId.present ? categoryId.value : this.categoryId,
     commitmentTaskId: commitmentTaskId.present
         ? commitmentTaskId.value
         : this.commitmentTaskId,
     payeeId: payeeId.present ? payeeId.value : this.payeeId,
-    transferGroupId: transferGroupId.present
-        ? transferGroupId.value
-        : this.transferGroupId,
-    transferType: transferType.present ? transferType.value : this.transferType,
     transactionDateTime: transactionDateTime.present
         ? transactionDateTime.value
         : this.transactionDateTime,
@@ -11095,17 +8624,16 @@ class TrnsctnTransaction extends DataClass
           : this.description,
       amount: data.amount.present ? data.amount.value : this.amount,
       savingId: data.savingId.present ? data.savingId.value : this.savingId,
-      expenseId: data.expenseId.present ? data.expenseId.value : this.expenseId,
+      destinationSavingId: data.destinationSavingId.present
+          ? data.destinationSavingId.value
+          : this.destinationSavingId,
+      categoryId: data.categoryId.present
+          ? data.categoryId.value
+          : this.categoryId,
       commitmentTaskId: data.commitmentTaskId.present
           ? data.commitmentTaskId.value
           : this.commitmentTaskId,
       payeeId: data.payeeId.present ? data.payeeId.value : this.payeeId,
-      transferGroupId: data.transferGroupId.present
-          ? data.transferGroupId.value
-          : this.transferGroupId,
-      transferType: data.transferType.present
-          ? data.transferType.value
-          : this.transferType,
       transactionDateTime: data.transactionDateTime.present
           ? data.transactionDateTime.value
           : this.transactionDateTime,
@@ -11125,11 +8653,10 @@ class TrnsctnTransaction extends DataClass
           ..write('description: $description, ')
           ..write('amount: $amount, ')
           ..write('savingId: $savingId, ')
-          ..write('expenseId: $expenseId, ')
+          ..write('destinationSavingId: $destinationSavingId, ')
+          ..write('categoryId: $categoryId, ')
           ..write('commitmentTaskId: $commitmentTaskId, ')
           ..write('payeeId: $payeeId, ')
-          ..write('transferGroupId: $transferGroupId, ')
-          ..write('transferType: $transferType, ')
           ..write('transactionDateTime: $transactionDateTime, ')
           ..write('note: $note')
           ..write(')'))
@@ -11147,11 +8674,10 @@ class TrnsctnTransaction extends DataClass
     description,
     amount,
     savingId,
-    expenseId,
+    destinationSavingId,
+    categoryId,
     commitmentTaskId,
     payeeId,
-    transferGroupId,
-    transferType,
     transactionDateTime,
     note,
   );
@@ -11168,11 +8694,10 @@ class TrnsctnTransaction extends DataClass
           other.description == this.description &&
           other.amount == this.amount &&
           other.savingId == this.savingId &&
-          other.expenseId == this.expenseId &&
+          other.destinationSavingId == this.destinationSavingId &&
+          other.categoryId == this.categoryId &&
           other.commitmentTaskId == this.commitmentTaskId &&
           other.payeeId == this.payeeId &&
-          other.transferGroupId == this.transferGroupId &&
-          other.transferType == this.transferType &&
           other.transactionDateTime == this.transactionDateTime &&
           other.note == this.note);
 }
@@ -11187,11 +8712,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   final Value<String> description;
   final Value<double> amount;
   final Value<String> savingId;
-  final Value<String?> expenseId;
+  final Value<String?> destinationSavingId;
+  final Value<String?> categoryId;
   final Value<String?> commitmentTaskId;
   final Value<String?> payeeId;
-  final Value<String?> transferGroupId;
-  final Value<String?> transferType;
   final Value<DateTime?> transactionDateTime;
   final Value<String?> note;
   final Value<int> rowid;
@@ -11205,11 +8729,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.description = const Value.absent(),
     this.amount = const Value.absent(),
     this.savingId = const Value.absent(),
-    this.expenseId = const Value.absent(),
+    this.destinationSavingId = const Value.absent(),
+    this.categoryId = const Value.absent(),
     this.commitmentTaskId = const Value.absent(),
     this.payeeId = const Value.absent(),
-    this.transferGroupId = const Value.absent(),
-    this.transferType = const Value.absent(),
     this.transactionDateTime = const Value.absent(),
     this.note = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -11224,11 +8747,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.description = const Value.absent(),
     required double amount,
     required String savingId,
-    this.expenseId = const Value.absent(),
+    this.destinationSavingId = const Value.absent(),
+    this.categoryId = const Value.absent(),
     this.commitmentTaskId = const Value.absent(),
     this.payeeId = const Value.absent(),
-    this.transferGroupId = const Value.absent(),
-    this.transferType = const Value.absent(),
     this.transactionDateTime = const Value.absent(),
     this.note = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -11248,11 +8770,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     Expression<String>? description,
     Expression<double>? amount,
     Expression<String>? savingId,
-    Expression<String>? expenseId,
+    Expression<String>? destinationSavingId,
+    Expression<String>? categoryId,
     Expression<String>? commitmentTaskId,
     Expression<String>? payeeId,
-    Expression<String>? transferGroupId,
-    Expression<String>? transferType,
     Expression<DateTime>? transactionDateTime,
     Expression<String>? note,
     Expression<int>? rowid,
@@ -11267,11 +8788,11 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       if (description != null) 'description': description,
       if (amount != null) 'amount': amount,
       if (savingId != null) 'saving_id': savingId,
-      if (expenseId != null) 'expense_id': expenseId,
+      if (destinationSavingId != null)
+        'destination_saving_id': destinationSavingId,
+      if (categoryId != null) 'category_id': categoryId,
       if (commitmentTaskId != null) 'commitment_task_id': commitmentTaskId,
       if (payeeId != null) 'payee_id': payeeId,
-      if (transferGroupId != null) 'transfer_group_id': transferGroupId,
-      if (transferType != null) 'transfer_type': transferType,
       if (transactionDateTime != null)
         'transaction_date_time': transactionDateTime,
       if (note != null) 'note': note,
@@ -11289,11 +8810,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     Value<String>? description,
     Value<double>? amount,
     Value<String>? savingId,
-    Value<String?>? expenseId,
+    Value<String?>? destinationSavingId,
+    Value<String?>? categoryId,
     Value<String?>? commitmentTaskId,
     Value<String?>? payeeId,
-    Value<String?>? transferGroupId,
-    Value<String?>? transferType,
     Value<DateTime?>? transactionDateTime,
     Value<String?>? note,
     Value<int>? rowid,
@@ -11308,11 +8828,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       description: description ?? this.description,
       amount: amount ?? this.amount,
       savingId: savingId ?? this.savingId,
-      expenseId: expenseId ?? this.expenseId,
+      destinationSavingId: destinationSavingId ?? this.destinationSavingId,
+      categoryId: categoryId ?? this.categoryId,
       commitmentTaskId: commitmentTaskId ?? this.commitmentTaskId,
       payeeId: payeeId ?? this.payeeId,
-      transferGroupId: transferGroupId ?? this.transferGroupId,
-      transferType: transferType ?? this.transferType,
       transactionDateTime: transactionDateTime ?? this.transactionDateTime,
       note: note ?? this.note,
       rowid: rowid ?? this.rowid,
@@ -11351,20 +8870,19 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     if (savingId.present) {
       map['saving_id'] = Variable<String>(savingId.value);
     }
-    if (expenseId.present) {
-      map['expense_id'] = Variable<String>(expenseId.value);
+    if (destinationSavingId.present) {
+      map['destination_saving_id'] = Variable<String>(
+        destinationSavingId.value,
+      );
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<String>(categoryId.value);
     }
     if (commitmentTaskId.present) {
       map['commitment_task_id'] = Variable<String>(commitmentTaskId.value);
     }
     if (payeeId.present) {
       map['payee_id'] = Variable<String>(payeeId.value);
-    }
-    if (transferGroupId.present) {
-      map['transfer_group_id'] = Variable<String>(transferGroupId.value);
-    }
-    if (transferType.present) {
-      map['transfer_type'] = Variable<String>(transferType.value);
     }
     if (transactionDateTime.present) {
       map['transaction_date_time'] = Variable<DateTime>(
@@ -11392,11 +8910,10 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
           ..write('description: $description, ')
           ..write('amount: $amount, ')
           ..write('savingId: $savingId, ')
-          ..write('expenseId: $expenseId, ')
+          ..write('destinationSavingId: $destinationSavingId, ')
+          ..write('categoryId: $categoryId, ')
           ..write('commitmentTaskId: $commitmentTaskId, ')
           ..write('payeeId: $payeeId, ')
-          ..write('transferGroupId: $transferGroupId, ')
-          ..write('transferType: $transferType, ')
           ..write('transactionDateTime: $transactionDateTime, ')
           ..write('note: $note, ')
           ..write('rowid: $rowid')
@@ -13437,6 +10954,1844 @@ class ExchangeRateTableCompanion extends UpdateCompanion<ExchangeRate> {
   }
 }
 
+class $GroupReferenceTableTable extends GroupReferenceTable
+    with TableInfo<$GroupReferenceTableTable, MstrdtGroupReference> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GroupReferenceTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    label,
+    value,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'group_reference_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MstrdtGroupReference> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MstrdtGroupReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MstrdtGroupReference(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+    );
+  }
+
+  @override
+  $GroupReferenceTableTable createAlias(String alias) {
+    return $GroupReferenceTableTable(attachedDatabase, alias);
+  }
+}
+
+class MstrdtGroupReference extends DataClass
+    implements Insertable<MstrdtGroupReference> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+  final String label;
+  final String value;
+  const MstrdtGroupReference({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.label,
+    required this.value,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['label'] = Variable<String>(label);
+    map['value'] = Variable<String>(value);
+    return map;
+  }
+
+  GroupReferenceTableCompanion toCompanion(bool nullToAbsent) {
+    return GroupReferenceTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      label: Value(label),
+      value: Value(value),
+    );
+  }
+
+  factory MstrdtGroupReference.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MstrdtGroupReference(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      label: serializer.fromJson<String>(json['label']),
+      value: serializer.fromJson<String>(json['value']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'label': serializer.toJson<String>(label),
+      'value': serializer.toJson<String>(value),
+    };
+  }
+
+  MstrdtGroupReference copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    String? label,
+    String? value,
+  }) => MstrdtGroupReference(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    label: label ?? this.label,
+    value: value ?? this.value,
+  );
+  MstrdtGroupReference copyWithCompanion(GroupReferenceTableCompanion data) {
+    return MstrdtGroupReference(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      label: data.label.present ? data.label.value : this.label,
+      value: data.value.present ? data.value.value : this.value,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MstrdtGroupReference(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('label: $label, ')
+          ..write('value: $value')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    label,
+    value,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MstrdtGroupReference &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.label == this.label &&
+          other.value == this.value);
+}
+
+class GroupReferenceTableCompanion
+    extends UpdateCompanion<MstrdtGroupReference> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> label;
+  final Value<String> value;
+  final Value<int> rowid;
+  const GroupReferenceTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.label = const Value.absent(),
+    this.value = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GroupReferenceTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String label,
+    required String value,
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       label = Value(label),
+       value = Value(value);
+  static Insertable<MstrdtGroupReference> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? label,
+    Expression<String>? value,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (label != null) 'label': label,
+      if (value != null) 'value': value,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GroupReferenceTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<String>? label,
+    Value<String>? value,
+    Value<int>? rowid,
+  }) {
+    return GroupReferenceTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      label: label ?? this.label,
+      value: value ?? this.value,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GroupReferenceTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('label: $label, ')
+          ..write('value: $value, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReferenceTableTable extends ReferenceTable
+    with TableInfo<$ReferenceTableTable, MstrdtReference> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReferenceTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _belongToMeta = const VerificationMeta(
+    'belongTo',
+  );
+  @override
+  late final GeneratedColumn<String> belongTo = GeneratedColumn<String>(
+    'belong_to',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES reference_table (id)',
+    ),
+  );
+  static const VerificationMeta _groupIdMeta = const VerificationMeta(
+    'groupId',
+  );
+  @override
+  late final GeneratedColumn<String> groupId = GeneratedColumn<String>(
+    'group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES group_reference_table (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    label,
+    value,
+    isActive,
+    belongTo,
+    groupId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'reference_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MstrdtReference> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('belong_to')) {
+      context.handle(
+        _belongToMeta,
+        belongTo.isAcceptableOrUnknown(data['belong_to']!, _belongToMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_belongToMeta);
+    }
+    if (data.containsKey('group_id')) {
+      context.handle(
+        _groupIdMeta,
+        groupId.isAcceptableOrUnknown(data['group_id']!, _groupIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MstrdtReference map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MstrdtReference(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_active'],
+      )!,
+      belongTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}belong_to'],
+      )!,
+      groupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_id'],
+      )!,
+    );
+  }
+
+  @override
+  $ReferenceTableTable createAlias(String alias) {
+    return $ReferenceTableTable(attachedDatabase, alias);
+  }
+}
+
+class MstrdtReference extends DataClass implements Insertable<MstrdtReference> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+  final String label;
+  final String value;
+  final bool isActive;
+  final String belongTo;
+  final String groupId;
+  const MstrdtReference({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.label,
+    required this.value,
+    required this.isActive,
+    required this.belongTo,
+    required this.groupId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['label'] = Variable<String>(label);
+    map['value'] = Variable<String>(value);
+    map['is_active'] = Variable<bool>(isActive);
+    map['belong_to'] = Variable<String>(belongTo);
+    map['group_id'] = Variable<String>(groupId);
+    return map;
+  }
+
+  ReferenceTableCompanion toCompanion(bool nullToAbsent) {
+    return ReferenceTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      label: Value(label),
+      value: Value(value),
+      isActive: Value(isActive),
+      belongTo: Value(belongTo),
+      groupId: Value(groupId),
+    );
+  }
+
+  factory MstrdtReference.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MstrdtReference(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      label: serializer.fromJson<String>(json['label']),
+      value: serializer.fromJson<String>(json['value']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      belongTo: serializer.fromJson<String>(json['belongTo']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'label': serializer.toJson<String>(label),
+      'value': serializer.toJson<String>(value),
+      'isActive': serializer.toJson<bool>(isActive),
+      'belongTo': serializer.toJson<String>(belongTo),
+      'groupId': serializer.toJson<String>(groupId),
+    };
+  }
+
+  MstrdtReference copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    String? label,
+    String? value,
+    bool? isActive,
+    String? belongTo,
+    String? groupId,
+  }) => MstrdtReference(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    label: label ?? this.label,
+    value: value ?? this.value,
+    isActive: isActive ?? this.isActive,
+    belongTo: belongTo ?? this.belongTo,
+    groupId: groupId ?? this.groupId,
+  );
+  MstrdtReference copyWithCompanion(ReferenceTableCompanion data) {
+    return MstrdtReference(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      label: data.label.present ? data.label.value : this.label,
+      value: data.value.present ? data.value.value : this.value,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      belongTo: data.belongTo.present ? data.belongTo.value : this.belongTo,
+      groupId: data.groupId.present ? data.groupId.value : this.groupId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MstrdtReference(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('label: $label, ')
+          ..write('value: $value, ')
+          ..write('isActive: $isActive, ')
+          ..write('belongTo: $belongTo, ')
+          ..write('groupId: $groupId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    label,
+    value,
+    isActive,
+    belongTo,
+    groupId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MstrdtReference &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.label == this.label &&
+          other.value == this.value &&
+          other.isActive == this.isActive &&
+          other.belongTo == this.belongTo &&
+          other.groupId == this.groupId);
+}
+
+class ReferenceTableCompanion extends UpdateCompanion<MstrdtReference> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> label;
+  final Value<String> value;
+  final Value<bool> isActive;
+  final Value<String> belongTo;
+  final Value<String> groupId;
+  final Value<int> rowid;
+  const ReferenceTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.label = const Value.absent(),
+    this.value = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.belongTo = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReferenceTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String label,
+    required String value,
+    this.isActive = const Value.absent(),
+    required String belongTo,
+    required String groupId,
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       label = Value(label),
+       value = Value(value),
+       belongTo = Value(belongTo),
+       groupId = Value(groupId);
+  static Insertable<MstrdtReference> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? label,
+    Expression<String>? value,
+    Expression<bool>? isActive,
+    Expression<String>? belongTo,
+    Expression<String>? groupId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (label != null) 'label': label,
+      if (value != null) 'value': value,
+      if (isActive != null) 'is_active': isActive,
+      if (belongTo != null) 'belong_to': belongTo,
+      if (groupId != null) 'group_id': groupId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReferenceTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<String>? label,
+    Value<String>? value,
+    Value<bool>? isActive,
+    Value<String>? belongTo,
+    Value<String>? groupId,
+    Value<int>? rowid,
+  }) {
+    return ReferenceTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      label: label ?? this.label,
+      value: value ?? this.value,
+      isActive: isActive ?? this.isActive,
+      belongTo: belongTo ?? this.belongTo,
+      groupId: groupId ?? this.groupId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (belongTo.present) {
+      map['belong_to'] = Variable<String>(belongTo.value);
+    }
+    if (groupId.present) {
+      map['group_id'] = Variable<String>(groupId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReferenceTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('label: $label, ')
+          ..write('value: $value, ')
+          ..write('isActive: $isActive, ')
+          ..write('belongTo: $belongTo, ')
+          ..write('groupId: $groupId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReferenceDataTableTable extends ReferenceDataTable
+    with TableInfo<$ReferenceDataTableTable, MstrdtReferenceData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReferenceDataTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupLabelMeta = const VerificationMeta(
+    'groupLabel',
+  );
+  @override
+  late final GeneratedColumn<String> groupLabel = GeneratedColumn<String>(
+    'group_label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _groupValueMeta = const VerificationMeta(
+    'groupValue',
+  );
+  @override
+  late final GeneratedColumn<String> groupValue = GeneratedColumn<String>(
+    'group_value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _referenceIdMeta = const VerificationMeta(
+    'referenceId',
+  );
+  @override
+  late final GeneratedColumn<String> referenceId = GeneratedColumn<String>(
+    'reference_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES reference_table (id)',
+    ),
+  );
+  static const VerificationMeta _isHasNextMeta = const VerificationMeta(
+    'isHasNext',
+  );
+  @override
+  late final GeneratedColumn<bool> isHasNext = GeneratedColumn<bool>(
+    'is_has_next',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_has_next" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _nextReferenceDataIdMeta =
+      const VerificationMeta('nextReferenceDataId');
+  @override
+  late final GeneratedColumn<String> nextReferenceDataId =
+      GeneratedColumn<String>(
+        'next_reference_data_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES reference_data_table (id)',
+        ),
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    label,
+    groupLabel,
+    value,
+    groupValue,
+    referenceId,
+    isHasNext,
+    nextReferenceDataId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'reference_data_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MstrdtReferenceData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('group_label')) {
+      context.handle(
+        _groupLabelMeta,
+        groupLabel.isAcceptableOrUnknown(data['group_label']!, _groupLabelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupLabelMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('group_value')) {
+      context.handle(
+        _groupValueMeta,
+        groupValue.isAcceptableOrUnknown(data['group_value']!, _groupValueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_groupValueMeta);
+    }
+    if (data.containsKey('reference_id')) {
+      context.handle(
+        _referenceIdMeta,
+        referenceId.isAcceptableOrUnknown(
+          data['reference_id']!,
+          _referenceIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_has_next')) {
+      context.handle(
+        _isHasNextMeta,
+        isHasNext.isAcceptableOrUnknown(data['is_has_next']!, _isHasNextMeta),
+      );
+    }
+    if (data.containsKey('next_reference_data_id')) {
+      context.handle(
+        _nextReferenceDataIdMeta,
+        nextReferenceDataId.isAcceptableOrUnknown(
+          data['next_reference_data_id']!,
+          _nextReferenceDataIdMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MstrdtReferenceData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MstrdtReferenceData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      groupLabel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_label'],
+      )!,
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}value'],
+      )!,
+      groupValue: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}group_value'],
+      )!,
+      referenceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reference_id'],
+      ),
+      isHasNext: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_has_next'],
+      )!,
+      nextReferenceDataId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}next_reference_data_id'],
+      ),
+    );
+  }
+
+  @override
+  $ReferenceDataTableTable createAlias(String alias) {
+    return $ReferenceDataTableTable(attachedDatabase, alias);
+  }
+}
+
+class MstrdtReferenceData extends DataClass
+    implements Insertable<MstrdtReferenceData> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+  final String label;
+  final String groupLabel;
+  final String value;
+  final String groupValue;
+  final String? referenceId;
+  final bool isHasNext;
+  final String? nextReferenceDataId;
+  const MstrdtReferenceData({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.label,
+    required this.groupLabel,
+    required this.value,
+    required this.groupValue,
+    this.referenceId,
+    required this.isHasNext,
+    this.nextReferenceDataId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['label'] = Variable<String>(label);
+    map['group_label'] = Variable<String>(groupLabel);
+    map['value'] = Variable<String>(value);
+    map['group_value'] = Variable<String>(groupValue);
+    if (!nullToAbsent || referenceId != null) {
+      map['reference_id'] = Variable<String>(referenceId);
+    }
+    map['is_has_next'] = Variable<bool>(isHasNext);
+    if (!nullToAbsent || nextReferenceDataId != null) {
+      map['next_reference_data_id'] = Variable<String>(nextReferenceDataId);
+    }
+    return map;
+  }
+
+  ReferenceDataTableCompanion toCompanion(bool nullToAbsent) {
+    return ReferenceDataTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      label: Value(label),
+      groupLabel: Value(groupLabel),
+      value: Value(value),
+      groupValue: Value(groupValue),
+      referenceId: referenceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(referenceId),
+      isHasNext: Value(isHasNext),
+      nextReferenceDataId: nextReferenceDataId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextReferenceDataId),
+    );
+  }
+
+  factory MstrdtReferenceData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MstrdtReferenceData(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      label: serializer.fromJson<String>(json['label']),
+      groupLabel: serializer.fromJson<String>(json['groupLabel']),
+      value: serializer.fromJson<String>(json['value']),
+      groupValue: serializer.fromJson<String>(json['groupValue']),
+      referenceId: serializer.fromJson<String?>(json['referenceId']),
+      isHasNext: serializer.fromJson<bool>(json['isHasNext']),
+      nextReferenceDataId: serializer.fromJson<String?>(
+        json['nextReferenceDataId'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'label': serializer.toJson<String>(label),
+      'groupLabel': serializer.toJson<String>(groupLabel),
+      'value': serializer.toJson<String>(value),
+      'groupValue': serializer.toJson<String>(groupValue),
+      'referenceId': serializer.toJson<String?>(referenceId),
+      'isHasNext': serializer.toJson<bool>(isHasNext),
+      'nextReferenceDataId': serializer.toJson<String?>(nextReferenceDataId),
+    };
+  }
+
+  MstrdtReferenceData copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    String? label,
+    String? groupLabel,
+    String? value,
+    String? groupValue,
+    Value<String?> referenceId = const Value.absent(),
+    bool? isHasNext,
+    Value<String?> nextReferenceDataId = const Value.absent(),
+  }) => MstrdtReferenceData(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    label: label ?? this.label,
+    groupLabel: groupLabel ?? this.groupLabel,
+    value: value ?? this.value,
+    groupValue: groupValue ?? this.groupValue,
+    referenceId: referenceId.present ? referenceId.value : this.referenceId,
+    isHasNext: isHasNext ?? this.isHasNext,
+    nextReferenceDataId: nextReferenceDataId.present
+        ? nextReferenceDataId.value
+        : this.nextReferenceDataId,
+  );
+  MstrdtReferenceData copyWithCompanion(ReferenceDataTableCompanion data) {
+    return MstrdtReferenceData(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      label: data.label.present ? data.label.value : this.label,
+      groupLabel: data.groupLabel.present
+          ? data.groupLabel.value
+          : this.groupLabel,
+      value: data.value.present ? data.value.value : this.value,
+      groupValue: data.groupValue.present
+          ? data.groupValue.value
+          : this.groupValue,
+      referenceId: data.referenceId.present
+          ? data.referenceId.value
+          : this.referenceId,
+      isHasNext: data.isHasNext.present ? data.isHasNext.value : this.isHasNext,
+      nextReferenceDataId: data.nextReferenceDataId.present
+          ? data.nextReferenceDataId.value
+          : this.nextReferenceDataId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MstrdtReferenceData(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('label: $label, ')
+          ..write('groupLabel: $groupLabel, ')
+          ..write('value: $value, ')
+          ..write('groupValue: $groupValue, ')
+          ..write('referenceId: $referenceId, ')
+          ..write('isHasNext: $isHasNext, ')
+          ..write('nextReferenceDataId: $nextReferenceDataId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    label,
+    groupLabel,
+    value,
+    groupValue,
+    referenceId,
+    isHasNext,
+    nextReferenceDataId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MstrdtReferenceData &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.label == this.label &&
+          other.groupLabel == this.groupLabel &&
+          other.value == this.value &&
+          other.groupValue == this.groupValue &&
+          other.referenceId == this.referenceId &&
+          other.isHasNext == this.isHasNext &&
+          other.nextReferenceDataId == this.nextReferenceDataId);
+}
+
+class ReferenceDataTableCompanion extends UpdateCompanion<MstrdtReferenceData> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> label;
+  final Value<String> groupLabel;
+  final Value<String> value;
+  final Value<String> groupValue;
+  final Value<String?> referenceId;
+  final Value<bool> isHasNext;
+  final Value<String?> nextReferenceDataId;
+  final Value<int> rowid;
+  const ReferenceDataTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.label = const Value.absent(),
+    this.groupLabel = const Value.absent(),
+    this.value = const Value.absent(),
+    this.groupValue = const Value.absent(),
+    this.referenceId = const Value.absent(),
+    this.isHasNext = const Value.absent(),
+    this.nextReferenceDataId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReferenceDataTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String label,
+    required String groupLabel,
+    required String value,
+    required String groupValue,
+    this.referenceId = const Value.absent(),
+    this.isHasNext = const Value.absent(),
+    this.nextReferenceDataId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       label = Value(label),
+       groupLabel = Value(groupLabel),
+       value = Value(value),
+       groupValue = Value(groupValue);
+  static Insertable<MstrdtReferenceData> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? label,
+    Expression<String>? groupLabel,
+    Expression<String>? value,
+    Expression<String>? groupValue,
+    Expression<String>? referenceId,
+    Expression<bool>? isHasNext,
+    Expression<String>? nextReferenceDataId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (label != null) 'label': label,
+      if (groupLabel != null) 'group_label': groupLabel,
+      if (value != null) 'value': value,
+      if (groupValue != null) 'group_value': groupValue,
+      if (referenceId != null) 'reference_id': referenceId,
+      if (isHasNext != null) 'is_has_next': isHasNext,
+      if (nextReferenceDataId != null)
+        'next_reference_data_id': nextReferenceDataId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReferenceDataTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<String>? label,
+    Value<String>? groupLabel,
+    Value<String>? value,
+    Value<String>? groupValue,
+    Value<String?>? referenceId,
+    Value<bool>? isHasNext,
+    Value<String?>? nextReferenceDataId,
+    Value<int>? rowid,
+  }) {
+    return ReferenceDataTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      label: label ?? this.label,
+      groupLabel: groupLabel ?? this.groupLabel,
+      value: value ?? this.value,
+      groupValue: groupValue ?? this.groupValue,
+      referenceId: referenceId ?? this.referenceId,
+      isHasNext: isHasNext ?? this.isHasNext,
+      nextReferenceDataId: nextReferenceDataId ?? this.nextReferenceDataId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (groupLabel.present) {
+      map['group_label'] = Variable<String>(groupLabel.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (groupValue.present) {
+      map['group_value'] = Variable<String>(groupValue.value);
+    }
+    if (referenceId.present) {
+      map['reference_id'] = Variable<String>(referenceId.value);
+    }
+    if (isHasNext.present) {
+      map['is_has_next'] = Variable<bool>(isHasNext.value);
+    }
+    if (nextReferenceDataId.present) {
+      map['next_reference_data_id'] = Variable<String>(
+        nextReferenceDataId.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReferenceDataTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('label: $label, ')
+          ..write('groupLabel: $groupLabel, ')
+          ..write('value: $value, ')
+          ..write('groupValue: $groupValue, ')
+          ..write('referenceId: $referenceId, ')
+          ..write('isHasNext: $isHasNext, ')
+          ..write('nextReferenceDataId: $nextReferenceDataId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $ExpenseReferenceTableTable extends ExpenseReferenceTable
     with TableInfo<$ExpenseReferenceTableTable, MstrdtExpenseReference> {
   @override
@@ -13975,6 +13330,594 @@ class ExpenseReferenceTableCompanion
           ..write('suggestedAmount: $suggestedAmount, ')
           ..write('description: $description, ')
           ..write('referenceId: $referenceId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExpenseTableTable extends ExpenseTable
+    with TableInfo<$ExpenseTableTable, ExpnsExpense> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExpenseTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
+  @override
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+    'amount',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _expenseDateMeta = const VerificationMeta(
+    'expenseDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> expenseDate = GeneratedColumn<DateTime>(
+    'expense_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _referenceDataIdMeta = const VerificationMeta(
+    'referenceDataId',
+  );
+  @override
+  late final GeneratedColumn<String> referenceDataId = GeneratedColumn<String>(
+    'reference_data_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES reference_data_table (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    amount,
+    description,
+    expenseDate,
+    referenceDataId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'expense_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExpnsExpense> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('amount')) {
+      context.handle(
+        _amountMeta,
+        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('expense_date')) {
+      context.handle(
+        _expenseDateMeta,
+        expenseDate.isAcceptableOrUnknown(
+          data['expense_date']!,
+          _expenseDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_expenseDateMeta);
+    }
+    if (data.containsKey('reference_data_id')) {
+      context.handle(
+        _referenceDataIdMeta,
+        referenceDataId.isAcceptableOrUnknown(
+          data['reference_data_id']!,
+          _referenceDataIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_referenceDataIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ExpnsExpense map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExpnsExpense(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      amount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}amount'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      expenseDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}expense_date'],
+      )!,
+      referenceDataId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reference_data_id'],
+      )!,
+    );
+  }
+
+  @override
+  $ExpenseTableTable createAlias(String alias) {
+    return $ExpenseTableTable(attachedDatabase, alias);
+  }
+}
+
+class ExpnsExpense extends DataClass implements Insertable<ExpnsExpense> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+  final double amount;
+  final String? description;
+  final DateTime expenseDate;
+  final String referenceDataId;
+  const ExpnsExpense({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.amount,
+    this.description,
+    required this.expenseDate,
+    required this.referenceDataId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['amount'] = Variable<double>(amount);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['expense_date'] = Variable<DateTime>(expenseDate);
+    map['reference_data_id'] = Variable<String>(referenceDataId);
+    return map;
+  }
+
+  ExpenseTableCompanion toCompanion(bool nullToAbsent) {
+    return ExpenseTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      amount: Value(amount),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      expenseDate: Value(expenseDate),
+      referenceDataId: Value(referenceDataId),
+    );
+  }
+
+  factory ExpnsExpense.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExpnsExpense(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      amount: serializer.fromJson<double>(json['amount']),
+      description: serializer.fromJson<String?>(json['description']),
+      expenseDate: serializer.fromJson<DateTime>(json['expenseDate']),
+      referenceDataId: serializer.fromJson<String>(json['referenceDataId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'amount': serializer.toJson<double>(amount),
+      'description': serializer.toJson<String?>(description),
+      'expenseDate': serializer.toJson<DateTime>(expenseDate),
+      'referenceDataId': serializer.toJson<String>(referenceDataId),
+    };
+  }
+
+  ExpnsExpense copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    double? amount,
+    Value<String?> description = const Value.absent(),
+    DateTime? expenseDate,
+    String? referenceDataId,
+  }) => ExpnsExpense(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    amount: amount ?? this.amount,
+    description: description.present ? description.value : this.description,
+    expenseDate: expenseDate ?? this.expenseDate,
+    referenceDataId: referenceDataId ?? this.referenceDataId,
+  );
+  ExpnsExpense copyWithCompanion(ExpenseTableCompanion data) {
+    return ExpnsExpense(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      amount: data.amount.present ? data.amount.value : this.amount,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      expenseDate: data.expenseDate.present
+          ? data.expenseDate.value
+          : this.expenseDate,
+      referenceDataId: data.referenceDataId.present
+          ? data.referenceDataId.value
+          : this.referenceDataId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpnsExpense(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('amount: $amount, ')
+          ..write('description: $description, ')
+          ..write('expenseDate: $expenseDate, ')
+          ..write('referenceDataId: $referenceDataId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    amount,
+    description,
+    expenseDate,
+    referenceDataId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExpnsExpense &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.amount == this.amount &&
+          other.description == this.description &&
+          other.expenseDate == this.expenseDate &&
+          other.referenceDataId == this.referenceDataId);
+}
+
+class ExpenseTableCompanion extends UpdateCompanion<ExpnsExpense> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<double> amount;
+  final Value<String?> description;
+  final Value<DateTime> expenseDate;
+  final Value<String> referenceDataId;
+  final Value<int> rowid;
+  const ExpenseTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.amount = const Value.absent(),
+    this.description = const Value.absent(),
+    this.expenseDate = const Value.absent(),
+    this.referenceDataId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExpenseTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required double amount,
+    this.description = const Value.absent(),
+    required DateTime expenseDate,
+    required String referenceDataId,
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       amount = Value(amount),
+       expenseDate = Value(expenseDate),
+       referenceDataId = Value(referenceDataId);
+  static Insertable<ExpnsExpense> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<double>? amount,
+    Expression<String>? description,
+    Expression<DateTime>? expenseDate,
+    Expression<String>? referenceDataId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (amount != null) 'amount': amount,
+      if (description != null) 'description': description,
+      if (expenseDate != null) 'expense_date': expenseDate,
+      if (referenceDataId != null) 'reference_data_id': referenceDataId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExpenseTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<double>? amount,
+    Value<String?>? description,
+    Value<DateTime>? expenseDate,
+    Value<String>? referenceDataId,
+    Value<int>? rowid,
+  }) {
+    return ExpenseTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      amount: amount ?? this.amount,
+      description: description ?? this.description,
+      expenseDate: expenseDate ?? this.expenseDate,
+      referenceDataId: referenceDataId ?? this.referenceDataId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (amount.present) {
+      map['amount'] = Variable<double>(amount.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (expenseDate.present) {
+      map['expense_date'] = Variable<DateTime>(expenseDate.value);
+    }
+    if (referenceDataId.present) {
+      map['reference_data_id'] = Variable<String>(referenceDataId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExpenseTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('amount: $amount, ')
+          ..write('description: $description, ')
+          ..write('expenseDate: $expenseDate, ')
+          ..write('referenceDataId: $referenceDataId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -15868,7 +15811,6 @@ class TransactionTagMapTableCompanion
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $CategoryTableTable categoryTable = $CategoryTableTable(this);
   late final $BudgetsTable budgets = $BudgetsTable(this);
   late final $BudgetPlansTable budgetPlans = $BudgetPlansTable(this);
   late final $UserTableTable userTable = $UserTableTable(this);
@@ -15877,12 +15819,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SavingTableTable savingTable = $SavingTableTable(this);
   late final $BudgetPlanDepositsTable budgetPlanDeposits =
       $BudgetPlanDepositsTable(this);
-  late final $GroupReferenceTableTable groupReferenceTable =
-      $GroupReferenceTableTable(this);
-  late final $ReferenceTableTable referenceTable = $ReferenceTableTable(this);
-  late final $ReferenceDataTableTable referenceDataTable =
-      $ReferenceDataTableTable(this);
-  late final $ExpenseTableTable expenseTable = $ExpenseTableTable(this);
+  late final $CategoryTableTable categoryTable = $CategoryTableTable(this);
   late final $CommitmentTableTable commitmentTable = $CommitmentTableTable(
     this,
   );
@@ -15902,8 +15839,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $BudgetPlanMilestonesTable(this);
   late final $ExchangeRateTableTable exchangeRateTable =
       $ExchangeRateTableTable(this);
+  late final $GroupReferenceTableTable groupReferenceTable =
+      $GroupReferenceTableTable(this);
+  late final $ReferenceTableTable referenceTable = $ReferenceTableTable(this);
+  late final $ReferenceDataTableTable referenceDataTable =
+      $ReferenceDataTableTable(this);
   late final $ExpenseReferenceTableTable expenseReferenceTable =
       $ExpenseReferenceTableTable(this);
+  late final $ExpenseTableTable expenseTable = $ExpenseTableTable(this);
   late final $RecurringTransactionTableTable recurringTransactionTable =
       $RecurringTransactionTableTable(this);
   late final $TransactionTagTableTable transactionTagTable =
@@ -15915,17 +15858,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    categoryTable,
     budgets,
     budgetPlans,
     userTable,
     moneyStorageTable,
     savingTable,
     budgetPlanDeposits,
-    groupReferenceTable,
-    referenceTable,
-    referenceDataTable,
-    expenseTable,
+    categoryTable,
     commitmentTable,
     commitmentDetailTable,
     payeeTable,
@@ -15935,499 +15874,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     budgetPlanLinkedAccounts,
     budgetPlanMilestones,
     exchangeRateTable,
+    groupReferenceTable,
+    referenceTable,
+    referenceDataTable,
     expenseReferenceTable,
+    expenseTable,
     recurringTransactionTable,
     transactionTagTable,
     transactionTagMapTable,
   ];
 }
 
-typedef $$CategoryTableTableCreateCompanionBuilder =
-    CategoryTableCompanion Function({
-      Value<String> id,
-      required String createdBy,
-      Value<DateTime> dateCreated,
-      required DateTime dateUpdated,
-      required String lastModifiedBy,
-      required String name,
-      required String iconCodePoint,
-      Value<String> iconFontFamily,
-      Value<bool> isIncome,
-      Value<bool> isExpense,
-      Value<int> orderIndex,
-      Value<bool> isActive,
-      Value<DateTime> createdAt,
-      Value<int> rowid,
-    });
-typedef $$CategoryTableTableUpdateCompanionBuilder =
-    CategoryTableCompanion Function({
-      Value<String> id,
-      Value<String> createdBy,
-      Value<DateTime> dateCreated,
-      Value<DateTime> dateUpdated,
-      Value<String> lastModifiedBy,
-      Value<String> name,
-      Value<String> iconCodePoint,
-      Value<String> iconFontFamily,
-      Value<bool> isIncome,
-      Value<bool> isExpense,
-      Value<int> orderIndex,
-      Value<bool> isActive,
-      Value<DateTime> createdAt,
-      Value<int> rowid,
-    });
-
-final class $$CategoryTableTableReferences
-    extends
-        BaseReferences<_$AppDatabase, $CategoryTableTable, TrnsctnCategory> {
-  $$CategoryTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static MultiTypedResultKey<
-    $RecurringTransactionTableTable,
-    List<RecurringTransaction>
-  >
-  _recurringTransactionTableRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.recurringTransactionTable,
-        aliasName: $_aliasNameGenerator(
-          db.categoryTable.id,
-          db.recurringTransactionTable.categoryId,
-        ),
-      );
-
-  $$RecurringTransactionTableTableProcessedTableManager
-  get recurringTransactionTableRefs {
-    final manager = $$RecurringTransactionTableTableTableManager(
-      $_db,
-      $_db.recurringTransactionTable,
-    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _recurringTransactionTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$CategoryTableTableFilterComposer
-    extends Composer<_$AppDatabase, $CategoryTableTable> {
-  $$CategoryTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get iconCodePoint => $composableBuilder(
-    column: $table.iconCodePoint,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get iconFontFamily => $composableBuilder(
-    column: $table.iconFontFamily,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isIncome => $composableBuilder(
-    column: $table.isIncome,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isExpense => $composableBuilder(
-    column: $table.isExpense,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get orderIndex => $composableBuilder(
-    column: $table.orderIndex,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isActive => $composableBuilder(
-    column: $table.isActive,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> recurringTransactionTableRefs(
-    Expression<bool> Function($$RecurringTransactionTableTableFilterComposer f)
-    f,
-  ) {
-    final $$RecurringTransactionTableTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.recurringTransactionTable,
-          getReferencedColumn: (t) => t.categoryId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$RecurringTransactionTableTableFilterComposer(
-                $db: $db,
-                $table: $db.recurringTransactionTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$CategoryTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $CategoryTableTable> {
-  $$CategoryTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get iconCodePoint => $composableBuilder(
-    column: $table.iconCodePoint,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get iconFontFamily => $composableBuilder(
-    column: $table.iconFontFamily,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isIncome => $composableBuilder(
-    column: $table.isIncome,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isExpense => $composableBuilder(
-    column: $table.isExpense,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get orderIndex => $composableBuilder(
-    column: $table.orderIndex,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isActive => $composableBuilder(
-    column: $table.isActive,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$CategoryTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $CategoryTableTable> {
-  $$CategoryTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get createdBy =>
-      $composableBuilder(column: $table.createdBy, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get iconCodePoint => $composableBuilder(
-    column: $table.iconCodePoint,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get iconFontFamily => $composableBuilder(
-    column: $table.iconFontFamily,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isIncome =>
-      $composableBuilder(column: $table.isIncome, builder: (column) => column);
-
-  GeneratedColumn<bool> get isExpense =>
-      $composableBuilder(column: $table.isExpense, builder: (column) => column);
-
-  GeneratedColumn<int> get orderIndex => $composableBuilder(
-    column: $table.orderIndex,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isActive =>
-      $composableBuilder(column: $table.isActive, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  Expression<T> recurringTransactionTableRefs<T extends Object>(
-    Expression<T> Function($$RecurringTransactionTableTableAnnotationComposer a)
-    f,
-  ) {
-    final $$RecurringTransactionTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.recurringTransactionTable,
-          getReferencedColumn: (t) => t.categoryId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$RecurringTransactionTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.recurringTransactionTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$CategoryTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $CategoryTableTable,
-          TrnsctnCategory,
-          $$CategoryTableTableFilterComposer,
-          $$CategoryTableTableOrderingComposer,
-          $$CategoryTableTableAnnotationComposer,
-          $$CategoryTableTableCreateCompanionBuilder,
-          $$CategoryTableTableUpdateCompanionBuilder,
-          (TrnsctnCategory, $$CategoryTableTableReferences),
-          TrnsctnCategory,
-          PrefetchHooks Function({bool recurringTransactionTableRefs})
-        > {
-  $$CategoryTableTableTableManager(_$AppDatabase db, $CategoryTableTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$CategoryTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$CategoryTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$CategoryTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> createdBy = const Value.absent(),
-                Value<DateTime> dateCreated = const Value.absent(),
-                Value<DateTime> dateUpdated = const Value.absent(),
-                Value<String> lastModifiedBy = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> iconCodePoint = const Value.absent(),
-                Value<String> iconFontFamily = const Value.absent(),
-                Value<bool> isIncome = const Value.absent(),
-                Value<bool> isExpense = const Value.absent(),
-                Value<int> orderIndex = const Value.absent(),
-                Value<bool> isActive = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => CategoryTableCompanion(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                name: name,
-                iconCodePoint: iconCodePoint,
-                iconFontFamily: iconFontFamily,
-                isIncome: isIncome,
-                isExpense: isExpense,
-                orderIndex: orderIndex,
-                isActive: isActive,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                required String createdBy,
-                Value<DateTime> dateCreated = const Value.absent(),
-                required DateTime dateUpdated,
-                required String lastModifiedBy,
-                required String name,
-                required String iconCodePoint,
-                Value<String> iconFontFamily = const Value.absent(),
-                Value<bool> isIncome = const Value.absent(),
-                Value<bool> isExpense = const Value.absent(),
-                Value<int> orderIndex = const Value.absent(),
-                Value<bool> isActive = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => CategoryTableCompanion.insert(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                name: name,
-                iconCodePoint: iconCodePoint,
-                iconFontFamily: iconFontFamily,
-                isIncome: isIncome,
-                isExpense: isExpense,
-                orderIndex: orderIndex,
-                isActive: isActive,
-                createdAt: createdAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$CategoryTableTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({recurringTransactionTableRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (recurringTransactionTableRefs) db.recurringTransactionTable,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (recurringTransactionTableRefs)
-                    await $_getPrefetchedData<
-                      TrnsctnCategory,
-                      $CategoryTableTable,
-                      RecurringTransaction
-                    >(
-                      currentTable: table,
-                      referencedTable: $$CategoryTableTableReferences
-                          ._recurringTransactionTableRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$CategoryTableTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).recurringTransactionTableRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.categoryId == item.id),
-                      typedResults: items,
-                    ),
-                ];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$CategoryTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $CategoryTableTable,
-      TrnsctnCategory,
-      $$CategoryTableTableFilterComposer,
-      $$CategoryTableTableOrderingComposer,
-      $$CategoryTableTableAnnotationComposer,
-      $$CategoryTableTableCreateCompanionBuilder,
-      $$CategoryTableTableUpdateCompanionBuilder,
-      (TrnsctnCategory, $$CategoryTableTableReferences),
-      TrnsctnCategory,
-      PrefetchHooks Function({bool recurringTransactionTableRefs})
-    >;
 typedef $$BudgetsTableCreateCompanionBuilder =
     BudgetsCompanion Function({
       required String id,
@@ -18832,29 +18289,6 @@ final class $$SavingTableTableReferences
     );
   }
 
-  static MultiTypedResultKey<$TransactionTableTable, List<TrnsctnTransaction>>
-  _transactionTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.transactionTable,
-    aliasName: $_aliasNameGenerator(
-      db.savingTable.id,
-      db.transactionTable.savingId,
-    ),
-  );
-
-  $$TransactionTableTableProcessedTableManager get transactionTableRefs {
-    final manager = $$TransactionTableTableTableManager(
-      $_db,
-      $_db.transactionTable,
-    ).filter((f) => f.savingId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _transactionTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
   static MultiTypedResultKey<
     $BudgetPlanLinkedAccountsTable,
     List<BudgetPlanLinkedAccount>
@@ -19135,31 +18569,6 @@ class $$SavingTableTableFilterComposer
                     $removeJoinBuilderFromRootComposer,
               ),
         );
-    return f(composer);
-  }
-
-  Expression<bool> transactionTableRefs(
-    Expression<bool> Function($$TransactionTableTableFilterComposer f) f,
-  ) {
-    final $$TransactionTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.transactionTable,
-      getReferencedColumn: (t) => t.savingId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TransactionTableTableFilterComposer(
-            $db: $db,
-            $table: $db.transactionTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
     return f(composer);
   }
 
@@ -19577,31 +18986,6 @@ class $$SavingTableTableAnnotationComposer
     return f(composer);
   }
 
-  Expression<T> transactionTableRefs<T extends Object>(
-    Expression<T> Function($$TransactionTableTableAnnotationComposer a) f,
-  ) {
-    final $$TransactionTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.transactionTable,
-      getReferencedColumn: (t) => t.savingId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TransactionTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.transactionTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<T> budgetPlanLinkedAccountsRefs<T extends Object>(
     Expression<T> Function($$BudgetPlanLinkedAccountsTableAnnotationComposer a)
     f,
@@ -19676,7 +19060,6 @@ class $$SavingTableTableTableManager
             bool budgetPlanDepositsRefs,
             bool commitmentTableRefs,
             bool commitmentDetailTableRefs,
-            bool transactionTableRefs,
             bool budgetPlanLinkedAccountsRefs,
             bool recurringTransactionTableRefs,
           })
@@ -19803,7 +19186,6 @@ class $$SavingTableTableTableManager
                 budgetPlanDepositsRefs = false,
                 commitmentTableRefs = false,
                 commitmentDetailTableRefs = false,
-                transactionTableRefs = false,
                 budgetPlanLinkedAccountsRefs = false,
                 recurringTransactionTableRefs = false,
               }) {
@@ -19813,7 +19195,6 @@ class $$SavingTableTableTableManager
                     if (budgetPlanDepositsRefs) db.budgetPlanDeposits,
                     if (commitmentTableRefs) db.commitmentTable,
                     if (commitmentDetailTableRefs) db.commitmentDetailTable,
-                    if (transactionTableRefs) db.transactionTable,
                     if (budgetPlanLinkedAccountsRefs)
                       db.budgetPlanLinkedAccounts,
                     if (recurringTransactionTableRefs)
@@ -19933,27 +19314,6 @@ class $$SavingTableTableTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (transactionTableRefs)
-                        await $_getPrefetchedData<
-                          SvngSaving,
-                          $SavingTableTable,
-                          TrnsctnTransaction
-                        >(
-                          currentTable: table,
-                          referencedTable: $$SavingTableTableReferences
-                              ._transactionTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$SavingTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).transactionTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.savingId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
                       if (budgetPlanLinkedAccountsRefs)
                         await $_getPrefetchedData<
                           SvngSaving,
@@ -20022,7 +19382,6 @@ typedef $$SavingTableTableProcessedTableManager =
         bool budgetPlanDepositsRefs,
         bool commitmentTableRefs,
         bool commitmentDetailTableRefs,
-        bool transactionTableRefs,
         bool budgetPlanLinkedAccountsRefs,
         bool recurringTransactionTableRefs,
       })
@@ -20514,1859 +19873,56 @@ typedef $$BudgetPlanDepositsTableProcessedTableManager =
       BudgetPlanDeposit,
       PrefetchHooks Function({bool planId, bool linkedAccountId})
     >;
-typedef $$GroupReferenceTableTableCreateCompanionBuilder =
-    GroupReferenceTableCompanion Function({
+typedef $$CategoryTableTableCreateCompanionBuilder =
+    CategoryTableCompanion Function({
       Value<String> id,
       required String createdBy,
       Value<DateTime> dateCreated,
       required DateTime dateUpdated,
       required String lastModifiedBy,
-      required String label,
-      required String value,
-      Value<int> rowid,
-    });
-typedef $$GroupReferenceTableTableUpdateCompanionBuilder =
-    GroupReferenceTableCompanion Function({
-      Value<String> id,
-      Value<String> createdBy,
-      Value<DateTime> dateCreated,
-      Value<DateTime> dateUpdated,
-      Value<String> lastModifiedBy,
-      Value<String> label,
-      Value<String> value,
-      Value<int> rowid,
-    });
-
-final class $$GroupReferenceTableTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $GroupReferenceTableTable,
-          MstrdtGroupReference
-        > {
-  $$GroupReferenceTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static MultiTypedResultKey<$ReferenceTableTable, List<MstrdtReference>>
-  _referenceTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.referenceTable,
-    aliasName: $_aliasNameGenerator(
-      db.groupReferenceTable.id,
-      db.referenceTable.groupId,
-    ),
-  );
-
-  $$ReferenceTableTableProcessedTableManager get referenceTableRefs {
-    final manager = $$ReferenceTableTableTableManager(
-      $_db,
-      $_db.referenceTable,
-    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_referenceTableRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$GroupReferenceTableTableFilterComposer
-    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
-  $$GroupReferenceTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get label => $composableBuilder(
-    column: $table.label,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> referenceTableRefs(
-    Expression<bool> Function($$ReferenceTableTableFilterComposer f) f,
-  ) {
-    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.referenceTable,
-      getReferencedColumn: (t) => t.groupId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceTableTableFilterComposer(
-            $db: $db,
-            $table: $db.referenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$GroupReferenceTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
-  $$GroupReferenceTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get label => $composableBuilder(
-    column: $table.label,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$GroupReferenceTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
-  $$GroupReferenceTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get createdBy =>
-      $composableBuilder(column: $table.createdBy, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get label =>
-      $composableBuilder(column: $table.label, builder: (column) => column);
-
-  GeneratedColumn<String> get value =>
-      $composableBuilder(column: $table.value, builder: (column) => column);
-
-  Expression<T> referenceTableRefs<T extends Object>(
-    Expression<T> Function($$ReferenceTableTableAnnotationComposer a) f,
-  ) {
-    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.referenceTable,
-      getReferencedColumn: (t) => t.groupId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.referenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$GroupReferenceTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $GroupReferenceTableTable,
-          MstrdtGroupReference,
-          $$GroupReferenceTableTableFilterComposer,
-          $$GroupReferenceTableTableOrderingComposer,
-          $$GroupReferenceTableTableAnnotationComposer,
-          $$GroupReferenceTableTableCreateCompanionBuilder,
-          $$GroupReferenceTableTableUpdateCompanionBuilder,
-          (MstrdtGroupReference, $$GroupReferenceTableTableReferences),
-          MstrdtGroupReference,
-          PrefetchHooks Function({bool referenceTableRefs})
-        > {
-  $$GroupReferenceTableTableTableManager(
-    _$AppDatabase db,
-    $GroupReferenceTableTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$GroupReferenceTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$GroupReferenceTableTableOrderingComposer(
-                $db: db,
-                $table: table,
-              ),
-          createComputedFieldComposer: () =>
-              $$GroupReferenceTableTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> createdBy = const Value.absent(),
-                Value<DateTime> dateCreated = const Value.absent(),
-                Value<DateTime> dateUpdated = const Value.absent(),
-                Value<String> lastModifiedBy = const Value.absent(),
-                Value<String> label = const Value.absent(),
-                Value<String> value = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => GroupReferenceTableCompanion(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                label: label,
-                value: value,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                required String createdBy,
-                Value<DateTime> dateCreated = const Value.absent(),
-                required DateTime dateUpdated,
-                required String lastModifiedBy,
-                required String label,
-                required String value,
-                Value<int> rowid = const Value.absent(),
-              }) => GroupReferenceTableCompanion.insert(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                label: label,
-                value: value,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$GroupReferenceTableTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({referenceTableRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (referenceTableRefs) db.referenceTable,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (referenceTableRefs)
-                    await $_getPrefetchedData<
-                      MstrdtGroupReference,
-                      $GroupReferenceTableTable,
-                      MstrdtReference
-                    >(
-                      currentTable: table,
-                      referencedTable: $$GroupReferenceTableTableReferences
-                          ._referenceTableRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$GroupReferenceTableTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).referenceTableRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.groupId == item.id),
-                      typedResults: items,
-                    ),
-                ];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$GroupReferenceTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $GroupReferenceTableTable,
-      MstrdtGroupReference,
-      $$GroupReferenceTableTableFilterComposer,
-      $$GroupReferenceTableTableOrderingComposer,
-      $$GroupReferenceTableTableAnnotationComposer,
-      $$GroupReferenceTableTableCreateCompanionBuilder,
-      $$GroupReferenceTableTableUpdateCompanionBuilder,
-      (MstrdtGroupReference, $$GroupReferenceTableTableReferences),
-      MstrdtGroupReference,
-      PrefetchHooks Function({bool referenceTableRefs})
-    >;
-typedef $$ReferenceTableTableCreateCompanionBuilder =
-    ReferenceTableCompanion Function({
-      Value<String> id,
-      required String createdBy,
-      Value<DateTime> dateCreated,
-      required DateTime dateUpdated,
-      required String lastModifiedBy,
-      required String label,
-      required String value,
+      required String name,
+      required String iconCodePoint,
+      Value<String> iconFontFamily,
+      Value<bool> isIncome,
+      Value<bool> isExpense,
+      Value<int> orderIndex,
       Value<bool> isActive,
-      required String belongTo,
-      required String groupId,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
-typedef $$ReferenceTableTableUpdateCompanionBuilder =
-    ReferenceTableCompanion Function({
+typedef $$CategoryTableTableUpdateCompanionBuilder =
+    CategoryTableCompanion Function({
       Value<String> id,
       Value<String> createdBy,
       Value<DateTime> dateCreated,
       Value<DateTime> dateUpdated,
       Value<String> lastModifiedBy,
-      Value<String> label,
-      Value<String> value,
+      Value<String> name,
+      Value<String> iconCodePoint,
+      Value<String> iconFontFamily,
+      Value<bool> isIncome,
+      Value<bool> isExpense,
+      Value<int> orderIndex,
       Value<bool> isActive,
-      Value<String> belongTo,
-      Value<String> groupId,
+      Value<DateTime> createdAt,
       Value<int> rowid,
     });
 
-final class $$ReferenceTableTableReferences
+final class $$CategoryTableTableReferences
     extends
-        BaseReferences<_$AppDatabase, $ReferenceTableTable, MstrdtReference> {
-  $$ReferenceTableTableReferences(
+        BaseReferences<_$AppDatabase, $CategoryTableTable, TrnsctnCategory> {
+  $$CategoryTableTableReferences(
     super.$_db,
     super.$_table,
     super.$_typedResult,
   );
-
-  static $ReferenceTableTable _belongToTable(_$AppDatabase db) =>
-      db.referenceTable.createAlias(
-        $_aliasNameGenerator(db.referenceTable.belongTo, db.referenceTable.id),
-      );
-
-  $$ReferenceTableTableProcessedTableManager get belongTo {
-    final $_column = $_itemColumn<String>('belong_to')!;
-
-    final manager = $$ReferenceTableTableTableManager(
-      $_db,
-      $_db.referenceTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_belongToTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static $GroupReferenceTableTable _groupIdTable(_$AppDatabase db) =>
-      db.groupReferenceTable.createAlias(
-        $_aliasNameGenerator(
-          db.referenceTable.groupId,
-          db.groupReferenceTable.id,
-        ),
-      );
-
-  $$GroupReferenceTableTableProcessedTableManager get groupId {
-    final $_column = $_itemColumn<String>('group_id')!;
-
-    final manager = $$GroupReferenceTableTableTableManager(
-      $_db,
-      $_db.groupReferenceTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $ReferenceDataTableTable,
-    List<MstrdtReferenceData>
-  >
-  _referenceDataTableRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.referenceDataTable,
-        aliasName: $_aliasNameGenerator(
-          db.referenceTable.id,
-          db.referenceDataTable.referenceId,
-        ),
-      );
-
-  $$ReferenceDataTableTableProcessedTableManager get referenceDataTableRefs {
-    final manager = $$ReferenceDataTableTableTableManager(
-      $_db,
-      $_db.referenceDataTable,
-    ).filter((f) => f.referenceId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _referenceDataTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<
-    $ExpenseReferenceTableTable,
-    List<MstrdtExpenseReference>
-  >
-  _expenseReferenceTableRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.expenseReferenceTable,
-        aliasName: $_aliasNameGenerator(
-          db.referenceTable.id,
-          db.expenseReferenceTable.referenceId,
-        ),
-      );
-
-  $$ExpenseReferenceTableTableProcessedTableManager
-  get expenseReferenceTableRefs {
-    final manager = $$ExpenseReferenceTableTableTableManager(
-      $_db,
-      $_db.expenseReferenceTable,
-    ).filter((f) => f.referenceId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _expenseReferenceTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$ReferenceTableTableFilterComposer
-    extends Composer<_$AppDatabase, $ReferenceTableTable> {
-  $$ReferenceTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get label => $composableBuilder(
-    column: $table.label,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isActive => $composableBuilder(
-    column: $table.isActive,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$ReferenceTableTableFilterComposer get belongTo {
-    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.belongTo,
-      referencedTable: $db.referenceTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceTableTableFilterComposer(
-            $db: $db,
-            $table: $db.referenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$GroupReferenceTableTableFilterComposer get groupId {
-    final $$GroupReferenceTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.groupId,
-      referencedTable: $db.groupReferenceTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$GroupReferenceTableTableFilterComposer(
-            $db: $db,
-            $table: $db.groupReferenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> referenceDataTableRefs(
-    Expression<bool> Function($$ReferenceDataTableTableFilterComposer f) f,
-  ) {
-    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.referenceDataTable,
-      getReferencedColumn: (t) => t.referenceId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceDataTableTableFilterComposer(
-            $db: $db,
-            $table: $db.referenceDataTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> expenseReferenceTableRefs(
-    Expression<bool> Function($$ExpenseReferenceTableTableFilterComposer f) f,
-  ) {
-    final $$ExpenseReferenceTableTableFilterComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.expenseReferenceTable,
-          getReferencedColumn: (t) => t.referenceId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$ExpenseReferenceTableTableFilterComposer(
-                $db: $db,
-                $table: $db.expenseReferenceTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$ReferenceTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $ReferenceTableTable> {
-  $$ReferenceTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get label => $composableBuilder(
-    column: $table.label,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isActive => $composableBuilder(
-    column: $table.isActive,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$ReferenceTableTableOrderingComposer get belongTo {
-    final $$ReferenceTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.belongTo,
-      referencedTable: $db.referenceTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.referenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$GroupReferenceTableTableOrderingComposer get groupId {
-    final $$GroupReferenceTableTableOrderingComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.groupId,
-          referencedTable: $db.groupReferenceTable,
-          getReferencedColumn: (t) => t.id,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$GroupReferenceTableTableOrderingComposer(
-                $db: $db,
-                $table: $db.groupReferenceTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return composer;
-  }
-}
-
-class $$ReferenceTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ReferenceTableTable> {
-  $$ReferenceTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get createdBy =>
-      $composableBuilder(column: $table.createdBy, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get label =>
-      $composableBuilder(column: $table.label, builder: (column) => column);
-
-  GeneratedColumn<String> get value =>
-      $composableBuilder(column: $table.value, builder: (column) => column);
-
-  GeneratedColumn<bool> get isActive =>
-      $composableBuilder(column: $table.isActive, builder: (column) => column);
-
-  $$ReferenceTableTableAnnotationComposer get belongTo {
-    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.belongTo,
-      referencedTable: $db.referenceTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.referenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$GroupReferenceTableTableAnnotationComposer get groupId {
-    final $$GroupReferenceTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.groupId,
-          referencedTable: $db.groupReferenceTable,
-          getReferencedColumn: (t) => t.id,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$GroupReferenceTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.groupReferenceTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return composer;
-  }
-
-  Expression<T> referenceDataTableRefs<T extends Object>(
-    Expression<T> Function($$ReferenceDataTableTableAnnotationComposer a) f,
-  ) {
-    final $$ReferenceDataTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.referenceDataTable,
-          getReferencedColumn: (t) => t.referenceId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$ReferenceDataTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.referenceDataTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> expenseReferenceTableRefs<T extends Object>(
-    Expression<T> Function($$ExpenseReferenceTableTableAnnotationComposer a) f,
-  ) {
-    final $$ExpenseReferenceTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.expenseReferenceTable,
-          getReferencedColumn: (t) => t.referenceId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$ExpenseReferenceTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.expenseReferenceTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-}
-
-class $$ReferenceTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $ReferenceTableTable,
-          MstrdtReference,
-          $$ReferenceTableTableFilterComposer,
-          $$ReferenceTableTableOrderingComposer,
-          $$ReferenceTableTableAnnotationComposer,
-          $$ReferenceTableTableCreateCompanionBuilder,
-          $$ReferenceTableTableUpdateCompanionBuilder,
-          (MstrdtReference, $$ReferenceTableTableReferences),
-          MstrdtReference,
-          PrefetchHooks Function({
-            bool belongTo,
-            bool groupId,
-            bool referenceDataTableRefs,
-            bool expenseReferenceTableRefs,
-          })
-        > {
-  $$ReferenceTableTableTableManager(
-    _$AppDatabase db,
-    $ReferenceTableTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$ReferenceTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ReferenceTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$ReferenceTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> createdBy = const Value.absent(),
-                Value<DateTime> dateCreated = const Value.absent(),
-                Value<DateTime> dateUpdated = const Value.absent(),
-                Value<String> lastModifiedBy = const Value.absent(),
-                Value<String> label = const Value.absent(),
-                Value<String> value = const Value.absent(),
-                Value<bool> isActive = const Value.absent(),
-                Value<String> belongTo = const Value.absent(),
-                Value<String> groupId = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => ReferenceTableCompanion(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                label: label,
-                value: value,
-                isActive: isActive,
-                belongTo: belongTo,
-                groupId: groupId,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                required String createdBy,
-                Value<DateTime> dateCreated = const Value.absent(),
-                required DateTime dateUpdated,
-                required String lastModifiedBy,
-                required String label,
-                required String value,
-                Value<bool> isActive = const Value.absent(),
-                required String belongTo,
-                required String groupId,
-                Value<int> rowid = const Value.absent(),
-              }) => ReferenceTableCompanion.insert(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                label: label,
-                value: value,
-                isActive: isActive,
-                belongTo: belongTo,
-                groupId: groupId,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$ReferenceTableTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({
-                belongTo = false,
-                groupId = false,
-                referenceDataTableRefs = false,
-                expenseReferenceTableRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (referenceDataTableRefs) db.referenceDataTable,
-                    if (expenseReferenceTableRefs) db.expenseReferenceTable,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (belongTo) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.belongTo,
-                                    referencedTable:
-                                        $$ReferenceTableTableReferences
-                                            ._belongToTable(db),
-                                    referencedColumn:
-                                        $$ReferenceTableTableReferences
-                                            ._belongToTable(db)
-                                            .id,
-                                  )
-                                  as T;
-                        }
-                        if (groupId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.groupId,
-                                    referencedTable:
-                                        $$ReferenceTableTableReferences
-                                            ._groupIdTable(db),
-                                    referencedColumn:
-                                        $$ReferenceTableTableReferences
-                                            ._groupIdTable(db)
-                                            .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (referenceDataTableRefs)
-                        await $_getPrefetchedData<
-                          MstrdtReference,
-                          $ReferenceTableTable,
-                          MstrdtReferenceData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$ReferenceTableTableReferences
-                              ._referenceDataTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$ReferenceTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).referenceDataTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.referenceId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (expenseReferenceTableRefs)
-                        await $_getPrefetchedData<
-                          MstrdtReference,
-                          $ReferenceTableTable,
-                          MstrdtExpenseReference
-                        >(
-                          currentTable: table,
-                          referencedTable: $$ReferenceTableTableReferences
-                              ._expenseReferenceTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$ReferenceTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).expenseReferenceTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.referenceId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$ReferenceTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $ReferenceTableTable,
-      MstrdtReference,
-      $$ReferenceTableTableFilterComposer,
-      $$ReferenceTableTableOrderingComposer,
-      $$ReferenceTableTableAnnotationComposer,
-      $$ReferenceTableTableCreateCompanionBuilder,
-      $$ReferenceTableTableUpdateCompanionBuilder,
-      (MstrdtReference, $$ReferenceTableTableReferences),
-      MstrdtReference,
-      PrefetchHooks Function({
-        bool belongTo,
-        bool groupId,
-        bool referenceDataTableRefs,
-        bool expenseReferenceTableRefs,
-      })
-    >;
-typedef $$ReferenceDataTableTableCreateCompanionBuilder =
-    ReferenceDataTableCompanion Function({
-      Value<String> id,
-      required String createdBy,
-      Value<DateTime> dateCreated,
-      required DateTime dateUpdated,
-      required String lastModifiedBy,
-      required String label,
-      required String groupLabel,
-      required String value,
-      required String groupValue,
-      Value<String?> referenceId,
-      Value<bool> isHasNext,
-      Value<String?> nextReferenceDataId,
-      Value<int> rowid,
-    });
-typedef $$ReferenceDataTableTableUpdateCompanionBuilder =
-    ReferenceDataTableCompanion Function({
-      Value<String> id,
-      Value<String> createdBy,
-      Value<DateTime> dateCreated,
-      Value<DateTime> dateUpdated,
-      Value<String> lastModifiedBy,
-      Value<String> label,
-      Value<String> groupLabel,
-      Value<String> value,
-      Value<String> groupValue,
-      Value<String?> referenceId,
-      Value<bool> isHasNext,
-      Value<String?> nextReferenceDataId,
-      Value<int> rowid,
-    });
-
-final class $$ReferenceDataTableTableReferences
-    extends
-        BaseReferences<
-          _$AppDatabase,
-          $ReferenceDataTableTable,
-          MstrdtReferenceData
-        > {
-  $$ReferenceDataTableTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $ReferenceTableTable _referenceIdTable(_$AppDatabase db) =>
-      db.referenceTable.createAlias(
-        $_aliasNameGenerator(
-          db.referenceDataTable.referenceId,
-          db.referenceTable.id,
-        ),
-      );
-
-  $$ReferenceTableTableProcessedTableManager? get referenceId {
-    final $_column = $_itemColumn<String>('reference_id');
-    if ($_column == null) return null;
-    final manager = $$ReferenceTableTableTableManager(
-      $_db,
-      $_db.referenceTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_referenceIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static $ReferenceDataTableTable _nextReferenceDataIdTable(_$AppDatabase db) =>
-      db.referenceDataTable.createAlias(
-        $_aliasNameGenerator(
-          db.referenceDataTable.nextReferenceDataId,
-          db.referenceDataTable.id,
-        ),
-      );
-
-  $$ReferenceDataTableTableProcessedTableManager? get nextReferenceDataId {
-    final $_column = $_itemColumn<String>('next_reference_data_id');
-    if ($_column == null) return null;
-    final manager = $$ReferenceDataTableTableTableManager(
-      $_db,
-      $_db.referenceDataTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_nextReferenceDataIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<$ExpenseTableTable, List<ExpnsExpense>>
-  _expenseTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.expenseTable,
-    aliasName: $_aliasNameGenerator(
-      db.referenceDataTable.id,
-      db.expenseTable.referenceDataId,
-    ),
-  );
-
-  $$ExpenseTableTableProcessedTableManager get expenseTableRefs {
-    final manager = $$ExpenseTableTableTableManager($_db, $_db.expenseTable)
-        .filter(
-          (f) => f.referenceDataId.id.sqlEquals($_itemColumn<String>('id')!),
-        );
-
-    final cache = $_typedResult.readTableOrNull(_expenseTableRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$ReferenceDataTableTableFilterComposer
-    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
-  $$ReferenceDataTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get label => $composableBuilder(
-    column: $table.label,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get groupLabel => $composableBuilder(
-    column: $table.groupLabel,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get groupValue => $composableBuilder(
-    column: $table.groupValue,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<bool> get isHasNext => $composableBuilder(
-    column: $table.isHasNext,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$ReferenceTableTableFilterComposer get referenceId {
-    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.referenceId,
-      referencedTable: $db.referenceTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceTableTableFilterComposer(
-            $db: $db,
-            $table: $db.referenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$ReferenceDataTableTableFilterComposer get nextReferenceDataId {
-    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.nextReferenceDataId,
-      referencedTable: $db.referenceDataTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceDataTableTableFilterComposer(
-            $db: $db,
-            $table: $db.referenceDataTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> expenseTableRefs(
-    Expression<bool> Function($$ExpenseTableTableFilterComposer f) f,
-  ) {
-    final $$ExpenseTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.expenseTable,
-      getReferencedColumn: (t) => t.referenceDataId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExpenseTableTableFilterComposer(
-            $db: $db,
-            $table: $db.expenseTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$ReferenceDataTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
-  $$ReferenceDataTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get label => $composableBuilder(
-    column: $table.label,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get groupLabel => $composableBuilder(
-    column: $table.groupLabel,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get groupValue => $composableBuilder(
-    column: $table.groupValue,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<bool> get isHasNext => $composableBuilder(
-    column: $table.isHasNext,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$ReferenceTableTableOrderingComposer get referenceId {
-    final $$ReferenceTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.referenceId,
-      referencedTable: $db.referenceTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.referenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$ReferenceDataTableTableOrderingComposer get nextReferenceDataId {
-    final $$ReferenceDataTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.nextReferenceDataId,
-      referencedTable: $db.referenceDataTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceDataTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.referenceDataTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$ReferenceDataTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
-  $$ReferenceDataTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get createdBy =>
-      $composableBuilder(column: $table.createdBy, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get label =>
-      $composableBuilder(column: $table.label, builder: (column) => column);
-
-  GeneratedColumn<String> get groupLabel => $composableBuilder(
-    column: $table.groupLabel,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get value =>
-      $composableBuilder(column: $table.value, builder: (column) => column);
-
-  GeneratedColumn<String> get groupValue => $composableBuilder(
-    column: $table.groupValue,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<bool> get isHasNext =>
-      $composableBuilder(column: $table.isHasNext, builder: (column) => column);
-
-  $$ReferenceTableTableAnnotationComposer get referenceId {
-    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.referenceId,
-      referencedTable: $db.referenceTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.referenceTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $$ReferenceDataTableTableAnnotationComposer get nextReferenceDataId {
-    final $$ReferenceDataTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.nextReferenceDataId,
-          referencedTable: $db.referenceDataTable,
-          getReferencedColumn: (t) => t.id,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$ReferenceDataTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.referenceDataTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return composer;
-  }
-
-  Expression<T> expenseTableRefs<T extends Object>(
-    Expression<T> Function($$ExpenseTableTableAnnotationComposer a) f,
-  ) {
-    final $$ExpenseTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.expenseTable,
-      getReferencedColumn: (t) => t.referenceDataId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ExpenseTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.expenseTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$ReferenceDataTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $ReferenceDataTableTable,
-          MstrdtReferenceData,
-          $$ReferenceDataTableTableFilterComposer,
-          $$ReferenceDataTableTableOrderingComposer,
-          $$ReferenceDataTableTableAnnotationComposer,
-          $$ReferenceDataTableTableCreateCompanionBuilder,
-          $$ReferenceDataTableTableUpdateCompanionBuilder,
-          (MstrdtReferenceData, $$ReferenceDataTableTableReferences),
-          MstrdtReferenceData,
-          PrefetchHooks Function({
-            bool referenceId,
-            bool nextReferenceDataId,
-            bool expenseTableRefs,
-          })
-        > {
-  $$ReferenceDataTableTableTableManager(
-    _$AppDatabase db,
-    $ReferenceDataTableTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$ReferenceDataTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ReferenceDataTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$ReferenceDataTableTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> createdBy = const Value.absent(),
-                Value<DateTime> dateCreated = const Value.absent(),
-                Value<DateTime> dateUpdated = const Value.absent(),
-                Value<String> lastModifiedBy = const Value.absent(),
-                Value<String> label = const Value.absent(),
-                Value<String> groupLabel = const Value.absent(),
-                Value<String> value = const Value.absent(),
-                Value<String> groupValue = const Value.absent(),
-                Value<String?> referenceId = const Value.absent(),
-                Value<bool> isHasNext = const Value.absent(),
-                Value<String?> nextReferenceDataId = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => ReferenceDataTableCompanion(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                label: label,
-                groupLabel: groupLabel,
-                value: value,
-                groupValue: groupValue,
-                referenceId: referenceId,
-                isHasNext: isHasNext,
-                nextReferenceDataId: nextReferenceDataId,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                required String createdBy,
-                Value<DateTime> dateCreated = const Value.absent(),
-                required DateTime dateUpdated,
-                required String lastModifiedBy,
-                required String label,
-                required String groupLabel,
-                required String value,
-                required String groupValue,
-                Value<String?> referenceId = const Value.absent(),
-                Value<bool> isHasNext = const Value.absent(),
-                Value<String?> nextReferenceDataId = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => ReferenceDataTableCompanion.insert(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                label: label,
-                groupLabel: groupLabel,
-                value: value,
-                groupValue: groupValue,
-                referenceId: referenceId,
-                isHasNext: isHasNext,
-                nextReferenceDataId: nextReferenceDataId,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$ReferenceDataTableTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({
-                referenceId = false,
-                nextReferenceDataId = false,
-                expenseTableRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (expenseTableRefs) db.expenseTable,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (referenceId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.referenceId,
-                                    referencedTable:
-                                        $$ReferenceDataTableTableReferences
-                                            ._referenceIdTable(db),
-                                    referencedColumn:
-                                        $$ReferenceDataTableTableReferences
-                                            ._referenceIdTable(db)
-                                            .id,
-                                  )
-                                  as T;
-                        }
-                        if (nextReferenceDataId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.nextReferenceDataId,
-                                    referencedTable:
-                                        $$ReferenceDataTableTableReferences
-                                            ._nextReferenceDataIdTable(db),
-                                    referencedColumn:
-                                        $$ReferenceDataTableTableReferences
-                                            ._nextReferenceDataIdTable(db)
-                                            .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (expenseTableRefs)
-                        await $_getPrefetchedData<
-                          MstrdtReferenceData,
-                          $ReferenceDataTableTable,
-                          ExpnsExpense
-                        >(
-                          currentTable: table,
-                          referencedTable: $$ReferenceDataTableTableReferences
-                              ._expenseTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$ReferenceDataTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).expenseTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.referenceDataId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$ReferenceDataTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $ReferenceDataTableTable,
-      MstrdtReferenceData,
-      $$ReferenceDataTableTableFilterComposer,
-      $$ReferenceDataTableTableOrderingComposer,
-      $$ReferenceDataTableTableAnnotationComposer,
-      $$ReferenceDataTableTableCreateCompanionBuilder,
-      $$ReferenceDataTableTableUpdateCompanionBuilder,
-      (MstrdtReferenceData, $$ReferenceDataTableTableReferences),
-      MstrdtReferenceData,
-      PrefetchHooks Function({
-        bool referenceId,
-        bool nextReferenceDataId,
-        bool expenseTableRefs,
-      })
-    >;
-typedef $$ExpenseTableTableCreateCompanionBuilder =
-    ExpenseTableCompanion Function({
-      Value<String> id,
-      required String createdBy,
-      Value<DateTime> dateCreated,
-      required DateTime dateUpdated,
-      required String lastModifiedBy,
-      required double amount,
-      Value<String?> description,
-      required DateTime expenseDate,
-      required String referenceDataId,
-      Value<int> rowid,
-    });
-typedef $$ExpenseTableTableUpdateCompanionBuilder =
-    ExpenseTableCompanion Function({
-      Value<String> id,
-      Value<String> createdBy,
-      Value<DateTime> dateCreated,
-      Value<DateTime> dateUpdated,
-      Value<String> lastModifiedBy,
-      Value<double> amount,
-      Value<String?> description,
-      Value<DateTime> expenseDate,
-      Value<String> referenceDataId,
-      Value<int> rowid,
-    });
-
-final class $$ExpenseTableTableReferences
-    extends BaseReferences<_$AppDatabase, $ExpenseTableTable, ExpnsExpense> {
-  $$ExpenseTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $ReferenceDataTableTable _referenceDataIdTable(_$AppDatabase db) =>
-      db.referenceDataTable.createAlias(
-        $_aliasNameGenerator(
-          db.expenseTable.referenceDataId,
-          db.referenceDataTable.id,
-        ),
-      );
-
-  $$ReferenceDataTableTableProcessedTableManager get referenceDataId {
-    final $_column = $_itemColumn<String>('reference_data_id')!;
-
-    final manager = $$ReferenceDataTableTableTableManager(
-      $_db,
-      $_db.referenceDataTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_referenceDataIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
 
   static MultiTypedResultKey<$TransactionTableTable, List<TrnsctnTransaction>>
   _transactionTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.transactionTable,
     aliasName: $_aliasNameGenerator(
-      db.expenseTable.id,
-      db.transactionTable.expenseId,
+      db.categoryTable.id,
+      db.transactionTable.categoryId,
     ),
   );
 
@@ -22374,7 +19930,7 @@ final class $$ExpenseTableTableReferences
     final manager = $$TransactionTableTableTableManager(
       $_db,
       $_db.transactionTable,
-    ).filter((f) => f.expenseId.id.sqlEquals($_itemColumn<String>('id')!));
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(
       _transactionTableRefsTable($_db),
@@ -22383,11 +19939,39 @@ final class $$ExpenseTableTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<
+    $RecurringTransactionTableTable,
+    List<RecurringTransaction>
+  >
+  _recurringTransactionTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.recurringTransactionTable,
+        aliasName: $_aliasNameGenerator(
+          db.categoryTable.id,
+          db.recurringTransactionTable.categoryId,
+        ),
+      );
+
+  $$RecurringTransactionTableTableProcessedTableManager
+  get recurringTransactionTableRefs {
+    final manager = $$RecurringTransactionTableTableTableManager(
+      $_db,
+      $_db.recurringTransactionTable,
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _recurringTransactionTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
-class $$ExpenseTableTableFilterComposer
-    extends Composer<_$AppDatabase, $ExpenseTableTable> {
-  $$ExpenseTableTableFilterComposer({
+class $$CategoryTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CategoryTableTable> {
+  $$CategoryTableTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -22419,43 +20003,45 @@ class $$ExpenseTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get amount => $composableBuilder(
-    column: $table.amount,
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get description => $composableBuilder(
-    column: $table.description,
+  ColumnFilters<String> get iconCodePoint => $composableBuilder(
+    column: $table.iconCodePoint,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get expenseDate => $composableBuilder(
-    column: $table.expenseDate,
+  ColumnFilters<String> get iconFontFamily => $composableBuilder(
+    column: $table.iconFontFamily,
     builder: (column) => ColumnFilters(column),
   );
 
-  $$ReferenceDataTableTableFilterComposer get referenceDataId {
-    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.referenceDataId,
-      referencedTable: $db.referenceDataTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceDataTableTableFilterComposer(
-            $db: $db,
-            $table: $db.referenceDataTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<bool> get isIncome => $composableBuilder(
+    column: $table.isIncome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isExpense => $composableBuilder(
+    column: $table.isExpense,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
 
   Expression<bool> transactionTableRefs(
     Expression<bool> Function($$TransactionTableTableFilterComposer f) f,
@@ -22464,7 +20050,7 @@ class $$ExpenseTableTableFilterComposer
       composer: this,
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.transactionTable,
-      getReferencedColumn: (t) => t.expenseId,
+      getReferencedColumn: (t) => t.categoryId,
       builder:
           (
             joinBuilder, {
@@ -22481,11 +20067,38 @@ class $$ExpenseTableTableFilterComposer
     );
     return f(composer);
   }
+
+  Expression<bool> recurringTransactionTableRefs(
+    Expression<bool> Function($$RecurringTransactionTableTableFilterComposer f)
+    f,
+  ) {
+    final $$RecurringTransactionTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.recurringTransactionTable,
+          getReferencedColumn: (t) => t.categoryId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RecurringTransactionTableTableFilterComposer(
+                $db: $db,
+                $table: $db.recurringTransactionTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
-class $$ExpenseTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $ExpenseTableTable> {
-  $$ExpenseTableTableOrderingComposer({
+class $$CategoryTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CategoryTableTable> {
+  $$CategoryTableTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -22517,48 +20130,50 @@ class $$ExpenseTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get amount => $composableBuilder(
-    column: $table.amount,
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get description => $composableBuilder(
-    column: $table.description,
+  ColumnOrderings<String> get iconCodePoint => $composableBuilder(
+    column: $table.iconCodePoint,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get expenseDate => $composableBuilder(
-    column: $table.expenseDate,
+  ColumnOrderings<String> get iconFontFamily => $composableBuilder(
+    column: $table.iconFontFamily,
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$ReferenceDataTableTableOrderingComposer get referenceDataId {
-    final $$ReferenceDataTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.referenceDataId,
-      referencedTable: $db.referenceDataTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$ReferenceDataTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.referenceDataTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<bool> get isIncome => $composableBuilder(
+    column: $table.isIncome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isExpense => $composableBuilder(
+    column: $table.isExpense,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
-class $$ExpenseTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ExpenseTableTable> {
-  $$ExpenseTableTableAnnotationComposer({
+class $$CategoryTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CategoryTableTable> {
+  $$CategoryTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -22586,42 +20201,35 @@ class $$ExpenseTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<double> get amount =>
-      $composableBuilder(column: $table.amount, builder: (column) => column);
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get description => $composableBuilder(
-    column: $table.description,
+  GeneratedColumn<String> get iconCodePoint => $composableBuilder(
+    column: $table.iconCodePoint,
     builder: (column) => column,
   );
 
-  GeneratedColumn<DateTime> get expenseDate => $composableBuilder(
-    column: $table.expenseDate,
+  GeneratedColumn<String> get iconFontFamily => $composableBuilder(
+    column: $table.iconFontFamily,
     builder: (column) => column,
   );
 
-  $$ReferenceDataTableTableAnnotationComposer get referenceDataId {
-    final $$ReferenceDataTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.referenceDataId,
-          referencedTable: $db.referenceDataTable,
-          getReferencedColumn: (t) => t.id,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$ReferenceDataTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.referenceDataTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return composer;
-  }
+  GeneratedColumn<bool> get isIncome =>
+      $composableBuilder(column: $table.isIncome, builder: (column) => column);
+
+  GeneratedColumn<bool> get isExpense =>
+      $composableBuilder(column: $table.isExpense, builder: (column) => column);
+
+  GeneratedColumn<int> get orderIndex => $composableBuilder(
+    column: $table.orderIndex,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   Expression<T> transactionTableRefs<T extends Object>(
     Expression<T> Function($$TransactionTableTableAnnotationComposer a) f,
@@ -22630,7 +20238,7 @@ class $$ExpenseTableTableAnnotationComposer
       composer: this,
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.transactionTable,
-      getReferencedColumn: (t) => t.expenseId,
+      getReferencedColumn: (t) => t.categoryId,
       builder:
           (
             joinBuilder, {
@@ -22647,37 +20255,64 @@ class $$ExpenseTableTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> recurringTransactionTableRefs<T extends Object>(
+    Expression<T> Function($$RecurringTransactionTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$RecurringTransactionTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.recurringTransactionTable,
+          getReferencedColumn: (t) => t.categoryId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RecurringTransactionTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.recurringTransactionTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
-class $$ExpenseTableTableTableManager
+class $$CategoryTableTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $ExpenseTableTable,
-          ExpnsExpense,
-          $$ExpenseTableTableFilterComposer,
-          $$ExpenseTableTableOrderingComposer,
-          $$ExpenseTableTableAnnotationComposer,
-          $$ExpenseTableTableCreateCompanionBuilder,
-          $$ExpenseTableTableUpdateCompanionBuilder,
-          (ExpnsExpense, $$ExpenseTableTableReferences),
-          ExpnsExpense,
+          $CategoryTableTable,
+          TrnsctnCategory,
+          $$CategoryTableTableFilterComposer,
+          $$CategoryTableTableOrderingComposer,
+          $$CategoryTableTableAnnotationComposer,
+          $$CategoryTableTableCreateCompanionBuilder,
+          $$CategoryTableTableUpdateCompanionBuilder,
+          (TrnsctnCategory, $$CategoryTableTableReferences),
+          TrnsctnCategory,
           PrefetchHooks Function({
-            bool referenceDataId,
             bool transactionTableRefs,
+            bool recurringTransactionTableRefs,
           })
         > {
-  $$ExpenseTableTableTableManager(_$AppDatabase db, $ExpenseTableTable table)
+  $$CategoryTableTableTableManager(_$AppDatabase db, $CategoryTableTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$ExpenseTableTableFilterComposer($db: db, $table: table),
+              $$CategoryTableTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$ExpenseTableTableOrderingComposer($db: db, $table: table),
+              $$CategoryTableTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$ExpenseTableTableAnnotationComposer($db: db, $table: table),
+              $$CategoryTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -22685,21 +20320,29 @@ class $$ExpenseTableTableTableManager
                 Value<DateTime> dateCreated = const Value.absent(),
                 Value<DateTime> dateUpdated = const Value.absent(),
                 Value<String> lastModifiedBy = const Value.absent(),
-                Value<double> amount = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<DateTime> expenseDate = const Value.absent(),
-                Value<String> referenceDataId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> iconCodePoint = const Value.absent(),
+                Value<String> iconFontFamily = const Value.absent(),
+                Value<bool> isIncome = const Value.absent(),
+                Value<bool> isExpense = const Value.absent(),
+                Value<int> orderIndex = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ExpenseTableCompanion(
+              }) => CategoryTableCompanion(
                 id: id,
                 createdBy: createdBy,
                 dateCreated: dateCreated,
                 dateUpdated: dateUpdated,
                 lastModifiedBy: lastModifiedBy,
-                amount: amount,
-                description: description,
-                expenseDate: expenseDate,
-                referenceDataId: referenceDataId,
+                name: name,
+                iconCodePoint: iconCodePoint,
+                iconFontFamily: iconFontFamily,
+                isIncome: isIncome,
+                isExpense: isExpense,
+                orderIndex: orderIndex,
+                isActive: isActive,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -22709,92 +20352,93 @@ class $$ExpenseTableTableTableManager
                 Value<DateTime> dateCreated = const Value.absent(),
                 required DateTime dateUpdated,
                 required String lastModifiedBy,
-                required double amount,
-                Value<String?> description = const Value.absent(),
-                required DateTime expenseDate,
-                required String referenceDataId,
+                required String name,
+                required String iconCodePoint,
+                Value<String> iconFontFamily = const Value.absent(),
+                Value<bool> isIncome = const Value.absent(),
+                Value<bool> isExpense = const Value.absent(),
+                Value<int> orderIndex = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ExpenseTableCompanion.insert(
+              }) => CategoryTableCompanion.insert(
                 id: id,
                 createdBy: createdBy,
                 dateCreated: dateCreated,
                 dateUpdated: dateUpdated,
                 lastModifiedBy: lastModifiedBy,
-                amount: amount,
-                description: description,
-                expenseDate: expenseDate,
-                referenceDataId: referenceDataId,
+                name: name,
+                iconCodePoint: iconCodePoint,
+                iconFontFamily: iconFontFamily,
+                isIncome: isIncome,
+                isExpense: isExpense,
+                orderIndex: orderIndex,
+                isActive: isActive,
+                createdAt: createdAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
                   e.readTable(table),
-                  $$ExpenseTableTableReferences(db, table, e),
+                  $$CategoryTableTableReferences(db, table, e),
                 ),
               )
               .toList(),
           prefetchHooksCallback:
-              ({referenceDataId = false, transactionTableRefs = false}) {
+              ({
+                transactionTableRefs = false,
+                recurringTransactionTableRefs = false,
+              }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (transactionTableRefs) db.transactionTable,
+                    if (recurringTransactionTableRefs)
+                      db.recurringTransactionTable,
                   ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (referenceDataId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.referenceDataId,
-                                    referencedTable:
-                                        $$ExpenseTableTableReferences
-                                            ._referenceDataIdTable(db),
-                                    referencedColumn:
-                                        $$ExpenseTableTableReferences
-                                            ._referenceDataIdTable(db)
-                                            .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
+                  addJoins: null,
                   getPrefetchedDataCallback: (items) async {
                     return [
                       if (transactionTableRefs)
                         await $_getPrefetchedData<
-                          ExpnsExpense,
-                          $ExpenseTableTable,
+                          TrnsctnCategory,
+                          $CategoryTableTable,
                           TrnsctnTransaction
                         >(
                           currentTable: table,
-                          referencedTable: $$ExpenseTableTableReferences
+                          referencedTable: $$CategoryTableTableReferences
                               ._transactionTableRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $$ExpenseTableTableReferences(
+                              $$CategoryTableTableReferences(
                                 db,
                                 table,
                                 p0,
                               ).transactionTableRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
-                                (e) => e.expenseId == item.id,
+                                (e) => e.categoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (recurringTransactionTableRefs)
+                        await $_getPrefetchedData<
+                          TrnsctnCategory,
+                          $CategoryTableTable,
+                          RecurringTransaction
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CategoryTableTableReferences
+                              ._recurringTransactionTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CategoryTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).recurringTransactionTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.categoryId == item.id,
                               ),
                           typedResults: items,
                         ),
@@ -22806,19 +20450,22 @@ class $$ExpenseTableTableTableManager
       );
 }
 
-typedef $$ExpenseTableTableProcessedTableManager =
+typedef $$CategoryTableTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $ExpenseTableTable,
-      ExpnsExpense,
-      $$ExpenseTableTableFilterComposer,
-      $$ExpenseTableTableOrderingComposer,
-      $$ExpenseTableTableAnnotationComposer,
-      $$ExpenseTableTableCreateCompanionBuilder,
-      $$ExpenseTableTableUpdateCompanionBuilder,
-      (ExpnsExpense, $$ExpenseTableTableReferences),
-      ExpnsExpense,
-      PrefetchHooks Function({bool referenceDataId, bool transactionTableRefs})
+      $CategoryTableTable,
+      TrnsctnCategory,
+      $$CategoryTableTableFilterComposer,
+      $$CategoryTableTableOrderingComposer,
+      $$CategoryTableTableAnnotationComposer,
+      $$CategoryTableTableCreateCompanionBuilder,
+      $$CategoryTableTableUpdateCompanionBuilder,
+      (TrnsctnCategory, $$CategoryTableTableReferences),
+      TrnsctnCategory,
+      PrefetchHooks Function({
+        bool transactionTableRefs,
+        bool recurringTransactionTableRefs,
+      })
     >;
 typedef $$CommitmentTableTableCreateCompanionBuilder =
     CommitmentTableCompanion Function({
@@ -25796,11 +23443,10 @@ typedef $$TransactionTableTableCreateCompanionBuilder =
       Value<String> description,
       required double amount,
       required String savingId,
-      Value<String?> expenseId,
+      Value<String?> destinationSavingId,
+      Value<String?> categoryId,
       Value<String?> commitmentTaskId,
       Value<String?> payeeId,
-      Value<String?> transferGroupId,
-      Value<String?> transferType,
       Value<DateTime?> transactionDateTime,
       Value<String?> note,
       Value<int> rowid,
@@ -25816,11 +23462,10 @@ typedef $$TransactionTableTableUpdateCompanionBuilder =
       Value<String> description,
       Value<double> amount,
       Value<String> savingId,
-      Value<String?> expenseId,
+      Value<String?> destinationSavingId,
+      Value<String?> categoryId,
       Value<String?> commitmentTaskId,
       Value<String?> payeeId,
-      Value<String?> transferGroupId,
-      Value<String?> transferType,
       Value<DateTime?> transactionDateTime,
       Value<String?> note,
       Value<int> rowid,
@@ -25858,19 +23503,44 @@ final class $$TransactionTableTableReferences
     );
   }
 
-  static $ExpenseTableTable _expenseIdTable(_$AppDatabase db) =>
-      db.expenseTable.createAlias(
-        $_aliasNameGenerator(db.transactionTable.expenseId, db.expenseTable.id),
+  static $SavingTableTable _destinationSavingIdTable(_$AppDatabase db) =>
+      db.savingTable.createAlias(
+        $_aliasNameGenerator(
+          db.transactionTable.destinationSavingId,
+          db.savingTable.id,
+        ),
       );
 
-  $$ExpenseTableTableProcessedTableManager? get expenseId {
-    final $_column = $_itemColumn<String>('expense_id');
+  $$SavingTableTableProcessedTableManager? get destinationSavingId {
+    final $_column = $_itemColumn<String>('destination_saving_id');
     if ($_column == null) return null;
-    final manager = $$ExpenseTableTableTableManager(
+    final manager = $$SavingTableTableTableManager(
       $_db,
-      $_db.expenseTable,
+      $_db.savingTable,
     ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_expenseIdTable($_db));
+    final item = $_typedResult.readTableOrNull(_destinationSavingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CategoryTableTable _categoryIdTable(_$AppDatabase db) =>
+      db.categoryTable.createAlias(
+        $_aliasNameGenerator(
+          db.transactionTable.categoryId,
+          db.categoryTable.id,
+        ),
+      );
+
+  $$CategoryTableTableProcessedTableManager? get categoryId {
+    final $_column = $_itemColumn<String>('category_id');
+    if ($_column == null) return null;
+    final manager = $$CategoryTableTableTableManager(
+      $_db,
+      $_db.categoryTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -26025,16 +23695,6 @@ class $$TransactionTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get transferGroupId => $composableBuilder(
-    column: $table.transferGroupId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get transferType => $composableBuilder(
-    column: $table.transferType,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<DateTime> get transactionDateTime => $composableBuilder(
     column: $table.transactionDateTime,
     builder: (column) => ColumnFilters(column),
@@ -26068,20 +23728,43 @@ class $$TransactionTableTableFilterComposer
     return composer;
   }
 
-  $$ExpenseTableTableFilterComposer get expenseId {
-    final $$ExpenseTableTableFilterComposer composer = $composerBuilder(
+  $$SavingTableTableFilterComposer get destinationSavingId {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.expenseId,
-      referencedTable: $db.expenseTable,
+      getCurrentColumn: (t) => t.destinationSavingId,
+      referencedTable: $db.savingTable,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ExpenseTableTableFilterComposer(
+          }) => $$SavingTableTableFilterComposer(
             $db: $db,
-            $table: $db.expenseTable,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoryTableTableFilterComposer get categoryId {
+    final $$CategoryTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryTableTableFilterComposer(
+            $db: $db,
+            $table: $db.categoryTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -26239,16 +23922,6 @@ class $$TransactionTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get transferGroupId => $composableBuilder(
-    column: $table.transferGroupId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get transferType => $composableBuilder(
-    column: $table.transferType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<DateTime> get transactionDateTime => $composableBuilder(
     column: $table.transactionDateTime,
     builder: (column) => ColumnOrderings(column),
@@ -26282,20 +23955,43 @@ class $$TransactionTableTableOrderingComposer
     return composer;
   }
 
-  $$ExpenseTableTableOrderingComposer get expenseId {
-    final $$ExpenseTableTableOrderingComposer composer = $composerBuilder(
+  $$SavingTableTableOrderingComposer get destinationSavingId {
+    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.expenseId,
-      referencedTable: $db.expenseTable,
+      getCurrentColumn: (t) => t.destinationSavingId,
+      referencedTable: $db.savingTable,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ExpenseTableTableOrderingComposer(
+          }) => $$SavingTableTableOrderingComposer(
             $db: $db,
-            $table: $db.expenseTable,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoryTableTableOrderingComposer get categoryId {
+    final $$CategoryTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.categoryTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -26394,16 +24090,6 @@ class $$TransactionTableTableAnnotationComposer
   GeneratedColumn<double> get amount =>
       $composableBuilder(column: $table.amount, builder: (column) => column);
 
-  GeneratedColumn<String> get transferGroupId => $composableBuilder(
-    column: $table.transferGroupId,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get transferType => $composableBuilder(
-    column: $table.transferType,
-    builder: (column) => column,
-  );
-
   GeneratedColumn<DateTime> get transactionDateTime => $composableBuilder(
     column: $table.transactionDateTime,
     builder: (column) => column,
@@ -26435,20 +24121,43 @@ class $$TransactionTableTableAnnotationComposer
     return composer;
   }
 
-  $$ExpenseTableTableAnnotationComposer get expenseId {
-    final $$ExpenseTableTableAnnotationComposer composer = $composerBuilder(
+  $$SavingTableTableAnnotationComposer get destinationSavingId {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.expenseId,
-      referencedTable: $db.expenseTable,
+      getCurrentColumn: (t) => t.destinationSavingId,
+      referencedTable: $db.savingTable,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $$ExpenseTableTableAnnotationComposer(
+          }) => $$SavingTableTableAnnotationComposer(
             $db: $db,
-            $table: $db.expenseTable,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoryTableTableAnnotationComposer get categoryId {
+    final $$CategoryTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.categoryTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -26573,7 +24282,8 @@ class $$TransactionTableTableTableManager
           TrnsctnTransaction,
           PrefetchHooks Function({
             bool savingId,
-            bool expenseId,
+            bool destinationSavingId,
+            bool categoryId,
             bool commitmentTaskId,
             bool payeeId,
             bool budgetPlanTransactionsRefs,
@@ -26604,11 +24314,10 @@ class $$TransactionTableTableTableManager
                 Value<String> description = const Value.absent(),
                 Value<double> amount = const Value.absent(),
                 Value<String> savingId = const Value.absent(),
-                Value<String?> expenseId = const Value.absent(),
+                Value<String?> destinationSavingId = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
                 Value<String?> commitmentTaskId = const Value.absent(),
                 Value<String?> payeeId = const Value.absent(),
-                Value<String?> transferGroupId = const Value.absent(),
-                Value<String?> transferType = const Value.absent(),
                 Value<DateTime?> transactionDateTime = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -26622,11 +24331,10 @@ class $$TransactionTableTableTableManager
                 description: description,
                 amount: amount,
                 savingId: savingId,
-                expenseId: expenseId,
+                destinationSavingId: destinationSavingId,
+                categoryId: categoryId,
                 commitmentTaskId: commitmentTaskId,
                 payeeId: payeeId,
-                transferGroupId: transferGroupId,
-                transferType: transferType,
                 transactionDateTime: transactionDateTime,
                 note: note,
                 rowid: rowid,
@@ -26642,11 +24350,10 @@ class $$TransactionTableTableTableManager
                 Value<String> description = const Value.absent(),
                 required double amount,
                 required String savingId,
-                Value<String?> expenseId = const Value.absent(),
+                Value<String?> destinationSavingId = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
                 Value<String?> commitmentTaskId = const Value.absent(),
                 Value<String?> payeeId = const Value.absent(),
-                Value<String?> transferGroupId = const Value.absent(),
-                Value<String?> transferType = const Value.absent(),
                 Value<DateTime?> transactionDateTime = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -26660,11 +24367,10 @@ class $$TransactionTableTableTableManager
                 description: description,
                 amount: amount,
                 savingId: savingId,
-                expenseId: expenseId,
+                destinationSavingId: destinationSavingId,
+                categoryId: categoryId,
                 commitmentTaskId: commitmentTaskId,
                 payeeId: payeeId,
-                transferGroupId: transferGroupId,
-                transferType: transferType,
                 transactionDateTime: transactionDateTime,
                 note: note,
                 rowid: rowid,
@@ -26680,7 +24386,8 @@ class $$TransactionTableTableTableManager
           prefetchHooksCallback:
               ({
                 savingId = false,
-                expenseId = false,
+                destinationSavingId = false,
+                categoryId = false,
                 commitmentTaskId = false,
                 payeeId = false,
                 budgetPlanTransactionsRefs = false,
@@ -26723,17 +24430,32 @@ class $$TransactionTableTableTableManager
                                   )
                                   as T;
                         }
-                        if (expenseId) {
+                        if (destinationSavingId) {
                           state =
                               state.withJoin(
                                     currentTable: table,
-                                    currentColumn: table.expenseId,
+                                    currentColumn: table.destinationSavingId,
                                     referencedTable:
                                         $$TransactionTableTableReferences
-                                            ._expenseIdTable(db),
+                                            ._destinationSavingIdTable(db),
                                     referencedColumn:
                                         $$TransactionTableTableReferences
-                                            ._expenseIdTable(db)
+                                            ._destinationSavingIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (categoryId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.categoryId,
+                                    referencedTable:
+                                        $$TransactionTableTableReferences
+                                            ._categoryIdTable(db),
+                                    referencedColumn:
+                                        $$TransactionTableTableReferences
+                                            ._categoryIdTable(db)
                                             .id,
                                   )
                                   as T;
@@ -26837,7 +24559,8 @@ typedef $$TransactionTableTableProcessedTableManager =
       TrnsctnTransaction,
       PrefetchHooks Function({
         bool savingId,
-        bool expenseId,
+        bool destinationSavingId,
+        bool categoryId,
         bool commitmentTaskId,
         bool payeeId,
         bool budgetPlanTransactionsRefs,
@@ -28479,6 +26202,1800 @@ typedef $$ExchangeRateTableTableProcessedTableManager =
       ExchangeRate,
       PrefetchHooks Function()
     >;
+typedef $$GroupReferenceTableTableCreateCompanionBuilder =
+    GroupReferenceTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required String label,
+      required String value,
+      Value<int> rowid,
+    });
+typedef $$GroupReferenceTableTableUpdateCompanionBuilder =
+    GroupReferenceTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<String> label,
+      Value<String> value,
+      Value<int> rowid,
+    });
+
+final class $$GroupReferenceTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $GroupReferenceTableTable,
+          MstrdtGroupReference
+        > {
+  $$GroupReferenceTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$ReferenceTableTable, List<MstrdtReference>>
+  _referenceTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.referenceTable,
+    aliasName: $_aliasNameGenerator(
+      db.groupReferenceTable.id,
+      db.referenceTable.groupId,
+    ),
+  );
+
+  $$ReferenceTableTableProcessedTableManager get referenceTableRefs {
+    final manager = $$ReferenceTableTableTableManager(
+      $_db,
+      $_db.referenceTable,
+    ).filter((f) => f.groupId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_referenceTableRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$GroupReferenceTableTableFilterComposer
+    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
+  $$GroupReferenceTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> referenceTableRefs(
+    Expression<bool> Function($$ReferenceTableTableFilterComposer f) f,
+  ) {
+    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.referenceTable,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceTableTableFilterComposer(
+            $db: $db,
+            $table: $db.referenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$GroupReferenceTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
+  $$GroupReferenceTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GroupReferenceTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GroupReferenceTableTable> {
+  $$GroupReferenceTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  Expression<T> referenceTableRefs<T extends Object>(
+    Expression<T> Function($$ReferenceTableTableAnnotationComposer a) f,
+  ) {
+    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.referenceTable,
+      getReferencedColumn: (t) => t.groupId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.referenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$GroupReferenceTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GroupReferenceTableTable,
+          MstrdtGroupReference,
+          $$GroupReferenceTableTableFilterComposer,
+          $$GroupReferenceTableTableOrderingComposer,
+          $$GroupReferenceTableTableAnnotationComposer,
+          $$GroupReferenceTableTableCreateCompanionBuilder,
+          $$GroupReferenceTableTableUpdateCompanionBuilder,
+          (MstrdtGroupReference, $$GroupReferenceTableTableReferences),
+          MstrdtGroupReference,
+          PrefetchHooks Function({bool referenceTableRefs})
+        > {
+  $$GroupReferenceTableTableTableManager(
+    _$AppDatabase db,
+    $GroupReferenceTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GroupReferenceTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GroupReferenceTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$GroupReferenceTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GroupReferenceTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                label: label,
+                value: value,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required String label,
+                required String value,
+                Value<int> rowid = const Value.absent(),
+              }) => GroupReferenceTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                label: label,
+                value: value,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$GroupReferenceTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({referenceTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (referenceTableRefs) db.referenceTable,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (referenceTableRefs)
+                    await $_getPrefetchedData<
+                      MstrdtGroupReference,
+                      $GroupReferenceTableTable,
+                      MstrdtReference
+                    >(
+                      currentTable: table,
+                      referencedTable: $$GroupReferenceTableTableReferences
+                          ._referenceTableRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$GroupReferenceTableTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).referenceTableRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.groupId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$GroupReferenceTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GroupReferenceTableTable,
+      MstrdtGroupReference,
+      $$GroupReferenceTableTableFilterComposer,
+      $$GroupReferenceTableTableOrderingComposer,
+      $$GroupReferenceTableTableAnnotationComposer,
+      $$GroupReferenceTableTableCreateCompanionBuilder,
+      $$GroupReferenceTableTableUpdateCompanionBuilder,
+      (MstrdtGroupReference, $$GroupReferenceTableTableReferences),
+      MstrdtGroupReference,
+      PrefetchHooks Function({bool referenceTableRefs})
+    >;
+typedef $$ReferenceTableTableCreateCompanionBuilder =
+    ReferenceTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required String label,
+      required String value,
+      Value<bool> isActive,
+      required String belongTo,
+      required String groupId,
+      Value<int> rowid,
+    });
+typedef $$ReferenceTableTableUpdateCompanionBuilder =
+    ReferenceTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<String> label,
+      Value<String> value,
+      Value<bool> isActive,
+      Value<String> belongTo,
+      Value<String> groupId,
+      Value<int> rowid,
+    });
+
+final class $$ReferenceTableTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $ReferenceTableTable, MstrdtReference> {
+  $$ReferenceTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ReferenceTableTable _belongToTable(_$AppDatabase db) =>
+      db.referenceTable.createAlias(
+        $_aliasNameGenerator(db.referenceTable.belongTo, db.referenceTable.id),
+      );
+
+  $$ReferenceTableTableProcessedTableManager get belongTo {
+    final $_column = $_itemColumn<String>('belong_to')!;
+
+    final manager = $$ReferenceTableTableTableManager(
+      $_db,
+      $_db.referenceTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_belongToTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $GroupReferenceTableTable _groupIdTable(_$AppDatabase db) =>
+      db.groupReferenceTable.createAlias(
+        $_aliasNameGenerator(
+          db.referenceTable.groupId,
+          db.groupReferenceTable.id,
+        ),
+      );
+
+  $$GroupReferenceTableTableProcessedTableManager get groupId {
+    final $_column = $_itemColumn<String>('group_id')!;
+
+    final manager = $$GroupReferenceTableTableTableManager(
+      $_db,
+      $_db.groupReferenceTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_groupIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $ReferenceDataTableTable,
+    List<MstrdtReferenceData>
+  >
+  _referenceDataTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.referenceDataTable,
+        aliasName: $_aliasNameGenerator(
+          db.referenceTable.id,
+          db.referenceDataTable.referenceId,
+        ),
+      );
+
+  $$ReferenceDataTableTableProcessedTableManager get referenceDataTableRefs {
+    final manager = $$ReferenceDataTableTableTableManager(
+      $_db,
+      $_db.referenceDataTable,
+    ).filter((f) => f.referenceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _referenceDataTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $ExpenseReferenceTableTable,
+    List<MstrdtExpenseReference>
+  >
+  _expenseReferenceTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.expenseReferenceTable,
+        aliasName: $_aliasNameGenerator(
+          db.referenceTable.id,
+          db.expenseReferenceTable.referenceId,
+        ),
+      );
+
+  $$ExpenseReferenceTableTableProcessedTableManager
+  get expenseReferenceTableRefs {
+    final manager = $$ExpenseReferenceTableTableTableManager(
+      $_db,
+      $_db.expenseReferenceTable,
+    ).filter((f) => f.referenceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _expenseReferenceTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ReferenceTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ReferenceTableTable> {
+  $$ReferenceTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ReferenceTableTableFilterComposer get belongTo {
+    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.belongTo,
+      referencedTable: $db.referenceTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceTableTableFilterComposer(
+            $db: $db,
+            $table: $db.referenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GroupReferenceTableTableFilterComposer get groupId {
+    final $$GroupReferenceTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.groupId,
+      referencedTable: $db.groupReferenceTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$GroupReferenceTableTableFilterComposer(
+            $db: $db,
+            $table: $db.groupReferenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> referenceDataTableRefs(
+    Expression<bool> Function($$ReferenceDataTableTableFilterComposer f) f,
+  ) {
+    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.referenceDataTable,
+      getReferencedColumn: (t) => t.referenceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceDataTableTableFilterComposer(
+            $db: $db,
+            $table: $db.referenceDataTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> expenseReferenceTableRefs(
+    Expression<bool> Function($$ExpenseReferenceTableTableFilterComposer f) f,
+  ) {
+    final $$ExpenseReferenceTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.expenseReferenceTable,
+          getReferencedColumn: (t) => t.referenceId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ExpenseReferenceTableTableFilterComposer(
+                $db: $db,
+                $table: $db.expenseReferenceTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$ReferenceTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReferenceTableTable> {
+  $$ReferenceTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ReferenceTableTableOrderingComposer get belongTo {
+    final $$ReferenceTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.belongTo,
+      referencedTable: $db.referenceTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.referenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GroupReferenceTableTableOrderingComposer get groupId {
+    final $$GroupReferenceTableTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.groupId,
+          referencedTable: $db.groupReferenceTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GroupReferenceTableTableOrderingComposer(
+                $db: $db,
+                $table: $db.groupReferenceTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$ReferenceTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReferenceTableTable> {
+  $$ReferenceTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  $$ReferenceTableTableAnnotationComposer get belongTo {
+    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.belongTo,
+      referencedTable: $db.referenceTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.referenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$GroupReferenceTableTableAnnotationComposer get groupId {
+    final $$GroupReferenceTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.groupId,
+          referencedTable: $db.groupReferenceTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$GroupReferenceTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.groupReferenceTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  Expression<T> referenceDataTableRefs<T extends Object>(
+    Expression<T> Function($$ReferenceDataTableTableAnnotationComposer a) f,
+  ) {
+    final $$ReferenceDataTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.referenceDataTable,
+          getReferencedColumn: (t) => t.referenceId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ReferenceDataTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.referenceDataTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> expenseReferenceTableRefs<T extends Object>(
+    Expression<T> Function($$ExpenseReferenceTableTableAnnotationComposer a) f,
+  ) {
+    final $$ExpenseReferenceTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.expenseReferenceTable,
+          getReferencedColumn: (t) => t.referenceId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ExpenseReferenceTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.expenseReferenceTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$ReferenceTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ReferenceTableTable,
+          MstrdtReference,
+          $$ReferenceTableTableFilterComposer,
+          $$ReferenceTableTableOrderingComposer,
+          $$ReferenceTableTableAnnotationComposer,
+          $$ReferenceTableTableCreateCompanionBuilder,
+          $$ReferenceTableTableUpdateCompanionBuilder,
+          (MstrdtReference, $$ReferenceTableTableReferences),
+          MstrdtReference,
+          PrefetchHooks Function({
+            bool belongTo,
+            bool groupId,
+            bool referenceDataTableRefs,
+            bool expenseReferenceTableRefs,
+          })
+        > {
+  $$ReferenceTableTableTableManager(
+    _$AppDatabase db,
+    $ReferenceTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReferenceTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReferenceTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReferenceTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<bool> isActive = const Value.absent(),
+                Value<String> belongTo = const Value.absent(),
+                Value<String> groupId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ReferenceTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                label: label,
+                value: value,
+                isActive: isActive,
+                belongTo: belongTo,
+                groupId: groupId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required String label,
+                required String value,
+                Value<bool> isActive = const Value.absent(),
+                required String belongTo,
+                required String groupId,
+                Value<int> rowid = const Value.absent(),
+              }) => ReferenceTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                label: label,
+                value: value,
+                isActive: isActive,
+                belongTo: belongTo,
+                groupId: groupId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ReferenceTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                belongTo = false,
+                groupId = false,
+                referenceDataTableRefs = false,
+                expenseReferenceTableRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (referenceDataTableRefs) db.referenceDataTable,
+                    if (expenseReferenceTableRefs) db.expenseReferenceTable,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (belongTo) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.belongTo,
+                                    referencedTable:
+                                        $$ReferenceTableTableReferences
+                                            ._belongToTable(db),
+                                    referencedColumn:
+                                        $$ReferenceTableTableReferences
+                                            ._belongToTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (groupId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.groupId,
+                                    referencedTable:
+                                        $$ReferenceTableTableReferences
+                                            ._groupIdTable(db),
+                                    referencedColumn:
+                                        $$ReferenceTableTableReferences
+                                            ._groupIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (referenceDataTableRefs)
+                        await $_getPrefetchedData<
+                          MstrdtReference,
+                          $ReferenceTableTable,
+                          MstrdtReferenceData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ReferenceTableTableReferences
+                              ._referenceDataTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ReferenceTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).referenceDataTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.referenceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (expenseReferenceTableRefs)
+                        await $_getPrefetchedData<
+                          MstrdtReference,
+                          $ReferenceTableTable,
+                          MstrdtExpenseReference
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ReferenceTableTableReferences
+                              ._expenseReferenceTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ReferenceTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).expenseReferenceTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.referenceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$ReferenceTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ReferenceTableTable,
+      MstrdtReference,
+      $$ReferenceTableTableFilterComposer,
+      $$ReferenceTableTableOrderingComposer,
+      $$ReferenceTableTableAnnotationComposer,
+      $$ReferenceTableTableCreateCompanionBuilder,
+      $$ReferenceTableTableUpdateCompanionBuilder,
+      (MstrdtReference, $$ReferenceTableTableReferences),
+      MstrdtReference,
+      PrefetchHooks Function({
+        bool belongTo,
+        bool groupId,
+        bool referenceDataTableRefs,
+        bool expenseReferenceTableRefs,
+      })
+    >;
+typedef $$ReferenceDataTableTableCreateCompanionBuilder =
+    ReferenceDataTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required String label,
+      required String groupLabel,
+      required String value,
+      required String groupValue,
+      Value<String?> referenceId,
+      Value<bool> isHasNext,
+      Value<String?> nextReferenceDataId,
+      Value<int> rowid,
+    });
+typedef $$ReferenceDataTableTableUpdateCompanionBuilder =
+    ReferenceDataTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<String> label,
+      Value<String> groupLabel,
+      Value<String> value,
+      Value<String> groupValue,
+      Value<String?> referenceId,
+      Value<bool> isHasNext,
+      Value<String?> nextReferenceDataId,
+      Value<int> rowid,
+    });
+
+final class $$ReferenceDataTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $ReferenceDataTableTable,
+          MstrdtReferenceData
+        > {
+  $$ReferenceDataTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $ReferenceTableTable _referenceIdTable(_$AppDatabase db) =>
+      db.referenceTable.createAlias(
+        $_aliasNameGenerator(
+          db.referenceDataTable.referenceId,
+          db.referenceTable.id,
+        ),
+      );
+
+  $$ReferenceTableTableProcessedTableManager? get referenceId {
+    final $_column = $_itemColumn<String>('reference_id');
+    if ($_column == null) return null;
+    final manager = $$ReferenceTableTableTableManager(
+      $_db,
+      $_db.referenceTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_referenceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $ReferenceDataTableTable _nextReferenceDataIdTable(_$AppDatabase db) =>
+      db.referenceDataTable.createAlias(
+        $_aliasNameGenerator(
+          db.referenceDataTable.nextReferenceDataId,
+          db.referenceDataTable.id,
+        ),
+      );
+
+  $$ReferenceDataTableTableProcessedTableManager? get nextReferenceDataId {
+    final $_column = $_itemColumn<String>('next_reference_data_id');
+    if ($_column == null) return null;
+    final manager = $$ReferenceDataTableTableTableManager(
+      $_db,
+      $_db.referenceDataTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_nextReferenceDataIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$ExpenseTableTable, List<ExpnsExpense>>
+  _expenseTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.expenseTable,
+    aliasName: $_aliasNameGenerator(
+      db.referenceDataTable.id,
+      db.expenseTable.referenceDataId,
+    ),
+  );
+
+  $$ExpenseTableTableProcessedTableManager get expenseTableRefs {
+    final manager = $$ExpenseTableTableTableManager($_db, $_db.expenseTable)
+        .filter(
+          (f) => f.referenceDataId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(_expenseTableRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ReferenceDataTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
+  $$ReferenceDataTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupLabel => $composableBuilder(
+    column: $table.groupLabel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get groupValue => $composableBuilder(
+    column: $table.groupValue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isHasNext => $composableBuilder(
+    column: $table.isHasNext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ReferenceTableTableFilterComposer get referenceId {
+    final $$ReferenceTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.referenceId,
+      referencedTable: $db.referenceTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceTableTableFilterComposer(
+            $db: $db,
+            $table: $db.referenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ReferenceDataTableTableFilterComposer get nextReferenceDataId {
+    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.nextReferenceDataId,
+      referencedTable: $db.referenceDataTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceDataTableTableFilterComposer(
+            $db: $db,
+            $table: $db.referenceDataTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> expenseTableRefs(
+    Expression<bool> Function($$ExpenseTableTableFilterComposer f) f,
+  ) {
+    final $$ExpenseTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expenseTable,
+      getReferencedColumn: (t) => t.referenceDataId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpenseTableTableFilterComposer(
+            $db: $db,
+            $table: $db.expenseTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ReferenceDataTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
+  $$ReferenceDataTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupLabel => $composableBuilder(
+    column: $table.groupLabel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get groupValue => $composableBuilder(
+    column: $table.groupValue,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isHasNext => $composableBuilder(
+    column: $table.isHasNext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ReferenceTableTableOrderingComposer get referenceId {
+    final $$ReferenceTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.referenceId,
+      referencedTable: $db.referenceTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.referenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ReferenceDataTableTableOrderingComposer get nextReferenceDataId {
+    final $$ReferenceDataTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.nextReferenceDataId,
+      referencedTable: $db.referenceDataTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceDataTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.referenceDataTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ReferenceDataTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReferenceDataTableTable> {
+  $$ReferenceDataTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+
+  GeneratedColumn<String> get groupLabel => $composableBuilder(
+    column: $table.groupLabel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<String> get groupValue => $composableBuilder(
+    column: $table.groupValue,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isHasNext =>
+      $composableBuilder(column: $table.isHasNext, builder: (column) => column);
+
+  $$ReferenceTableTableAnnotationComposer get referenceId {
+    final $$ReferenceTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.referenceId,
+      referencedTable: $db.referenceTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.referenceTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ReferenceDataTableTableAnnotationComposer get nextReferenceDataId {
+    final $$ReferenceDataTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.nextReferenceDataId,
+          referencedTable: $db.referenceDataTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ReferenceDataTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.referenceDataTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
+  Expression<T> expenseTableRefs<T extends Object>(
+    Expression<T> Function($$ExpenseTableTableAnnotationComposer a) f,
+  ) {
+    final $$ExpenseTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.expenseTable,
+      getReferencedColumn: (t) => t.referenceDataId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpenseTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.expenseTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ReferenceDataTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ReferenceDataTableTable,
+          MstrdtReferenceData,
+          $$ReferenceDataTableTableFilterComposer,
+          $$ReferenceDataTableTableOrderingComposer,
+          $$ReferenceDataTableTableAnnotationComposer,
+          $$ReferenceDataTableTableCreateCompanionBuilder,
+          $$ReferenceDataTableTableUpdateCompanionBuilder,
+          (MstrdtReferenceData, $$ReferenceDataTableTableReferences),
+          MstrdtReferenceData,
+          PrefetchHooks Function({
+            bool referenceId,
+            bool nextReferenceDataId,
+            bool expenseTableRefs,
+          })
+        > {
+  $$ReferenceDataTableTableTableManager(
+    _$AppDatabase db,
+    $ReferenceDataTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReferenceDataTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReferenceDataTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReferenceDataTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<String> label = const Value.absent(),
+                Value<String> groupLabel = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<String> groupValue = const Value.absent(),
+                Value<String?> referenceId = const Value.absent(),
+                Value<bool> isHasNext = const Value.absent(),
+                Value<String?> nextReferenceDataId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ReferenceDataTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                label: label,
+                groupLabel: groupLabel,
+                value: value,
+                groupValue: groupValue,
+                referenceId: referenceId,
+                isHasNext: isHasNext,
+                nextReferenceDataId: nextReferenceDataId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required String label,
+                required String groupLabel,
+                required String value,
+                required String groupValue,
+                Value<String?> referenceId = const Value.absent(),
+                Value<bool> isHasNext = const Value.absent(),
+                Value<String?> nextReferenceDataId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ReferenceDataTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                label: label,
+                groupLabel: groupLabel,
+                value: value,
+                groupValue: groupValue,
+                referenceId: referenceId,
+                isHasNext: isHasNext,
+                nextReferenceDataId: nextReferenceDataId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ReferenceDataTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                referenceId = false,
+                nextReferenceDataId = false,
+                expenseTableRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (expenseTableRefs) db.expenseTable,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (referenceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.referenceId,
+                                    referencedTable:
+                                        $$ReferenceDataTableTableReferences
+                                            ._referenceIdTable(db),
+                                    referencedColumn:
+                                        $$ReferenceDataTableTableReferences
+                                            ._referenceIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (nextReferenceDataId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.nextReferenceDataId,
+                                    referencedTable:
+                                        $$ReferenceDataTableTableReferences
+                                            ._nextReferenceDataIdTable(db),
+                                    referencedColumn:
+                                        $$ReferenceDataTableTableReferences
+                                            ._nextReferenceDataIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (expenseTableRefs)
+                        await $_getPrefetchedData<
+                          MstrdtReferenceData,
+                          $ReferenceDataTableTable,
+                          ExpnsExpense
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ReferenceDataTableTableReferences
+                              ._expenseTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ReferenceDataTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).expenseTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.referenceDataId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$ReferenceDataTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ReferenceDataTableTable,
+      MstrdtReferenceData,
+      $$ReferenceDataTableTableFilterComposer,
+      $$ReferenceDataTableTableOrderingComposer,
+      $$ReferenceDataTableTableAnnotationComposer,
+      $$ReferenceDataTableTableCreateCompanionBuilder,
+      $$ReferenceDataTableTableUpdateCompanionBuilder,
+      (MstrdtReferenceData, $$ReferenceDataTableTableReferences),
+      MstrdtReferenceData,
+      PrefetchHooks Function({
+        bool referenceId,
+        bool nextReferenceDataId,
+        bool expenseTableRefs,
+      })
+    >;
 typedef $$ExpenseReferenceTableTableCreateCompanionBuilder =
     ExpenseReferenceTableCompanion Function({
       Value<String> id,
@@ -28889,6 +28406,415 @@ typedef $$ExpenseReferenceTableTableProcessedTableManager =
       (MstrdtExpenseReference, $$ExpenseReferenceTableTableReferences),
       MstrdtExpenseReference,
       PrefetchHooks Function({bool referenceId})
+    >;
+typedef $$ExpenseTableTableCreateCompanionBuilder =
+    ExpenseTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required double amount,
+      Value<String?> description,
+      required DateTime expenseDate,
+      required String referenceDataId,
+      Value<int> rowid,
+    });
+typedef $$ExpenseTableTableUpdateCompanionBuilder =
+    ExpenseTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<double> amount,
+      Value<String?> description,
+      Value<DateTime> expenseDate,
+      Value<String> referenceDataId,
+      Value<int> rowid,
+    });
+
+final class $$ExpenseTableTableReferences
+    extends BaseReferences<_$AppDatabase, $ExpenseTableTable, ExpnsExpense> {
+  $$ExpenseTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ReferenceDataTableTable _referenceDataIdTable(_$AppDatabase db) =>
+      db.referenceDataTable.createAlias(
+        $_aliasNameGenerator(
+          db.expenseTable.referenceDataId,
+          db.referenceDataTable.id,
+        ),
+      );
+
+  $$ReferenceDataTableTableProcessedTableManager get referenceDataId {
+    final $_column = $_itemColumn<String>('reference_data_id')!;
+
+    final manager = $$ReferenceDataTableTableTableManager(
+      $_db,
+      $_db.referenceDataTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_referenceDataIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ExpenseTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ExpenseTableTable> {
+  $$ExpenseTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get expenseDate => $composableBuilder(
+    column: $table.expenseDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ReferenceDataTableTableFilterComposer get referenceDataId {
+    final $$ReferenceDataTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.referenceDataId,
+      referencedTable: $db.referenceDataTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceDataTableTableFilterComposer(
+            $db: $db,
+            $table: $db.referenceDataTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ExpenseTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExpenseTableTable> {
+  $$ExpenseTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get amount => $composableBuilder(
+    column: $table.amount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get expenseDate => $composableBuilder(
+    column: $table.expenseDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ReferenceDataTableTableOrderingComposer get referenceDataId {
+    final $$ReferenceDataTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.referenceDataId,
+      referencedTable: $db.referenceDataTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReferenceDataTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.referenceDataTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ExpenseTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExpenseTableTable> {
+  $$ExpenseTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get amount =>
+      $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get expenseDate => $composableBuilder(
+    column: $table.expenseDate,
+    builder: (column) => column,
+  );
+
+  $$ReferenceDataTableTableAnnotationComposer get referenceDataId {
+    final $$ReferenceDataTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.referenceDataId,
+          referencedTable: $db.referenceDataTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$ReferenceDataTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.referenceDataTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$ExpenseTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExpenseTableTable,
+          ExpnsExpense,
+          $$ExpenseTableTableFilterComposer,
+          $$ExpenseTableTableOrderingComposer,
+          $$ExpenseTableTableAnnotationComposer,
+          $$ExpenseTableTableCreateCompanionBuilder,
+          $$ExpenseTableTableUpdateCompanionBuilder,
+          (ExpnsExpense, $$ExpenseTableTableReferences),
+          ExpnsExpense,
+          PrefetchHooks Function({bool referenceDataId})
+        > {
+  $$ExpenseTableTableTableManager(_$AppDatabase db, $ExpenseTableTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExpenseTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExpenseTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExpenseTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<double> amount = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<DateTime> expenseDate = const Value.absent(),
+                Value<String> referenceDataId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ExpenseTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                amount: amount,
+                description: description,
+                expenseDate: expenseDate,
+                referenceDataId: referenceDataId,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required double amount,
+                Value<String?> description = const Value.absent(),
+                required DateTime expenseDate,
+                required String referenceDataId,
+                Value<int> rowid = const Value.absent(),
+              }) => ExpenseTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                amount: amount,
+                description: description,
+                expenseDate: expenseDate,
+                referenceDataId: referenceDataId,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$ExpenseTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({referenceDataId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (referenceDataId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.referenceDataId,
+                                referencedTable: $$ExpenseTableTableReferences
+                                    ._referenceDataIdTable(db),
+                                referencedColumn: $$ExpenseTableTableReferences
+                                    ._referenceDataIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ExpenseTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExpenseTableTable,
+      ExpnsExpense,
+      $$ExpenseTableTableFilterComposer,
+      $$ExpenseTableTableOrderingComposer,
+      $$ExpenseTableTableAnnotationComposer,
+      $$ExpenseTableTableCreateCompanionBuilder,
+      $$ExpenseTableTableUpdateCompanionBuilder,
+      (ExpnsExpense, $$ExpenseTableTableReferences),
+      ExpnsExpense,
+      PrefetchHooks Function({bool referenceDataId})
     >;
 typedef $$RecurringTransactionTableTableCreateCompanionBuilder =
     RecurringTransactionTableCompanion Function({
@@ -30407,8 +30333,6 @@ typedef $$TransactionTagMapTableTableProcessedTableManager =
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$CategoryTableTableTableManager get categoryTable =>
-      $$CategoryTableTableTableManager(_db, _db.categoryTable);
   $$BudgetsTableTableManager get budgets =>
       $$BudgetsTableTableManager(_db, _db.budgets);
   $$BudgetPlansTableTableManager get budgetPlans =>
@@ -30421,14 +30345,8 @@ class $AppDatabaseManager {
       $$SavingTableTableTableManager(_db, _db.savingTable);
   $$BudgetPlanDepositsTableTableManager get budgetPlanDeposits =>
       $$BudgetPlanDepositsTableTableManager(_db, _db.budgetPlanDeposits);
-  $$GroupReferenceTableTableTableManager get groupReferenceTable =>
-      $$GroupReferenceTableTableTableManager(_db, _db.groupReferenceTable);
-  $$ReferenceTableTableTableManager get referenceTable =>
-      $$ReferenceTableTableTableManager(_db, _db.referenceTable);
-  $$ReferenceDataTableTableTableManager get referenceDataTable =>
-      $$ReferenceDataTableTableTableManager(_db, _db.referenceDataTable);
-  $$ExpenseTableTableTableManager get expenseTable =>
-      $$ExpenseTableTableTableManager(_db, _db.expenseTable);
+  $$CategoryTableTableTableManager get categoryTable =>
+      $$CategoryTableTableTableManager(_db, _db.categoryTable);
   $$CommitmentTableTableTableManager get commitmentTable =>
       $$CommitmentTableTableTableManager(_db, _db.commitmentTable);
   $$CommitmentDetailTableTableTableManager get commitmentDetailTable =>
@@ -30453,8 +30371,16 @@ class $AppDatabaseManager {
       $$BudgetPlanMilestonesTableTableManager(_db, _db.budgetPlanMilestones);
   $$ExchangeRateTableTableTableManager get exchangeRateTable =>
       $$ExchangeRateTableTableTableManager(_db, _db.exchangeRateTable);
+  $$GroupReferenceTableTableTableManager get groupReferenceTable =>
+      $$GroupReferenceTableTableTableManager(_db, _db.groupReferenceTable);
+  $$ReferenceTableTableTableManager get referenceTable =>
+      $$ReferenceTableTableTableManager(_db, _db.referenceTable);
+  $$ReferenceDataTableTableTableManager get referenceDataTable =>
+      $$ReferenceDataTableTableTableManager(_db, _db.referenceDataTable);
   $$ExpenseReferenceTableTableTableManager get expenseReferenceTable =>
       $$ExpenseReferenceTableTableTableManager(_db, _db.expenseReferenceTable);
+  $$ExpenseTableTableTableManager get expenseTable =>
+      $$ExpenseTableTableTableManager(_db, _db.expenseTable);
   $$RecurringTransactionTableTableTableManager get recurringTransactionTable =>
       $$RecurringTransactionTableTableTableManager(
         _db,

@@ -3,15 +3,22 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'package:wise_spends/data/repositories/category/i_category_repository.dart';
 import 'package:wise_spends/presentation/blocs/category/category_bloc.dart';
 import 'package:wise_spends/presentation/blocs/category/category_event.dart';
 import 'package:wise_spends/presentation/blocs/category/category_state.dart';
+import 'package:wise_spends/presentation/blocs/payee/payee_bloc.dart';
+import 'package:wise_spends/presentation/blocs/payee/payee_event.dart';
+import 'package:wise_spends/presentation/blocs/payee/payee_state.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_bloc.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_event.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_state.dart';
@@ -29,20 +36,23 @@ import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 class AddTransactionScreenArgs {
   final TransactionType? preselectedType;
   final String? editingTransactionId;
+  final CommitmentTaskVO? existingCommitmentTaskVO;
   final TransactionEntity? existingTransaction;
   final CategoryEntity? existingCategory;
+  final PayeeVO? existingPayee;
   final TimeOfDay? existingTime;
 
   const AddTransactionScreenArgs({
     this.preselectedType,
     this.editingTransactionId,
     this.existingTransaction,
+    this.existingCommitmentTaskVO,
     this.existingCategory,
+    this.existingPayee,
     this.existingTime,
   });
 }
 
-/// Provider wrapper — sets up all BLoCs then hands off to the stateful content.
 class AddTransactionScreen extends StatelessWidget {
   final AddTransactionScreenArgs? args;
 
@@ -69,6 +79,12 @@ class AddTransactionScreen extends StatelessWidget {
                 ..add(LoadSavingsListEvent()),
         ),
         BlocProvider(
+          create: (ctx) => PayeeBloc(
+            SingletonUtil.getSingleton<IRepositoryLocator>()!
+                .getPayeeRepository(),
+          )..add(LoadPayees()),
+        ),
+        BlocProvider(
           create: (ctx) {
             final a = args;
             final bloc = TransactionFormBloc();
@@ -77,6 +93,7 @@ class AddTransactionScreen extends StatelessWidget {
                 InitializeTransactionFormForEdit(
                   transaction: a!.existingTransaction!,
                   category: a.existingCategory,
+                  payee: a.existingPayee,
                   selectedTime: a.existingTime,
                 ),
               );
@@ -93,10 +110,6 @@ class AddTransactionScreen extends StatelessWidget {
     );
   }
 }
-
-// =============================================================================
-// Stateful content
-// =============================================================================
 
 class _AddTransactionScreenContent extends StatefulWidget {
   final AddTransactionScreenArgs? args;
@@ -134,17 +147,12 @@ class _AddTransactionScreenContentState
     super.dispose();
   }
 
-  // ---------------------------------------------------------------------------
-  // Sync controllers once on edit mode load
-  // ---------------------------------------------------------------------------
-
   void _syncControllersFromFormState(TransactionFormReady formState) {
     if (_controllersSynced) return;
     if (!formState.isEditMode) {
       _controllersSynced = true;
       return;
     }
-
     if (formState.amount != null && _amountController.text.isEmpty) {
       _amountController.text = formState.amount!;
     }
@@ -154,7 +162,6 @@ class _AddTransactionScreenContentState
     if (formState.note != null && _noteController.text.isEmpty) {
       _noteController.text = formState.note!;
     }
-
     _controllersSynced = true;
   }
 
@@ -172,7 +179,6 @@ class _AddTransactionScreenContentState
       body: BlocListener<TransactionBloc, TransactionState>(
         listener: (context, state) {
           if (state is TransactionCreated || state is TransactionUpdated) {
-            final isEdit = state is TransactionUpdated;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Row(
@@ -180,7 +186,7 @@ class _AddTransactionScreenContentState
                     const Icon(Icons.check_circle, color: Colors.white),
                     const SizedBox(width: 8),
                     Text(
-                      isEdit
+                      state is TransactionUpdated
                           ? 'Transaction updated successfully'
                           : 'Transaction added successfully',
                     ),
@@ -196,7 +202,7 @@ class _AddTransactionScreenContentState
             Navigator.pushNamedAndRemoveUntil(
               context,
               AppRoutes.homeLoggedIn,
-              (context) => false,
+              (r) => false,
             );
           } else if (state is TransactionError) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -225,53 +231,52 @@ class _AddTransactionScreenContentState
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Locked banner — only in edit mode
                     if (_isEditMode) ...[
                       _buildLockedBanner(),
                       const SizedBox(height: 16),
                     ],
 
-                    // Transaction type — locked in edit, toggle in add
                     _isEditMode
                         ? _buildLockedTypeDisplay(formState)
                         : _buildTransactionTypeToggle(context, formState),
                     const SizedBox(height: 24),
 
-                    // Amount — locked in edit, input in add
                     _isEditMode
                         ? _buildLockedAmountDisplay(formState)
                         : _buildAmountInput(context, formState),
                     const SizedBox(height: 24),
 
-                    // Account — locked in edit, dropdown in add
                     _isEditMode
                         ? _buildLockedAccountDisplay(context, formState)
                         : _buildAccountSelection(context, formState),
                     const SizedBox(height: 16),
 
-                    // Description — always editable
                     _buildTitleInput(context),
                     const SizedBox(height: 16),
 
-                    // Category — locked in edit, grid in add
                     if (formState.transactionType != TransactionType.transfer &&
                         formState.transactionType !=
                             TransactionType.commitment) ...[
                       _isEditMode
-                          ? _buildLockedCategoryDisplay(context, formState)
+                          ? _buildLockedCategoryDisplay(formState)
                           : _buildCategoryGrid(context, formState),
                       const SizedBox(height: 16),
                     ],
 
-                    // Date — always editable
+                    // Payee — expense and commitment only
+                    if (formState.supportsPayee) ...[
+                      _isEditMode
+                          ? _buildLockedPayeeDisplay(formState)
+                          : _buildPayeePicker(context, formState),
+                      const SizedBox(height: 16),
+                    ],
+
                     _buildDatePicker(context, formState),
                     const SizedBox(height: 16),
 
-                    // Time — always editable
                     _buildTimePicker(context, formState),
                     const SizedBox(height: 16),
 
-                    // Note — always editable
                     _buildNoteField(context, formState),
                     const SizedBox(height: 32),
 
@@ -321,7 +326,6 @@ class _AddTransactionScreenContentState
   Widget _buildLockedTypeDisplay(TransactionFormReady formState) {
     final type = formState.transactionType;
     final color = _typeColor(type);
-
     return _LockedField(
       label: 'Transaction Type',
       child: Container(
@@ -365,40 +369,31 @@ class _AddTransactionScreenContentState
   ) {
     return BlocBuilder<SavingsBloc, SavingsState>(
       builder: (context, state) {
-        final savingsList = state is SavingsListLoaded
+        final list = state is SavingsListLoaded
             ? state.savingsList
             : <ListSavingVO>[];
 
-        final sourceName =
-            savingsList
+        String nameFor(String? id) =>
+            list
                 .cast<ListSavingVO?>()
-                .firstWhere(
-                  (s) => s?.saving.id == formState.selectedSourceAccount,
-                  orElse: () => null,
-                )
+                .firstWhere((s) => s?.saving.id == id, orElse: () => null)
                 ?.saving
                 .name ??
-            formState.selectedSourceAccount ??
+            id ??
             'Unknown';
 
-        if (formState.transactionType == TransactionType.transfer) {
-          final destName =
-              savingsList
-                  .cast<ListSavingVO?>()
-                  .firstWhere(
-                    (s) => s?.saving.id == formState.selectedDestinationAccount,
-                    orElse: () => null,
-                  )
-                  ?.saving
-                  .name ??
-              formState.selectedDestinationAccount ??
-              'Unknown';
-
+        if (formState.transactionType == TransactionType.transfer ||
+            (formState.transactionType == TransactionType.commitment &&
+                formState.selectedDestinationAccount != null)) {
           return _LockedField(
             label: 'Transfer Accounts',
             child: Row(
               children: [
-                _accountChip(sourceName, Icons.arrow_upward, AppColors.expense),
+                _accountChip(
+                  nameFor(formState.selectedSourceAccount),
+                  Icons.arrow_upward,
+                  AppColors.expense,
+                ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8),
                   child: Icon(
@@ -407,7 +402,11 @@ class _AddTransactionScreenContentState
                     color: AppColors.textSecondary,
                   ),
                 ),
-                _accountChip(destName, Icons.arrow_downward, AppColors.income),
+                _accountChip(
+                  nameFor(formState.selectedDestinationAccount),
+                  Icons.arrow_downward,
+                  AppColors.income,
+                ),
               ],
             ),
           );
@@ -418,7 +417,7 @@ class _AddTransactionScreenContentState
               ? 'Received Into Account'
               : 'Paid From Account',
           child: _accountChip(
-            sourceName,
+            nameFor(formState.selectedSourceAccount),
             Icons.account_balance,
             AppColors.primary,
           ),
@@ -440,16 +439,20 @@ class _AddTransactionScreenContentState
         children: [
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 6),
-          Text(name, style: AppTextStyles.bodyMedium.copyWith(color: color)),
+          Flexible(
+            child: Text(
+              name,
+              style: AppTextStyles.bodyMedium.copyWith(color: color),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildLockedCategoryDisplay(
-    BuildContext context,
-    TransactionFormReady formState,
-  ) {
+  Widget _buildLockedCategoryDisplay(TransactionFormReady formState) {
     final category = formState.selectedCategory;
     final typeColor = _typeColor(formState.transactionType);
 
@@ -492,6 +495,205 @@ class _AddTransactionScreenContentState
           ),
         ],
       ),
+    );
+  }
+
+  /// Read-only payee display for edit mode.
+  Widget _buildLockedPayeeDisplay(TransactionFormReady formState) {
+    final payee = formState.selectedPayee;
+
+    if (payee == null) {
+      return _LockedField(
+        label: 'Payee',
+        child: Text(
+          'No payee recorded',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      );
+    }
+
+    return _LockedField(
+      label: 'Payee',
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.person, color: AppColors.primary, size: 18),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  payee.name ?? 'Unknown',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (payee.bankName != null || payee.accountNumber != null)
+                  Text(
+                    [
+                      if (payee.bankName != null) payee.bankName!,
+                      if (payee.accountNumber != null) payee.accountNumber!,
+                    ].join(' · '),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Payee picker (add / edit-allowed mode — expense and commitment only)
+  // ---------------------------------------------------------------------------
+
+  Widget _buildPayeePicker(
+    BuildContext context,
+    TransactionFormReady formState,
+  ) {
+    return BlocBuilder<PayeeBloc, PayeeState>(
+      builder: (context, state) {
+        final payees = state is PayeesLoaded ? state.payees : <PayeeVO>[];
+        final selectedPayee = formState.selectedPayee;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text('Payee', style: AppTextStyles.bodySemiBold),
+                const SizedBox(width: 6),
+                Text(
+                  '(optional)',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textHint,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Selected payee chip
+            if (selectedPayee != null) ...[
+              _SelectedPayeeChip(
+                payee: selectedPayee,
+                onClear: () => context.read<TransactionFormBloc>().add(
+                  const SelectPayee(null),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+
+            if (state is PayeeLoading)
+              const LinearProgressIndicator()
+            else if (payees.isEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 14,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.divider),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.person_outline,
+                      color: AppColors.textSecondary,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'No payees yet — add one in Settings',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else if (selectedPayee == null)
+              DropdownButtonFormField<String>(
+                initialValue: payees.any((p) => p.id == selectedPayee?.id)
+                    ? selectedPayee?.id
+                    : null,
+                isExpanded: true,
+                decoration: InputDecoration(
+                  hintText: 'Select a payee',
+                  prefixIcon: const Icon(Icons.person_outline),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  suffixIcon: selectedPayee != null
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () => context
+                              .read<TransactionFormBloc>()
+                              .add(const SelectPayee(null)),
+                        )
+                      : null,
+                ),
+                items: payees.map((p) {
+                  return DropdownMenuItem<String>(
+                    value: p.id,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          p.name ?? 'Unknown',
+                          style: AppTextStyles.bodyMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (p.bankName != null || p.accountNumber != null)
+                          Text(
+                            [
+                              if (p.bankName != null) p.bankName!,
+                              if (p.accountNumber != null) p.accountNumber!,
+                            ].join(' · '),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                onChanged: (id) {
+                  if (id == null) {
+                    context.read<TransactionFormBloc>().add(
+                      const SelectPayee(null),
+                    );
+                    return;
+                  }
+                  final match = payees.cast<PayeeVO?>().firstWhere(
+                    (p) => p?.id == id,
+                    orElse: () => null,
+                  );
+                  if (match != null) {
+                    context.read<TransactionFormBloc>().add(SelectPayee(match));
+                  }
+                },
+              ),
+          ],
+        );
+      },
     );
   }
 
@@ -690,10 +892,6 @@ class _AddTransactionScreenContentState
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Title (always editable)
-  // ---------------------------------------------------------------------------
-
   Widget _buildTitleInput(BuildContext context) {
     return AppTextField(
       label: 'Description',
@@ -828,7 +1026,7 @@ class _AddTransactionScreenContentState
   }
 
   // ---------------------------------------------------------------------------
-  // Date picker (always editable)
+  // Date picker
   // ---------------------------------------------------------------------------
 
   Widget _buildDatePicker(
@@ -901,7 +1099,7 @@ class _AddTransactionScreenContentState
   }
 
   // ---------------------------------------------------------------------------
-  // Time picker (always editable)
+  // Time picker
   // ---------------------------------------------------------------------------
 
   Widget _buildTimePicker(
@@ -967,7 +1165,7 @@ class _AddTransactionScreenContentState
   }
 
   // ---------------------------------------------------------------------------
-  // Note field (always editable)
+  // Note field
   // ---------------------------------------------------------------------------
 
   Widget _buildNoteField(BuildContext context, TransactionFormReady formState) {
@@ -1000,8 +1198,7 @@ class _AddTransactionScreenContentState
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
         final isLoading = state is TransactionLoading;
-        final isEdit = formState.isEditMode;
-        final label = isEdit
+        final label = formState.isEditMode
             ? (isLoading ? 'Updating...' : 'Update Transaction')
             : (isLoading ? 'Saving...' : 'Save Transaction');
 
@@ -1026,7 +1223,6 @@ class _AddTransactionScreenContentState
       return;
     }
 
-    // Build combined date + time
     DateTime transactionDateTime = formState.selectedDate;
     if (formState.selectedTime != null) {
       transactionDateTime = DateTime(
@@ -1039,8 +1235,6 @@ class _AddTransactionScreenContentState
     }
 
     if (formState.isEditMode && formState.editingTransactionId != null) {
-      // Edit mode — only send editable fields.
-      // Bloc will load the existing record and preserve all immutable fields.
       context.read<TransactionBloc>().add(
         UpdateTransactionEvent(
           TransactionEntity(
@@ -1048,7 +1242,6 @@ class _AddTransactionScreenContentState
             title: titleText,
             date: transactionDateTime,
             note: note,
-            // Immutable fields — bloc ignores these and uses existing DB values
             amount: 0,
             type: formState.transactionType,
             savingId: '',
@@ -1060,7 +1253,6 @@ class _AddTransactionScreenContentState
       return;
     }
 
-    // Add mode — validate all fields before dispatching
     final amountText = _amountController.text.trim();
     final amount = double.tryParse(amountText);
 
@@ -1094,7 +1286,7 @@ class _AddTransactionScreenContentState
         title: titleText,
         amount: amount,
         type: formState.transactionType,
-        categoryId: formState.selectedCategory?.id ?? 'uncategorized',
+        categoryId: formState.selectedCategory?.id ?? '',
         date: formState.selectedDate,
         time: formState.selectedTime,
         note: note,
@@ -1103,6 +1295,7 @@ class _AddTransactionScreenContentState
             formState.transactionType == TransactionType.transfer
             ? formState.selectedDestinationAccount
             : null,
+        payeeId: formState.selectedPayee?.id,
       ),
     );
   }
@@ -1157,7 +1350,66 @@ class _AddTransactionScreenContentState
 }
 
 // =============================================================================
-// Locked field wrapper widget
+// Selected payee chip
+// =============================================================================
+
+class _SelectedPayeeChip extends StatelessWidget {
+  final PayeeVO payee;
+  final VoidCallback onClear;
+
+  const _SelectedPayeeChip({required this.payee, required this.onClear});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.person, size: 18, color: AppColors.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  payee.name ?? 'Unknown',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (payee.bankName != null || payee.accountNumber != null)
+                  Text(
+                    [
+                      if (payee.bankName != null) payee.bankName!,
+                      if (payee.accountNumber != null) payee.accountNumber!,
+                    ].join(' · '),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primary.withValues(alpha: 0.7),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, size: 16, color: AppColors.primary),
+            onPressed: onClear,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Locked field wrapper
 // =============================================================================
 
 class _LockedField extends StatelessWidget {
@@ -1287,7 +1539,6 @@ class _AccountDropdown extends StatelessWidget {
       );
     }
 
-    // Guard against assertion crash when savings load async
     final validSelectedId = available.any((s) => s.saving.id == selectedId)
         ? selectedId
         : null;
@@ -1301,26 +1552,28 @@ class _AccountDropdown extends StatelessWidget {
         prefixIcon: const Icon(Icons.account_balance),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      items: available.map((s) {
-        return DropdownMenuItem<String>(
-          value: s.saving.id,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _savingIcon(s.saving.type),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  '${s.saving.name ?? 'Unnamed'} · RM ${s.saving.currentAmount.toStringAsFixed(2)}',
-                  style: AppTextStyles.bodyMedium,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                ),
+      items: available
+          .map(
+            (s) => DropdownMenuItem<String>(
+              value: s.saving.id,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _savingIcon(s.saving.type),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      '${s.saving.name ?? 'Unnamed'} · RM ${s.saving.currentAmount.toStringAsFixed(2)}',
+                      style: AppTextStyles.bodyMedium,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        );
-      }).toList(),
+            ),
+          )
+          .toList(),
       onChanged: onChanged,
     );
   }

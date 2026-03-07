@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 /// Transaction Form BLoC States
@@ -21,11 +23,15 @@ class TransactionFormLoading extends TransactionFormState {}
 class TransactionFormReady extends TransactionFormState {
   final TransactionType transactionType;
   final CategoryEntity? selectedCategory;
+  final CommitmentTaskType? commitmentTaskType;
+  final PayeeVO? selectedPayee;
   final DateTime selectedDate;
   final TimeOfDay? selectedTime;
   final bool showNoteField;
   final String? selectedSourceAccount;
   final String? selectedDestinationAccount;
+
+  // Edit-mode only fields
   final String? title;
   final String? amount;
   final String? note;
@@ -35,7 +41,9 @@ class TransactionFormReady extends TransactionFormState {
   TransactionFormReady({
     this.transactionType = TransactionType.expense,
     this.selectedCategory,
+    this.selectedPayee,
     DateTime? selectedDate,
+    this.commitmentTaskType,
     this.selectedTime,
     this.showNoteField = false,
     this.selectedSourceAccount,
@@ -47,25 +55,21 @@ class TransactionFormReady extends TransactionFormState {
     this.editingTransactionId,
   }) : selectedDate = selectedDate ?? DateTime.now();
 
-  @override
-  List<Object?> get props => [
-    transactionType,
-    selectedCategory,
-    selectedDate,
-    selectedTime,
-    showNoteField,
-    selectedSourceAccount,
-    selectedDestinationAccount,
-    title,
-    amount,
-    note,
-    isEditMode,
-    editingTransactionId,
-  ];
+  /// Whether this transaction type supports payee selection.
+  bool get supportsPayee =>
+      transactionType == TransactionType.expense ||
+      (transactionType == TransactionType.commitment &&
+          (selectedPayee != null ||
+              (commitmentTaskType != null &&
+                  CommitmentTaskType.thirdPartyPayment == commitmentTaskType)));
 
   TransactionFormReady copyWith({
     TransactionType? transactionType,
     CategoryEntity? selectedCategory,
+    CommitmentTaskType? commitmentTaskType,
+    bool clearCategory = false,
+    PayeeVO? selectedPayee,
+    bool clearPayee = false,
     DateTime? selectedDate,
     TimeOfDay? selectedTime,
     bool? showNoteField,
@@ -79,7 +83,11 @@ class TransactionFormReady extends TransactionFormState {
   }) {
     return TransactionFormReady(
       transactionType: transactionType ?? this.transactionType,
-      selectedCategory: selectedCategory ?? this.selectedCategory,
+      selectedCategory: clearCategory
+          ? null
+          : (selectedCategory ?? this.selectedCategory),
+      commitmentTaskType: commitmentTaskType,
+      selectedPayee: clearPayee ? null : (selectedPayee ?? this.selectedPayee),
       selectedDate: selectedDate ?? this.selectedDate,
       selectedTime: selectedTime ?? this.selectedTime,
       showNoteField: showNoteField ?? this.showNoteField,
@@ -94,6 +102,24 @@ class TransactionFormReady extends TransactionFormState {
       editingTransactionId: editingTransactionId ?? this.editingTransactionId,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    transactionType,
+    selectedCategory,
+    commitmentTaskType,
+    selectedPayee,
+    selectedDate,
+    selectedTime,
+    showNoteField,
+    selectedSourceAccount,
+    selectedDestinationAccount,
+    title,
+    amount,
+    note,
+    isEditMode,
+    editingTransactionId,
+  ];
 }
 
 /// Form error state

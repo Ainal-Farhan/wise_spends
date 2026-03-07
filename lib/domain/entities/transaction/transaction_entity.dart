@@ -1,6 +1,39 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
 
-enum TransactionType { income, expense, transfer, commitment }
+enum TransactionType {
+  income(
+    label: 'Income',
+    icon: Icons.arrow_downward_rounded,
+    color: AppColors.income,
+  ),
+  expense(
+    label: 'Expense',
+    icon: Icons.arrow_upward_rounded,
+    color: AppColors.expense,
+  ),
+  transfer(
+    label: 'Transfer',
+    icon: Icons.swap_horiz_rounded,
+    color: AppColors.transfer,
+  ),
+  commitment(
+    label: 'Commitment',
+    icon: Icons.event_repeat_rounded,
+    color: AppColors.commitment,
+  );
+
+  const TransactionType({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+
+  final String label;
+  final IconData icon;
+  final Color color;
+}
 
 class TransactionEntity extends Equatable {
   final String id;
@@ -8,17 +41,16 @@ class TransactionEntity extends Equatable {
   final double amount;
   final TransactionType type;
 
-  // Relations
+  // -- Account links ---------------------------------------------------------
   final String savingId;
-  final String? expenseId;
+  final String? destinationSavingId;
+
+  // -- Relations -------------------------------------------------------------
+  final String? categoryId;
   final String? commitmentTaskId;
   final String? payeeId;
 
-  // Transfer Logic
-  final String? transferGroupId;
-  final String? transferType;
-
-  // Metadata
+  // -- Metadata --------------------------------------------------------------
   final DateTime date;
   final String? note;
   final DateTime createdAt;
@@ -30,27 +62,18 @@ class TransactionEntity extends Equatable {
     required this.amount,
     required this.type,
     required this.savingId,
-    this.expenseId,
+    this.destinationSavingId,
+    this.categoryId,
     this.commitmentTaskId,
     this.payeeId,
-    this.transferGroupId,
-    this.transferType,
     required this.date,
     this.note,
     required this.createdAt,
     required this.updatedAt,
   });
 
-  // ── Convenience aliases ────────────────────────────────────────────────────
-
-  /// Alias for [savingId] — used by screens that refer to the source account.
+  /// Alias — call sites that used sourceAccountId still compile.
   String get sourceAccountId => savingId;
-
-  /// Alias for [savingId] — kept for backward-compat call sites using savingIds.
-  String get savingIds => savingId;
-
-  /// Alias for [expenseId] — used by screens and blocs that refer to categoryId.
-  String? get categoryId => expenseId;
 
   @override
   List<Object?> get props => [
@@ -59,11 +82,10 @@ class TransactionEntity extends Equatable {
     amount,
     type,
     savingId,
-    expenseId,
+    destinationSavingId,
+    categoryId,
     commitmentTaskId,
     payeeId,
-    transferGroupId,
-    transferType,
     date,
     note,
     createdAt,
@@ -76,11 +98,10 @@ class TransactionEntity extends Equatable {
     double? amount,
     TransactionType? type,
     String? savingId,
-    String? expenseId,
+    String? destinationSavingId,
+    String? categoryId,
     String? commitmentTaskId,
     String? payeeId,
-    String? transferGroupId,
-    String? transferType,
     DateTime? date,
     String? note,
     DateTime? createdAt,
@@ -92,11 +113,10 @@ class TransactionEntity extends Equatable {
       amount: amount ?? this.amount,
       type: type ?? this.type,
       savingId: savingId ?? this.savingId,
-      expenseId: expenseId ?? this.expenseId,
+      destinationSavingId: destinationSavingId ?? this.destinationSavingId,
+      categoryId: categoryId ?? this.categoryId,
       commitmentTaskId: commitmentTaskId ?? this.commitmentTaskId,
       payeeId: payeeId ?? this.payeeId,
-      transferGroupId: transferGroupId ?? this.transferGroupId,
-      transferType: transferType ?? this.transferType,
       date: date ?? this.date,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,

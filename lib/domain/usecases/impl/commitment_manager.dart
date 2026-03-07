@@ -608,7 +608,7 @@ class CommitmentManager extends ICommitmentManager {
     switch (taskVO.type) {
       case CommitmentTaskType.internalTransfer:
         if (taskVO.sourceSavingId == null) return;
-        await transactionRepo.createTransaction(
+        await transactionRepo.saveTransaction(
           TransactionEntity(
             id: baseId,
             title: taskVO.name ?? 'Commitment Transfer',
@@ -620,6 +620,7 @@ class CommitmentManager extends ICommitmentManager {
                 taskVO.note ??
                 'Transfer from $sourceSavingName to $targetSavingName',
             savingId: taskVO.sourceSavingId!,
+            destinationSavingId: taskVO.targetSavingId,
             createdAt: now,
             updatedAt: now,
           ),
@@ -628,7 +629,7 @@ class CommitmentManager extends ICommitmentManager {
 
       case CommitmentTaskType.thirdPartyPayment:
         if (taskVO.sourceSavingId == null) return;
-        await transactionRepo.createTransaction(
+        await transactionRepo.saveTransaction(
           TransactionEntity(
             id: baseId,
             title: taskVO.name ?? 'Commitment Payment',
@@ -639,6 +640,7 @@ class CommitmentManager extends ICommitmentManager {
             date: now,
             note: taskVO.note ?? 'Payment from $sourceSavingName',
             savingId: taskVO.sourceSavingId!,
+            destinationSavingId: taskVO.targetSavingId,
             createdAt: now,
             updatedAt: now,
           ),

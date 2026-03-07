@@ -5,8 +5,10 @@ import 'package:wise_spends/core/utils/singleton_util.dart';
 
 class TransactionService extends ITransactionService {
   TransactionService()
-      : super(SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getTransactionRepository());
+    : super(
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .getTransactionRepository(),
+      );
 
   final ITransactionRepository _transactionRepository =
       SingletonUtil.getSingleton<IRepositoryLocator>()!
@@ -14,6 +16,6 @@ class TransactionService extends ITransactionService {
 
   @override
   Future<void> deleteAllBasedOnSavingId(String savingId) async {
-    await _transactionRepository.deleteBasedOnSavingId(savingId);
+    await _transactionRepository.deleteAllBySavingAccount(savingId);
   }
 }

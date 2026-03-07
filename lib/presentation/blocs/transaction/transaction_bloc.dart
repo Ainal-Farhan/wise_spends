@@ -4,6 +4,8 @@ import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 import 'transaction_event.dart';
@@ -33,6 +35,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<ClearFiltersEvent>(_onClearFilters);
     on<RefreshTransactionsEvent>(_onRefreshTransactions);
     on<ReloadTransactionsEvent>(_onReloadTransactions);
+    on<FilterTransactionsByDateRangeEvent>(_onFilterByDateRange);
   }
 
   // ============================================================================
@@ -45,7 +48,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     emit(TransactionLoading());
     try {
-      final tx = await _repository.getTransactionById(event.transactionId);
+      final tx = await _repository.fetchById(event.transactionId);
       if (tx == null) {
         emit(const TransactionError('Transaction not found'));
         return;
@@ -59,14 +62,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       // ── Resolve category name + icon ───────────────────────────────────────
       String categoryName = 'Uncategorized';
       IconData categoryIcon = CategoryIconMapper.getIconForCategory(
-        tx.expenseId ?? '',
+        tx.categoryId ?? '',
       );
 
-      if (tx.expenseId != null && tx.expenseId!.isNotEmpty) {
+      if (tx.categoryId != null && tx.categoryId!.isNotEmpty) {
         try {
           final categoryRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
               .getCategoryRepository();
-          final category = await categoryRepo.findById(id: tx.expenseId!);
+          final category = await categoryRepo.findById(id: tx.categoryId!);
           if (category != null) {
             categoryName = category.name;
             categoryIcon = CategoryIconMapper.getIconForCategory(category.name);
@@ -76,34 +79,22 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       // ── Resolve target account (transfers) ─────────────────────────────────
       String? targetAccountName;
-      if (tx.transferGroupId != null && tx.transferType == 'debit') {
-        try {
-          final pairedTx = await _repository.getTransactionByTransferGroupId(
-            tx.transferGroupId!,
-            excludeId: tx.id,
-          );
-          if (pairedTx != null) {
-            final targetSaving = await _savingRepository.getSavingById(
-              pairedTx.savingId,
-            );
-            targetAccountName = targetSaving?.saving.name ?? pairedTx.savingId;
-          }
-        } catch (_) {}
+      if (tx.destinationSavingId != null) {
+        final targetSaving = await _savingRepository.getSavingById(
+          tx.destinationSavingId!,
+        );
+        targetAccountName = targetSaving?.saving.name ?? tx.destinationSavingId;
       }
 
       // ── Resolve payee info ─────────────────────────────────────────────────
-      String? payeeName;
-      String? payeeBankName;
-      String? payeeAccountNumber;
+      PayeeVO? payeeVO;
       if (tx.payeeId != null) {
         try {
           final payeeRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
               .getPayeeRepository();
           final payee = await payeeRepo.findById(id: tx.payeeId!);
           if (payee != null) {
-            payeeName = payee.name;
-            payeeBankName = payee.bankName;
-            payeeAccountNumber = payee.accountNumber;
+            payeeVO = PayeeVO.fromExpnsPayee(payee);
           }
         } catch (_) {}
       }
@@ -126,9 +117,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           categoryName: categoryName,
           categoryIcon: categoryIcon,
           targetAccountName: targetAccountName,
-          payeeName: payeeName,
-          payeeBankName: payeeBankName,
-          payeeAccountNumber: payeeAccountNumber,
+          payeeVO: payeeVO,
           commitmentTaskName: commitmentTaskName,
         ),
       );
@@ -147,13 +136,41 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     emit(TransactionLoading());
     try {
-      final transaction = await _repository.getTransactionById(
-        event.transactionId,
-      );
+      final transaction = await _repository.fetchById(event.transactionId);
       if (transaction == null) {
         emit(const TransactionError('Transaction not found'));
       } else {
-        emit(TransactionLoadedById(transaction));
+        CommitmentTaskVO? commitmentTaskVO;
+        PayeeVO? payeeVO;
+        if (transaction.commitmentTaskId != null) {
+          final commitment =
+              await SingletonUtil.getSingleton<IRepositoryLocator>()!
+                  .getCommitmentTaskRepository()
+                  .findById(id: transaction.commitmentTaskId!);
+
+          if (commitment != null) {
+            commitmentTaskVO = CommitmentTaskVO.fromExpnsCommitmentTask(
+              commitment,
+            );
+          }
+        }
+
+        if (transaction.payeeId != null) {
+          final payee = await SingletonUtil.getSingleton<IRepositoryLocator>()!
+              .getPayeeRepository()
+              .findById(id: transaction.payeeId!);
+
+          if (payee != null) {
+            payeeVO = PayeeVO.fromExpnsPayee(payee);
+          }
+        }
+        emit(
+          TransactionLoadedById(
+            transaction,
+            commitmentTaskVO: commitmentTaskVO,
+            payeeVO: payeeVO,
+          ),
+        );
       }
     } catch (e) {
       emit(TransactionError('Failed to load transaction: ${e.toString()}'));
@@ -170,17 +187,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     emit(TransactionLoading());
     try {
-      final transactions = await _repository.getAllTransactions();
+      final transactions = await _repository.fetchAll();
       final now = DateTime.now();
       final thirtyDaysAgo = now.subtract(const Duration(days: 30));
 
-      final totalIncome = await _repository.getTotalIncome(
-        startDate: thirtyDaysAgo,
-        endDate: now,
+      final totalIncome = await _repository.sumIncome(
+        from: thirtyDaysAgo,
+        to: now,
       );
-      final totalExpenses = await _repository.getTotalExpenses(
-        startDate: thirtyDaysAgo,
-        endDate: now,
+      final totalExpenses = await _repository.sumExpenses(
+        from: thirtyDaysAgo,
+        to: now,
       );
 
       if (transactions.isEmpty) {
@@ -207,19 +224,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     try {
-      final transactions = await _repository.getRecentTransactions(
-        limit: event.limit,
-      );
+      final transactions = await _repository.fetchRecent(limit: event.limit);
       final now = DateTime.now();
       final thirtyDaysAgo = now.subtract(const Duration(days: 30));
 
-      final totalIncome = await _repository.getTotalIncome(
-        startDate: thirtyDaysAgo,
-        endDate: now,
+      final totalIncome = await _repository.sumIncome(
+        from: thirtyDaysAgo,
+        to: now,
       );
-      final totalExpenses = await _repository.getTotalExpenses(
-        startDate: thirtyDaysAgo,
-        endDate: now,
+      final totalExpenses = await _repository.sumExpenses(
+        from: thirtyDaysAgo,
+        to: now,
       );
 
       emit(
@@ -243,17 +258,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     emit(TransactionLoading());
     try {
-      final transactions = await _repository.getTransactionsByDateRange(
-        startDate: event.startDate,
-        endDate: event.endDate,
+      final transactions = await _repository.fetchByDateRange(
+        from: event.startDate,
+        to: event.endDate,
       );
-      final totalIncome = await _repository.getTotalIncome(
-        startDate: event.startDate,
-        endDate: event.endDate,
+      final totalIncome = await _repository.sumIncome(
+        from: event.startDate,
+        to: event.endDate,
       );
-      final totalExpenses = await _repository.getTotalExpenses(
-        startDate: event.startDate,
-        endDate: event.endDate,
+      final totalExpenses = await _repository.sumExpenses(
+        from: event.startDate,
+        to: event.endDate,
       );
 
       if (transactions.isEmpty) {
@@ -281,7 +296,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     emit(TransactionLoading());
     try {
-      final transactions = await _repository.getTransactionsByType(event.type);
+      final transactions = await _repository.fetchByType(event.type);
       emit(
         TransactionsFilteredLoaded(
           transactions: transactions,
@@ -300,11 +315,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(TransactionLoading());
     try {
       final transactions = event.startDate != null && event.endDate != null
-          ? await _repository.getTransactionsByDateRange(
-              startDate: event.startDate!,
-              endDate: event.endDate!,
+          ? await _repository.fetchByDateRange(
+              from: event.startDate!,
+              to: event.endDate!,
             )
-          : await _repository.getAllTransactions();
+          : await _repository.fetchAll();
 
       final grouped = <DateTime, List<TransactionEntity>>{};
       for (final tx in transactions) {
@@ -318,13 +333,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       final now = DateTime.now();
       final thirtyDaysAgo = now.subtract(const Duration(days: 30));
-      final totalIncome = await _repository.getTotalIncome(
-        startDate: event.startDate ?? thirtyDaysAgo,
-        endDate: event.endDate ?? now,
+      final totalIncome = await _repository.sumIncome(
+        from: event.startDate ?? thirtyDaysAgo,
+        to: event.endDate ?? now,
       );
-      final totalExpenses = await _repository.getTotalExpenses(
-        startDate: event.startDate ?? thirtyDaysAgo,
-        endDate: event.endDate ?? now,
+      final totalExpenses = await _repository.sumExpenses(
+        from: event.startDate ?? thirtyDaysAgo,
+        to: event.endDate ?? now,
       );
 
       if (sortedGrouped.isEmpty) {
@@ -370,9 +385,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         title: event.title,
         amount: event.amount,
         type: event.type,
-        savingId:
-            event.sourceAccountId ?? '', // ← fixed: savingId = source account
-        expenseId: event.categoryId, // ← fixed: expenseId = category
+        savingId: event.sourceAccountId ?? '',
+        payeeId: event.payeeId,
+        destinationSavingId: event.destinationAccountId,
+        categoryId: event.categoryId,
         date: transactionDateTime,
         note: event.note,
         createdAt: DateTime.now(),
@@ -387,7 +403,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         reference: event.title,
       );
 
-      final created = await _repository.createTransaction(transaction);
+      final created = await _repository.saveTransaction(transaction);
       emit(TransactionCreated(created));
       add(LoadTransactionsEvent());
     } catch (e) {
@@ -406,9 +422,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     emit(TransactionLoading());
     try {
       // Load the existing transaction so we can preserve immutable fields
-      final existing = await _repository.getTransactionById(
-        event.transaction.id,
-      );
+      final existing = await _repository.fetchById(event.transaction.id);
 
       if (existing == null) {
         emit(const TransactionError('Transaction not found'));
@@ -428,7 +442,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         updatedAt: DateTime.now(),
       );
 
-      final saved = await _repository.updateTransaction(updated);
+      final saved = await _repository.editTransaction(updated);
       emit(TransactionUpdated(saved));
       add(LoadTransactionsEvent());
     } catch (e) {
@@ -447,13 +461,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     try {
-      final allTransactions = await _repository.getAllTransactions();
+      final allTransactions = await _repository.fetchAll();
       final deletedTransaction = allTransactions.firstWhere(
         (t) => t.id == event.transactionId,
         orElse: () => throw Exception('Transaction not found'),
       );
 
-      await _repository.deleteTransaction(event.transactionId);
+      await _repository.removeTransaction(event.transactionId);
       emit(TransactionDeleted(event.transactionId));
 
       _deletedTransactionBuffer[event.transactionId] = deletedTransaction;
@@ -470,7 +484,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Future<void> undoDelete(String transactionId) async {
     final transaction = _deletedTransactionBuffer.remove(transactionId);
     if (transaction != null) {
-      await _repository.createTransaction(transaction);
+      await _repository.saveTransaction(transaction);
       add(LoadTransactionsEvent());
     }
   }
@@ -481,7 +495,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ) async {
     try {
       for (final id in event.transactionIds) {
-        await _repository.deleteTransaction(id);
+        await _repository.removeTransaction(id);
       }
       emit(MultipleTransactionsDeleted(event.transactionIds));
       add(LoadTransactionsEvent());
@@ -499,12 +513,75 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     try {
-      final results = await _repository.searchTransactions(event.query);
+      final current = state is TransactionLoaded
+          ? state as TransactionLoaded
+          : null;
+
+      emit(TransactionLoading());
+      final allTransactions = await _repository.fetchAll();
+
+      var filtered = allTransactions;
+
+      // Preserve type filter
+      if (current?.filterType != null) {
+        filtered = filtered
+            .where((t) => t.type == current!.filterType)
+            .toList();
+      }
+
+      // Preserve date filter
+      if (current?.filterFrom != null && current?.filterTo != null) {
+        filtered = filtered
+            .where(
+              (t) =>
+                  t.date.isAfter(
+                    current!.filterFrom!.subtract(const Duration(seconds: 1)),
+                  ) &&
+                  t.date.isBefore(
+                    current.filterTo!.add(const Duration(seconds: 1)),
+                  ),
+            )
+            .toList();
+      }
+
+      // Apply search
+      if (event.query.isNotEmpty) {
+        filtered = filtered
+            .where(
+              (t) =>
+                  t.title.toLowerCase().contains(event.query.toLowerCase()) ||
+                  (t.note?.toLowerCase().contains(event.query.toLowerCase()) ??
+                      false),
+            )
+            .toList();
+      }
+
+      final now = DateTime.now();
+      final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+      final totalIncome = await _repository.sumIncome(
+        from: thirtyDaysAgo,
+        to: now,
+      );
+      final totalExpenses = await _repository.sumExpenses(
+        from: thirtyDaysAgo,
+        to: now,
+      );
+
       emit(
-        TransactionSearchResults(query: event.query, searchResults: results),
+        TransactionLoaded(
+          transactions: filtered,
+          totalIncome: totalIncome,
+          totalExpenses: totalExpenses,
+          totalBalance: totalIncome - totalExpenses,
+          filterType: current?.filterType,
+          searchQuery: event.query,
+          filterFrom: current?.filterFrom,
+          filterTo: current?.filterTo,
+          dateRangeLabel: current?.dateRangeLabel,
+        ),
       );
     } catch (e) {
-      emit(TransactionError('Failed to search transactions: ${e.toString()}'));
+      emit(TransactionError('Failed to search: ${e.toString()}'));
     }
   }
 
@@ -520,7 +597,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     try {
-      final transactions = await _repository.getAllTransactions();
+      emit(TransactionLoading());
+
+      final transactions = await _repository.fetchAll();
       final filtered = event.categoryId == null
           ? transactions
           : transactions
@@ -543,18 +622,158 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     try {
-      final transactions = await _repository.getAllTransactions();
-      final filtered = event.type == null
-          ? transactions
-          : transactions.where((t) => t.type == event.type!).toList();
+      // Preserve existing filter state
+      final current = state is TransactionLoaded
+          ? state as TransactionLoaded
+          : null;
+
+      emit(TransactionLoading());
+
+      final allTransactions = await _repository.fetchAll();
+      final newFilterType = event.type;
+      final existingDateFrom = current?.filterFrom;
+      final existingDateTo = current?.filterTo;
+      final existingSearch = current?.searchQuery;
+
+      var filtered = allTransactions;
+
+      // Apply type filter
+      if (newFilterType != null) {
+        filtered = filtered.where((t) => t.type == newFilterType).toList();
+      }
+
+      // Preserve date filter
+      if (existingDateFrom != null && existingDateTo != null) {
+        filtered = filtered
+            .where(
+              (t) =>
+                  t.date.isAfter(
+                    existingDateFrom.subtract(const Duration(seconds: 1)),
+                  ) &&
+                  t.date.isBefore(
+                    existingDateTo.add(const Duration(seconds: 1)),
+                  ),
+            )
+            .toList();
+      }
+
+      // Preserve search
+      if (existingSearch != null && existingSearch.isNotEmpty) {
+        filtered = filtered
+            .where(
+              (t) =>
+                  t.title.toLowerCase().contains(
+                    existingSearch.toLowerCase(),
+                  ) ||
+                  (t.note?.toLowerCase().contains(
+                        existingSearch.toLowerCase(),
+                      ) ??
+                      false),
+            )
+            .toList();
+      }
+
+      final now = DateTime.now();
+      final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+      final totalIncome = await _repository.sumIncome(
+        from: thirtyDaysAgo,
+        to: now,
+      );
+      final totalExpenses = await _repository.sumExpenses(
+        from: thirtyDaysAgo,
+        to: now,
+      );
+
       emit(
-        TransactionsFilteredLoaded(
+        TransactionLoaded(
           transactions: filtered,
-          filterType: event.type,
+          totalIncome: totalIncome,
+          totalExpenses: totalExpenses,
+          totalBalance: totalIncome - totalExpenses,
+          filterType: newFilterType,
+          searchQuery: existingSearch,
+          filterFrom: existingDateFrom,
+          filterTo: existingDateTo,
+          dateRangeLabel: current?.dateRangeLabel,
         ),
       );
     } catch (e) {
-      emit(TransactionError('Failed to filter transactions: ${e.toString()}'));
+      emit(TransactionError('Failed to filter: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onFilterByDateRange(
+    FilterTransactionsByDateRangeEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    try {
+      final current = state is TransactionLoaded
+          ? state as TransactionLoaded
+          : null;
+
+      emit(TransactionLoading());
+
+      final allTransactions = await _repository.fetchAll();
+      final existingType = current?.filterType;
+      final existingSearch = current?.searchQuery;
+
+      var filtered = allTransactions;
+
+      if (existingType != null) {
+        filtered = filtered.where((t) => t.type == existingType).toList();
+      }
+      if (event.from != null && event.to != null) {
+        filtered = filtered
+            .where(
+              (t) =>
+                  t.date.isAfter(
+                    event.from!.subtract(const Duration(seconds: 1)),
+                  ) &&
+                  t.date.isBefore(event.to!.add(const Duration(seconds: 1))),
+            )
+            .toList();
+      }
+      if (existingSearch != null && existingSearch.isNotEmpty) {
+        filtered = filtered
+            .where(
+              (t) =>
+                  t.title.toLowerCase().contains(
+                    existingSearch.toLowerCase(),
+                  ) ||
+                  (t.note?.toLowerCase().contains(
+                        existingSearch.toLowerCase(),
+                      ) ??
+                      false),
+            )
+            .toList();
+      }
+
+      final now = DateTime.now();
+      final thirtyDaysAgo = now.subtract(const Duration(days: 30));
+      final totalIncome = await _repository.sumIncome(
+        from: thirtyDaysAgo,
+        to: now,
+      );
+      final totalExpenses = await _repository.sumExpenses(
+        from: thirtyDaysAgo,
+        to: now,
+      );
+
+      emit(
+        TransactionLoaded(
+          transactions: filtered,
+          totalIncome: totalIncome,
+          totalExpenses: totalExpenses,
+          totalBalance: totalIncome - totalExpenses,
+          filterType: existingType,
+          searchQuery: existingSearch,
+          filterFrom: event.from,
+          filterTo: event.to,
+          dateRangeLabel: event.rangeLabel,
+        ),
+      );
+    } catch (e) {
+      emit(TransactionError('Failed to filter by date: ${e.toString()}'));
     }
   }
 
@@ -570,16 +789,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     try {
-      final transactions = await _repository.getAllTransactions();
+      final transactions = await _repository.fetchAll();
       final now = DateTime.now();
       final thirtyDaysAgo = now.subtract(const Duration(days: 30));
-      final totalIncome = await _repository.getTotalIncome(
-        startDate: thirtyDaysAgo,
-        endDate: now,
+      final totalIncome = await _repository.sumIncome(
+        from: thirtyDaysAgo,
+        to: now,
       );
-      final totalExpenses = await _repository.getTotalExpenses(
-        startDate: thirtyDaysAgo,
-        endDate: now,
+      final totalExpenses = await _repository.sumExpenses(
+        from: thirtyDaysAgo,
+        to: now,
       );
       emit(
         RecentTransactionsLoaded(

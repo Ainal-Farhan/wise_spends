@@ -100,6 +100,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
               TransactionDetailLoaded(
                 transaction: state.transaction,
                 accountName: state.transaction.sourceAccountId,
+                payeeVO: state.payeeVO,
                 categoryName: state.transaction.categoryId ?? '',
                 categoryIcon: CategoryIconMapper.getIconForCategory(
                   state.transaction.categoryId ?? '',
@@ -361,23 +362,23 @@ class _TransactionDetailScreenContent extends StatelessWidget {
             ),
 
           // Payee info — only for third-party commitment payments
-          if (state.payeeName != null)
+          if (state.payeeVO?.name != null)
             _buildDetailRow(
               icon: Icons.person_outline,
               label: 'Payee',
-              value: state.payeeName!,
+              value: state.payeeVO!.name!,
             ),
-          if (state.payeeBankName != null)
+          if (state.payeeVO?.bankName != null)
             _buildDetailRow(
               icon: Icons.account_balance_wallet_outlined,
               label: 'Bank',
-              value: state.payeeBankName!,
+              value: state.payeeVO!.bankName!,
             ),
-          if (state.payeeAccountNumber != null)
+          if (state.payeeVO?.accountNumber != null)
             _buildDetailRow(
               icon: Icons.credit_card_outlined,
               label: 'Account No.',
-              value: state.payeeAccountNumber!,
+              value: state.payeeVO!.accountNumber!,
             ),
 
           // Commitment task reference

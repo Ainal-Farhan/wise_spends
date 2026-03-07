@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 abstract class TransactionState extends Equatable {
@@ -22,6 +24,9 @@ class TransactionLoaded extends TransactionState {
   final String? searchQuery;
   final DateTime? startDate;
   final DateTime? endDate;
+  final DateTime? filterFrom;
+  final DateTime? filterTo;
+  final String? dateRangeLabel;
 
   const TransactionLoaded({
     required this.transactions,
@@ -32,7 +37,46 @@ class TransactionLoaded extends TransactionState {
     this.searchQuery,
     this.startDate,
     this.endDate,
+    this.filterFrom,
+    this.filterTo,
+    this.dateRangeLabel,
   });
+
+  bool get hasActiveFilters =>
+      filterType != null ||
+      (searchQuery != null && searchQuery!.isNotEmpty) ||
+      filterFrom != null;
+
+  TransactionLoaded copyWith({
+    List<TransactionEntity>? transactions,
+    double? totalIncome,
+    double? totalExpenses,
+    double? totalBalance,
+    TransactionType? filterType,
+    bool clearFilterType = false,
+    String? searchQuery,
+    bool clearSearchQuery = false,
+    DateTime? filterFrom,
+    bool clearFilterFrom = false,
+    DateTime? filterTo,
+    bool clearFilterTo = false,
+    String? dateRangeLabel,
+    bool clearDateRangeLabel = false,
+  }) {
+    return TransactionLoaded(
+      transactions: transactions ?? this.transactions,
+      totalIncome: totalIncome ?? this.totalIncome,
+      totalExpenses: totalExpenses ?? this.totalExpenses,
+      totalBalance: totalBalance ?? this.totalBalance,
+      filterType: clearFilterType ? null : (filterType ?? this.filterType),
+      searchQuery: clearSearchQuery ? null : (searchQuery ?? this.searchQuery),
+      filterFrom: clearFilterFrom ? null : (filterFrom ?? this.filterFrom),
+      filterTo: clearFilterTo ? null : (filterTo ?? this.filterTo),
+      dateRangeLabel: clearDateRangeLabel
+          ? null
+          : (dateRangeLabel ?? this.dateRangeLabel),
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -42,6 +86,9 @@ class TransactionLoaded extends TransactionState {
     totalBalance,
     startDate,
     endDate,
+    filterFrom,
+    filterTo,
+    dateRangeLabel,
   ];
 }
 
@@ -108,11 +155,17 @@ class TransactionsFilteredLoaded extends TransactionState {
 /// Prefer [TransactionDetailLoaded] for the detail screen.
 class TransactionLoadedById extends TransactionState {
   final TransactionEntity transaction;
+  final CommitmentTaskVO? commitmentTaskVO;
+  final PayeeVO? payeeVO;
 
-  const TransactionLoadedById(this.transaction);
+  const TransactionLoadedById(
+    this.transaction, {
+    this.commitmentTaskVO,
+    this.payeeVO,
+  });
 
   @override
-  List<Object?> get props => [transaction];
+  List<Object?> get props => [transaction, commitmentTaskVO, payeeVO];
 }
 
 /// Enriched detail state — carries the resolved display strings so
@@ -138,9 +191,7 @@ class TransactionDetailLoaded extends TransactionState {
 
   // Transfer / commitment extras — all nullable
   final String? targetAccountName;
-  final String? payeeName;
-  final String? payeeBankName;
-  final String? payeeAccountNumber;
+  final PayeeVO? payeeVO;
   final String? commitmentTaskName;
 
   const TransactionDetailLoaded({
@@ -149,9 +200,7 @@ class TransactionDetailLoaded extends TransactionState {
     required this.categoryName,
     required this.categoryIcon,
     this.targetAccountName,
-    this.payeeName,
-    this.payeeBankName,
-    this.payeeAccountNumber,
+    this.payeeVO,
     this.commitmentTaskName,
   });
 
@@ -162,9 +211,7 @@ class TransactionDetailLoaded extends TransactionState {
     categoryName,
     categoryIcon,
     targetAccountName,
-    payeeName,
-    payeeBankName,
-    payeeAccountNumber,
+    payeeVO,
     commitmentTaskName,
   ];
 }

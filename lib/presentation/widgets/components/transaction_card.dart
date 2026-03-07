@@ -67,9 +67,9 @@ class TransactionCard extends StatelessWidget {
                     Text(
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: WiseSpendsColors.textPrimary,
-                          ),
+                        fontWeight: FontWeight.w600,
+                        color: WiseSpendsColors.textPrimary,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -78,9 +78,8 @@ class TransactionCard extends StatelessWidget {
                       children: [
                         Text(
                           _formatDate(date),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: WiseSpendsColors.textHint,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: WiseSpendsColors.textHint),
                         ),
                         if (note != null && note!.isNotEmpty) ...[
                           const SizedBox(width: UIConstants.spacingSmall),
@@ -96,9 +95,8 @@ class TransactionCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               note!,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: WiseSpendsColors.textHint,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: WiseSpendsColors.textHint),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -146,26 +144,21 @@ class TransactionCard extends StatelessWidget {
     IconData defaultIcon;
     Color iconColor;
 
+    defaultIcon = type.icon;
+    iconColor = type.color;
+
     switch (type) {
       case TransactionType.income:
         backgroundColor = WiseSpendsColors.primaryContainer;
-        defaultIcon = Icons.arrow_downward_rounded;
-        iconColor = WiseSpendsColors.primaryDark;
         break;
       case TransactionType.expense:
         backgroundColor = WiseSpendsColors.secondaryContainer;
-        defaultIcon = Icons.arrow_upward_rounded;
-        iconColor = WiseSpendsColors.secondaryDark;
         break;
       case TransactionType.transfer:
         backgroundColor = WiseSpendsColors.tertiaryContainer;
-        defaultIcon = Icons.swap_horiz_rounded;
-        iconColor = WiseSpendsColors.tertiaryDark;
         break;
       case TransactionType.commitment:
-        backgroundColor = WiseSpendsColors.tertiaryContainer;
-        defaultIcon = Icons.task_alt;
-        iconColor = WiseSpendsColors.tertiaryDark;
+        backgroundColor = WiseSpendsColors.commitmentContainer;
         break;
     }
 

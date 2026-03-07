@@ -90,6 +90,7 @@ class CreateTransactionEvent extends TransactionEvent {
   final String? note;
   final String? sourceAccountId;
   final String? destinationAccountId;
+  final String? payeeId;
 
   const CreateTransactionEvent({
     required this.title,
@@ -101,6 +102,7 @@ class CreateTransactionEvent extends TransactionEvent {
     this.note,
     this.sourceAccountId,
     this.destinationAccountId,
+    this.payeeId,
   });
 
   @override
@@ -114,6 +116,7 @@ class CreateTransactionEvent extends TransactionEvent {
     note,
     sourceAccountId,
     destinationAccountId,
+    payeeId,
   ];
 }
 
@@ -171,6 +174,21 @@ class FilterTransactionsByTypeEvent extends TransactionEvent {
 
   @override
   List<Object?> get props => [type];
+}
+
+class FilterTransactionsByDateRangeEvent extends TransactionEvent {
+  final DateTime? from;
+  final DateTime? to;
+  final String? rangeLabel;
+
+  const FilterTransactionsByDateRangeEvent({
+    this.from,
+    this.to,
+    this.rangeLabel,
+  });
+
+  @override
+  List<Object?> get props => [from, to, rangeLabel];
 }
 
 class ClearFiltersEvent extends TransactionEvent {}

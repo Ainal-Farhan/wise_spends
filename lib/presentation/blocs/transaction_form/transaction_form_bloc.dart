@@ -3,7 +3,6 @@ import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart'
 import 'transaction_form_event.dart';
 import 'transaction_form_state.dart';
 
-/// Transaction Form BLoC - manages add/edit transaction form state
 class TransactionFormBloc
     extends Bloc<TransactionFormEvent, TransactionFormState> {
   TransactionFormBloc() : super(TransactionFormInitial()) {
@@ -11,6 +10,7 @@ class TransactionFormBloc
     on<InitializeTransactionFormForEdit>(_onInitializeForEdit);
     on<ChangeTransactionType>(_onChangeType);
     on<SelectCategory>(_onSelectCategory);
+    on<SelectPayee>(_onSelectPayee);
     on<ChangeTransactionDate>(_onChangeDate);
     on<ChangeTransactionTime>(_onChangeTime);
     on<ToggleNoteField>(_onToggleNoteField);
@@ -38,11 +38,15 @@ class TransactionFormBloc
       TransactionFormReady(
         transactionType: event.transaction.type,
         selectedCategory: event.category,
+        selectedPayee: event.payee,
+        commitmentTaskType: event.commitmentTaskVO?.type,
         selectedDate: event.transaction.date,
+        selectedTime: event.selectedTime,
         showNoteField:
             event.transaction.note != null &&
             event.transaction.note!.isNotEmpty,
-        selectedSourceAccount: event.transaction.expenseId,
+        selectedSourceAccount: event.transaction.sourceAccountId,
+        selectedDestinationAccount: event.transaction.destinationSavingId,
         title: event.transaction.title,
         amount: event.transaction.amount.toString(),
         note: event.transaction.note,
@@ -56,24 +60,36 @@ class TransactionFormBloc
     ChangeTransactionType event,
     Emitter<TransactionFormState> emit,
   ) {
-    if (state is TransactionFormReady) {
-      final currentState = state as TransactionFormReady;
-      emit(
-        currentState.copyWith(
-          transactionType: event.type,
-          selectedCategory: null, // Reset category when type changes
-        ),
-      );
-    }
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    emit(
+      current.copyWith(
+        transactionType: event.type,
+        clearCategory: true,
+        // Clear payee if switching to a type that doesn't support it
+        clearPayee:
+            event.type != TransactionType.expense &&
+            event.type != TransactionType.commitment,
+      ),
+    );
   }
 
   void _onSelectCategory(
     SelectCategory event,
     Emitter<TransactionFormState> emit,
   ) {
-    if (state is TransactionFormReady) {
-      final currentState = state as TransactionFormReady;
-      emit(currentState.copyWith(selectedCategory: event.category));
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    emit(current.copyWith(selectedCategory: event.category));
+  }
+
+  void _onSelectPayee(SelectPayee event, Emitter<TransactionFormState> emit) {
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    if (event.payee == null) {
+      emit(current.copyWith(clearPayee: true));
+    } else {
+      emit(current.copyWith(selectedPayee: event.payee));
     }
   }
 
@@ -81,50 +97,45 @@ class TransactionFormBloc
     ChangeTransactionDate event,
     Emitter<TransactionFormState> emit,
   ) {
-    if (state is TransactionFormReady) {
-      final currentState = state as TransactionFormReady;
-      emit(currentState.copyWith(selectedDate: event.date));
-    }
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    emit(current.copyWith(selectedDate: event.date));
   }
 
   void _onChangeTime(
     ChangeTransactionTime event,
     Emitter<TransactionFormState> emit,
   ) {
-    if (state is TransactionFormReady) {
-      final currentState = state as TransactionFormReady;
-      emit(currentState.copyWith(selectedTime: event.time));
-    }
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    emit(current.copyWith(selectedTime: event.time));
   }
 
   void _onToggleNoteField(
     ToggleNoteField event,
     Emitter<TransactionFormState> emit,
   ) {
-    if (state is TransactionFormReady) {
-      final currentState = state as TransactionFormReady;
-      emit(currentState.copyWith(showNoteField: event.show));
-    }
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    emit(current.copyWith(showNoteField: event.show));
   }
 
   void _onSelectSourceAccount(
     SelectSourceAccount event,
     Emitter<TransactionFormState> emit,
   ) {
-    if (state is TransactionFormReady) {
-      final currentState = state as TransactionFormReady;
-      emit(currentState.copyWith(selectedSourceAccount: event.accountId));
-    }
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    emit(current.copyWith(selectedSourceAccount: event.accountId));
   }
 
   void _onSelectDestinationAccount(
     SelectDestinationAccount event,
     Emitter<TransactionFormState> emit,
   ) {
-    if (state is TransactionFormReady) {
-      final currentState = state as TransactionFormReady;
-      emit(currentState.copyWith(selectedDestinationAccount: event.accountId));
-    }
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    emit(current.copyWith(selectedDestinationAccount: event.accountId));
   }
 
   void _onClear(

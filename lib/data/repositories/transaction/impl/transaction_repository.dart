@@ -3,127 +3,133 @@ import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
-/// Transaction Repository Implementation
-/// Handles all database operations for transactions
 class TransactionRepository extends ITransactionRepository {
   TransactionRepository() : super(AppDatabase());
 
   @override
   String getTypeName() => 'TransactionTable';
 
+  // ---------------------------------------------------------------------------
+  // Delete helpers
+  // ---------------------------------------------------------------------------
+
   @override
-  Future<void> deleteBasedOnSavingId(String savingId) async {
+  Future<void> deleteAllBySavingAccount(String savingAccountId) async {
     await (db.delete(
       db.transactionTable,
-    )..where((tbl) => tbl.savingId.equals(savingId))).go();
+    )..where((tbl) => tbl.savingId.equals(savingAccountId))).go();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Fetch — all / recent
+  // ---------------------------------------------------------------------------
+
+  @override
+  Future<List<TransactionEntity>> fetchAll() async {
+    final rows = await db.select(db.transactionTable).get();
+    return rows.map(_toEntity).toList();
   }
 
   @override
-  Future<List<TransactionEntity>> getAllTransactions() async {
-    final query = db.select(db.transactionTable);
-    final rows = await query.get();
-
-    return rows.map(_mapToEntity).toList();
+  Future<List<TransactionEntity>> fetchRecent({int limit = 10}) async {
+    final rows =
+        await (db.select(db.transactionTable)
+              ..orderBy([(tbl) => OrderingTerm.desc(tbl.dateCreated)])
+              ..limit(limit))
+            .get();
+    return rows.map(_toEntity).toList();
   }
 
+  // ---------------------------------------------------------------------------
+  // Fetch — filtered
+  // ---------------------------------------------------------------------------
+
   @override
-  Future<List<TransactionEntity>> getTransactionsByDateRange({
-    required DateTime startDate,
-    required DateTime endDate,
+  Future<List<TransactionEntity>> fetchByDateRange({
+    required DateTime from,
+    required DateTime to,
   }) async {
-    final query = db.select(db.transactionTable)
-      ..where(
-        (tbl) =>
-            tbl.dateCreated.isBiggerOrEqualValue(startDate) &
-            tbl.dateCreated.isSmallerOrEqualValue(endDate),
-      );
-
-    final rows = await query.get();
-    return rows.map(_mapToEntity).toList();
+    final rows =
+        await (db.select(db.transactionTable)..where(
+              (tbl) =>
+                  tbl.dateCreated.isBiggerOrEqualValue(from) &
+                  tbl.dateCreated.isSmallerOrEqualValue(to),
+            ))
+            .get();
+    return rows.map(_toEntity).toList();
   }
 
   @override
-  Future<List<TransactionEntity>> getTransactionsByType(
-    TransactionType type,
-  ) async {
-    final query = db.select(db.transactionTable)
-      ..where((tbl) => tbl.type.equals(type.name));
-
-    final rows = await query.get();
-    return rows.map(_mapToEntity).toList();
+  Future<List<TransactionEntity>> fetchByType(TransactionType type) async {
+    final rows = await (db.select(
+      db.transactionTable,
+    )..where((tbl) => tbl.type.equals(type.name))).get();
+    return rows.map(_toEntity).toList();
   }
 
   @override
-  Future<List<TransactionEntity>> getTransactionsByCategory(
-    String categoryId,
-  ) async {
-    // Note: Current schema doesn't have categoryId, would need schema update
-    // For now, return empty list or implement based on expenseId mapping
-    final query = db.select(db.transactionTable)
-      ..where((tbl) => tbl.expenseId.equals(categoryId));
-
-    final rows = await query.get();
-    return rows.map(_mapToEntity).toList();
+  Future<List<TransactionEntity>> fetchByCategory(String categoryId) async {
+    final rows = await (db.select(
+      db.transactionTable,
+    )..where((tbl) => tbl.categoryId.equals(categoryId))).get();
+    return rows.map(_toEntity).toList();
   }
 
-  @override
-  Future<TransactionEntity?> getTransactionById(String id) async {
-    final query = db.select(db.transactionTable)
-      ..where((tbl) => tbl.id.equals(id));
+  // ---------------------------------------------------------------------------
+  // Fetch — single
+  // ---------------------------------------------------------------------------
 
-    final rows = await query.get();
+  @override
+  Future<TransactionEntity?> fetchById(String transactionId) async {
+    final rows = await (db.select(
+      db.transactionTable,
+    )..where((tbl) => tbl.id.equals(transactionId))).get();
     if (rows.isEmpty) return null;
-    return _mapToEntity(rows.first);
+    return _toEntity(rows.first);
   }
 
+  // ---------------------------------------------------------------------------
+  // Aggregates
+  // ---------------------------------------------------------------------------
+
   @override
-  Future<List<TransactionEntity>> getRecentTransactions({
-    int limit = 10,
+  Future<double> sumIncome({
+    required DateTime from,
+    required DateTime to,
   }) async {
-    final query = db.select(db.transactionTable)
-      ..orderBy([(tbl) => OrderingTerm.desc(tbl.dateCreated)])
-      ..limit(limit);
-
-    final rows = await query.get();
-    return rows.map(_mapToEntity).toList();
+    final rows =
+        await (db.select(db.transactionTable)..where(
+              (tbl) =>
+                  tbl.type.equals(TransactionType.income.name) &
+                  tbl.dateCreated.isBiggerOrEqualValue(from) &
+                  tbl.dateCreated.isSmallerOrEqualValue(to),
+            ))
+            .get();
+    return rows.fold(0.0, (sum, row) async => await sum + row.amount);
   }
 
   @override
-  Future<double> getTotalIncome({
-    required DateTime startDate,
-    required DateTime endDate,
+  Future<double> sumExpenses({
+    required DateTime from,
+    required DateTime to,
   }) async {
-    final query = db.select(db.transactionTable)
-      ..where(
-        (tbl) =>
-            tbl.type.equals(TransactionType.income.name) &
-            tbl.dateCreated.isBiggerOrEqualValue(startDate) &
-            tbl.dateCreated.isSmallerOrEqualValue(endDate),
-      );
-
-    final rows = await query.get();
-    return rows.fold<double>(0.0, (sum, row) => sum + row.amount);
+    final rows =
+        await (db.select(db.transactionTable)..where(
+              (tbl) =>
+                  tbl.type.equals(TransactionType.expense.name) &
+                  tbl.dateCreated.isBiggerOrEqualValue(from) &
+                  tbl.dateCreated.isSmallerOrEqualValue(to),
+            ))
+            .get();
+    return rows.fold(0.0, (sum, row) async => await sum + row.amount);
   }
 
-  @override
-  Future<double> getTotalExpenses({
-    required DateTime startDate,
-    required DateTime endDate,
-  }) async {
-    final query = db.select(db.transactionTable)
-      ..where(
-        (tbl) =>
-            tbl.type.equals(TransactionType.expense.name) &
-            tbl.dateCreated.isBiggerOrEqualValue(startDate) &
-            tbl.dateCreated.isSmallerOrEqualValue(endDate),
-      );
-
-    final rows = await query.get();
-    return rows.fold<double>(0.0, (sum, row) => sum + row.amount);
-  }
+  // ---------------------------------------------------------------------------
+  // Mutate
+  // ---------------------------------------------------------------------------
 
   @override
-  Future<TransactionEntity> createTransaction(
+  Future<TransactionEntity> saveTransaction(
     TransactionEntity transaction,
   ) async {
     final companion = TransactionTableCompanion.insert(
@@ -132,10 +138,9 @@ class TransactionRepository extends ITransactionRepository {
       description: Value(transaction.title),
       amount: transaction.amount,
       savingId: transaction.savingId,
-      expenseId: Value(transaction.expenseId),
+      destinationSavingId: Value(transaction.destinationSavingId),
+      categoryId: Value(transaction.categoryId),
       commitmentTaskId: Value(transaction.commitmentTaskId),
-      transferGroupId: Value(transaction.transferGroupId),
-      transferType: Value(transaction.transferType),
       payeeId: Value(transaction.payeeId),
       transactionDateTime: Value(transaction.date),
       note: Value(transaction.note),
@@ -150,7 +155,7 @@ class TransactionRepository extends ITransactionRepository {
   }
 
   @override
-  Future<TransactionEntity> updateTransaction(
+  Future<TransactionEntity> editTransaction(
     TransactionEntity transaction,
   ) async {
     final companion = TransactionTableCompanion(
@@ -158,10 +163,9 @@ class TransactionRepository extends ITransactionRepository {
       description: Value(transaction.title),
       amount: Value(transaction.amount),
       savingId: Value(transaction.savingId),
-      expenseId: Value(transaction.expenseId),
+      destinationSavingId: Value(transaction.destinationSavingId),
+      categoryId: Value(transaction.categoryId),
       commitmentTaskId: Value(transaction.commitmentTaskId),
-      transferGroupId: Value(transaction.transferGroupId),
-      transferType: Value(transaction.transferType),
       payeeId: Value(transaction.payeeId),
       transactionDateTime: Value(transaction.date),
       note: Value(transaction.note),
@@ -177,57 +181,49 @@ class TransactionRepository extends ITransactionRepository {
   }
 
   @override
-  Future<void> deleteTransaction(String id) async {
+  Future<void> removeTransaction(String transactionId) async {
     await (db.delete(
       db.transactionTable,
-    )..where((tbl) => tbl.id.equals(id))).go();
+    )..where((tbl) => tbl.id.equals(transactionId))).go();
   }
 
-  @override
-  Future<List<TransactionEntity>> searchTransactions(String query) async {
-    final results = await db.select(db.transactionTable).get();
+  // ---------------------------------------------------------------------------
+  // Search
+  // ---------------------------------------------------------------------------
 
-    return results
+  @override
+  Future<List<TransactionEntity>> searchByKeyword(String keyword) async {
+    final rows = await db.select(db.transactionTable).get();
+    final lower = keyword.toLowerCase();
+    return rows
         .where(
           (row) =>
-              row.description.toLowerCase().contains(query.toLowerCase()) ||
-              (row.expenseId?.toLowerCase().contains(query.toLowerCase()) ??
-                  false),
+              row.description.toLowerCase().contains(lower) ||
+              (row.note?.toLowerCase().contains(lower) ?? false),
         )
-        .map(_mapToEntity)
+        .map(_toEntity)
         .toList();
   }
 
-  /// Helper method to map database row to domain entity
-  TransactionEntity _mapToEntity(TrnsctnTransaction row) {
+  // ---------------------------------------------------------------------------
+  // Private mapper
+  // ---------------------------------------------------------------------------
+
+  TransactionEntity _toEntity(TrnsctnTransaction row) {
     return TransactionEntity(
       id: row.id,
       title: row.description,
       amount: row.amount,
       type: row.type,
-      expenseId: row.expenseId ?? 'uncategorized',
+      savingId: row.savingId,
+      destinationSavingId: row.destinationSavingId,
+      categoryId: row.categoryId,
+      commitmentTaskId: row.commitmentTaskId,
+      payeeId: row.payeeId,
       date: row.transactionDateTime ?? row.dateCreated,
       note: row.note,
-      savingId: row.savingId,
       createdAt: row.dateCreated,
       updatedAt: row.dateUpdated,
     );
-  }
-
-  @override
-  Future<TransactionEntity?> getTransactionByTransferGroupId(
-    String transferGroupId, {
-    required String excludeId,
-  }) async {
-    final query = db.select(db.transactionTable)
-      ..where(
-        (tbl) =>
-            tbl.transferGroupId.equals(transferGroupId) &
-            tbl.id.equals(excludeId).not(),
-      );
-
-    final rows = await query.get();
-    if (rows.isEmpty) return null;
-    return _mapToEntity(rows.first);
   }
 }

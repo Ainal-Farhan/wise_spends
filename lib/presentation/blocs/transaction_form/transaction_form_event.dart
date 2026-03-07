@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
+import 'package:wise_spends/domain/entities/impl/commitment/commitment_task_vo.dart';
+import 'package:wise_spends/domain/entities/impl/expense/payee_vo.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 /// Transaction Form BLoC Events
@@ -24,17 +26,21 @@ class InitializeTransactionForm extends TransactionFormEvent {
 /// Initialize form for editing existing transaction
 class InitializeTransactionFormForEdit extends TransactionFormEvent {
   final TransactionEntity transaction;
+  final CommitmentTaskVO? commitmentTaskVO;
   final CategoryEntity? category;
   final TimeOfDay? selectedTime;
+  final PayeeVO? payee;
 
   const InitializeTransactionFormForEdit({
     required this.transaction,
     this.category,
     this.selectedTime,
+    this.payee,
+    this.commitmentTaskVO,
   });
 
   @override
-  List<Object?> get props => [transaction, category, selectedTime];
+  List<Object?> get props => [transaction, category, selectedTime, payee];
 }
 
 /// Change transaction type
@@ -55,6 +61,11 @@ class SelectCategory extends TransactionFormEvent {
 
   @override
   List<Object?> get props => [category];
+}
+
+class SelectPayee extends TransactionFormEvent {
+  final PayeeVO? payee; // null = cleared
+  const SelectPayee(this.payee);
 }
 
 /// Change date

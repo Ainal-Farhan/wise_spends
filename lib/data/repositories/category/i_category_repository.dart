@@ -1,5 +1,5 @@
 import 'package:wise_spends/data/db/app_database.dart';
-import 'package:wise_spends/data/db/tables/category_table.dart';
+import 'package:wise_spends/data/db/domain/transaction/category_table.dart';
 import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/domain/entities/category/category_entity.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';

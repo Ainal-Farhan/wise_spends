@@ -68,6 +68,8 @@ class _EditTransactionBody extends StatelessWidget {
         }
         if (txState is TransactionLoadedById) {
           final transaction = txState.transaction;
+          final commitmentTaskVO = txState.commitmentTaskVO;
+          final payeeVO = txState.payeeVO;
 
           return BlocBuilder<CategoryBloc, CategoryState>(
             builder: (context, catState) {
@@ -90,12 +92,14 @@ class _EditTransactionBody extends StatelessWidget {
                       minute: transaction.date.minute,
                     );
 
-              // ← No BlocProvider wrapper here anymore
+              //
               return AddTransactionScreen(
                 args: AddTransactionScreenArgs(
                   editingTransactionId: transactionId,
                   preselectedType: transaction.type,
-                  existingTransaction: transaction, // ← pass data via args
+                  existingPayee: payeeVO,
+                  existingTransaction: transaction,
+                  existingCommitmentTaskVO: commitmentTaskVO,
                   existingCategory: category,
                   existingTime: storedTime,
                 ),

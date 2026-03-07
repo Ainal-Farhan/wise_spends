@@ -285,25 +285,25 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 children: [
                   Expanded(
                     child: AppStatCard(
-                      icon: Icons.arrow_downward_rounded,
-                      label: 'Income',
+                      icon: TransactionType.income.icon,
+                      label: TransactionType.income.label,
                       value: NumberFormat.currency(
                         symbol: 'RM ',
                         decimalDigits: 2,
                       ).format(totalIncome),
-                      color: AppColors.income,
+                      color: TransactionType.income.color,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: AppStatCard(
-                      icon: Icons.arrow_upward_rounded,
-                      label: 'Expenses',
+                      icon: TransactionType.expense.icon,
+                      label: TransactionType.expense.label,
                       value: NumberFormat.currency(
                         symbol: 'RM ',
                         decimalDigits: 2,
                       ).format(totalExpenses),
-                      color: AppColors.expense,
+                      color: TransactionType.expense.color,
                     ),
                   ),
                 ],
@@ -382,9 +382,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             Expanded(
               child: _buildQuickActionItem(
                 context,
-                icon: Icons.arrow_downward_rounded,
-                label: 'Income',
-                color: AppColors.income,
+                icon: TransactionType.income.icon,
+                label: TransactionType.income.label,
+                color: TransactionType.income.color,
                 onTap: () =>
                     _navigateToAddTransaction(context, TransactionType.income),
               ),
@@ -393,9 +393,9 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             Expanded(
               child: _buildQuickActionItem(
                 context,
-                icon: Icons.arrow_upward_rounded,
-                label: 'Expense',
-                color: AppColors.expense,
+                icon: TransactionType.expense.icon,
+                label: TransactionType.expense.label,
+                color: TransactionType.expense.color,
                 onTap: () =>
                     _navigateToAddTransaction(context, TransactionType.expense),
               ),
