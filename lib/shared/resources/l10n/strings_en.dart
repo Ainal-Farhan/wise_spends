@@ -62,6 +62,10 @@ class EnglishStrings {
     'general.today': 'Today',
     'general.yesterday': 'Yesterday',
     'general.tomorrow': 'Tomorrow',
+    'general.remaining': 'remaining',
+    'general.complete': 'complete',
+    'general.details': 'Details',
+    'general.due': 'Due',
     'general.view': 'View',
     'general.view_all': 'View All',
     'general.see_all': 'See All',
@@ -85,7 +89,6 @@ class EnglishStrings {
     'general.tap_button_below':
         'Tap the button below to add your first commitment',
     'general.view_all_commitments': 'View All Commitments',
-    'general.details': 'details',
     'general.tap_to_manage': 'Tap to manage',
     'general.internal_transfer': 'Internal Transfer',
     'general.third_party_payment': 'Third-Party Payment',
@@ -305,6 +308,7 @@ class EnglishStrings {
     'error.validation.date': 'Please select a valid date',
     'error.validation.name': 'Please enter a name',
     'error.something_wrong.title': 'Something went wrong',
+    'error.validation.invalid_number': 'Please enter a valid number',
 
     // Empty States
     'empty.no_data': 'No data available',
@@ -725,5 +729,92 @@ class EnglishStrings {
     'budget_plans.complete_milestone_msg': 'Mark this milestone as completed?',
     'budget_plans.complete': 'Complete',
     'budget_plans.start_date_label': 'Start Date',
+
+    // ── Budget list ──────────────────────────────────────────────────────────
+    'budgets.on_track_label': 'budgets on track',
+    'budgets.success_rate': 'success rate',
+    'budgets.of': 'of',
+    'budgets.period_all': 'All',
+    'budgets.period_day': 'Day',
+    'budgets.period_week': 'Week',
+    'budgets.period_month': 'Month',
+    'budgets.period_year': 'Year',
+    'budgets.period_daily': 'Daily',
+    'budgets.period_weekly': 'Weekly',
+    'budgets.period_monthly': 'Monthly',
+    'budgets.period_yearly': 'Yearly',
+    'budgets.period_one_time': 'One-time',
+    'budgets.delete_title': 'Delete Budget?',
+    'budgets.delete_confirm':
+        'Are you sure you want to delete "{name}"? This cannot be undone.',
+    'budgets.create': 'Create Budget',
+
+    // ── Budget plans — deposit / spending sheets ─────────────────────────────
+    'budget_plans.source_manual': 'Manual',
+    'budget_plans.source_account': 'From Account',
+    'budget_plans.source_salary': 'Salary',
+    'budget_plans.source_bonus': 'Bonus',
+    'budget_plans.source_other': 'Other',
+    'budget_plans.select_account': 'Select Account',
+    'budget_plans.note_hint': 'Add any additional details (optional)',
+    'budget_plans.cat_venue': 'Venue',
+    'budget_plans.cat_catering': 'Catering',
+    'budget_plans.cat_decor': 'Decor',
+    'budget_plans.cat_attire': 'Attire',
+    'budget_plans.cat_photography': 'Photography',
+    'budget_plans.cat_other': 'Other',
+    'budget_plans.receipt_attached_short': 'Receipt attached',
+    'budget_plans.link_to_main': 'Also add to main transactions',
+    'budget_plans.link_to_main_subtitle':
+        'Create a linked transaction in main ledger',
+    'budget_plans.linked_note': 'Linked to budget plan: {uuid}',
+
+    // ── Budget plan detail ───────────────────────────────────────────────────
+    'budget_plans.no_milestones': 'No milestones yet',
+    'budget_plans.allocated': 'Allocated',
+    'budget_plans.analytics_title': 'Plan Analytics',
+    'budget_plans.savings_progress': 'Savings Progress',
+    'budget_plans.deposited': 'Deposited',
+    'budget_plans.spent': 'Spent',
+    'budget_plans.milestone_title_hint': 'e.g., Venue Deposit',
+    'budget_plans.due_date_optional': 'Due Date (optional)',
+
+    // ── Budget plans list ────────────────────────────────────────────────────
+    'budget_plans.of_goal': 'of goal',
+    'budget_plans.edit_plan': 'Edit Plan',
+    'budget_plans.plan_exported': 'Plan exported successfully',
+    'budget_plans.export_failed': 'Export failed: {error}',
+    'budget_plans.delete_plan': 'Delete Plan?',
+    'budget_plans.delete_plan_msg': 'This action cannot be undone.',
+
+    // ── Create / edit wizard ──────────────────────────────────────────────────
+    'budget_plans.step_basics_subtitle': 'Name, description and category',
+    'budget_plans.step_financial_subtitle': 'Set your target and timeline',
+    'budget_plans.no_milestones_yet': 'No milestones added yet',
+    'budget_plans.review_subtitle': 'Confirm your changes before saving',
+    'budget_plans.edit_basics': 'Basics',
+    'budget_plans.edit_basics_subtitle': 'Update name and category',
+    'budget_plans.edit_financial': 'Financial',
+    'budget_plans.edit_financial_subtitle': 'Adjust your target and date',
+    'budget_plans.save_changes': 'Save Changes',
+
+    // Shimmer / loading semantics
+    'shimmer.loading_transaction': 'Loading transaction',
+    'shimmer.loading_transactions': 'Loading transactions',
+    'shimmer.loading_notification': 'Loading notification',
+    'shimmer.loading_notifications': 'Loading notifications',
+    'shimmer.loading_budget': 'Loading budget',
+    'shimmer.loading_budgets': 'Loading budgets',
+    'shimmer.loading_balance': 'Loading balance',
+    'shimmer.loading_profile': 'Loading profile',
+    'shimmer.loading_chart': 'Loading chart',
+    'shimmer.loading_categories': 'Loading categories',
+    'shimmer.loading_summary': 'Loading summary',
+    'shimmer.loading': 'Loading',
+
+    // Generic loading / empty states
+    'loading.please_wait': 'Please wait…',
+    'loading.fetching_data': 'Fetching your data',
+    'loading.almost_ready': 'Almost ready',
   };
 }

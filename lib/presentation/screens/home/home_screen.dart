@@ -409,7 +409,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                 label: 'Budgets',
                 color: AppColors.budgetGood,
                 onTap: () {
-                  Navigator.pushNamed(context, AppRoutes.budgetList);
+                  Navigator.pushNamed(context, AppRoutes.budgetPlansList);
                 },
               ),
             ),

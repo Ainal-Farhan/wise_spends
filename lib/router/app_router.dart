@@ -23,12 +23,10 @@ import 'package:wise_spends/presentation/screens/money_storage/money_storage_scr
     as money_storage_screen;
 import 'package:wise_spends/presentation/screens/budget_plan/budget_plans_list_screen.dart'
     as budget_plan_screen;
-import 'package:wise_spends/presentation/screens/budget_plan/create_budget_plan_screen.dart'
+import 'package:wise_spends/presentation/screens/budget_plan/budget_plans_forms.dart'
     as create_budget_plan_screen;
 import 'package:wise_spends/presentation/screens/budget_plan/budget_plan_detail_screen.dart'
     as budget_plan_detail_screen;
-import 'package:wise_spends/presentation/screens/budget_plan/edit_budget_plan_screen.dart'
-    as edit_budget_plan_screen;
 import 'package:wise_spends/presentation/screens/notifications/notifications_screen.dart'
     as notifications_screen;
 import 'package:wise_spends/presentation/screens/commitment_task/commitment_task_screen.dart'
@@ -131,7 +129,7 @@ abstract class AppRouter {
       case AppRoutes.editBudgetPlan:
         final args = settings.arguments as String;
         return _createRoute(
-          edit_budget_plan_screen.EditBudgetPlanScreen(planUuid: args),
+          create_budget_plan_screen.EditBudgetPlanScreen(planUuid: args),
           settings,
         );
 

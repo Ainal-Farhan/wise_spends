@@ -10,17 +10,13 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_bloc.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_event.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_state.dart';
-import 'package:wise_spends/presentation/widgets/components/empty_state_widget.dart';
 import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Budget Plans List Screen
-/// Features:
-/// - Overall summary card
-/// - Filter chips (All/Active/Completed)
-/// - Budget plan cards with progress
-/// - Color-coded by health status
-/// - FAB to create new plan
 class BudgetPlansListScreen extends StatelessWidget {
   const BudgetPlansListScreen({super.key});
 
@@ -30,89 +26,91 @@ class BudgetPlansListScreen extends StatelessWidget {
         .getBudgetPlanRepository();
 
     return BlocProvider(
-      create: (context) =>
-          BudgetPlanListBloc(repository)..add(LoadBudgetPlans()),
-      child: const _BudgetPlansListScreenContent(),
+      create: (_) => BudgetPlanListBloc(repository)..add(LoadBudgetPlans()),
+      child: const _BudgetPlansListContent(),
     );
   }
 }
 
-class _BudgetPlansListScreenContent extends StatefulWidget {
-  const _BudgetPlansListScreenContent();
+class _BudgetPlansListContent extends StatelessWidget {
+  const _BudgetPlansListContent();
 
-  @override
-  State<_BudgetPlansListScreenContent> createState() =>
-      _BudgetPlansListScreenContentState();
-}
-
-class _BudgetPlansListScreenContentState
-    extends State<_BudgetPlansListScreenContent> {
   @override
   Widget build(BuildContext context) {
-    final loc = LocalizationService();
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(loc.get('budget_plans.title')),
+        title: Text('budget_plans.title'.tr),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () => _showFilterDialog(context),
-            tooltip: loc.get('general.filter'),
+            tooltip: 'general.filter'.tr,
           ),
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          context.read<BudgetPlanListBloc>().add(RefreshBudgetPlans());
-        },
+        onRefresh: () async =>
+            context.read<BudgetPlanListBloc>().add(RefreshBudgetPlans()),
         child: CustomScrollView(
           slivers: [
-            // Overall Summary Card
-            SliverToBoxAdapter(child: _buildSummaryCard(context)),
+            // ── Summary card ───────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  0,
+                ),
+                child: _SummaryCard(),
+              ),
+            ),
 
-            // Filter Chips
-            SliverToBoxAdapter(child: _buildFilterChips(context)),
+            // ── Filter chips ───────────────────────────────────────────────
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.md,
+                ),
+                child: _FilterChips(),
+              ),
+            ),
 
-            // Plans List
+            // ── Plans list ─────────────────────────────────────────────────
             SliverPadding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               sliver: BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
                 builder: (context, state) {
                   if (state is BudgetPlanListLoading) {
-                    return _buildShimmerList();
-                  } else if (state is BudgetPlanListLoaded) {
-                    if (state.filteredPlans.isEmpty) {
-                      return SliverToBoxAdapter(
-                        child: EmptyStateWidget(
-                          icon: Icons.account_balance_wallet_outlined,
-                          title: loc.get('budget_plans.no_plans'),
-                          subtitle: loc.get('budget_plans.no_plans_subtitle'),
-                          actionLabel: loc.get('budget_plans.add'),
-                          onAction: () => _navigateToCreatePlan(context),
-                        ),
-                      );
-                    }
-                    return _buildPlansList(context, state.filteredPlans);
-                  } else if (state is BudgetPlanListEmpty) {
-                    return SliverToBoxAdapter(
-                      child: EmptyStateWidget(
-                        icon: Icons.account_balance_wallet_outlined,
-                        title: loc.get('budget_plans.no_plans'),
-                        subtitle: loc.get('budget_plans.no_plans_subtitle'),
-                        actionLabel: loc.get('budget_plans.add'),
-                        onAction: () => _navigateToCreatePlan(context),
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (_, _) => const BudgetCardShimmer(),
+                        childCount: 5,
                       ),
                     );
-                  } else if (state is BudgetPlanListError) {
+                  }
+                  if (state is BudgetPlanListLoaded) {
+                    if (state.filteredPlans.isEmpty) {
+                      return SliverToBoxAdapter(child: _buildEmpty(context));
+                    }
+                    return SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (_, i) => _PlanCard(plan: state.filteredPlans[i]),
+                        childCount: state.filteredPlans.length,
+                      ),
+                    );
+                  }
+                  if (state is BudgetPlanListEmpty) {
+                    return SliverToBoxAdapter(child: _buildEmpty(context));
+                  }
+                  if (state is BudgetPlanListError) {
                     return SliverToBoxAdapter(
                       child: ErrorStateWidget(
                         message: state.message,
-                        onAction: () {
-                          context.read<BudgetPlanListBloc>().add(
-                            LoadBudgetPlans(),
-                          );
-                        },
+                        onAction: () => context.read<BudgetPlanListBloc>().add(
+                          LoadBudgetPlans(),
+                        ),
                       ),
                     );
                   }
@@ -121,319 +119,292 @@ class _BudgetPlansListScreenContentState
               ),
             ),
 
-            // Bottom padding for FAB
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _navigateToCreatePlan(context),
+        onPressed: () =>
+            Navigator.pushNamed(context, AppRoutes.createBudgetPlan),
         elevation: 4,
+        tooltip: 'budget_plans.add'.tr,
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  Widget _buildSummaryCard(BuildContext context) {
-    final loc = LocalizationService();
+  Widget _buildEmpty(BuildContext context) {
+    return EmptyStateWidget(
+      icon: Icons.account_balance_wallet_outlined,
+      title: 'budget_plans.no_plans'.tr,
+      subtitle: 'budget_plans.no_plans_subtitle'.tr,
+      actionLabel: 'budget_plans.add'.tr,
+      onAction: () => Navigator.pushNamed(context, AppRoutes.createBudgetPlan),
+    );
+  }
 
+  void _showFilterDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => BlocProvider.value(
+        value: context.read<BudgetPlanListBloc>(),
+        child: _FilterDialog(),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Summary card
+// =============================================================================
+
+class _SummaryCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
       builder: (context, state) {
-        if (state is BudgetPlanListLoaded) {
-          final summary = state.summary;
-          final progress = summary.overallProgressPercentage;
+        if (state is! BudgetPlanListLoaded) return const SizedBox.shrink();
 
-          return Container(
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  WiseSpendsColors.tertiary,
-                  WiseSpendsColors.tertiaryDark,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: WiseSpendsColors.tertiary.withValues(alpha: 0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                const Icon(
-                  Icons.pie_chart_outline,
-                  color: Colors.white,
-                  size: 48,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  loc.get('budget_plans.overall_summary'),
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  NumberFormat.currency(
-                    symbol: 'RM ',
-                    decimalDigits: 0,
-                  ).format(summary.totalSavedAmount),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'of ${NumberFormat.currency(symbol: 'RM ', decimalDigits: 0).format(summary.totalTargetAmount)} goal',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                const SizedBox(height: 16),
-                // Progress bar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress.clamp(0.0, 1.0),
-                    backgroundColor: Colors.white24,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      Colors.white,
-                    ),
-                    minHeight: 8,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildSummaryChip(
-                      context,
-                      label:
-                          '${summary.plansOnTrack} ${loc.get('budget_plans.plans_on_track')}',
-                      color: WiseSpendsColors.success,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildSummaryChip(
-                      context,
-                      label:
-                          '${summary.plansAtRisk} ${loc.get('budget_plans.plans_at_risk')}',
-                      color: WiseSpendsColors.secondary,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        }
-        return const SizedBox.shrink();
-      },
-    );
-  }
+        final summary = state.summary;
+        final progress = summary.overallProgressPercentage;
+        final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 0);
 
-  Widget _buildSummaryChip(
-    BuildContext context, {
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.5)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterChips(BuildContext context) {
-    final loc = LocalizationService();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _buildFilterChip(
-              context,
-              label: loc.get('budget_plans.filter_all'),
-              status: null,
-            ),
-            const SizedBox(width: 8),
-            _buildFilterChip(
-              context,
-              label: loc.get('budget_plans.filter_active'),
-              status: BudgetPlanStatus.active,
-            ),
-            const SizedBox(width: 8),
-            _buildFilterChip(
-              context,
-              label: loc.get('budget_plans.filter_completed'),
-              status: BudgetPlanStatus.completed,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(
-    BuildContext context, {
-    required String label,
-    BudgetPlanStatus? status,
-  }) {
-    return BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
-      builder: (context, state) {
-        BudgetPlanStatus? currentStatus;
-        if (state is BudgetPlanListLoaded) {
-          currentStatus = state.filterStatus;
-        }
-        
-        final isSelected = currentStatus == status;
-
-        return FilterChip(
-          label: Text(label),
-          selected: isSelected,
-          onSelected: (selected) {
-            context.read<BudgetPlanListBloc>().add(
-              FilterBudgetPlans(status: selected ? status : null),
-            );
-          },
-          selectedColor: WiseSpendsColors.primary.withValues(alpha: 0.2),
-          checkmarkColor: WiseSpendsColors.primary,
+        return SectionHeader.card(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [WiseSpendsColors.tertiary, WiseSpendsColors.tertiaryDark],
+          ),
+          icon: Icons.pie_chart_outline,
+          label: 'budget_plans.overall_summary'.tr,
+          title: fmt.format(summary.totalSavedAmount),
+          subtitle:
+              '${'budget_plans.of_goal'.tr} ${fmt.format(summary.totalTargetAmount)}',
+          collapsibleBody: _SummaryDetail(summary: summary, progress: progress),
+          learnMoreLabel: 'general.details'.tr,
+          learnLessLabel: 'general.less'.tr,
         );
       },
     );
   }
+}
 
-  Widget _buildPlansList(BuildContext context, List<dynamic> plans) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => _buildPlanCard(context, plans[index]),
-        childCount: plans.length,
+class _SummaryDetail extends StatelessWidget {
+  final dynamic summary;
+  final double progress;
+
+  const _SummaryDetail({required this.summary, required this.progress});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Progress bar
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.xs),
+          child: LinearProgressIndicator(
+            value: progress.clamp(0.0, 1.0),
+            backgroundColor: Colors.white24,
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+            minHeight: 8,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        Row(
+          children: [
+            SectionHeaderBullet(
+              '${summary.plansOnTrack} ${'budget_plans.plans_on_track'.tr}',
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            SectionHeaderBullet(
+              '${summary.plansAtRisk} ${'budget_plans.plans_at_risk'.tr}',
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// =============================================================================
+// Filter chips
+// =============================================================================
+
+class _FilterChips extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SectionHeaderCompact(
+      title: 'general.filter'.tr,
+      trailing: BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
+        builder: (context, state) {
+          final current = state is BudgetPlanListLoaded
+              ? state.filterStatus
+              : null;
+
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _chip(context, null, 'budget_plans.filter_all'.tr, current),
+                const SizedBox(width: AppSpacing.xs),
+                _chip(
+                  context,
+                  BudgetPlanStatus.active,
+                  'budget_plans.filter_active'.tr,
+                  current,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                _chip(
+                  context,
+                  BudgetPlanStatus.completed,
+                  'budget_plans.filter_completed'.tr,
+                  current,
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildPlanCard(BuildContext context, dynamic plan) {
-    final progress = plan.progressPercentage;
-    final healthColor = _getHealthColor(plan.healthStatus);
+  Widget _chip(
+    BuildContext context,
+    BudgetPlanStatus? status,
+    String label,
+    BudgetPlanStatus? current,
+  ) {
+    final isSelected = current == status;
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (s) => context.read<BudgetPlanListBloc>().add(
+        FilterBudgetPlans(status: s ? status : null),
+      ),
+      selectedColor: WiseSpendsColors.primary.withValues(alpha: 0.2),
+      checkmarkColor: WiseSpendsColors.primary,
+    );
+  }
+}
+
+// =============================================================================
+// Plan card
+// =============================================================================
+
+class _PlanCard extends StatelessWidget {
+  final dynamic plan;
+
+  const _PlanCard({required this.plan});
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = (plan.progressPercentage as double).clamp(0.0, 1.0);
+    final healthColor = _healthColor(plan.healthStatus);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         side: BorderSide(color: healthColor, width: 2),
       ),
       child: InkWell(
-        onTap: () => _navigateToPlanDetail(context, plan.uuid),
-        borderRadius: BorderRadius.circular(12),
+        onTap: () => Navigator.pushNamed(
+          context,
+          AppRoutes.budgetPlanDetail,
+          arguments: plan.uuid,
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header row
               Row(
                 children: [
-                  // Icon
                   Container(
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
                       color: healthColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
-                    child: Text(
-                      plan.category.iconCode,
-                      style: const TextStyle(fontSize: 24),
+                    child: Center(
+                      child: Text(
+                        plan.category.iconCode,
+                        style: const TextStyle(fontSize: 24),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  // Name and category
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           plan.name,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           plan.category.displayName,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: WiseSpendsColors.textSecondary),
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: WiseSpendsColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  // More button
                   IconButton(
                     icon: const Icon(Icons.more_vert),
-                    onPressed: () => _showPlanOptions(context, plan),
+                    onPressed: () => _showOptions(context, plan),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
+
               // Progress bar
               ClipRRect(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(AppRadius.xs),
                 child: LinearProgressIndicator(
-                  value: progress.clamp(0.0, 1.0),
+                  value: progress,
                   backgroundColor: healthColor.withValues(alpha: 0.2),
                   valueColor: AlwaysStoppedAnimation<Color>(healthColor),
                   minHeight: 8,
                 ),
               ),
-              const SizedBox(height: 8),
-              // Amount and days
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
+              const SizedBox(height: AppSpacing.sm),
+
+              // Amount + health row using SectionHeaderCompact
+              SectionHeaderCompact(
+                title:
                     '${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(plan.currentAmount)} / ${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(plan.targetAmount)}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      plan.healthStatus == BudgetHealthStatus.onTrack
+                          ? Icons.check_circle
+                          : Icons.warning,
+                      size: AppIconSize.xs,
                       color: healthColor,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        plan.healthStatus == BudgetHealthStatus.onTrack
-                            ? Icons.check_circle
-                            : Icons.warning,
-                        size: 16,
-                        color: healthColor,
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(
+                      '${plan.healthStatus.displayName} · ${plan.daysRemaining}d',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: WiseSpendsColors.textSecondary,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${plan.healthStatus.displayName} • ${plan.daysRemaining}d left',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: WiseSpendsColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -442,7 +413,7 @@ class _BudgetPlansListScreenContentState
     );
   }
 
-  Color _getHealthColor(dynamic healthStatus) {
+  Color _healthColor(dynamic healthStatus) {
     switch (healthStatus) {
       case BudgetHealthStatus.onTrack:
         return WiseSpendsColors.success;
@@ -458,169 +429,120 @@ class _BudgetPlansListScreenContentState
     }
   }
 
-  Widget _buildShimmerList() {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) => const BudgetCardShimmer(),
-        childCount: 5,
-      ),
-    );
-  }
-
-  void _showFilterDialog(BuildContext context) {
-    final loc = LocalizationService();
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
-        builder: (context, state) {
-          BudgetPlanStatus? currentStatus;
-          if (state is BudgetPlanListLoaded) {
-            currentStatus = state.filterStatus;
-          }
-          
-          return AlertDialog(
-            title: Text(loc.get('general.filter')),
-            content: RadioGroup<BudgetPlanStatus?>(
-              groupValue: currentStatus,
-              onChanged: (value) {
-                Navigator.pop(dialogContext);
-                context.read<BudgetPlanListBloc>().add(
-                  FilterBudgetPlans(status: value),
-                );
-              },
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RadioListTile<BudgetPlanStatus?>(
-                    title: Text(loc.get('budget_plans.filter_all')),
-                    value: null,
-                  ),
-                  RadioListTile<BudgetPlanStatus?>(
-                    title: Text(loc.get('budget_plans.filter_active')),
-                    value: BudgetPlanStatus.active,
-                  ),
-                  RadioListTile<BudgetPlanStatus?>(
-                    title: Text(loc.get('budget_plans.filter_completed')),
-                    value: BudgetPlanStatus.completed,
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  context.read<BudgetPlanListBloc>().add(FilterBudgetPlans());
-                  Navigator.pop(dialogContext);
-                },
-                child: Text(loc.get('general.clear')),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(loc.get('general.close')),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  void _navigateToCreatePlan(BuildContext context) {
-    Navigator.pushNamed(context, '/budget-plan/create');
-  }
-
-  void _navigateToPlanDetail(BuildContext context, String uuid) {
-    Navigator.pushNamed(context, '/budget-plan/detail', arguments: uuid);
-  }
-
-  void _showPlanOptions(BuildContext context, dynamic plan) {
+  void _showOptions(BuildContext context, dynamic plan) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text('budget_plans.edit_plan'.tr),
-              onTap: () {
-                Navigator.pop(context);
-                // Navigate to edit plan screen
-                Navigator.pushNamed(
-                  context,
-                  AppRoutes.editBudgetPlan,
-                  arguments: plan.uuid,
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.file_download_outlined),
-              title: Text('budget_plans.export_plan'.tr),
-              onTap: () async {
-                Navigator.pop(context);
-                try {
-                  // Export plan to CSV
-                  final exportService = BudgetPlanExportService();
-                  final planToExport = await SingletonUtil.getSingleton<IRepositoryLocator>()!
-                      .getBudgetPlanRepository()
-                      .getPlanByUuid(plan.uuid);
+      builder: (_) => BlocProvider.value(
+        value: context.read<BudgetPlanListBloc>(),
+        child: _PlanOptionsSheet(plan: plan),
+      ),
+    );
+  }
+}
 
-                  if (planToExport != null) {
-                    final filePath = await exportService.exportToCsv(planToExport);
-                    await exportService.shareExport(filePath);
+// =============================================================================
+// Plan options sheet
+// =============================================================================
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('budget_plans.plan_exported'.tr),
-                        backgroundColor: WiseSpendsColors.success,
-                      ),
-                    );
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('budget_plans.export_failed'.trWith({'error': e.toString()})),
-                      backgroundColor: WiseSpendsColors.error,
-                    ),
-                  );
-                }
-              },
+class _PlanOptionsSheet extends StatelessWidget {
+  final dynamic plan;
+
+  const _PlanOptionsSheet({required this.plan});
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit_outlined),
+            title: Text('budget_plans.edit_plan'.tr),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(
+                context,
+                AppRoutes.editBudgetPlan,
+                arguments: plan.uuid,
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.file_download_outlined),
+            title: Text('budget_plans.export_plan'.tr),
+            onTap: () async {
+              Navigator.pop(context);
+              await _export(context, plan);
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.delete_outline,
+              color: WiseSpendsColors.secondary,
             ),
-            ListTile(
-              leading: const Icon(
-                Icons.delete_outline,
-                color: WiseSpendsColors.secondary,
-              ),
-              title: Text(
-                'general.delete'.tr,
-                style: const TextStyle(color: WiseSpendsColors.secondary),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _confirmDeletePlan(context, plan);
-              },
+            title: Text(
+              'general.delete'.tr,
+              style: const TextStyle(color: WiseSpendsColors.secondary),
             ),
-          ],
-        ),
+            onTap: () {
+              Navigator.pop(context);
+              _confirmDelete(context, plan);
+            },
+          ),
+        ],
       ),
     );
   }
 
-  void _confirmDeletePlan(BuildContext context, dynamic plan) {
+  Future<void> _export(BuildContext context, dynamic plan) async {
+    try {
+      final planToExport =
+          await SingletonUtil.getSingleton<IRepositoryLocator>()!
+              .getBudgetPlanRepository()
+              .getPlanByUuid(plan.uuid);
+
+      if (planToExport != null) {
+        final svc = BudgetPlanExportService();
+        final path = await svc.exportToCsv(planToExport);
+        await svc.shareExport(path);
+
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('budget_plans.plan_exported'.tr),
+              backgroundColor: WiseSpendsColors.success,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'budget_plans.export_failed'.trWith({'error': e.toString()}),
+            ),
+            backgroundColor: WiseSpendsColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _confirmDelete(BuildContext context, dynamic plan) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: Text('budget_plans.delete_plan'.tr),
         content: Text('budget_plans.delete_plan_msg'.tr),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(ctx),
             child: Text('general.cancel'.tr),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(ctx);
               context.read<BudgetPlanListBloc>().add(
                 DeleteBudgetPlan(plan.uuid),
               );
@@ -632,6 +554,66 @@ class _BudgetPlansListScreenContentState
           ),
         ],
       ),
+    );
+  }
+}
+
+// =============================================================================
+// Filter dialog
+// =============================================================================
+
+class _FilterDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
+      builder: (context, state) {
+        final current = state is BudgetPlanListLoaded
+            ? state.filterStatus
+            : null;
+
+        void select(BudgetPlanStatus? v) {
+          context.read<BudgetPlanListBloc>().add(FilterBudgetPlans(status: v));
+          Navigator.pop(context);
+        }
+
+        return AlertDialog(
+          title: Text('general.filter'.tr),
+          content: RadioGroup<BudgetPlanStatus?>(
+            groupValue: current,
+            onChanged: select,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                RadioListTile<BudgetPlanStatus?>(
+                  title: Text('budget_plans.filter_all'.tr),
+                  value: null,
+                ),
+                RadioListTile<BudgetPlanStatus?>(
+                  title: Text('budget_plans.filter_active'.tr),
+                  value: BudgetPlanStatus.active,
+                ),
+                RadioListTile<BudgetPlanStatus?>(
+                  title: Text('budget_plans.filter_completed'.tr),
+                  value: BudgetPlanStatus.completed,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.read<BudgetPlanListBloc>().add(FilterBudgetPlans());
+                Navigator.pop(context);
+              },
+              child: Text('general.clear'.tr),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('general.close'.tr),
+            ),
+          ],
+        );
+      },
     );
   }
 }

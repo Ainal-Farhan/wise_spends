@@ -736,5 +736,99 @@ class MalayStrings {
         'Tanda milestone ini sebagai selesai?',
     'budget_plans.complete': 'Selesai',
     'budget_plans.start_date_label': 'Tarikh Mula',
+
+    // Shimmer / keadaan memuatkan
+    'shimmer.loading_transaction': 'Memuatkan transaksi',
+    'shimmer.loading_transactions': 'Memuatkan transaksi',
+    'shimmer.loading_notification': 'Memuatkan pemberitahuan',
+    'shimmer.loading_notifications': 'Memuatkan pemberitahuan',
+    'shimmer.loading_budget': 'Memuatkan belanjawan',
+    'shimmer.loading_budgets': 'Memuatkan belanjawan',
+    'shimmer.loading_balance': 'Memuatkan baki',
+    'shimmer.loading_profile': 'Memuatkan profil',
+    'shimmer.loading_chart': 'Memuatkan carta',
+    'shimmer.loading_categories': 'Memuatkan kategori',
+    'shimmer.loading_summary': 'Memuatkan ringkasan',
+    'shimmer.loading': 'Memuatkan',
+
+    // Keadaan umum memuatkan / kosong
+    'loading.please_wait': 'Sila tunggu…',
+    'loading.fetching_data': 'Mengambil data anda',
+    'loading.almost_ready': 'Hampir siap',
+
+    // ── Senarai belanjawan ───────────────────────────────────────────────────
+    'budgets.on_track_label': 'belanjawan mengikut jadual',
+    'budgets.success_rate': 'kadar kejayaan',
+    'budgets.of': 'daripada',
+    'budgets.period_all': 'Semua',
+    'budgets.period_day': 'Hari',
+    'budgets.period_week': 'Minggu',
+    'budgets.period_month': 'Bulan',
+    'budgets.period_year': 'Tahun',
+    'budgets.period_daily': 'Harian',
+    'budgets.period_weekly': 'Mingguan',
+    'budgets.period_monthly': 'Bulanan',
+    'budgets.period_yearly': 'Tahunan',
+    'budgets.period_one_time': 'Sekali',
+    'budgets.delete_title': 'Padam Belanjawan?',
+    'budgets.delete_confirm':
+        'Adakah anda pasti untuk memadam "{name}"? Tindakan ini tidak boleh dibatalkan.',
+    'budgets.create': 'Buat Belanjawan',
+
+    // ── Pelan belanjawan — helaian deposit / perbelanjaan ────────────────────
+    'budget_plans.source_manual': 'Manual',
+    'budget_plans.source_account': 'Dari Akaun',
+    'budget_plans.source_salary': 'Gaji',
+    'budget_plans.source_bonus': 'Bonus',
+    'budget_plans.source_other': 'Lain-lain',
+    'budget_plans.select_account': 'Pilih Akaun',
+    'budget_plans.note_hint': 'Tambah butiran tambahan (pilihan)',
+    'budget_plans.cat_venue': 'Tempat',
+    'budget_plans.cat_catering': 'Katering',
+    'budget_plans.cat_decor': 'Hiasan',
+    'budget_plans.cat_attire': 'Pakaian',
+    'budget_plans.cat_photography': 'Fotografi',
+    'budget_plans.cat_other': 'Lain-lain',
+    'budget_plans.receipt_attached_short': 'Resit dilampirkan',
+    'budget_plans.link_to_main': 'Tambah juga ke transaksi utama',
+    'budget_plans.link_to_main_subtitle':
+        'Cipta transaksi terpaut dalam lejar utama',
+    'budget_plans.linked_note': 'Terpaut ke pelan belanjawan: {uuid}',
+
+    // ── Butiran pelan belanjawan ─────────────────────────────────────────────
+    'budget_plans.no_milestones': 'Tiada pencapaian lagi',
+    'budget_plans.allocated': 'Diperuntukkan',
+    'budget_plans.analytics_title': 'Analitik Pelan',
+    'budget_plans.savings_progress': 'Perkembangan Simpanan',
+    'budget_plans.deposited': 'Didepositkan',
+    'budget_plans.spent': 'Dibelanjakan',
+    'budget_plans.milestone_title_hint': 'cth., Bayaran Pendahuluan Tempat',
+    'budget_plans.due_date_optional': 'Tarikh Akhir (pilihan)',
+
+    // ── Senarai pelan belanjawan ─────────────────────────────────────────────
+    'budget_plans.of_goal': 'daripada sasaran',
+    'budget_plans.edit_plan': 'Edit Pelan',
+    'budget_plans.plan_exported': 'Pelan berjaya dieksport',
+    'budget_plans.export_failed': 'Eksport gagal: {error}',
+    'budget_plans.delete_plan': 'Padam Pelan?',
+    'budget_plans.delete_plan_msg': 'Tindakan ini tidak boleh dibatalkan.',
+
+    // ── Wizard cipta / edit ───────────────────────────────────────────────────
+    'budget_plans.step_financial_subtitle': 'Tetapkan sasaran dan jangka masa',
+    'budget_plans.no_milestones_yet': 'Tiada pencapaian ditambah lagi',
+    'budget_plans.review_subtitle': 'Sahkan perubahan anda sebelum menyimpan',
+    'budget_plans.edit_basics': 'Asas',
+    'budget_plans.edit_basics_subtitle': 'Kemas kini nama dan kategori',
+    'budget_plans.edit_financial': 'Kewangan',
+    'budget_plans.edit_financial_subtitle': 'Laraskan sasaran dan tarikh anda',
+    'budget_plans.save_changes': 'Simpan Perubahan',
+
+    // ── Tambahan am ───────────────────────────────────────────────────────────
+    'general.remaining': 'berbaki',
+    'general.complete': 'selesai',
+    'general.due': 'Tarikh Akhir',
+
+    // ── Pengesahan ralat ──────────────────────────────────────────────────────
+    'error.validation.invalid_number': 'Sila masukkan nombor yang sah',
   };
 }

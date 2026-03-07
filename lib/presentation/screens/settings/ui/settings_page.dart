@@ -204,7 +204,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   title: 'budgets.title'.tr,
                   subtitle: 'budgets.manage'.tr,
                   onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.budgetList);
+                    Navigator.pushNamed(context, AppRoutes.budgetPlansList);
                   },
                 ),
                 const Divider(height: 1, indent: 60),

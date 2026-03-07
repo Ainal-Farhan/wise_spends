@@ -9,16 +9,16 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_bloc.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_event.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_state.dart';
-import 'package:wise_spends/presentation/widgets/components/empty_state_widget.dart';
 import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
 import 'package:wise_spends/presentation/widgets/charts/budget_charts.dart';
-import 'package:wise_spends/presentation/screens/budget_plan/add_deposit_bottom_sheet.dart';
-import 'package:wise_spends/presentation/screens/budget_plan/add_spending_bottom_sheet.dart';
+import 'package:wise_spends/presentation/screens/budget_plan/add_bottom_sheet.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
-/// Budget Plan Detail Screen - Tabbed Interface
-/// Tabs: Overview, Transactions, Charts
+/// Budget Plan Detail Screen — Tabbed Interface (Overview · Transactions · Charts)
 class BudgetPlanDetailScreen extends StatelessWidget {
   final String planUuid;
 
@@ -32,23 +32,22 @@ class BudgetPlanDetailScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) =>
           BudgetPlanDetailBloc(repository)..add(LoadPlanDetail(planUuid)),
-      child: _BudgetPlanDetailScreenContent(planUuid: planUuid),
+      child: _BudgetPlanDetailContent(planUuid: planUuid),
     );
   }
 }
 
-class _BudgetPlanDetailScreenContent extends StatefulWidget {
+class _BudgetPlanDetailContent extends StatefulWidget {
   final String planUuid;
 
-  const _BudgetPlanDetailScreenContent({required this.planUuid});
+  const _BudgetPlanDetailContent({required this.planUuid});
 
   @override
-  State<_BudgetPlanDetailScreenContent> createState() =>
-      _BudgetPlanDetailScreenContentState();
+  State<_BudgetPlanDetailContent> createState() =>
+      _BudgetPlanDetailContentState();
 }
 
-class _BudgetPlanDetailScreenContentState
-    extends State<_BudgetPlanDetailScreenContent>
+class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -66,23 +65,25 @@ class _BudgetPlanDetailScreenContentState
 
   @override
   Widget build(BuildContext context) {
-    final loc = LocalizationService();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('budget_plans.title'.tr),
         actions: [
           PopupMenuButton<String>(
-            onSelected: (value) => _handleMenuAction(value),
-            itemBuilder: (context) => [
+            onSelected: _handleMenuAction,
+            itemBuilder: (_) => [
               PopupMenuItem(
                 value: 'edit',
-                child: ListTile(leading: Icon(Icons.edit), title: Text('general.edit'.tr)),
+                child: ListTile(
+                  leading: const Icon(Icons.edit),
+                  title: Text('general.edit'.tr),
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
               PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
-                  leading: Icon(
+                  leading: const Icon(
                     Icons.delete,
                     color: WiseSpendsColors.secondary,
                   ),
@@ -90,6 +91,7 @@ class _BudgetPlanDetailScreenContentState
                     'general.delete'.tr,
                     style: const TextStyle(color: WiseSpendsColors.secondary),
                   ),
+                  contentPadding: EdgeInsets.zero,
                 ),
               ),
             ],
@@ -100,241 +102,522 @@ class _BudgetPlanDetailScreenContentState
           tabs: [
             Tab(
               icon: const Icon(Icons.dashboard),
-              text: loc.get('budget_plans.overview'),
+              text: 'budget_plans.overview'.tr,
             ),
             Tab(
               icon: const Icon(Icons.receipt_long),
-              text: loc.get('budget_plans.transactions'),
+              text: 'budget_plans.transactions'.tr,
             ),
             Tab(
               icon: const Icon(Icons.insights),
-              text: loc.get('budget_plans.charts'),
+              text: 'budget_plans.charts'.tr,
             ),
           ],
         ),
       ),
       body: BlocConsumer<BudgetPlanDetailBloc, BudgetPlanDetailState>(
-        listener: (context, state) {
-          if (state is DepositAdded) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(loc.get('budget_plans.deposit_added')),
-                backgroundColor: WiseSpendsColors.success,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          } else if (state is SpendingAdded) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(loc.get('budget_plans.spending_added')),
-                backgroundColor: WiseSpendsColors.success,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          } else if (state is PlanDeleted) {
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(loc.get('budget_plans.deleted')),
-                backgroundColor: WiseSpendsColors.success,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          } else if (state is BudgetPlanDetailError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: WiseSpendsColors.error,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        },
+        listener: _handleStateListener,
         builder: (context, state) {
           if (state is BudgetPlanDetailLoading) {
             return const DashboardShimmer();
-          } else if (state is BudgetPlanDetailLoaded) {
+          }
+          if (state is BudgetPlanDetailLoaded) {
             return TabBarView(
               controller: _tabController,
               children: [
-                _buildOverviewTab(state),
-                _buildTransactionsTab(state),
-                _buildChartsTab(state),
+                _OverviewTab(
+                  state: state,
+                  onAddDeposit: _showAddDepositSheet,
+                  onAddSpending: _showAddSpendingSheet,
+                  onAddMilestone: (planUuid) =>
+                      _showAddMilestoneDialog(context, planUuid),
+                  onCompleteMilestone: (milestoneId, planId) =>
+                      _confirmCompleteMilestone(context, milestoneId, planId),
+                  onUnlinkAccount: (accountId, planId) =>
+                      _confirmUnlinkAccount(context, accountId, planId),
+                ),
+                _TransactionsTab(state: state),
+                _ChartsTab(state: state),
               ],
             );
-          } else if (state is BudgetPlanNotFound) {
+          }
+          if (state is BudgetPlanNotFound) {
             return const NoBudgetsEmptyState();
-          } else if (state is BudgetPlanDetailError) {
+          }
+          if (state is BudgetPlanDetailError) {
             return ErrorStateWidget(message: state.message);
           }
           return const SizedBox.shrink();
         },
       ),
-      floatingActionButton: _buildFAB(),
+      floatingActionButton: _DetailFAB(
+        tabController: _tabController,
+        onDeposit: _showAddDepositSheet,
+        onSpending: _showAddSpendingSheet,
+      ),
     );
   }
 
-  Widget _buildOverviewTab(BudgetPlanDetailLoaded state) {
+  void _handleStateListener(BuildContext context, BudgetPlanDetailState state) {
+    final messenger = ScaffoldMessenger.of(context);
+    if (state is DepositAdded) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('budget_plans.deposit_added'.tr),
+          backgroundColor: WiseSpendsColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else if (state is SpendingAdded) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('budget_plans.spending_added'.tr),
+          backgroundColor: WiseSpendsColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else if (state is PlanDeleted) {
+      Navigator.pop(context);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('budget_plans.deleted'.tr),
+          backgroundColor: WiseSpendsColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else if (state is BudgetPlanDetailError) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(state.message),
+          backgroundColor: WiseSpendsColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  void _handleMenuAction(String value) {
+    final state = context.read<BudgetPlanDetailBloc>().state;
+    if (state is! BudgetPlanDetailLoaded) return;
+
+    switch (value) {
+      case 'edit':
+        Navigator.pushNamed(
+          context,
+          AppRoutes.editBudgetPlan,
+          arguments: widget.planUuid,
+        );
+      case 'delete':
+        _confirmDelete(state.plan.id);
+    }
+  }
+
+  void _showAddDepositSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => BlocProvider.value(
+        value: context.read<BudgetPlanDetailBloc>(),
+        child: AddDepositBottomSheet(planUuid: widget.planUuid),
+      ),
+    );
+  }
+
+  void _showAddSpendingSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => BlocProvider.value(
+        value: context.read<BudgetPlanDetailBloc>(),
+        child: AddSpendingBottomSheet(planUuid: widget.planUuid),
+      ),
+    );
+  }
+
+  void _confirmDelete(String uuid) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('budget_plans.delete_plan'.tr),
+        content: Text('budget_plans.delete_plan_msg'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('general.cancel'.tr),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<BudgetPlanDetailBloc>().add(DeletePlanEvent(uuid));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: WiseSpendsColors.secondary,
+            ),
+            child: Text('general.delete'.tr),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddMilestoneDialog(BuildContext context, String planUuid) {
+    final titleCtrl = TextEditingController();
+    final amountCtrl = TextEditingController();
+    DateTime? dueDate;
+
+    showDialog(
+      context: context,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text('budget_plans.add_milestone_title'.tr),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppTextField(
+                label: 'budget_plans.milestone_title'.tr,
+                hint: 'budget_plans.milestone_title_hint'.tr,
+                controller: titleCtrl,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppTextField(
+                label: 'budget_plans.target_amount'.tr,
+                hint: '0.00',
+                prefixText: 'RM ',
+                controller: amountCtrl,
+                keyboardType: AppTextFieldKeyboardType.decimal,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.calendar_today),
+                title: Text(
+                  dueDate != null
+                      ? '${'general.due'.tr}: ${DateFormat('MMM d, y').format(dueDate!)}'
+                      : 'budget_plans.due_date_optional'.tr,
+                ),
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: ctx,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                  );
+                  if (picked != null) {
+                    setDialogState(() => dueDate = picked);
+                  }
+                },
+              ),
+            ],
+          ),
+          actions: [
+            AppButton.text(
+              label: 'general.cancel'.tr,
+              onPressed: () => Navigator.pop(ctx),
+            ),
+            AppButton.primary(
+              label: 'general.add'.tr,
+              onPressed: () {
+                if (titleCtrl.text.isNotEmpty && amountCtrl.text.isNotEmpty) {
+                  context.read<BudgetPlanDetailBloc>().add(
+                    AddMilestoneEvent(
+                      title: titleCtrl.text,
+                      targetAmount: double.parse(amountCtrl.text),
+                      dueDate:
+                          dueDate ??
+                          DateTime.now().add(const Duration(days: 30)),
+                    ),
+                  );
+                  Navigator.pop(ctx);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmCompleteMilestone(
+    BuildContext context,
+    String milestoneId,
+    String planId,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('budget_plans.complete_milestone'.tr),
+        content: Text('budget_plans.complete_milestone_msg'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('general.cancel'.tr),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<BudgetPlanDetailBloc>().add(
+                CompleteMilestoneEvent(milestoneId),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: WiseSpendsColors.success,
+            ),
+            child: Text('budget_plans.complete'.tr),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmUnlinkAccount(
+    BuildContext context,
+    String accountId,
+    String planId,
+  ) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('budget_plans.unlink_account'.tr),
+        content: Text('budget_plans.unlink_account_msg'.tr),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('general.cancel'.tr),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<BudgetPlanDetailBloc>().add(
+                UnlinkAccountEvent(accountId),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: WiseSpendsColors.secondary,
+            ),
+            child: Text('budget_plans.unlink'.tr),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Overview tab
+// =============================================================================
+
+class _OverviewTab extends StatelessWidget {
+  final BudgetPlanDetailLoaded state;
+  final VoidCallback onAddDeposit;
+  final VoidCallback onAddSpending;
+  final ValueChanged<String> onAddMilestone;
+  final void Function(String milestoneId, String planId) onCompleteMilestone;
+  final void Function(String accountId, String planId) onUnlinkAccount;
+
+  const _OverviewTab({
+    required this.state,
+    required this.onAddDeposit,
+    required this.onAddSpending,
+    required this.onAddMilestone,
+    required this.onCompleteMilestone,
+    required this.onUnlinkAccount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final plan = state.plan;
-    final progress = plan.progressPercentage;
-    final healthColor = _getHealthColor(plan.healthStatus);
+    final healthColor = _healthColor(plan.healthStatus);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Progress Card
-          _buildProgressCard(plan, progress, healthColor),
-          const SizedBox(height: 16),
+          // Progress card (using SectionHeader.card)
+          SectionHeader.card(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [healthColor, healthColor.withValues(alpha: 0.7)],
+            ),
+            icon: Icons.account_balance_wallet_outlined,
+            label: plan.category.displayName,
+            title: plan.name,
+            subtitle: _progressSubtitle(plan),
+            collapsibleBody: _ProgressBody(plan: plan, color: healthColor),
+            learnMoreLabel: 'general.details'.tr,
+            learnLessLabel: 'general.less'.tr,
+          ),
 
-          // Quick Actions
-          _buildQuickActions(),
-          const SizedBox(height: 24),
+          // Quick actions
+          SectionHeader(title: 'budget_plans.quick_actions'.tr),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              Expanded(
+                child: AppButton.primary(
+                  label: 'budget_plans.add_deposit'.tr,
+                  icon: Icons.add,
+                  onPressed: onAddDeposit,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: AppButton.secondary(
+                  label: 'budget_plans.add_spending'.tr,
+                  icon: Icons.remove,
+                  onPressed: onAddSpending,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xxl),
 
           // Milestones
-          _buildMilestonesSection(state.milestones, state.plan.id, context),
-          const SizedBox(height: 24),
-
-          // Linked Accounts
-          _buildLinkedAccountsSection(
-            state.linkedAccounts,
-            state.plan.id,
-            context,
+          SectionHeader(
+            title: 'budget_plans.milestones'.tr,
+            trailing: TextButton.icon(
+              onPressed: () => onAddMilestone(state.plan.id),
+              icon: const Icon(Icons.add, size: AppIconSize.sm),
+              label: Text('budget_plans.add_milestone'.tr),
+            ),
           ),
+          const SizedBox(height: AppSpacing.sm),
+          if (state.milestones.isEmpty)
+            _EmptySection(
+              icon: Icons.flag_outlined,
+              messageKey: 'budget_plans.no_milestones',
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: state.milestones.length,
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+              itemBuilder: (_, i) => _MilestoneCard(
+                milestone: state.milestones[i],
+                planId: state.plan.id,
+                onComplete: onCompleteMilestone,
+              ),
+            ),
+          const SizedBox(height: AppSpacing.xxl),
+
+          // Linked accounts
+          SectionHeader(title: 'budget_plans.linked_accounts'.tr),
+          const SizedBox(height: AppSpacing.sm),
+          if (state.linkedAccounts.isEmpty)
+            _EmptySection(
+              icon: Icons.account_balance,
+              messageKey: 'budget_plans.no_linked_accounts',
+            )
+          else
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: state.linkedAccounts.length,
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+              itemBuilder: (_, i) => _LinkedAccountCard(
+                account: state.linkedAccounts[i],
+                planId: state.plan.id,
+                onUnlink: onUnlinkAccount,
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildProgressCard(dynamic plan, double progress, Color healthColor) {
-    final loc = LocalizationService();
+  String _progressSubtitle(dynamic plan) {
+    final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 0);
+    return '${fmt.format(plan.currentAmount)} / ${fmt.format(plan.targetAmount)} · ${plan.daysRemaining} ${'general.days'.tr} ${'general.remaining'.tr}';
+  }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [healthColor, healthColor.withValues(alpha: 0.7)],
+  Color _healthColor(BudgetHealthStatus status) {
+    switch (status) {
+      case BudgetHealthStatus.onTrack:
+        return WiseSpendsColors.success;
+      case BudgetHealthStatus.slightlyBehind:
+        return WiseSpendsColors.warning;
+      case BudgetHealthStatus.atRisk:
+      case BudgetHealthStatus.overBudget:
+        return WiseSpendsColors.secondary;
+      case BudgetHealthStatus.completed:
+        return WiseSpendsColors.primary;
+    }
+  }
+}
+
+/// Collapsible body shown inside the SectionHeader.card progress card.
+class _ProgressBody extends StatelessWidget {
+  final dynamic plan;
+  final Color color;
+
+  const _ProgressBody({required this.plan, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = (plan.progressPercentage as double).clamp(0.0, 1.0);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Progress bar
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.full),
+          child: LinearProgressIndicator(
+            value: progress,
+            backgroundColor: Colors.white24,
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+            minHeight: 12,
+          ),
         ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Text(plan.category.iconCode, style: const TextStyle(fontSize: 48)),
-          const SizedBox(height: 16),
-          Text(
-            plan.name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+        const SizedBox(height: AppSpacing.md),
+        Row(
+          children: [
+            _StatusChip(
+              icon: plan.healthStatus == BudgetHealthStatus.onTrack
+                  ? Icons.check_circle
+                  : Icons.warning,
+              label: plan.healthStatus.displayName,
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            plan.category.displayName,
-            style: TextStyle(color: Colors.white70, fontSize: 14),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                children: [
-                  Text(
-                    NumberFormat.currency(
-                      symbol: 'RM ',
-                      decimalDigits: 0,
-                    ).format(plan.currentAmount),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    loc.get('budget_plans.current_amount'),
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    NumberFormat.currency(
-                      symbol: 'RM ',
-                      decimalDigits: 0,
-                    ).format(plan.targetAmount),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    loc.get('budget_plans.target_amount'),
-                    style: TextStyle(color: Colors.white70),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: progress.clamp(0.0, 1.0),
-              backgroundColor: Colors.white24,
-              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-              minHeight: 12,
+            const SizedBox(width: AppSpacing.md),
+            _StatusChip(
+              icon: Icons.calendar_today,
+              label: '${(progress * 100).toInt()}% ${'general.complete'.tr}',
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildStatusChip(
-                icon: plan.healthStatus == BudgetHealthStatus.onTrack
-                    ? Icons.check_circle
-                    : Icons.warning,
-                label: plan.healthStatus.displayName,
-                color: Colors.white,
-              ),
-              _buildStatusChip(
-                icon: Icons.calendar_today,
-                label: '${plan.daysRemaining} ${loc.get('general.days')}',
-                color: Colors.white,
-              ),
-            ],
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
+}
 
-  Widget _buildStatusChip({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
+class _StatusChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _StatusChip({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.5)),
+        color: Colors.white.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 4),
+          Icon(icon, size: AppIconSize.xs, color: Colors.white),
+          const SizedBox(width: AppSpacing.xs),
           Text(
             label,
-            style: TextStyle(
-              color: color,
+            style: const TextStyle(
+              color: Colors.white,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -343,119 +626,53 @@ class _BudgetPlanDetailScreenContentState
       ),
     );
   }
+}
 
-  Widget _buildQuickActions() {
-    final loc = LocalizationService();
+class _EmptySection extends StatelessWidget {
+  final IconData icon;
+  final String messageKey;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          loc.get('budget_plans.quick_actions'),
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 12),
-        Row(
+  const _EmptySection({required this.icon, required this.messageKey});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xxxl),
+      decoration: BoxDecoration(
+        color: WiseSpendsColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Center(
+        child: Column(
           children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _showAddDepositSheet,
-                icon: const Icon(Icons.add),
-                label: Text(loc.get('budget_plans.add_deposit')),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: WiseSpendsColors.success,
-                  minimumSize: const Size(0, 48),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _showAddSpendingSheet,
-                icon: const Icon(Icons.remove),
-                label: Text(loc.get('budget_plans.add_spending')),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: WiseSpendsColors.secondary,
-                  minimumSize: const Size(0, 48),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMilestonesSection(
-    List<dynamic> milestones,
-    String planUuid,
-    BuildContext context,
-  ) {
-    final loc = LocalizationService();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+            Icon(icon, size: 48, color: WiseSpendsColors.textHint),
+            const SizedBox(height: AppSpacing.sm),
             Text(
-              loc.get('budget_plans.milestones'),
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            TextButton.icon(
-              onPressed: () => _showAddMilestoneDialog(context, planUuid),
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(loc.get('budget_plans.add_milestone')),
+              messageKey.tr,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: WiseSpendsColors.textSecondary,
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 8),
-        milestones.isEmpty
-            ? Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: WiseSpendsColors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.flag_outlined,
-                        size: 48,
-                        color: WiseSpendsColors.textHint,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'No milestones yet',
-                        style: TextStyle(color: WiseSpendsColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: milestones.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 8),
-                itemBuilder: (context, index) =>
-                    _buildMilestoneCard(milestones[index], planUuid, context),
-              ),
-      ],
+      ),
     );
   }
+}
 
-  Widget _buildMilestoneCard(
-    dynamic milestone,
-    String planUuid,
-    BuildContext context,
-  ) {
+class _MilestoneCard extends StatelessWidget {
+  final dynamic milestone;
+  final String planId;
+  final void Function(String milestoneId, String planId) onComplete;
+
+  const _MilestoneCard({
+    required this.milestone,
+    required this.planId,
+    required this.onComplete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: CircleAvatar(
@@ -479,108 +696,75 @@ class _BudgetPlanDetailScreenContentState
                 : null,
           ),
         ),
-        subtitle: Text('RM ${milestone.targetAmount.toStringAsFixed(2)}'),
+        subtitle: Text(
+          'RM ${(milestone.targetAmount as double).toStringAsFixed(2)}',
+        ),
         trailing: milestone.isCompleted
             ? null
             : IconButton(
                 icon: const Icon(Icons.check_circle_outline),
-                onPressed: () =>
-                    _confirmCompleteMilestone(context, milestone.id!, planUuid),
+                onPressed: () => onComplete(milestone.id!, planId),
               ),
       ),
     );
   }
+}
 
-  Widget _buildLinkedAccountsSection(
-    List<dynamic> accounts,
-    String planUuid,
-    BuildContext context,
-  ) {
-    final loc = LocalizationService();
+class _LinkedAccountCard extends StatelessWidget {
+  final dynamic account;
+  final String planId;
+  final void Function(String accountId, String planId) onUnlink;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          loc.get('budget_plans.linked_accounts'),
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
-        accounts.isEmpty
-            ? Container(
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: WiseSpendsColors.surface,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.account_balance,
-                        size: 48,
-                        color: WiseSpendsColors.textHint,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'No linked accounts',
-                        style: TextStyle(color: WiseSpendsColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: accounts.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 8),
-                itemBuilder: (context, index) =>
-                    _buildLinkedAccountCard(accounts[index], planUuid, context),
-              ),
-      ],
-    );
-  }
+  const _LinkedAccountCard({
+    required this.account,
+    required this.planId,
+    required this.onUnlink,
+  });
 
-  Widget _buildLinkedAccountCard(
-    dynamic account,
-    String planUuid,
-    BuildContext context,
-  ) {
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(child: const Icon(Icons.account_balance)),
+        leading: const CircleAvatar(child: Icon(Icons.account_balance)),
         title: Text(account.accountName ?? 'Account'),
         subtitle: Text(
-          'Allocated: RM ${(account.allocatedAmount ?? 0).toStringAsFixed(2)}',
+          '${'budget_plans.allocated'.tr}: RM ${((account.allocatedAmount ?? 0) as double).toStringAsFixed(2)}',
         ),
         trailing: IconButton(
           icon: const Icon(Icons.link_off),
-          onPressed: () =>
-              _confirmUnlinkAccount(context, account.accountId, planUuid),
+          onPressed: () => onUnlink(account.accountId as String, planId),
         ),
       ),
     );
   }
+}
 
-  Widget _buildTransactionsTab(BudgetPlanDetailLoaded state) {
+// =============================================================================
+// Transactions tab
+// =============================================================================
+
+class _TransactionsTab extends StatelessWidget {
+  final BudgetPlanDetailLoaded state;
+
+  const _TransactionsTab({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Column(
         children: [
-          const TabBar(
+          TabBar(
             tabs: [
-              Tab(text: 'Deposits'),
-              Tab(text: 'Spending'),
+              Tab(text: 'budget_plans.deposits'.tr),
+              Tab(text: 'budget_plans.spending'.tr),
             ],
           ),
           Expanded(
             child: TabBarView(
               children: [
-                _buildDepositsList(state.deposits),
-                _buildSpendingList(state.transactions),
+                _DepositsList(deposits: state.deposits),
+                _SpendingList(transactions: state.transactions),
               ],
             ),
           ),
@@ -588,21 +772,34 @@ class _BudgetPlanDetailScreenContentState
       ),
     );
   }
+}
 
-  Widget _buildDepositsList(List<dynamic> deposits) {
+class _DepositsList extends StatelessWidget {
+  final List<dynamic> deposits;
+
+  const _DepositsList({required this.deposits});
+
+  @override
+  Widget build(BuildContext context) {
     if (deposits.isEmpty) {
       return Center(child: Text('budget_plans.no_deposits'.tr));
     }
-
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       itemCount: deposits.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
-      itemBuilder: (context, index) => _buildDepositCard(deposits[index]),
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+      itemBuilder: (_, i) => _DepositCard(deposit: deposits[i]),
     );
   }
+}
 
-  Widget _buildDepositCard(dynamic deposit) {
+class _DepositCard extends StatelessWidget {
+  final dynamic deposit;
+
+  const _DepositCard({required this.deposit});
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: const CircleAvatar(
@@ -612,31 +809,43 @@ class _BudgetPlanDetailScreenContentState
         title: Text(deposit.source ?? 'Manual'),
         subtitle: Text(DateFormat('MMM d, y').format(deposit.depositDate)),
         trailing: Text(
-          '+ RM ${deposit.amount.toStringAsFixed(2)}',
-          style: const TextStyle(
+          '+ RM ${(deposit.amount as double).toStringAsFixed(2)}',
+          style: AppTextStyles.bodyMedium.copyWith(
             color: WiseSpendsColors.success,
             fontWeight: FontWeight.bold,
-            fontSize: 16,
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildSpendingList(List<dynamic> transactions) {
+class _SpendingList extends StatelessWidget {
+  final List<dynamic> transactions;
+
+  const _SpendingList({required this.transactions});
+
+  @override
+  Widget build(BuildContext context) {
     if (transactions.isEmpty) {
       return Center(child: Text('budget_plans.no_spending'.tr));
     }
-
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       itemCount: transactions.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
-      itemBuilder: (context, index) => _buildSpendingCard(transactions[index]),
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+      itemBuilder: (_, i) => _SpendingCard(transaction: transactions[i]),
     );
   }
+}
 
-  Widget _buildSpendingCard(dynamic transaction) {
+class _SpendingCard extends StatelessWidget {
+  final dynamic transaction;
+
+  const _SpendingCard({required this.transaction});
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: const CircleAvatar(
@@ -648,84 +857,79 @@ class _BudgetPlanDetailScreenContentState
           DateFormat('MMM d, y').format(transaction.transactionDate),
         ),
         trailing: Text(
-          '- RM ${transaction.amount.toStringAsFixed(2)}',
-          style: const TextStyle(
+          '- RM ${(transaction.amount as double).toStringAsFixed(2)}',
+          style: AppTextStyles.bodyMedium.copyWith(
             color: WiseSpendsColors.secondary,
             fontWeight: FontWeight.bold,
-            fontSize: 16,
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildChartsTab(BudgetPlanDetailLoaded state) {
+// =============================================================================
+// Charts tab
+// =============================================================================
+
+class _ChartsTab extends StatelessWidget {
+  final BudgetPlanDetailLoaded state;
+
+  const _ChartsTab({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
     final totalDeposited = state.deposits.fold<double>(
       0.0,
-      (sum, d) => sum + d.amount,
+      (s, d) => s + (d.amount),
     );
     final totalSpent = state.transactions.fold<double>(
       0.0,
-      (sum, t) => sum + t.amount,
+      (s, t) => s + (t.amount),
     );
 
-    // Prepare spending by category data
-    var spendingByCategory = <SpendingByCategory>[];
-    // Group transactions by vendor/description as category proxy
-    if (totalSpent > 0) {
-      final byVendor = <String, double>{};
-      for (final transaction in state.transactions) {
-        final key = transaction.vendor ?? transaction.description ?? 'Other';
-        byVendor[key] = (byVendor[key] ?? 0) + transaction.amount;
-      }
-
-      spendingByCategory = byVendor.entries
-          .map(
-            (e) => SpendingByCategory(
-              category: e.key,
-              amount: e.value,
-              percentage: (e.value / totalSpent) * 100,
-            ),
-          )
-          .toList();
-    }
+    final spendingByCategory = _buildCategoryData(totalSpent);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Summary Cards
-          _buildAnalyticsSummary(totalDeposited, totalSpent),
-          const SizedBox(height: 24),
+          // Summary via SectionHeader.card
+          SectionHeader.card(
+            gradient: const LinearGradient(
+              colors: [WiseSpendsColors.primary, WiseSpendsColors.primaryDark],
+            ),
+            icon: Icons.insights,
+            label: 'budget_plans.charts'.tr,
+            title: 'budget_plans.analytics_title'.tr,
+            subtitle: _analyticsSummary(totalDeposited, totalSpent),
+          ),
 
-          // Monthly Contributions Chart
-          _buildSectionTitle('Monthly Contributions'),
-          const SizedBox(height: 8),
+          SectionHeader(title: 'budget_plans.monthly_contributions'.tr),
+          const SizedBox(height: AppSpacing.sm),
           BudgetMonthlyContributionsChart(
             data: state.analytics?.monthlyContributions ?? [],
             requiredMonthlySaving: state.plan.requiredMonthlySaving,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
 
-          // Progress Chart
-          _buildSectionTitle('Savings Progress'),
-          const SizedBox(height: 8),
+          SectionHeader(title: 'budget_plans.savings_progress'.tr),
+          const SizedBox(height: AppSpacing.sm),
           BudgetProgressChart(
             snapshots: state.analytics?.progressHistory ?? [],
             targetAmount: state.plan.targetAmount,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xxl),
 
-          // Spending Breakdown
           if (spendingByCategory.isNotEmpty) ...[
-            _buildSectionTitle('Spending Breakdown'),
-            const SizedBox(height: 8),
+            SectionHeader(title: 'budget_plans.spending_breakdown'.tr),
+            const SizedBox(height: AppSpacing.sm),
             BudgetSpendingDonutChart(
               data: spendingByCategory,
               totalSpent: totalSpent,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             BudgetChartLegend(data: spendingByCategory),
           ],
         ],
@@ -733,311 +937,56 @@ class _BudgetPlanDetailScreenContentState
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: Theme.of(
-        context,
-      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-    );
+  List<SpendingByCategory> _buildCategoryData(double totalSpent) {
+    if (totalSpent <= 0) return [];
+    final byVendor = <String, double>{};
+    for (final t in state.transactions) {
+      final key = t.vendor ?? t.description ?? 'Other';
+      byVendor[key] = (byVendor[key] ?? 0) + (t.amount);
+    }
+    return byVendor.entries
+        .map(
+          (e) => SpendingByCategory(
+            category: e.key,
+            amount: e.value,
+            percentage: (e.value / totalSpent) * 100,
+          ),
+        )
+        .toList();
   }
 
-  Widget _buildAnalyticsSummary(double totalDeposited, double totalSpent) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildSummaryCard(
-            title: 'Total Deposited',
-            amount: totalDeposited,
-            color: WiseSpendsColors.success,
-            icon: Icons.add_circle,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildSummaryCard(
-            title: 'Total Spent',
-            amount: totalSpent,
-            color: WiseSpendsColors.secondary,
-            icon: Icons.remove_circle,
-          ),
-        ),
-      ],
-    );
+  String _analyticsSummary(double deposited, double spent) {
+    final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 0);
+    return '${'budget_plans.deposited'.tr}: ${fmt.format(deposited)}  ·  ${'budget_plans.spent'.tr}: ${fmt.format(spent)}';
   }
+}
 
-  Widget _buildSummaryCard({
-    required String title,
-    required double amount,
-    required Color color,
-    required IconData icon,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(color: color.withValues(alpha: 0.8), fontSize: 12),
-          ),
-          Text(
-            NumberFormat.currency(
-              symbol: 'RM ',
-              decimalDigits: 0,
-            ).format(amount),
-            style: TextStyle(
-              color: color,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+// =============================================================================
+// FAB
+// =============================================================================
 
-  Widget _buildFAB() {
+class _DetailFAB extends StatelessWidget {
+  final TabController tabController;
+  final VoidCallback onDeposit;
+  final VoidCallback onSpending;
+
+  const _DetailFAB({
+    required this.tabController,
+    required this.onDeposit,
+    required this.onSpending,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        // Quick add based on current tab
-        if (_tabController.index == 0) {
-          _showAddDepositSheet();
-        } else if (_tabController.index == 1) {
-          _showAddSpendingSheet();
+        if (tabController.index == 1) {
+          onSpending();
+        } else {
+          onDeposit();
         }
       },
       child: const Icon(Icons.add),
-    );
-  }
-
-  void _showAddDepositSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => AddDepositBottomSheet(planUuid: widget.planUuid),
-    );
-  }
-
-  void _showAddSpendingSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => AddSpendingBottomSheet(planUuid: widget.planUuid),
-    );
-  }
-
-  void _handleMenuAction(String value) {
-    final state = context.read<BudgetPlanDetailBloc>().state;
-    if (state is! BudgetPlanDetailLoaded) return;
-
-    switch (value) {
-      case 'edit':
-        // Navigate to edit screen
-        Navigator.pushNamed(
-          context,
-          AppRoutes.editBudgetPlan,
-          arguments: widget.planUuid,
-        );
-        break;
-      case 'delete':
-        _confirmDelete(state.plan.id);
-        break;
-    }
-  }
-
-  void _confirmDelete(String uuid) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('budget_plans.delete_plan'.tr),
-        content: Text('budget_plans.delete_plan_msg'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('general.cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<BudgetPlanDetailBloc>().add(DeletePlanEvent(uuid));
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: WiseSpendsColors.secondary,
-            ),
-            child: Text('general.delete'.tr),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getHealthColor(BudgetHealthStatus status) {
-    switch (status) {
-      case BudgetHealthStatus.onTrack:
-        return WiseSpendsColors.success;
-      case BudgetHealthStatus.slightlyBehind:
-        return WiseSpendsColors.warning;
-      case BudgetHealthStatus.atRisk:
-      case BudgetHealthStatus.overBudget:
-        return WiseSpendsColors.secondary;
-      case BudgetHealthStatus.completed:
-        return WiseSpendsColors.primary;
-    }
-  }
-
-  void _showAddMilestoneDialog(BuildContext context, String planUuid) {
-    final titleController = TextEditingController();
-    final amountController = TextEditingController();
-    DateTime? dueDate;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text('budget_plans.add_milestone_title'.tr),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Milestone Title',
-                  hintText: 'e.g., Venue Deposit',
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: amountController,
-                decoration: const InputDecoration(
-                  labelText: 'Target Amount',
-                  prefixText: 'RM ',
-                ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-              ),
-              const SizedBox(height: 16),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.calendar_today),
-                title: Text(
-                  dueDate != null
-                      ? 'Due: ${DateFormat('MMM d, y').format(dueDate!)}'
-                      : 'Due Date (optional)',
-                ),
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
-                  );
-                  if (picked != null) {
-                    setDialogState(() {
-                      dueDate = picked;
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('general.cancel'.tr),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (titleController.text.isNotEmpty &&
-                    amountController.text.isNotEmpty) {
-                  context.read<BudgetPlanDetailBloc>().add(
-                    AddMilestoneEvent(
-                      title: titleController.text,
-                      targetAmount: double.parse(amountController.text),
-                      dueDate:
-                          dueDate ??
-                          DateTime.now().add(const Duration(days: 30)),
-                    ),
-                  );
-                  Navigator.pop(context);
-                }
-              },
-              child: Text('general.add'.tr),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _confirmCompleteMilestone(
-    BuildContext context,
-    String milestoneId,
-    String planId,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('budget_plans.complete_milestone'.tr),
-        content: Text('budget_plans.complete_milestone_msg'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('general.cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<BudgetPlanDetailBloc>().add(
-                CompleteMilestoneEvent(milestoneId),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: WiseSpendsColors.success,
-            ),
-            child: Text('budget_plans.complete'.tr),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmUnlinkAccount(
-    BuildContext context,
-    String accountId,
-    String planId,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('budget_plans.unlink_account'.tr),
-        content: Text('budget_plans.unlink_account_msg'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('general.cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<BudgetPlanDetailBloc>().add(
-                UnlinkAccountEvent(accountId),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: WiseSpendsColors.secondary,
-            ),
-            child: Text('budget_plans.unlink'.tr),
-          ),
-        ],
-      ),
     );
   }
 }
