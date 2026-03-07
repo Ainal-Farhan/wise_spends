@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/presentation/blocs/payee/payee_bloc.dart';
 import 'package:wise_spends/presentation/blocs/payee/payee_event.dart';
 import 'package:wise_spends/presentation/blocs/payee/payee_state.dart';
@@ -280,17 +281,12 @@ class _PayeeManagementScreenContent extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text(
-          'Add Payee',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Add Payee',
+          icon: Icons.person_add_outlined,
+          iconColor: AppColors.primary,
+          content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               AppTextField(
@@ -323,50 +319,44 @@ class _PayeeManagementScreenContent extends StatelessWidget {
               ),
             ],
           ),
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+            CustomDialogButton(
+              text: 'Add',
+              isDefault: true,
+              onPressed: () {
+                final name = nameController.text.trim();
+                if (name.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a payee name'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                  return;
+                }
+
+                final payee = PayeeVO()
+                  ..name = name
+                  ..accountNumber = accountController.text.trim().isEmpty
+                      ? null
+                      : accountController.text.trim()
+                  ..bankName = bankController.text.trim().isEmpty
+                      ? null
+                      : bankController.text.trim()
+                  ..note = noteController.text.trim().isEmpty
+                      ? null
+                      : noteController.text.trim();
+
+                context.read<PayeeBloc>().add(SavePayee(payee));
+                Navigator.pop(dialogContext);
+              },
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final name = nameController.text.trim();
-              if (name.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a payee name'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-                return;
-              }
-
-              final payee = PayeeVO()
-                ..name = name
-                ..accountNumber = accountController.text.trim().isEmpty
-                    ? null
-                    : accountController.text.trim()
-                ..bankName = bankController.text.trim().isEmpty
-                    ? null
-                    : bankController.text.trim()
-                ..note = noteController.text.trim().isEmpty
-                    ? null
-                    : noteController.text.trim();
-
-              context.read<PayeeBloc>().add(SavePayee(payee));
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Add'),
-          ),
-        ],
       ),
     );
   }
@@ -381,17 +371,12 @@ class _PayeeManagementScreenContent extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text(
-          'Edit Payee',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Edit Payee',
+          icon: Icons.edit_note,
+          iconColor: AppColors.tertiary,
+          content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               AppTextField(
@@ -420,49 +405,43 @@ class _PayeeManagementScreenContent extends StatelessWidget {
               ),
             ],
           ),
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+            CustomDialogButton(
+              text: 'Update',
+              isDefault: true,
+              onPressed: () {
+                final name = nameController.text.trim();
+                if (name.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter a payee name'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                  return;
+                }
+
+                payee.name = name;
+                payee.accountNumber = accountController.text.trim().isEmpty
+                    ? null
+                    : accountController.text.trim();
+                payee.bankName = bankController.text.trim().isEmpty
+                    ? null
+                    : bankController.text.trim();
+                payee.note = noteController.text.trim().isEmpty
+                    ? null
+                    : noteController.text.trim();
+
+                context.read<PayeeBloc>().add(SavePayee(payee));
+                Navigator.pop(dialogContext);
+              },
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final name = nameController.text.trim();
-              if (name.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Please enter a payee name'),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-                return;
-              }
-
-              payee.name = name;
-              payee.accountNumber = accountController.text.trim().isEmpty
-                  ? null
-                  : accountController.text.trim();
-              payee.bankName = bankController.text.trim().isEmpty
-                  ? null
-                  : bankController.text.trim();
-              payee.note = noteController.text.trim().isEmpty
-                  ? null
-                  : noteController.text.trim();
-
-              context.read<PayeeBloc>().add(SavePayee(payee));
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Update'),
-          ),
-        ],
       ),
     );
   }
@@ -470,39 +449,28 @@ class _PayeeManagementScreenContent extends StatelessWidget {
   void _confirmDeletePayee(BuildContext context, PayeeVO payee) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text(
-          'Delete Payee?',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: const Text(
-          'Are you sure you want to delete this payee? This cannot be undone.',
-          style: TextStyle(color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Delete Payee?',
+          message:
+              'Are you sure you want to delete this payee? This cannot be undone.',
+          icon: Icons.delete_outline,
+          iconColor: AppColors.secondary,
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<PayeeBloc>().add(DeletePayee(payee.id!));
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: Colors.white,
+            CustomDialogButton(
+              text: 'Delete',
+              isDestructive: true,
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                context.read<PayeeBloc>().add(DeletePayee(payee.id!));
+              },
             ),
-            child: const Text('Delete'),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

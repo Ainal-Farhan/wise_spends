@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/presentation/blocs/commitment/commitment_bloc.dart';
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_vo.dart';
 import 'commitment_detail_screen.dart';
@@ -411,95 +412,74 @@ class _CommitmentListScreenContentState
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Row(
-          children: [
-            Icon(Icons.send_and_archive_rounded, color: Colors.green),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'Distribute Commitment?',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Distribute Commitment?',
+          message:
+              'This will create $detailCount task${detailCount == 1 ? '' : 's'} from "${commitment.name ?? 'this commitment'}".',
+          icon: Icons.send_and_archive_rounded,
+          iconColor: AppColors.success,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border:
+                      Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Total to distribute',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    Text(
+                      NumberFormat.currency(
+                        symbol: 'RM ',
+                        decimalDigits: 2,
+                      ).format(totalAmount),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(height: 10),
+              const Text(
+                'Each task will use the payment method configured in its detail.',
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              ),
+            ],
+          ),
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+            CustomDialogButton(
+              text: 'Distribute',
+              isDefault: true,
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                context.read<CommitmentBloc>().add(
+                  StartDistributeCommitmentEvent(commitment),
+                );
+              },
             ),
           ],
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'This will create $detailCount task${detailCount == 1 ? '' : 's'} '
-              'from "${commitment.name ?? 'this commitment'}".',
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Total to distribute',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  Text(
-                    NumberFormat.currency(
-                      symbol: 'RM ',
-                      decimalDigits: 2,
-                    ).format(totalAmount),
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Each task will use the payment method configured in its detail.',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          FilledButton.icon(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<CommitmentBloc>().add(
-                StartDistributeCommitmentEvent(commitment),
-              );
-            },
-            icon: const Icon(Icons.send_and_archive_rounded, size: 16),
-            label: const Text('Distribute'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -534,42 +514,30 @@ class _CommitmentListScreenContentState
   void _confirmDeleteCommitment(BuildContext context, CommitmentVO commitment) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text(
-          'Delete Commitment?',
-          style: TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: const Text(
-          'Are you sure you want to delete this commitment? '
-          'All associated tasks will be deleted. This cannot be undone.',
-          style: TextStyle(color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: AppColors.textSecondary),
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Delete Commitment?',
+          message: 'Are you sure you want to delete this commitment? '
+              'All associated tasks will be deleted. This cannot be undone.',
+          icon: Icons.delete_outline,
+          iconColor: AppColors.secondary,
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<CommitmentBloc>().add(
-                DeleteCommitmentEvent(commitment.commitmentId!),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: Colors.white,
+            CustomDialogButton(
+              text: 'Delete',
+              isDestructive: true,
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                context.read<CommitmentBloc>().add(
+                  DeleteCommitmentEvent(commitment.commitmentId!),
+                );
+              },
             ),
-            child: const Text('Delete'),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

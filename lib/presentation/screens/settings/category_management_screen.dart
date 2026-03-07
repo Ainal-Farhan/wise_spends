@@ -8,6 +8,7 @@ import 'package:wise_spends/presentation/blocs/category/category_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 import 'add_category_screen.dart';
 
@@ -252,10 +253,12 @@ class _CategoryManagementScreenContent extends StatelessWidget {
       builder: (dialogContext) {
         CategoryType categoryType = initialType;
         return StatefulBuilder(
-          builder: (dialogContext, setDialogState) => AlertDialog(
-            title: const Text('Edit Category'),
-            content: SingleChildScrollView(
-              child: Column(
+          builder: (dialogContext, setDialogState) => CustomDialog(
+            config: CustomDialogConfig(
+              title: 'Edit Category',
+              icon: Icons.edit_note,
+              iconColor: AppColors.tertiary,
+              content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AppTextField(
@@ -291,53 +294,50 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (nameController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Please enter a category name'),
-                        backgroundColor: AppColors.error,
+              buttons: [
+                CustomDialogButton(
+                  text: 'Cancel',
+                  onPressed: () => Navigator.pop(dialogContext),
+                ),
+                CustomDialogButton(
+                  text: 'Update',
+                  isDefault: true,
+                  onPressed: () {
+                    if (nameController.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please enter a category name'),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                      return;
+                    }
+
+                    categoryBloc.add(
+                      UpdateCategoryEvent(
+                        category.copyWith(
+                          name: nameController.text,
+                          isIncome:
+                              categoryType == CategoryType.income ||
+                              categoryType == CategoryType.both,
+                          isExpense:
+                              categoryType == CategoryType.expense ||
+                              categoryType == CategoryType.both,
+                        ),
                       ),
                     );
-                    return;
-                  }
 
-                  categoryBloc.add(
-                    UpdateCategoryEvent(
-                      category.copyWith(
-                        name: nameController.text,
-                        isIncome:
-                            categoryType == CategoryType.income ||
-                            categoryType == CategoryType.both,
-                        isExpense:
-                            categoryType == CategoryType.expense ||
-                            categoryType == CategoryType.both,
+                    Navigator.pop(dialogContext);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Category updated successfully'),
+                        backgroundColor: AppColors.success,
                       ),
-                    ),
-                  );
-
-                  Navigator.pop(dialogContext);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Category updated successfully'),
-                      backgroundColor: AppColors.success,
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                    );
+                  },
                 ),
-                child: const Text('Update'),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -349,34 +349,34 @@ class _CategoryManagementScreenContent extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Category?'),
-        content: Text(
-          'Are you sure you want to delete "${category.name}"? This cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              categoryBloc.add(DeleteCategoryEvent(category.id));
-              Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Category deleted successfully'),
-                  backgroundColor: AppColors.success,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: Colors.white,
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Delete Category?',
+          message:
+              'Are you sure you want to delete "${category.name}"? This cannot be undone.',
+          icon: Icons.delete_outline,
+          iconColor: AppColors.secondary,
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
             ),
-            child: const Text('Delete'),
-          ),
-        ],
+            CustomDialogButton(
+              text: 'Delete',
+              isDestructive: true,
+              onPressed: () {
+                categoryBloc.add(DeleteCategoryEvent(category.id));
+                Navigator.pop(dialogContext);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Category deleted successfully'),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

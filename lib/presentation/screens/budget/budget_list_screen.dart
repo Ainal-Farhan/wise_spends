@@ -10,6 +10,7 @@ import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 
 /// Budget List Screen
 /// Features:
@@ -394,33 +395,37 @@ class _BudgetListScreenContentState extends State<_BudgetListScreenContent> {
   void _confirmDeleteBudget(BuildContext context, dynamic budget) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Budget?'),
-        content: Text(
-          'Are you sure you want to delete "${budget.name}"? This action cannot be undone.',
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Delete Budget?',
+          message:
+              'Are you sure you want to delete "${budget.name}"? This action cannot be undone.',
+          icon: Icons.delete_outline,
+          iconColor: AppColors.secondary,
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+            CustomDialogButton(
+              text: 'Delete',
+              isDestructive: true,
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                context.read<BudgetBloc>().add(
+                  DeleteBudgetEvent(budget.id.toString()),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Budget deleted successfully'),
+                    behavior: SnackBarBehavior.floating,
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              },
+            ),
+          ],
         ),
-        actions: [
-          AppButton.text(
-            label: 'Cancel',
-            onPressed: () => Navigator.pop(context),
-          ),
-          AppButton.destructive(
-            label: 'Delete',
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<BudgetBloc>().add(
-                DeleteBudgetEvent(budget.id.toString()),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Budget deleted successfully'),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: AppColors.success,
-                ),
-              );
-            },
-          ),
-        ],
       ),
     );
   }

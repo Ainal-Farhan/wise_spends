@@ -7,6 +7,7 @@ import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 
 /// Settings Screen
 /// Features:
@@ -339,24 +340,28 @@ class SettingsPage extends StatelessWidget {
   void _showClearDataConfirmation(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear All Data?'),
-        content: const Text(
-          'This will permanently delete all your local data including transactions, budgets, and settings. This action cannot be undone.',
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Clear All Data?',
+          message:
+              'This will permanently delete all your local data including transactions, budgets, and settings. This action cannot be undone.',
+          icon: Icons.warning_amber_rounded,
+          iconColor: AppColors.warning,
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+            CustomDialogButton(
+              text: 'Clear All',
+              isDestructive: true,
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                // Clear data logic
+              },
+            ),
+          ],
         ),
-        actions: [
-          AppButton.text(
-            label: 'Cancel',
-            onPressed: () => Navigator.pop(context),
-          ),
-          AppButton.destructive(
-            label: 'Clear All',
-            onPressed: () {
-              Navigator.pop(context);
-              // Clear data logic
-            },
-          ),
-        ],
       ),
     );
   }
@@ -364,24 +369,28 @@ class SettingsPage extends StatelessWidget {
   void _showSignOutConfirmation(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text(
-          'Are you sure you want to sign out? You will need to sign in again to access your data.',
+      builder: (dialogContext) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Sign Out',
+          message:
+              'Are you sure you want to sign out? You will need to sign in again to access your data.',
+          icon: Icons.logout,
+          iconColor: AppColors.tertiary,
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(dialogContext),
+            ),
+            CustomDialogButton(
+              text: 'Sign Out',
+              isDestructive: true,
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                // Sign out logic
+              },
+            ),
+          ],
         ),
-        actions: [
-          AppButton.text(
-            label: 'Cancel',
-            onPressed: () => Navigator.pop(context),
-          ),
-          AppButton.destructive(
-            label: 'Sign Out',
-            onPressed: () {
-              Navigator.pop(context);
-              // Sign out logic
-            },
-          ),
-        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'package:wise_spends/presentation/widgets/components/amount_display.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 
 /// Reusable transaction card widget
 /// Displays a single transaction with all relevant information
@@ -245,24 +246,25 @@ class SwipeableTransactionCard extends StatelessWidget {
         // Show confirmation dialog
         return await showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Delete Transaction?'),
-            content: const Text(
-              'This action cannot be undone. Are you sure you want to delete this transaction?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: WiseSpendsColors.secondary,
+          builder: (context) => CustomDialog(
+            config: CustomDialogConfig(
+              title: 'Delete Transaction?',
+              message:
+                  'This action cannot be undone. Are you sure you want to delete this transaction?',
+              icon: Icons.delete_outline,
+              iconColor: WiseSpendsColors.secondary,
+              buttons: [
+                CustomDialogButton(
+                  text: 'Cancel',
+                  onPressed: () => Navigator.pop(context, false),
                 ),
-                child: const Text('Delete'),
-              ),
-            ],
+                CustomDialogButton(
+                  text: 'Delete',
+                  isDestructive: true,
+                  onPressed: () => Navigator.pop(context, true),
+                ),
+              ],
+            ),
           ),
         );
       },

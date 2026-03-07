@@ -5,7 +5,7 @@ import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task
 import 'package:wise_spends/domain/entities/impl/commitment/commitment_detail_vo.dart';
 import 'package:wise_spends/presentation/blocs/commitment/commitment_bloc.dart';
 import 'package:wise_spends/shared/components/forms/commitment_detail_form.dart';
-import 'package:wise_spends/shared/resources/ui/alert_dialog/delete_dialog.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/components/components.dart';
@@ -111,7 +111,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
               child: ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: details.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) =>
                     _buildDetailCard(context, state, details[index]),
               ),
@@ -207,17 +207,24 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                 style: TextButton.styleFrom(foregroundColor: AppColors.primary),
               ),
               TextButton.icon(
-                onPressed: () => showDeleteDialog(
-                  context: context,
-                  onDelete: () async {
+                onPressed: () async {
+                  final confirmed = await showDeleteDialog(
+                    context: context,
+                    title: 'Delete Detail',
+                    message:
+                        'Are you sure you want to delete this commitment detail?',
+                    deleteText: 'Delete',
+                    autoDisplayMessage: true,
+                  );
+                  if (confirmed == true) {
                     context.read<CommitmentBloc>().add(
                       DeleteCommitmentDetailEvent(
                         detail.commitmentDetailId!,
                         commitmentId: commitmentId,
                       ),
                     );
-                  },
-                ),
+                  }
+                },
                 icon: const Icon(Icons.delete_outline, size: 16),
                 label: const Text('Delete'),
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),

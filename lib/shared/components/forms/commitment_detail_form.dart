@@ -210,7 +210,7 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
               const _FieldLabel('Recurrence'),
               const SizedBox(height: 6),
               DropdownButtonFormField<CommitmentDetailType>(
-                value: _recurrenceType,
+                initialValue: _recurrenceType,
                 decoration: _inputDeco(
                   hint: 'Select recurrence',
                   icon: Icons.repeat_rounded,
@@ -290,7 +290,7 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
               widget.payeeVOList.isEmpty
                   ? _EmptyPayeeHint()
                   : DropdownButtonFormField<String>(
-                      value: _payeeId,
+                      initialValue: _payeeId,
                       decoration: _inputDeco(
                         hint: 'Select payee',
                         icon: Icons.person_outline_rounded,
@@ -722,7 +722,7 @@ class _SavingDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     final filtered = savings.where((s) => s.saving.id != excludeId).toList();
     return DropdownButtonFormField<String>(
-      value: filtered.any((s) => s.saving.id == value) ? value : null,
+      initialValue: filtered.any((s) => s.saving.id == value) ? value : null,
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: Icon(leadingIcon, size: 20),

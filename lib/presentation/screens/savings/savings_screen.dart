@@ -9,10 +9,10 @@ import 'package:wise_spends/presentation/blocs/savings/savings_bloc.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_event.dart';
 import 'package:wise_spends/presentation/blocs/savings/savings_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/resources/ui/alert_dialog/delete_dialog.dart';
 import 'package:wise_spends/domain/entities/impl/saving/list_saving_vo.dart';
 
 /// Enhanced Savings Screen - Pure BLoC

@@ -11,7 +11,7 @@ import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/resources/ui/alert_dialog/delete_dialog.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/domain/entities/impl/money_storage/money_storage_vo.dart';
 
 /// Enhanced Money Storage Screen
@@ -115,9 +115,7 @@ class MoneyStorageScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () {
-              context.read<MoneyStorageBloc>().add(
-                LoadAddMoneyStorageEvent(),
-              );
+              context.read<MoneyStorageBloc>().add(LoadAddMoneyStorageEvent());
             },
             tooltip: 'Add Money Storage',
           ),
@@ -153,11 +151,13 @@ class MoneyStorageScreen extends StatelessWidget {
                   ],
                 ),
               )
-            : NoMoneyStorageEmptyState(onAdd: () {
-                context.read<MoneyStorageBloc>().add(
-                  LoadAddMoneyStorageEvent(),
-                );
-              }),
+            : NoMoneyStorageEmptyState(
+                onAdd: () {
+                  context.read<MoneyStorageBloc>().add(
+                    LoadAddMoneyStorageEvent(),
+                  );
+                },
+              ),
       ),
     );
   }
@@ -292,21 +292,24 @@ class MoneyStorageScreen extends StatelessWidget {
               minWidth: AppTouchTarget.min,
               minHeight: AppTouchTarget.min,
             ),
-            onSelected: (String result) {
+            onSelected: (String result) async {
               if (result == 'edit') {
                 context.read<MoneyStorageBloc>().add(
                   LoadEditMoneyStorageEvent(storage.moneyStorage.id),
                 );
               }
               if (result == 'delete') {
-                showDeleteDialog(
+                final confirmed = await showDeleteDialog(
                   context: context,
-                  onDelete: () {
-                    context.read<MoneyStorageBloc>().add(
-                      DeleteMoneyStorageEvent(storage.moneyStorage.id),
-                    );
-                  },
+                  title: 'Delete Money Storage',
+                  message:
+                      'Are you sure you want to delete this money storage?',
                 );
+                if (confirmed == true) {
+                  context.read<MoneyStorageBloc>().add(
+                    DeleteMoneyStorageEvent(storage.moneyStorage.id),
+                  );
+                }
               }
             },
             itemBuilder: (BuildContext context) => const [
@@ -357,9 +360,7 @@ class MoneyStorageScreen extends StatelessWidget {
       text: moneyStorage?.moneyStorage.longName ?? '',
     );
     final amountController = TextEditingController(
-      text: moneyStorage != null
-          ? moneyStorage.amount.toStringAsFixed(2)
-          : '',
+      text: moneyStorage != null ? moneyStorage.amount.toStringAsFixed(2) : '',
     );
 
     return Scaffold(
@@ -454,8 +455,10 @@ class MoneyStorageScreen extends StatelessWidget {
                               SnackBar(
                                 content: Row(
                                   children: [
-                                    const Icon(Icons.check_circle,
-                                        color: Colors.white),
+                                    const Icon(
+                                      Icons.check_circle,
+                                      color: Colors.white,
+                                    ),
                                     const SizedBox(width: AppSpacing.sm),
                                     const Text(
                                       'Money storage added successfully',
@@ -465,8 +468,9 @@ class MoneyStorageScreen extends StatelessWidget {
                                 backgroundColor: AppColors.success,
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(AppRadius.md),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.md,
+                                  ),
                                 ),
                               ),
                             );
@@ -550,11 +554,10 @@ class NoMoneyStorageEmptyState extends StatelessWidget {
       title: 'No money storage yet',
       subtitle: 'Add your first money storage to get started',
       actionLabel: 'Add Money Storage',
-      onAction: onAdd ??
+      onAction:
+          onAdd ??
           () {
-            context.read<MoneyStorageBloc>().add(
-              LoadAddMoneyStorageEvent(),
-            );
+            context.read<MoneyStorageBloc>().add(LoadAddMoneyStorageEvent());
           },
       iconColor: AppColors.tertiary,
     );
