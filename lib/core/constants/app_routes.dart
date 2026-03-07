@@ -41,6 +41,7 @@ abstract class AppRoutes {
   static const String profile = '/profile';
   static const String notifications = '/notifications';
   static const String dataManagement = '/data';
+  static const String backupRestore = '/backup-restore';
 
   // Other routes
   static const String savings = '/savings';

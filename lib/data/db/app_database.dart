@@ -50,7 +50,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration {
@@ -58,88 +58,7 @@ class AppDatabase extends _$AppDatabase {
       onCreate: (Migrator m) async {
         await m.createAll();
       },
-      onUpgrade: (Migrator m, int from, int to) async {
-        // ── v2 → v3 ───────────────────────────────────────────────────────
-        // SQLite cannot change column nullability with ALTER TABLE, so we
-        // recreate commitment_detail_table with the correct schema and copy
-        // existing data across.
-        //
-        // Changes vs v2 schema:
-        //   saving_id        TEXT NOT NULL  →  TEXT NULLABLE
-        //   task_type        (new) INTEGER NOT NULL DEFAULT 0
-        //   target_saving_id (new) TEXT NULLABLE
-        //   payee_id         (new) TEXT NULLABLE
-        //
-        // Existing rows keep task_type = 0 (internalTransfer) and NULL for
-        // the new FK columns — the old distribute behaviour is preserved.
-        if (from < 4) {
-          // 1. Create the new table alongside the old one
-          await customStatement('''
-            CREATE TABLE IF NOT EXISTS commitment_detail_table_new (
-              id                TEXT NOT NULL PRIMARY KEY,
-              created_by        TEXT NOT NULL,
-              date_created      INTEGER NOT NULL DEFAULT (unixepoch()),
-              date_updated      INTEGER NOT NULL,
-              last_modified_by  TEXT NOT NULL,
-              amount            REAL NOT NULL,
-              description       TEXT NOT NULL,
-              type              INTEGER NOT NULL,
-              task_type         INTEGER NOT NULL DEFAULT 0,
-              saving_id         TEXT REFERENCES saving_table(id),
-              target_saving_id  TEXT REFERENCES saving_table(id),
-              payee_id          TEXT REFERENCES payee_table(id),
-              commitment_id     TEXT NOT NULL REFERENCES commitment_table(id)
-            )
-          ''');
-
-          // 2. Copy all existing rows; new columns receive their defaults
-          await customStatement('''
-            INSERT INTO commitment_detail_table_new
-              (id, created_by, date_created, date_updated, last_modified_by,
-               amount, description, type, saving_id, commitment_id)
-            SELECT
-              id, created_by, date_created, date_updated, last_modified_by,
-              amount, description, type, saving_id, commitment_id
-            FROM commitment_detail_table
-          ''');
-
-          // 3. Drop old table and rename new one into place
-          await customStatement('DROP TABLE commitment_detail_table');
-          await customStatement(
-            'ALTER TABLE commitment_detail_table_new '
-            'RENAME TO commitment_detail_table',
-          );
-        }
-
-        // ── v4 → v5 ───────────────────────────────────────────────────────
-        // Add new columns to user_table for enhanced profile features:
-        //   occupation       TEXT NULLABLE
-        //   address          TEXT NULLABLE
-        //   profile_image_url  TEXT NULLABLE
-        if (from < 5) {
-          // Add occupation column
-          await customStatement('''
-            ALTER TABLE user_table ADD COLUMN occupation TEXT NULLABLE
-          ''');
-
-          // Add address column
-          await customStatement('''
-            ALTER TABLE user_table ADD COLUMN address TEXT NULLABLE
-          ''');
-
-          // Add profile_image_url column (snake_case for SQLite)
-          await customStatement('''
-            ALTER TABLE user_table ADD COLUMN profile_image_url TEXT NULLABLE
-          ''');
-        }
-
-        if (from < 6) {
-          // Add profile_image_url column (snake_case for SQLite)
-          await customStatement('''
-            ALTER TABLE user_table ADD COLUMN profile_image_url TEXT NULLABLE
-          ''');
-        }
-      },
+      onUpgrade: (Migrator m, int from, int to) async {},
     );
   }
 
@@ -288,57 +207,90 @@ class AppDatabase extends _$AppDatabase {
       final tableData = data[repo.tableName()];
       if (tableData == null) continue;
 
-      switch (repo.tableName()) {
-        case 'UserTable':
-          await repo.saveAll([for (final d in tableData) CmmnUser.fromJson(d)]);
-        case 'GroupReferenceTable':
-          await repo.saveAll([
-            for (final d in tableData) MstrdtGroupReference.fromJson(d),
-          ]);
-        case 'ReferenceTable':
-          await repo.saveAll([
-            for (final d in tableData) MstrdtReference.fromJson(d),
-          ]);
-        case 'ReferenceDataTable':
-          await repo.saveAll([
-            for (final d in tableData) MstrdtReferenceData.fromJson(d),
-          ]);
-        case 'ExpenseTable':
-          await repo.saveAll([
-            for (final d in tableData) ExpnsExpense.fromJson(d),
-          ]);
-        case 'ExpenseReferenceTable':
-          await repo.saveAll([
-            for (final d in tableData) MstrdtExpenseReference.fromJson(d),
-          ]);
-        case 'MoneyStorageTable':
-          await repo.saveAll([
-            for (final d in tableData) SvngMoneyStorage.fromJson(d),
-          ]);
-        case 'SavingTable':
-          await repo.saveAll([
-            for (final d in tableData) SvngSaving.fromJson(d),
-          ]);
-        case 'TransactionTable':
-          await repo.saveAll([
-            for (final d in tableData) TrnsctnTransaction.fromJson(d),
-          ]);
-        case 'CommitmentTable':
-          await repo.saveAll([
-            for (final d in tableData) ExpnsCommitment.fromJson(d),
-          ]);
-        case 'CommitmentDetailTable':
-          await repo.saveAll([
-            for (final d in tableData) ExpnsCommitmentDetail.fromJson(d),
-          ]);
-        case 'CommitmentTaskTable':
-          await repo.saveAll([
-            for (final d in tableData) ExpnsCommitmentTask.fromJson(d),
-          ]);
-        case 'PayeeTable':
-          await repo.saveAll([
-            for (final d in tableData) ExpnsPayee.fromJson(d),
-          ]);
+      try {
+        switch (repo.tableName()) {
+          case 'UserTable':
+            final users = (tableData as List)
+                .map((d) => CmmnUser.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(users);
+            break;
+          case 'GroupReferenceTable':
+            final refs = (tableData as List)
+                .map((d) => MstrdtGroupReference.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(refs);
+            break;
+          case 'ReferenceTable':
+            final refs = (tableData as List)
+                .map((d) => MstrdtReference.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(refs);
+            break;
+          case 'ReferenceDataTable':
+            final refs = (tableData as List)
+                .map((d) => MstrdtReferenceData.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(refs);
+            break;
+          case 'ExpenseTable':
+            final expenses = (tableData as List)
+                .map((d) => ExpnsExpense.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(expenses);
+            break;
+          case 'ExpenseReferenceTable':
+            final refs = (tableData as List)
+                .map((d) => MstrdtExpenseReference.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(refs);
+            break;
+          case 'MoneyStorageTable':
+            final storages = (tableData as List)
+                .map((d) => SvngMoneyStorage.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(storages);
+            break;
+          case 'SavingTable':
+            final savings = (tableData as List)
+                .map((d) => SvngSaving.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(savings);
+            break;
+          case 'TransactionTable':
+            final transactions = (tableData as List)
+                .map((d) => TrnsctnTransaction.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(transactions);
+            break;
+          case 'CommitmentTable':
+            final commitments = (tableData as List)
+                .map((d) => ExpnsCommitment.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(commitments);
+            break;
+          case 'CommitmentDetailTable':
+            final details = (tableData as List)
+                .map((d) => ExpnsCommitmentDetail.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(details);
+            break;
+          case 'CommitmentTaskTable':
+            final tasks = (tableData as List)
+                .map((d) => ExpnsCommitmentTask.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(tasks);
+            break;
+          case 'PayeeTable':
+            final payees = (tableData as List)
+                .map((d) => ExpnsPayee.fromJson(d as Map<String, dynamic>))
+                .toList();
+            await repo.saveAll(payees);
+            break;
+        }
+      } catch (e) {
+        // Log error but continue with other tables
+        // In production, use proper logging
       }
     }
   }

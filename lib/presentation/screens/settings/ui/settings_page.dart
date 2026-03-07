@@ -317,10 +317,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SettingsTile(
                   leadingIcon: Icons.backup_outlined,
                   title: 'Backup & Restore',
-                  subtitle: 'Save and restore your data',
-                  showComingSoon: true,
+                  subtitle: 'Export and import your data',
                   onTap: () {
-                    _showComingSoonMessage(context, 'Backup & Restore');
+                    Navigator.pushNamed(context, AppRoutes.backupRestore);
                   },
                 ),
                 const Divider(height: 1, indent: 60),
