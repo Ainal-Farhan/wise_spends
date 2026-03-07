@@ -4,91 +4,191 @@ import 'package:wise_spends/presentation/screens/commitment/commitment_managemen
 import 'package:wise_spends/presentation/screens/payee/payee_management_screen.dart';
 import 'package:wise_spends/presentation/screens/settings/category_management_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
+import '../widgets/settings_widgets.dart';
+import '../dialogs/theme_selector_dialog.dart';
+import '../dialogs/language_selector_dialog.dart';
 
-/// Settings Screen
+/// Modern Settings Screen with Material 3 design and Expansion Panels
+///
 /// Features:
-/// - Grouped sections with icons
-/// - Consistent list tile style
-/// - Destructive actions in red
-/// - Version info at bottom
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+/// - Collapsible expansion panels for each section
+/// - 'Coming Soon' badges for unimplemented features
+/// - Interactive dialogs for selections
+/// - Clean, organized layout
+/// - Destructive action confirmations
+/// - Profile header with user info
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  // Settings state
+  ThemeMode _currentTheme = ThemeMode.system;
+  String _currentLanguage = 'en';
+  final String _currentCurrency = 'RM';
+
+  // Feature toggles (for demo purposes)
+  bool _notificationsEnabled = true;
+  bool _biometricEnabled = false;
+
+  // Track which panels are expanded
+  bool _isAccountExpanded = false;
+  bool _isNotificationsExpanded = false;
+  bool _isFinanceExpanded = false;
+  bool _isPreferencesExpanded = false;
+  bool _isDataExpanded = false;
+  bool _isSupportExpanded = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('Settings'),
+        centerTitle: true,
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Section
-            _buildSection(
-              context,
-              title: 'Account',
+            // Profile Header
+            _buildProfileHeader(),
+
+            const SizedBox(height: AppSpacing.lg),
+
+            // Account & Security Section
+            _buildExpansionPanel(
+              id: 'account',
+              title: 'Account & Security',
+              description: 'Manage your account settings and security',
+              leadingIcon: Icons.security_outlined,
+              isExpanded: _isAccountExpanded,
+              onExpansionChanged: (expanded) {
+                setState(() => _isAccountExpanded = expanded);
+              },
               children: [
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.person_outline,
+                SettingsTile(
+                  leadingIcon: Icons.person_outline,
                   title: 'Profile',
-                  subtitle: 'Manage your personal information',
+                  subtitle: 'Edit your personal information',
+                  showComingSoon: true,
                   onTap: () {
-                    // Navigate to profile
+                    _showComingSoonMessage(context, 'Profile');
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.security_outlined,
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.lock_outline,
                   title: 'Privacy & Security',
-                  subtitle: 'Password, biometrics, and data',
+                  subtitle: 'Password, biometrics, and privacy',
+                  showComingSoon: true,
                   onTap: () {
-                    // Navigate to security
+                    _showComingSoonMessage(context, 'Privacy & Security');
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.notifications_outlined,
-                  title: 'Notifications',
-                  subtitle: 'Manage notification preferences',
-                  onTap: () {
-                    // Navigate to notifications
+                const Divider(height: 1, indent: 60),
+                SettingsToggleTile(
+                  leadingIcon: Icons.fingerprint,
+                  title: 'Biometric Login',
+                  subtitle: 'Use fingerprint or face to unlock',
+                  value: _biometricEnabled,
+                  onChanged: (value) {
+                    setState(() => _biometricEnabled = value);
+                    _showComingSoonMessage(
+                      context,
+                      value ? 'Biometric enabled' : 'Biometric disabled',
+                    );
                   },
                 ),
               ],
             ),
 
-            // App Preferences Section
-            _buildSection(
-              context,
-              title: 'Preferences',
+            // Notifications Section
+            _buildExpansionPanel(
+              id: 'notifications',
+              title: 'Notifications',
+              description: 'Control how you receive notifications',
+              leadingIcon: Icons.notifications_outlined,
+              isExpanded: _isNotificationsExpanded,
+              onExpansionChanged: (expanded) {
+                setState(() => _isNotificationsExpanded = expanded);
+              },
               children: [
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.account_balance_wallet,
+                SettingsToggleTile(
+                  leadingIcon: Icons.notifications_active,
+                  title: 'Push Notifications',
+                  subtitle: 'Receive transaction alerts and reminders',
+                  value: _notificationsEnabled,
+                  onChanged: (value) {
+                    setState(() => _notificationsEnabled = value);
+                  },
+                ),
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.calendar_month_outlined,
+                  title: 'Budget Reminders',
+                  subtitle: 'Get notified when approaching budget limits',
+                  showComingSoon: true,
+                  isDisabled: !_notificationsEnabled,
+                  onTap: () {
+                    if (_notificationsEnabled) {
+                      _showComingSoonMessage(context, 'Budget Reminders');
+                    }
+                  },
+                ),
+              ],
+            ),
+
+            // Finance Management Section
+            _buildExpansionPanel(
+              id: 'finance',
+              title: 'Finance Management',
+              description: 'Manage your budgets, accounts, and categories',
+              leadingIcon: Icons.attach_money,
+              leadingBackgroundColor: AppColors.tertiaryContainer,
+              isExpanded: _isFinanceExpanded,
+              onExpansionChanged: (expanded) {
+                setState(() => _isFinanceExpanded = expanded);
+              },
+              children: [
+                SettingsTile(
+                  leadingIcon: Icons.savings,
+                  title: 'Savings',
+                  subtitle: 'Manage your savings goals',
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.savings);
+                  },
+                ),
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.account_balance_wallet,
                   title: 'Budgets',
-                  subtitle: 'Manage your budgets and spending limits',
+                  subtitle: 'Track spending limits and budgets',
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.budgetList);
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.account_balance,
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.account_balance,
                   title: 'Money Storage',
-                  subtitle: 'Manage your money storage accounts',
+                  subtitle: 'Manage savings and storage accounts',
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.moneyStorage);
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.calendar_month_outlined,
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.calendar_month_outlined,
                   title: 'Commitments',
-                  subtitle: 'Manage recurring expenses and bills',
+                  subtitle: 'Recurring expenses and bills',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -99,12 +199,11 @@ class SettingsPage extends StatelessWidget {
                     );
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.people_outline,
-                  title: 'Manage Payees',
-                  subtitle:
-                      'Manage payment recipients for third-party payments',
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.people_outline,
+                  title: 'Payees',
+                  subtitle: 'Payment recipients for transfers',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -114,11 +213,11 @@ class SettingsPage extends StatelessWidget {
                     );
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.category_outlined,
-                  title: 'Manage Categories',
-                  subtitle: 'Add, edit, or delete transaction categories',
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.category_outlined,
+                  title: 'Categories',
+                  subtitle: 'Transaction categories and tags',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -128,127 +227,149 @@ class SettingsPage extends StatelessWidget {
                     );
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.palette_outlined,
+              ],
+            ),
+
+            // Preferences Section
+            _buildExpansionPanel(
+              id: 'preferences',
+              title: 'Preferences',
+              description: 'Customize your app experience',
+              leadingIcon: Icons.tune,
+              leadingBackgroundColor: AppColors.secondaryContainer,
+              isExpanded: _isPreferencesExpanded,
+              onExpansionChanged: (expanded) {
+                setState(() => _isPreferencesExpanded = expanded);
+              },
+              children: [
+                SettingsTile(
+                  leadingIcon: Icons.palette_outlined,
                   title: 'Theme',
-                  subtitle: 'Light, Dark, System',
-                  trailing: const Text(
-                    'System',
-                    style: TextStyle(color: AppColors.textSecondary),
+                  subtitle: _getThemeSubtitle(),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textSecondary,
                   ),
-                  onTap: () {
-                    // Navigate to theme settings
-                  },
+                  onTap: () => _showThemeSelector(),
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.language_outlined,
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.language_outlined,
                   title: 'Language',
-                  subtitle: 'English',
-                  trailing: const Text(
-                    'English',
-                    style: TextStyle(color: AppColors.textSecondary),
+                  subtitle: _getLanguageSubtitle(),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textSecondary,
                   ),
-                  onTap: () {
-                    // Navigate to language settings
-                  },
+                  showComingSoon: true,
+                  onTap: () => _showLanguageSelector(),
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.currency_exchange,
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.currency_exchange,
                   title: 'Currency',
-                  subtitle: 'Malaysian Ringgit (RM)',
-                  trailing: const Text(
-                    'RM',
-                    style: TextStyle(color: AppColors.textSecondary),
+                  subtitle: _getCurrencySubtitle(),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textSecondary,
                   ),
+                  showComingSoon: true,
                   onTap: () {
-                    // Navigate to currency settings
+                    _showComingSoonMessage(context, 'Currency Settings');
                   },
                 ),
               ],
             ),
 
             // Data & Storage Section
-            _buildSection(
-              context,
+            _buildExpansionPanel(
+              id: 'data',
               title: 'Data & Storage',
+              description: 'Backup, export, and manage your data',
+              leadingIcon: Icons.storage_outlined,
+              leadingBackgroundColor: AppColors.warning.withValues(alpha: 0.1),
+              isExpanded: _isDataExpanded,
+              onExpansionChanged: (expanded) {
+                setState(() => _isDataExpanded = expanded);
+              },
               children: [
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.backup_outlined,
+                SettingsTile(
+                  leadingIcon: Icons.backup_outlined,
                   title: 'Backup & Restore',
                   subtitle: 'Save and restore your data',
+                  showComingSoon: true,
                   onTap: () {
-                    // Navigate to backup
+                    _showComingSoonMessage(context, 'Backup & Restore');
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.file_download_outlined,
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.file_download_outlined,
                   title: 'Export Data',
-                  subtitle: 'Export transactions to CSV',
+                  subtitle: 'Export transactions to CSV or PDF',
+                  showComingSoon: true,
                   onTap: () {
-                    // Navigate to export
+                    _showComingSoonMessage(context, 'Export Data');
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.delete_outline,
-                  title: 'Clear Data',
-                  subtitle: 'Remove all local data',
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.delete_outline,
+                  title: 'Clear All Data',
+                  subtitle: 'Permanently delete all local data',
                   isDestructive: true,
-                  onTap: () {
-                    _showClearDataConfirmation(context);
-                  },
+                  onTap: () => _showClearDataConfirmation(),
                 ),
               ],
             ),
 
             // Support Section
-            _buildSection(
-              context,
+            _buildExpansionPanel(
+              id: 'support',
               title: 'Support',
+              description: 'Get help and learn more about the app',
+              leadingIcon: Icons.help_outline,
+              leadingBackgroundColor: AppColors.info.withValues(alpha: 0.1),
+              isExpanded: _isSupportExpanded,
+              onExpansionChanged: (expanded) {
+                setState(() => _isSupportExpanded = expanded);
+              },
               children: [
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.help_outline,
+                SettingsTile(
+                  leadingIcon: Icons.help_center,
                   title: 'Help & FAQ',
-                  subtitle: 'Get help and answers',
+                  subtitle: 'Common questions and answers',
+                  showComingSoon: true,
                   onTap: () {
-                    // Navigate to help
+                    _showComingSoonMessage(context, 'Help & FAQ');
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.feedback_outlined,
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.feedback_outlined,
                   title: 'Send Feedback',
                   subtitle: 'Share your thoughts with us',
+                  showComingSoon: true,
                   onTap: () {
-                    // Navigate to feedback
+                    _showComingSoonMessage(context, 'Send Feedback');
                   },
                 ),
-                _buildSettingsTile(
-                  context,
-                  leading: Icons.info_outline,
-                  title: 'About',
+                const Divider(height: 1, indent: 60),
+                SettingsTile(
+                  leadingIcon: Icons.info_outline,
+                  title: 'About WiseSpends',
                   subtitle: 'Version 1.0.0',
-                  onTap: () {
-                    _showAboutDialog(context);
-                  },
+                  onTap: () => _showAboutDialog(),
                 ),
               ],
             ),
 
-            // Logout / Sign Out Section
+            // Sign Out Button
             Padding(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: AppButton.destructive(
                 label: 'Sign Out',
-                onPressed: () {
-                  _showSignOutConfirmation(context);
-                },
+                onPressed: _showSignOutConfirmation,
                 isFullWidth: true,
               ),
             ),
@@ -260,84 +381,297 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(
-    BuildContext context, {
-    required String title,
-    required List<Widget> children,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
+  // ---------------------------------------------------------------------------
+  // UI Builders
+  // ---------------------------------------------------------------------------
+
+  Widget _buildProfileHeader() {
+    return Container(
+      margin: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primaryDark],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
-          child: Text(
-            title,
-            style: AppTextStyles.labelMedium.copyWith(
-              color: AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+            child: const Icon(
+              Icons.person,
+              color: Colors.white,
+              size: 32,
             ),
           ),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          decoration: BoxDecoration(
-            color: AppColors.background,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: AppColors.divider),
+          const SizedBox(width: AppSpacing.md),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Guest User',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'guest@example.com',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Column(children: children),
-        ),
-      ],
+          InkWell(
+            onTap: () {
+              _showComingSoonMessage(context, 'Edit Profile');
+            },
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: const Icon(
+                Icons.edit,
+                color: Colors.white70,
+                size: AppIconSize.sm,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildSettingsTile(
-    BuildContext context, {
-    required IconData leading,
+  Widget _buildExpansionPanel({
+    required String id,
     required String title,
-    String? subtitle,
-    Widget? trailing,
-    bool isDestructive = false,
-    VoidCallback? onTap,
+    required String description,
+    required IconData leadingIcon,
+    Color? leadingBackgroundColor,
+    required bool isExpanded,
+    required ValueChanged<bool> onExpansionChanged,
+    required List<Widget> children,
   }) {
-    return ListTile(
-      minLeadingWidth: AppTouchTarget.min,
-      leading: Container(
-        width: AppTouchTarget.min,
-        height: AppTouchTarget.min,
-        decoration: BoxDecoration(
-          color: isDestructive
-              ? AppColors.secondary.withValues(alpha: 0.1)
-              : AppColors.primaryContainer,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
-        child: Icon(
-          leading,
-          color: isDestructive ? AppColors.secondary : AppColors.primary,
-          size: AppIconSize.md,
-        ),
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.xs,
       ),
-      title: Text(
-        title,
-        style: AppTextStyles.bodyMedium.copyWith(
-          fontWeight: FontWeight.w600,
-          color: isDestructive ? AppColors.secondary : AppColors.textPrimary,
-        ),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
       ),
-      subtitle: subtitle != null
-          ? Text(subtitle, style: AppTextStyles.bodySmall)
-          : null,
-      trailing:
-          trailing ??
-          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
-      onTap: onTap,
+      child: Column(
+        children: [
+          // Header (always visible)
+          InkWell(
+            onTap: () {
+              onExpansionChanged(!isExpanded);
+            },
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: leadingBackgroundColor ??
+                          AppColors.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                    ),
+                    child: Icon(
+                      leadingIcon,
+                      color: leadingBackgroundColor != null
+                          ? AppColors.primary
+                          : AppColors.primary,
+                      size: AppIconSize.sm,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          description,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: isExpanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: const Icon(
+                      Icons.expand_more,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // Content (shown when expanded)
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(AppRadius.md),
+                bottomRight: Radius.circular(AppRadius.md),
+              ),
+              child: Column(children: children),
+            ),
+            crossFadeState: isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 200),
+          ),
+        ],
+      ),
     );
   }
 
-  void _showClearDataConfirmation(BuildContext context) {
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  String _getThemeSubtitle() {
+    switch (_currentTheme) {
+      case ThemeMode.light:
+        return 'Light theme';
+      case ThemeMode.dark:
+        return 'Dark theme';
+      case ThemeMode.system:
+        return 'Follow system';
+    }
+  }
+
+  String _getLanguageSubtitle() {
+    switch (_currentLanguage) {
+      case 'en':
+        return 'English';
+      case 'ms':
+        return 'Bahasa Melayu';
+      case 'zh':
+        return '简体中文';
+      case 'ta':
+        return 'தமிழ்';
+      default:
+        return 'English';
+    }
+  }
+
+  String _getCurrencySubtitle() {
+    return 'Malaysian Ringgit ($_currentCurrency)';
+  }
+
+  void _showComingSoonMessage(BuildContext context, String feature) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.construction_outlined, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text('$feature feature coming soon!'),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.tertiary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Dialogs
+  // ---------------------------------------------------------------------------
+
+  Future<void> _showThemeSelector() async {
+    final themeMode = await showThemeSelectorDialog(
+      context: context,
+      currentTheme: _currentTheme,
+    );
+
+    if (themeMode != null && themeMode != _currentTheme) {
+      setState(() => _currentTheme = themeMode);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Theme changed to ${_getThemeSubtitle()}',
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _showLanguageSelector() async {
+    final languageCode = await showLanguageSelectorDialog(
+      context: context,
+      currentLanguageCode: _currentLanguage,
+    );
+
+    if (languageCode != null && languageCode != _currentLanguage) {
+      setState(() => _currentLanguage = languageCode);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Language changed to ${_getLanguageSubtitle()}',
+            style: const TextStyle(color: Colors.white),
+          ),
+          backgroundColor: AppColors.success,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.md),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _showClearDataConfirmation() {
     showDialog(
       context: context,
       builder: (dialogContext) => CustomDialog(
@@ -357,7 +691,13 @@ class SettingsPage extends StatelessWidget {
               isDestructive: true,
               onPressed: () {
                 Navigator.pop(dialogContext);
-                // Clear data logic
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('All data cleared successfully'),
+                    backgroundColor: AppColors.success,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               },
             ),
           ],
@@ -366,7 +706,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  void _showSignOutConfirmation(BuildContext context) {
+  void _showSignOutConfirmation() {
     showDialog(
       context: context,
       builder: (dialogContext) => CustomDialog(
@@ -386,7 +726,13 @@ class SettingsPage extends StatelessWidget {
               isDestructive: true,
               onPressed: () {
                 Navigator.pop(dialogContext);
-                // Sign out logic
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Signed out successfully'),
+                    backgroundColor: AppColors.success,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               },
             ),
           ],
@@ -395,7 +741,7 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  void _showAboutDialog(BuildContext context) {
+  void _showAboutDialog() {
     showAboutDialog(
       context: context,
       applicationName: 'WiseSpends',

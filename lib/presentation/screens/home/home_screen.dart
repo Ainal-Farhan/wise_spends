@@ -6,7 +6,6 @@ import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
-import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_event.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_state.dart';
@@ -24,16 +23,11 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => TransactionBloc(
-            context.read<ITransactionRepository>(),
-            context.read<ISavingRepository>(),
-          )..add(LoadRecentTransactionsEvent(limit: 10)),
-        ),
-        BlocProvider(create: (_) => NavigationBloc()),
-      ],
+    return BlocProvider(
+      create: (context) => TransactionBloc(
+        context.read<ITransactionRepository>(),
+        context.read<ISavingRepository>(),
+      )..add(LoadRecentTransactionsEvent(limit: 10)),
       child: const _HomeScreenContent(),
     );
   }
@@ -222,7 +216,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
           ],
         ),
       ),
@@ -230,30 +224,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
         onPressed: () => _showTransactionTypeDialog(context),
         elevation: AppElevation.sm,
         child: const Icon(Icons.add),
-      ),
-      // BlocBuilder drives selectedIndex and disabled state from NavigationBloc
-      bottomNavigationBar: BlocBuilder<NavigationBloc, NavigationState>(
-        builder: (context, navState) {
-          return BottomNavigationBar(
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.savings),
-                label: 'Savings',
-              ),
-            ],
-            currentIndex: navState.selectedIndex,
-            selectedItemColor: AppColors.primary,
-            unselectedItemColor: AppColors.textHint,
-            type: BottomNavigationBarType.fixed,
-            onTap: (index) {
-              // Pass context so the bloc can call Navigator.pushNamed
-              context.read<NavigationBloc>().add(
-                NavigationTabTapped(index: index, context: context),
-              );
-            },
-          );
-        },
       ),
     );
   }
@@ -411,6 +381,47 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                   context,
                   TransactionType.transfer,
                 ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.md),
+        // Second row with Savings and other actions
+        Row(
+          children: [
+            Expanded(
+              child: _buildQuickActionItem(
+                context,
+                icon: Icons.savings,
+                label: 'Savings',
+                color: AppColors.commitment,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.savings);
+                },
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: _buildQuickActionItem(
+                context,
+                icon: Icons.account_balance_wallet,
+                label: 'Budgets',
+                color: AppColors.budgetGood,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.budgetList);
+                },
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: _buildQuickActionItem(
+                context,
+                icon: Icons.task_alt,
+                label: 'Tasks',
+                color: AppColors.tertiary,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.commitmentTask);
+                },
               ),
             ),
           ],

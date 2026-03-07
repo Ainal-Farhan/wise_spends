@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/presentation/screens/home/home_screen.dart';
 import 'package:wise_spends/presentation/screens/login/ui/login_page.dart';
-import 'package:wise_spends/presentation/screens/settings/ui/settings_page.dart';
+import 'package:wise_spends/presentation/screens/settings/ui/settings_screen_wrapper.dart';
 import 'package:wise_spends/presentation/screens/transaction/add_transaction_screen.dart'
     as transaction_screen;
 import 'package:wise_spends/presentation/screens/transaction/transaction_history_screen.dart'
@@ -151,7 +151,7 @@ abstract class AppRouter {
 
       // Settings routes
       case AppRoutes.settings:
-        return _createRoute(const SettingsPage(), settings);
+        return _createRoute(const SettingsScreenWrapper(), settings);
 
       // Notifications routes
       case AppRoutes.notifications:
