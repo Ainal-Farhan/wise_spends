@@ -4,19 +4,6 @@ import 'package:wise_spends/shared/resources/ui/snack_bar/message.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 
 /// Show a simple confirmation dialog
-///
-/// Usage:
-/// ```dart
-/// await showConfirmDialog(
-///   context: context,
-///   title: 'Confirm Action',
-///   message: 'Are you sure you want to proceed?',
-///   confirmText: 'Proceed',
-///   onConfirm: () {
-///     // Handle confirmation
-///   },
-/// );
-/// ```
 Future<bool?> showConfirmDialog({
   required BuildContext context,
   required String title,
@@ -62,18 +49,6 @@ Future<bool?> showConfirmDialog({
 }
 
 /// Show a delete confirmation dialog
-///
-/// Usage:
-/// ```dart
-/// await showDeleteDialog(
-///   context: context,
-///   title: 'Delete Item',
-///   message: 'Are you sure you want to delete this item?',
-///   onDelete: () {
-///     // Handle deletion
-///   },
-/// );
-/// ```
 Future<bool?> showDeleteDialog({
   required BuildContext context,
   String title = 'Delete',
@@ -86,6 +61,13 @@ Future<bool?> showDeleteDialog({
   VoidCallback? onCancel,
   bool autoClose = true,
 }) {
+  // Capture the root navigator context BEFORE entering the dialog builder.
+  // The outer `context` may be a dialog or overlay context itself, so we
+  // walk up to the root to get a stable context for snackbars shown AFTER
+  // the dialog has been popped (at which point `dialogContext` is gone and
+  // the original `context` could also be unmounted).
+  final snackBarContext = Navigator.of(context, rootNavigator: true).context;
+
   return showDialog<bool>(
     context: context,
     builder: (dialogContext) => CustomDialog(
@@ -101,9 +83,11 @@ Future<bool?> showDeleteDialog({
             onPressed: () {
               if (autoClose) Navigator.pop(dialogContext, false);
               onCancel?.call();
-              if (autoDisplayMessage) {
+              // Use the stable root context, not dialogContext (already popped)
+              // or the outer context (may be unmounted).
+              if (autoDisplayMessage && snackBarContext.mounted) {
                 showSnackBarMessage(
-                  context,
+                  snackBarContext,
                   'Delete cancelled',
                   type: SnackBarMessageType.info,
                 );
@@ -116,9 +100,9 @@ Future<bool?> showDeleteDialog({
             onPressed: () {
               if (autoClose) Navigator.pop(dialogContext, true);
               onDelete?.call();
-              if (autoDisplayMessage) {
+              if (autoDisplayMessage && snackBarContext.mounted) {
                 showSnackBarMessage(
-                  context,
+                  snackBarContext,
                   'Successfully deleted',
                   type: SnackBarMessageType.success,
                 );
@@ -132,15 +116,6 @@ Future<bool?> showDeleteDialog({
 }
 
 /// Show an information dialog
-///
-/// Usage:
-/// ```dart
-/// await showInfoDialog(
-///   context: context,
-///   title: 'Information',
-///   message: 'Here is some important information.',
-/// );
-/// ```
 Future<void> showInfoDialog({
   required BuildContext context,
   required String title,
@@ -176,15 +151,6 @@ Future<void> showInfoDialog({
 }
 
 /// Show a warning dialog
-///
-/// Usage:
-/// ```dart
-/// await showWarningDialog(
-///   context: context,
-///   title: 'Warning',
-///   message: 'This action may have consequences.',
-/// );
-/// ```
 Future<bool?> showWarningDialog({
   required BuildContext context,
   required String title,
@@ -230,15 +196,6 @@ Future<bool?> showWarningDialog({
 }
 
 /// Show an error dialog
-///
-/// Usage:
-/// ```dart
-/// await showErrorDialog(
-///   context: context,
-///   title: 'Error',
-///   message: 'Something went wrong.',
-/// );
-/// ```
 Future<void> showErrorDialog({
   required BuildContext context,
   String title = 'Error',
@@ -272,15 +229,6 @@ Future<void> showErrorDialog({
 }
 
 /// Show a success dialog
-///
-/// Usage:
-/// ```dart
-/// await showSuccessDialog(
-///   context: context,
-///   title: 'Success',
-///   message: 'Operation completed successfully!',
-/// );
-/// ```
 Future<void> showSuccessDialog({
   required BuildContext context,
   String title = 'Success',
@@ -314,17 +262,6 @@ Future<void> showSuccessDialog({
 }
 
 /// Show a dialog with a single choice (Yes/No)
-///
-/// Usage:
-/// ```dart
-/// final result = await showChoiceDialog(
-///   context: context,
-///   title: 'Save Changes?',
-///   message: 'Do you want to save your changes before exiting?',
-///   yesText: 'Save',
-///   noText: 'Discard',
-/// );
-/// ```
 Future<bool?> showChoiceDialog({
   required BuildContext context,
   required String title,
@@ -365,20 +302,7 @@ Future<bool?> showChoiceDialog({
   );
 }
 
-/// Show a dialog with custom content and actions
-///
-/// Usage:
-/// ```dart
-/// await showCustomContentDialog(
-///   context: context,
-///   title: 'Custom Dialog',
-///   content: Column(children: [...]),
-///   actions: [
-///     DialogAction(text: 'Cancel', onPressed: () => Navigator.pop(context)),
-///     DialogAction(text: 'Save', isPrimary: true, onPressed: saveHandler),
-///   ],
-/// );
-/// ```
+/// DialogAction helper for showCustomContentDialog
 class DialogAction {
   final String text;
   final VoidCallback? onPressed;
@@ -402,13 +326,16 @@ class DialogAction {
   }
 }
 
+/// Show a dialog with custom content and actions
 Future<T?> showCustomContentDialog<T>({
   required BuildContext context,
   String? title,
   Widget? titleWidget,
   String? message,
   required Widget content,
-  List<DialogAction> actions = const [DialogAction(text: 'OK', isPrimary: true)],
+  List<DialogAction> actions = const [
+    DialogAction(text: 'OK', isPrimary: true),
+  ],
   IconData? icon,
   Color? iconColor,
   bool isScrollable = true,
@@ -426,20 +353,13 @@ Future<T?> showCustomContentDialog<T>({
         icon: icon,
         iconColor: iconColor,
         isScrollable: isScrollable,
-        buttons: actions.map((action) => action.toCustomDialogButton()).toList(),
+        buttons: actions.map((a) => a.toCustomDialogButton()).toList(),
       ),
     ),
   );
 }
 
 /// Show a loading/progress dialog
-///
-/// Usage:
-/// ```dart
-/// showLoadingDialog(context, message: 'Processing...');
-/// // ... do work ...
-/// Navigator.pop(context); // Close the dialog
-/// ```
 void showLoadingDialog(
   BuildContext context, {
   String? message,

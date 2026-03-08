@@ -49,4 +49,9 @@ abstract class AppRoutes {
   static const String commitmentTask = '/commitment_task';
   static const String payeeManagement = '/payee_management';
   static const String moneyStorage = '/money-storage';
+
+  // Developer/Debug routes
+  static const String hiddenUtilityMenu = '/developer/utilities';
+  static const String logViewer = '/developer/logs';
+  static const String logSettings = '/developer/logs/settings';
 }

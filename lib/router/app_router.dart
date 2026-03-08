@@ -33,6 +33,9 @@ import 'package:wise_spends/presentation/screens/commitment_task/commitment_task
     as commitment_task_screen;
 import 'package:wise_spends/presentation/screens/payee/payee_management_screen.dart'
     as payee_management_screen;
+import 'package:wise_spends/presentation/screens/logs/log_viewer_screen.dart';
+import 'package:wise_spends/presentation/screens/logs/log_settings_screen.dart';
+import 'package:wise_spends/presentation/screens/logs/hidden_utility_menu_screen.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/router/route_arguments.dart';
@@ -181,6 +184,25 @@ abstract class AppRouter {
       case AppRoutes.payeeManagement:
         return _createRoute(
           payee_management_screen.PayeeManagementScreen(),
+          settings,
+        );
+
+      // Developer/Debug routes
+      case AppRoutes.hiddenUtilityMenu:
+        return _createRoute(
+          const HiddenUtilityMenuScreen(),
+          settings,
+        );
+
+      case AppRoutes.logViewer:
+        return _createRoute(
+          const LogViewerScreen(),
+          settings,
+        );
+
+      case AppRoutes.logSettings:
+        return _createRoute(
+          const LogSettingsScreen(),
           settings,
         );
 

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:wise_spends/core/config/configuration/i_configuration_manager.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/di/i_service_locator.dart';
+import 'package:wise_spends/core/logger/logger.dart';
+import 'package:wise_spends/core/services/preferences_service.dart';
 import 'package:wise_spends/data/services/local/common/i_user_service.dart';
 import 'package:wise_spends/shared/theme/i_theme_manager.dart';
 import 'package:wise_spends/data/db/app_database.dart';
@@ -34,11 +36,49 @@ class StartupManager extends IStartupManager {
       _currentUser = null;
     }
 
+    // Initialize logger and preferences
+    await _initializeLogger();
+
     await _initCurrentUser("Guest", true, false);
     await _configurationManager.init();
     await _themeManager.init();
 
     this.isFirstInit = false;
+  }
+
+  /// Initialize logger with preferences
+  Future<void> _initializeLogger() async {
+    try {
+      // Initialize preferences service if not already done
+      final prefsService = PreferencesService();
+      await prefsService.init();
+
+      // Initialize logger preferences
+      final loggerPrefs = LoggerPreferencesService();
+      await loggerPrefs.init();
+
+      // Initialize logger
+      final logger = WiseLogger();
+      await logger.init();
+
+      // Apply preferences
+      logger.setEnabled(loggerPrefs.isLoggingEnabled());
+      logger.setMinLogLevel(loggerPrefs.getMinLogLevel());
+
+      WiseLogger().info('Logger initialized', tag: 'StartupManager');
+    } catch (e, stackTrace) {
+      // If logger initialization fails, try to log it
+      try {
+        WiseLogger().error(
+          'Failed to initialize logger: $e',
+          tag: 'StartupManager',
+          error: e,
+          stackTrace: stackTrace,
+        );
+      } catch (_) {
+        // Silent failure - logger couldn't be initialized
+      }
+    }
   }
 
   Future _initCurrentUser(

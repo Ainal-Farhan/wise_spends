@@ -9,6 +9,7 @@ import 'package:wise_spends/core/constants/constant/enum/expense/commitment_deta
 import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/core/utils/app_path.dart';
 import 'package:wise_spends/core/utils/file_util.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
@@ -205,8 +206,12 @@ class AppDatabase extends _$AppDatabase {
       try {
         final jsonList = (tableData as List).cast<Map<String, dynamic>>();
         await repo.saveAllFromJson(jsonList);
-      } catch (e) {
-        print('Error: $e');
+      } catch (e, stackTrace) {
+        WiseLogger().error(
+          "Error while restoring data",
+          error: e,
+          stackTrace: stackTrace,
+        );
       }
     }
   }
