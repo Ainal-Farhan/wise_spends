@@ -50,19 +50,29 @@ class BudgetPlanEntity extends Equatable {
 
   /// Computed: Progress percentage (0.0 to 1.0)
   double get progressPercentage {
-    if (targetAmount <= 0) return 0.0;
-    return (currentAmount / targetAmount).clamp(0.0, 1.0);
+    if (targetAmount <= 0 || currentAmount < 0) return 0.0;
+    final progress = currentAmount / targetAmount;
+    // Handle potential infinity from very large numbers
+    if (progress.isInfinite || progress.isNaN) return 1.0;
+    return progress.clamp(0.0, 1.0);
   }
 
   /// Computed: Remaining amount to reach target
-  double get remainingAmount => targetAmount - currentAmount;
+  double get remainingAmount {
+    final remaining = targetAmount - currentAmount;
+    // Prevent negative remaining amount
+    return remaining < 0 ? 0 : remaining;
+  }
 
   /// Computed: Whether plan is over budget
   bool get isOverBudget => totalSpent > targetAmount;
 
   /// Computed: Days remaining until target date
   int get daysRemaining {
-    final days = targetDate.difference(DateTime.now()).inDays;
+    final now = DateTime.now();
+    // Handle case where target date is before start date
+    if (targetDate.isBefore(startDate)) return 0;
+    final days = targetDate.difference(now).inDays;
     return days < 0 ? 0 : days;
   }
 
@@ -71,18 +81,29 @@ class BudgetPlanEntity extends Equatable {
       DateTime.now().isAfter(targetDate) && currentAmount < targetAmount;
 
   /// Computed: Total duration in days
-  int get totalDuration => targetDate.difference(startDate).inDays;
+  int get totalDuration {
+    final duration = targetDate.difference(startDate).inDays;
+    // Prevent negative duration
+    return duration < 0 ? 0 : duration;
+  }
 
   /// Computed: Elapsed duration in days
   int get elapsedDuration {
-    final elapsed = DateTime.now().difference(startDate).inDays;
+    final now = DateTime.now();
+    // Handle case where start date is in the future
+    if (now.isBefore(startDate)) return 0;
+    final elapsed = now.difference(startDate).inDays;
     return elapsed < 0 ? 0 : elapsed;
   }
 
   /// Computed: Required monthly saving to reach target
   double get requiredMonthlySaving {
-    final months = daysRemaining / 30;
-    if (months <= 0) return remainingAmount;
+    if (remainingAmount <= 0) return 0.0;
+    final days = daysRemaining;
+    if (days <= 0) return remainingAmount; // Need to save all immediately
+    final months = days / 30;
+    // Prevent division by very small numbers
+    if (months < 0.01) return remainingAmount;
     return remainingAmount / months;
   }
 
@@ -95,7 +116,9 @@ class BudgetPlanEntity extends Equatable {
     final totalMonths = totalDuration / 30;
     final elapsedMonths = elapsedDuration / 30;
 
-    if (totalMonths <= 0) return BudgetHealthStatus.atRisk;
+    if (totalMonths <= 0 || totalMonths.isInfinite) {
+      return BudgetHealthStatus.atRisk;
+    }
 
     final expectedProgress = elapsedMonths / totalMonths;
     final actualProgress = progressPercentage;
@@ -112,9 +135,13 @@ class BudgetPlanEntity extends Equatable {
   /// Computed: Projected completion date in months
   double get projectedCompletionMonths {
     if (totalDeposited <= 0) return -1;
-    final monthlyRate =
-        totalDeposited / (elapsedDuration / 30).clamp(1, double.infinity);
-    if (monthlyRate <= 0) return -1;
+    final elapsedMonths = elapsedDuration / 30;
+    // Prevent division by zero or negative
+    if (elapsedMonths <= 0) return -1;
+    final monthlyRate = totalDeposited / elapsedMonths;
+    if (monthlyRate <= 0 || monthlyRate.isInfinite || monthlyRate.isNaN) {
+      return -1;
+    }
     return remainingAmount / monthlyRate;
   }
 

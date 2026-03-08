@@ -182,6 +182,17 @@ class EditBudgetPlanFormBloc
       return;
     }
 
+    // Validate target date is after start date
+    if (current.endDate.isBefore(current.startDate) ||
+        current.endDate.isAtSameMomentAs(current.startDate)) {
+      emit(
+        const EditBudgetPlanFormError(
+          'Target date must be after the start date.',
+        ),
+      );
+      return;
+    }
+
     emit(current.copyWith(isLoading: true));
 
     try {

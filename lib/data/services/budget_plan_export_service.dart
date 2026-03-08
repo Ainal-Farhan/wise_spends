@@ -7,6 +7,22 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_entity.dart'
 /// Budget Plan Export Service
 /// Generates PDF/CSV exports of budget plans
 class BudgetPlanExportService {
+  /// Escape a value for CSV format
+  /// Handles commas, quotes, and newlines per RFC 4180
+  String _escapeCsvValue(String? value) {
+    if (value == null) return '';
+    // If value contains comma, newline, or double quote, wrap in quotes
+    if (value.contains(',') ||
+        value.contains('\n') ||
+        value.contains('\r') ||
+        value.contains('"')) {
+      // Escape double quotes by doubling them
+      final escaped = value.replaceAll('"', '""');
+      return '"$escaped"';
+    }
+    return value;
+  }
+
   /// Export budget plan to CSV
   Future<String> exportToCsv(BudgetPlanEntity plan) async {
     final buffer = StringBuffer();
@@ -20,10 +36,12 @@ class BudgetPlanExportService {
 
     // Plan Summary
     buffer.writeln('PLAN SUMMARY');
-    buffer.writeln('Name,${plan.name}');
-    buffer.writeln('Description,${plan.description ?? ''}');
-    buffer.writeln('Category,${plan.category.name}');
-    buffer.writeln('Target Amount,RM ${plan.targetAmount.toStringAsFixed(2)}');
+    buffer.writeln('Name,${_escapeCsvValue(plan.name)}');
+    buffer.writeln('Description,${_escapeCsvValue(plan.description)}');
+    buffer.writeln('Category,${_escapeCsvValue(plan.category.name)}');
+    buffer.writeln(
+      'Target Amount,RM ${plan.targetAmount.toStringAsFixed(2)}',
+    );
     buffer.writeln(
       'Current Amount,RM ${plan.currentAmount.toStringAsFixed(2)}',
     );
@@ -36,7 +54,7 @@ class BudgetPlanExportService {
     buffer.writeln(
       'Target Date,${DateFormat('yyyy-MM-dd').format(plan.targetDate)}',
     );
-    buffer.writeln('Status,${plan.status.name}');
+    buffer.writeln('Status,${_escapeCsvValue(plan.status.name)}');
     buffer.writeln();
 
     buffer.writeln('End of Export');
@@ -44,7 +62,7 @@ class BudgetPlanExportService {
     // Write to file
     final directory = await getApplicationDocumentsDirectory();
     final fileName =
-        'budget_plan_${plan.name.replaceAll(' ', '_')}_${DateFormat('yyyyMMdd').format(DateTime.now())}.csv';
+        'budget_plan_${_escapeCsvValue(plan.name.replaceAll(' ', '_'))}_${DateFormat('yyyyMMdd').format(DateTime.now())}.csv';
     final file = File('${directory.path}/$fileName');
     await file.writeAsString(buffer.toString());
 

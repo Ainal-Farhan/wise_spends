@@ -34,8 +34,8 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
               enabled: true,
               touchTooltipData: BarTouchTooltipData(
                 getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                  final color = rodIndex == 0 
-                      ? WiseSpendsColors.success 
+                  final color = rodIndex == 0
+                      ? WiseSpendsColors.success
                       : WiseSpendsColors.secondary;
                   return BarTooltipItem(
                     'RM ${rod.toY.toStringAsFixed(0)}',
@@ -81,36 +81,37 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
               drawVerticalLine: false,
               horizontalInterval: _calculateMaxY() / 4,
               getDrawingHorizontalLine: (value) {
-                return FlLine(
-                  color: WiseSpendsColors.divider,
-                  strokeWidth: 1,
-                );
+                return FlLine(color: WiseSpendsColors.divider, strokeWidth: 1);
               },
             ),
             borderData: FlBorderData(show: false),
-            barGroups: data.map((month) => BarChartGroupData(
-              x: data.indexOf(month),
-              barRods: [
-                BarChartRodData(
-                  toY: month.deposits,
-                  color: WiseSpendsColors.success,
-                  width: 10,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    topRight: Radius.circular(4),
+            barGroups: data
+                .map(
+                  (month) => BarChartGroupData(
+                    x: data.indexOf(month),
+                    barRods: [
+                      BarChartRodData(
+                        toY: month.deposits,
+                        color: WiseSpendsColors.success,
+                        width: 10,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(4),
+                          topRight: Radius.circular(4),
+                        ),
+                      ),
+                      BarChartRodData(
+                        toY: month.spending,
+                        color: WiseSpendsColors.secondary,
+                        width: 10,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(4),
+                          topRight: Radius.circular(4),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                BarChartRodData(
-                  toY: month.spending,
-                  color: WiseSpendsColors.secondary,
-                  width: 10,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(4),
-                    topRight: Radius.circular(4),
-                  ),
-                ),
-              ],
-            )).toList(),
+                )
+                .toList(),
           ),
         ),
       ),
@@ -119,11 +120,23 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
 
   double _calculateMaxY() {
     if (data.isEmpty) return 100;
-    final maxValue = data.fold<double>(
-      0,
-      (max, month) => max > month.deposits && max > month.spending ? max : (month.deposits > month.spending ? month.deposits : month.spending),
-    );
-    return (maxValue / 100).ceil() * 100 + 100;
+    // Find the maximum value across all deposits and spending
+    double maxValue = 0;
+    for (final month in data) {
+      if (month.deposits > maxValue) maxValue = month.deposits;
+      if (month.spending > maxValue) maxValue = month.spending;
+    }
+    // Handle potential infinity or very large numbers
+    if (maxValue.isInfinite || maxValue > 1e15) {
+      return 1e15; // Cap at a reasonable maximum
+    }
+    // Round up to nearest 100 and add padding
+    final rounded = (maxValue / 100).ceil() * 100.0;
+    final withPadding = rounded + 100.0;
+    // Final overflow check
+    return withPadding.isInfinite || withPadding > 1e15
+        ? 1e15
+        : withPadding.toDouble();
   }
 
   Widget _buildEmptyState() {
@@ -186,8 +199,8 @@ class BudgetProgressChart extends StatelessWidget {
                     return LineTooltipItem(
                       'RM ${spot.y.toStringAsFixed(0)}',
                       TextStyle(
-                        color: spot.barIndex == 0 
-                            ? WiseSpendsColors.primary 
+                        color: spot.barIndex == 0
+                            ? WiseSpendsColors.primary
                             : Colors.grey,
                         fontWeight: FontWeight.bold,
                       ),
@@ -202,7 +215,8 @@ class BudgetProgressChart extends StatelessWidget {
                 sideTitles: SideTitles(
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
-                    if (value.toInt() >= 0 && value.toInt() < snapshots.length) {
+                    if (value.toInt() >= 0 &&
+                        value.toInt() < snapshots.length) {
                       final date = snapshots[value.toInt()].date;
                       return Padding(
                         padding: const EdgeInsets.only(top: 8),
@@ -234,10 +248,7 @@ class BudgetProgressChart extends StatelessWidget {
               drawVerticalLine: false,
               horizontalInterval: targetAmount / 4,
               getDrawingHorizontalLine: (value) {
-                return FlLine(
-                  color: WiseSpendsColors.divider,
-                  strokeWidth: 1,
-                );
+                return FlLine(color: WiseSpendsColors.divider, strokeWidth: 1);
               },
             ),
             borderData: FlBorderData(show: false),
@@ -373,10 +384,7 @@ class BudgetSpendingDonutChart extends StatelessWidget {
 class BudgetChartLegend extends StatelessWidget {
   final List<SpendingByCategory> data;
 
-  const BudgetChartLegend({
-    super.key,
-    required this.data,
-  });
+  const BudgetChartLegend({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -407,10 +415,7 @@ class BudgetChartLegend extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 4),
-            Text(
-              category.category,
-              style: const TextStyle(fontSize: 12),
-            ),
+            Text(category.category, style: const TextStyle(fontSize: 12)),
           ],
         );
       }).toList(),

@@ -33,10 +33,14 @@ import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_deposi
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_spending_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_milestone_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_linked_account_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_item_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_item_tag_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_deposit_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_spending_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_milestone_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_linked_account_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_item_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_item_tag_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_tag_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_tag_map_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_recurring_transaction_repository.dart';
@@ -75,6 +79,8 @@ class RepositoryLocator extends IRepositoryLocator {
       getSavingsPlanSpendingRepository(),
       getSavingsPlanMilestoneRepository(),
       getSavingsPlanLinkedAccountRepository(),
+      getSavingsPlanItemRepository(),
+      getSavingsPlanItemTagRepository(),
     ];
 
     return allRepository;
@@ -319,6 +325,34 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<ISavingsPlanLinkedAccountRepository>()!;
+  }
+
+  @override
+  ISavingsPlanItemRepository getSavingsPlanItemRepository() {
+    ISavingsPlanItemRepository? repository =
+        SingletonUtil.getSingleton<ISavingsPlanItemRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ISavingsPlanItemRepository>(
+        SavingsPlanItemRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ISavingsPlanItemRepository>()!;
+  }
+
+  @override
+  ISavingsPlanItemTagRepository getSavingsPlanItemTagRepository() {
+    ISavingsPlanItemTagRepository? repository =
+        SingletonUtil.getSingleton<ISavingsPlanItemTagRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ISavingsPlanItemTagRepository>(
+        SavingsPlanItemTagRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ISavingsPlanItemTagRepository>()!;
   }
 
   @override

@@ -5,7 +5,12 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/domain/entities/budget_plan/budget_plan_deposit_entity.dart';
+import 'package:wise_spends/domain/entities/budget_plan/budget_plan_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
+import 'package:wise_spends/domain/entities/budget_plan/budget_plan_milestone_entity.dart';
+import 'package:wise_spends/domain/entities/budget_plan/budget_plan_transaction_entity.dart';
+import 'package:wise_spends/domain/entities/budget_plan/linked_account_entity.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_bloc.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_event.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_state.dart';
@@ -265,6 +270,9 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     final amountCtrl = TextEditingController();
     DateTime? dueDate;
 
+    // Constants for milestone date picker
+    const maxYearsFuture = 5;
+
     showDialog(
       context: context,
       builder: (_) => StatefulBuilder(
@@ -300,7 +308,9 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
                     context: ctx,
                     initialDate: DateTime.now(),
                     firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                    lastDate: DateTime.now().add(
+                      const Duration(days: 365 * maxYearsFuture),
+                    ),
                   );
                   if (picked != null) {
                     setDialogState(() => dueDate = picked);
@@ -527,9 +537,11 @@ class _OverviewTab extends StatelessWidget {
     );
   }
 
-  String _progressSubtitle(dynamic plan) {
+  String _progressSubtitle(BudgetPlanEntity plan) {
     final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 0);
-    return '${fmt.format(plan.currentAmount)} / ${fmt.format(plan.targetAmount)} · ${plan.daysRemaining} ${'general.days'.tr} ${'general.remaining'.tr}';
+    // Prevent overflow in days calculation
+    final days = plan.daysRemaining.clamp(0, 9999);
+    return '${fmt.format(plan.currentAmount)} / ${fmt.format(plan.targetAmount)} · $days ${'general.days'.tr} ${'general.remaining'.tr}';
   }
 
   Color _healthColor(BudgetHealthStatus status) {
@@ -549,14 +561,33 @@ class _OverviewTab extends StatelessWidget {
 
 /// Collapsible body shown inside the SectionHeader.card progress card.
 class _ProgressBody extends StatelessWidget {
-  final dynamic plan;
+  final BudgetPlanEntity plan;
   final Color color;
 
   const _ProgressBody({required this.plan, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    final progress = (plan.progressPercentage as double).clamp(0.0, 1.0);
+    final progress = plan.progressPercentage.clamp(0.0, 1.0);
+    final healthStatus = plan.healthStatus;
+    // Safe health status label with fallback
+    final String healthLabel;
+    switch (healthStatus) {
+      case BudgetHealthStatus.onTrack:
+        healthLabel = 'budget_plans.health_on_track'.tr;
+      case BudgetHealthStatus.slightlyBehind:
+        healthLabel = 'budget_plans.health_slightly_behind'.tr;
+      case BudgetHealthStatus.atRisk:
+        healthLabel = 'budget_plans.health_at_risk'.tr;
+      case BudgetHealthStatus.overBudget:
+        healthLabel = 'budget_plans.health_over_budget'.tr;
+      case BudgetHealthStatus.completed:
+        healthLabel = 'budget_plans.health_completed'.tr;
+    }
+
+    // Prevent overflow in percentage display
+    final percentageDisplay = (progress * 100).clamp(0, 100).toInt();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -574,15 +605,15 @@ class _ProgressBody extends StatelessWidget {
         Row(
           children: [
             _StatusChip(
-              icon: plan.healthStatus == BudgetHealthStatus.onTrack
+              icon: healthStatus == BudgetHealthStatus.onTrack
                   ? Icons.check_circle
                   : Icons.warning,
-              label: plan.healthStatus.displayName,
+              label: healthLabel,
             ),
             const SizedBox(width: AppSpacing.md),
             _StatusChip(
               icon: Icons.calendar_today,
-              label: '${(progress * 100).toInt()}% ${'general.complete'.tr}',
+              label: '$percentageDisplay% ${'general.complete'.tr}',
             ),
           ],
         ),
@@ -661,7 +692,7 @@ class _EmptySection extends StatelessWidget {
 }
 
 class _MilestoneCard extends StatelessWidget {
-  final dynamic milestone;
+  final BudgetPlanMilestoneEntity milestone;
   final String planId;
   final void Function(String milestoneId, String planId) onComplete;
 
@@ -696,14 +727,12 @@ class _MilestoneCard extends StatelessWidget {
                 : null,
           ),
         ),
-        subtitle: Text(
-          'RM ${(milestone.targetAmount as double).toStringAsFixed(2)}',
-        ),
+        subtitle: Text('RM ${milestone.targetAmount.toStringAsFixed(2)}'),
         trailing: milestone.isCompleted
             ? null
             : IconButton(
                 icon: const Icon(Icons.check_circle_outline),
-                onPressed: () => onComplete(milestone.id!, planId),
+                onPressed: () => onComplete(milestone.id, planId),
               ),
       ),
     );
@@ -711,7 +740,7 @@ class _MilestoneCard extends StatelessWidget {
 }
 
 class _LinkedAccountCard extends StatelessWidget {
-  final dynamic account;
+  final LinkedAccountSummaryEntity account;
   final String planId;
   final void Function(String accountId, String planId) onUnlink;
 
@@ -726,13 +755,13 @@ class _LinkedAccountCard extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: const CircleAvatar(child: Icon(Icons.account_balance)),
-        title: Text(account.accountName ?? 'Account'),
+        title: Text(account.accountName),
         subtitle: Text(
-          '${'budget_plans.allocated'.tr}: RM ${((account.allocatedAmount ?? 0) as double).toStringAsFixed(2)}',
+          '${'budget_plans.allocated'.tr}: RM ${account.allocatedAmount.toStringAsFixed(2)}',
         ),
         trailing: IconButton(
           icon: const Icon(Icons.link_off),
-          onPressed: () => onUnlink(account.accountId as String, planId),
+          onPressed: () => onUnlink(account.accountId, planId),
         ),
       ),
     );
@@ -775,7 +804,7 @@ class _TransactionsTab extends StatelessWidget {
 }
 
 class _DepositsList extends StatelessWidget {
-  final List<dynamic> deposits;
+  final List<BudgetPlanDepositEntity> deposits;
 
   const _DepositsList({required this.deposits});
 
@@ -794,7 +823,7 @@ class _DepositsList extends StatelessWidget {
 }
 
 class _DepositCard extends StatelessWidget {
-  final dynamic deposit;
+  final BudgetPlanDepositEntity deposit;
 
   const _DepositCard({required this.deposit});
 
@@ -806,10 +835,10 @@ class _DepositCard extends StatelessWidget {
           backgroundColor: WiseSpendsColors.success,
           child: Icon(Icons.arrow_downward, color: Colors.white),
         ),
-        title: Text(deposit.source ?? 'Manual'),
+        title: Text(deposit.sourceDisplayName),
         subtitle: Text(DateFormat('MMM d, y').format(deposit.depositDate)),
         trailing: Text(
-          '+ RM ${(deposit.amount as double).toStringAsFixed(2)}',
+          '+ RM ${deposit.amount.toStringAsFixed(2)}',
           style: AppTextStyles.bodyMedium.copyWith(
             color: WiseSpendsColors.success,
             fontWeight: FontWeight.bold,
@@ -821,7 +850,7 @@ class _DepositCard extends StatelessWidget {
 }
 
 class _SpendingList extends StatelessWidget {
-  final List<dynamic> transactions;
+  final List<BudgetPlanTransactionEntity> transactions;
 
   const _SpendingList({required this.transactions});
 
@@ -840,7 +869,7 @@ class _SpendingList extends StatelessWidget {
 }
 
 class _SpendingCard extends StatelessWidget {
-  final dynamic transaction;
+  final BudgetPlanTransactionEntity transaction;
 
   const _SpendingCard({required this.transaction});
 
@@ -857,7 +886,7 @@ class _SpendingCard extends StatelessWidget {
           DateFormat('MMM d, y').format(transaction.transactionDate),
         ),
         trailing: Text(
-          '- RM ${(transaction.amount as double).toStringAsFixed(2)}',
+          '- RM ${transaction.amount.toStringAsFixed(2)}',
           style: AppTextStyles.bodyMedium.copyWith(
             color: WiseSpendsColors.secondary,
             fontWeight: FontWeight.bold,
@@ -879,13 +908,20 @@ class _ChartsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate totals with overflow protection
     final totalDeposited = state.deposits.fold<double>(
       0.0,
-      (s, d) => s + (d.amount),
+      (s, d) {
+        final sum = s + d.amount;
+        return sum.isInfinite ? double.maxFinite : sum;
+      },
     );
     final totalSpent = state.transactions.fold<double>(
       0.0,
-      (s, t) => s + (t.amount),
+      (s, t) {
+        final sum = s + t.amount;
+        return sum.isInfinite ? double.maxFinite : sum;
+      },
     );
 
     final spendingByCategory = _buildCategoryData(totalSpent);
@@ -942,7 +978,7 @@ class _ChartsTab extends StatelessWidget {
     final byVendor = <String, double>{};
     for (final t in state.transactions) {
       final key = t.vendor ?? t.description ?? 'Other';
-      byVendor[key] = (byVendor[key] ?? 0) + (t.amount);
+      byVendor[key] = (byVendor[key] ?? 0) + t.amount;
     }
     return byVendor.entries
         .map(

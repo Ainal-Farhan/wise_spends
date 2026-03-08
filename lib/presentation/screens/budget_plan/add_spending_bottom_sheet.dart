@@ -16,6 +16,21 @@ import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
+/// Constants for budget plan spending categories
+class _BudgetPlanSpendingCategories {
+  static const String venue = 'venue';
+  static const String catering = 'catering';
+  static const String decor = 'decor';
+  static const String attire = 'attire';
+  static const String photography = 'photography';
+  static const String other = 'other';
+}
+
+/// Constants for date picker limits
+class _DatePickerLimits {
+  static const int firstYear = 2020;
+}
+
 /// Add Deposit Bottom Sheet
 /// Quick entry for adding deposits to a budget plan.
 class AddDepositBottomSheet extends StatefulWidget {
@@ -585,7 +600,7 @@ class _DatePickerField extends StatelessWidget {
         final picked = await showDatePicker(
           context: context,
           initialDate: selectedDate,
-          firstDate: DateTime(2020),
+          firstDate: DateTime(_DatePickerLimits.firstYear),
           lastDate: DateTime.now(),
         );
         if (picked != null) onChanged(picked);
@@ -659,12 +674,36 @@ class _SpendingCategoryChips extends StatelessWidget {
 
   // Each entry: (value, icon, labelKey)
   static const _categories = [
-    ('venue', Icons.celebration, 'budget_plans.cat_venue'),
-    ('catering', Icons.restaurant, 'budget_plans.cat_catering'),
-    ('decor', Icons.local_florist, 'budget_plans.cat_decor'),
-    ('attire', Icons.checkroom, 'budget_plans.cat_attire'),
-    ('photography', Icons.camera_alt, 'budget_plans.cat_photography'),
-    ('other', Icons.more_horiz, 'budget_plans.cat_other'),
+    (
+      _BudgetPlanSpendingCategories.venue,
+      Icons.celebration,
+      'budget_plans.cat_venue',
+    ),
+    (
+      _BudgetPlanSpendingCategories.catering,
+      Icons.restaurant,
+      'budget_plans.cat_catering',
+    ),
+    (
+      _BudgetPlanSpendingCategories.decor,
+      Icons.local_florist,
+      'budget_plans.cat_decor',
+    ),
+    (
+      _BudgetPlanSpendingCategories.attire,
+      Icons.checkroom,
+      'budget_plans.cat_attire',
+    ),
+    (
+      _BudgetPlanSpendingCategories.photography,
+      Icons.camera_alt,
+      'budget_plans.cat_photography',
+    ),
+    (
+      _BudgetPlanSpendingCategories.other,
+      Icons.more_horiz,
+      'budget_plans.cat_other',
+    ),
   ];
 
   const _SpendingCategoryChips({

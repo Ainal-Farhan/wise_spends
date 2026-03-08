@@ -20,6 +20,17 @@ import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
+/// Predefined accent color ARGB values for budget plans
+class _BudgetPlanAccentColorValues {
+  static final List<int> argbValues = [
+    AppColors.primary.toARGB32(),
+    AppColors.secondary.toARGB32(),
+    AppColors.tertiary.toARGB32(),
+    AppColors.warning.toARGB32(),
+    AppColors.info.toARGB32(),
+  ];
+}
+
 /// 3-step wizard to create a new budget plan.
 class CreateBudgetPlanScreen extends StatelessWidget {
   const CreateBudgetPlanScreen({super.key});
@@ -146,6 +157,12 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
       _showError('budget_plans.enter_target'.tr);
       return;
     }
+    // Validate target date is after start date
+    if (state.endDate.isBefore(state.startDate) ||
+        state.endDate.isAtSameMomentAs(state.startDate)) {
+      _showError('budget_plans.end_date_after_start'.tr);
+      return;
+    }
 
     // Delegate the actual save to the bloc.
     context.read<CreateBudgetPlanFormBloc>().add(const SaveCreateBudgetPlan());
@@ -233,28 +250,20 @@ class _Step1Basics extends StatelessWidget {
           SectionHeaderCompact(title: 'budget_plans.accent_color'.tr),
           const SizedBox(height: AppSpacing.sm),
           Row(
-            children:
-                [
-                      AppColors.primary,
-                      AppColors.secondary,
-                      AppColors.tertiary,
-                      AppColors.warning,
-                      AppColors.info,
-                    ]
-                    .map(
-                      (color) => Padding(
-                        padding: const EdgeInsets.only(right: AppSpacing.sm),
-                        child: _ColorSwatch(
-                          color: color,
-                          isSelected:
-                              state.accentColorValue == color.toARGB32(),
-                          onTap: () => context
-                              .read<CreateBudgetPlanFormBloc>()
-                              .add(ChangeAccentColor(color.toARGB32())),
-                        ),
-                      ),
-                    )
-                    .toList(),
+            children: _BudgetPlanAccentColorValues.argbValues
+                .map(
+                  (colorValue) => Padding(
+                    padding: const EdgeInsets.only(right: AppSpacing.sm),
+                    child: _ColorSwatch(
+                      color: Color(colorValue),
+                      isSelected: state.accentColorValue == colorValue,
+                      onTap: () => context
+                          .read<CreateBudgetPlanFormBloc>()
+                          .add(ChangeAccentColor(colorValue)),
+                    ),
+                  ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -391,15 +400,18 @@ class _Step3Milestones extends StatelessWidget {
               ),
             ),
 
-          ...state.milestones.map(
-            (m) => ListTile(
-              title: Text((m['title'] as String?) ?? ''),
+          ...state.milestones.asMap().entries.map(
+            (e) => ListTile(
+              key: ValueKey('milestone-${e.key}'),
+              title: Text((e.value['title'] as String?) ?? ''),
               subtitle: Text(
-                'RM ${((m['targetAmount'] ?? 0.0) as double).toStringAsFixed(2)}',
+                'RM ${((e.value['targetAmount'] ?? 0.0) as double).toStringAsFixed(2)}',
               ),
               trailing: IconButton(
                 icon: const Icon(Icons.delete_outline),
-                onPressed: () {},
+                onPressed: () => context.read<CreateBudgetPlanFormBloc>().add(
+                  RemoveMilestone(e.key),
+                ),
               ),
             ),
           ),

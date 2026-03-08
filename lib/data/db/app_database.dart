@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -53,7 +53,18 @@ class AppDatabase extends _$AppDatabase {
       onCreate: (Migrator m) async {
         await m.createAll();
       },
-      onUpgrade: (Migrator m, int from, int to) async {},
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          // Migration to schema version 2: Add item tracking tables
+          // Add itemId column to SavingsPlanDepositTable
+          await m.addColumn(savingsPlanDepositTable, savingsPlanDepositTable.itemId);
+          // Add itemId column to SavingsPlanSpendingTable
+          await m.addColumn(savingsPlanSpendingTable, savingsPlanSpendingTable.itemId);
+          // Create new tables (SavingsPlanItemTable and SavingsPlanItemTagTable are auto-created)
+          await m.create(savingsPlanItemTable);
+          await m.create(savingsPlanItemTagTable);
+        }
+      },
     );
   }
 

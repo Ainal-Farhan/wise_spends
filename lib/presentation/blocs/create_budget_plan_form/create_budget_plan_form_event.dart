@@ -96,6 +96,16 @@ class AddMilestone extends CreateBudgetPlanFormEvent {
   List<Object> get props => [title, targetAmount];
 }
 
+/// Remove milestone by index
+class RemoveMilestone extends CreateBudgetPlanFormEvent {
+  final int index;
+
+  const RemoveMilestone(this.index);
+
+  @override
+  List<Object> get props => [index];
+}
+
 /// Clear form
 class ClearCreateBudgetPlanForm extends CreateBudgetPlanFormEvent {}
 

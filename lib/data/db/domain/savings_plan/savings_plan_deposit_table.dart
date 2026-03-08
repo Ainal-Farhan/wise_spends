@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:wise_spends/core/constants/constant/domain/domain_table_constant.dart';
 import 'package:wise_spends/data/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/data/db/domain/savings_plan/savings_plan_table.dart';
+import 'package:wise_spends/data/db/domain/savings_plan/savings_plan_item_table.dart';
 
 /// Savings Plan Deposit table for tracking money added to a savings plan.
 ///
@@ -12,10 +13,14 @@ import 'package:wise_spends/data/db/domain/savings_plan/savings_plan_table.dart'
 ///   - dateUpdated
 ///
 /// Each deposit increases the [SavingsPlanTable]'s currentAmount.
+/// Optionally links to a specific [SavingsPlanItemTable] for item-level tracking.
 @DataClassName("${DomainTableConstant.savingsPlanTablePrefix}Deposit")
 class SavingsPlanDepositTable extends BaseEntityTable {
   /// FK to [SavingsPlanTable] — the plan this deposit belongs to.
   TextColumn get planId => text().references(SavingsPlanTable, #id)();
+
+  /// FK to [SavingsPlanItemTable] — optional link to a specific budget item.
+  TextColumn get itemId => text().nullable().references(SavingsPlanItemTable, #id)();
 
   /// Deposit amount (always positive).
   RealColumn get amount => real()();
@@ -46,6 +51,7 @@ class SavingsPlanDepositTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() => {
     'planId': planId.name,
+    'itemId': itemId.name,
     'amount': amount.name,
     'note': note.name,
     'source': source.name,

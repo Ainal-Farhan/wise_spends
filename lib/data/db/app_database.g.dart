@@ -2641,6 +2641,848 @@ class SavingsPlanTableCompanion extends UpdateCompanion<SvngPlnSavingsPlan> {
   }
 }
 
+class $SavingsPlanItemTableTable extends SavingsPlanItemTable
+    with TableInfo<$SavingsPlanItemTableTable, SvngPlnItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavingsPlanItemTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<String> planId = GeneratedColumn<String>(
+    'plan_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES savings_plan_table (id)',
+    ),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<double> sortOrder = GeneratedColumn<double>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1000.0),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 200,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalCostMeta = const VerificationMeta(
+    'totalCost',
+  );
+  @override
+  late final GeneratedColumn<double> totalCost = GeneratedColumn<double>(
+    'total_cost',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _depositPaidMeta = const VerificationMeta(
+    'depositPaid',
+  );
+  @override
+  late final GeneratedColumn<double> depositPaid = GeneratedColumn<double>(
+    'deposit_paid',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _amountPaidMeta = const VerificationMeta(
+    'amountPaid',
+  );
+  @override
+  late final GeneratedColumn<double> amountPaid = GeneratedColumn<double>(
+    'amount_paid',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isCompletedMeta = const VerificationMeta(
+    'isCompleted',
+  );
+  @override
+  late final GeneratedColumn<bool> isCompleted = GeneratedColumn<bool>(
+    'is_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _dueDateMeta = const VerificationMeta(
+    'dueDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dueDate = GeneratedColumn<DateTime>(
+    'due_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    planId,
+    sortOrder,
+    name,
+    totalCost,
+    depositPaid,
+    amountPaid,
+    notes,
+    isCompleted,
+    dueDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'savings_plan_item_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SvngPlnItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('plan_id')) {
+      context.handle(
+        _planIdMeta,
+        planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_planIdMeta);
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('total_cost')) {
+      context.handle(
+        _totalCostMeta,
+        totalCost.isAcceptableOrUnknown(data['total_cost']!, _totalCostMeta),
+      );
+    }
+    if (data.containsKey('deposit_paid')) {
+      context.handle(
+        _depositPaidMeta,
+        depositPaid.isAcceptableOrUnknown(
+          data['deposit_paid']!,
+          _depositPaidMeta,
+        ),
+      );
+    }
+    if (data.containsKey('amount_paid')) {
+      context.handle(
+        _amountPaidMeta,
+        amountPaid.isAcceptableOrUnknown(data['amount_paid']!, _amountPaidMeta),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('is_completed')) {
+      context.handle(
+        _isCompletedMeta,
+        isCompleted.isAcceptableOrUnknown(
+          data['is_completed']!,
+          _isCompletedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(
+        _dueDateMeta,
+        dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {planId, sortOrder},
+  ];
+  @override
+  SvngPlnItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SvngPlnItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      planId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plan_id'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      totalCost: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_cost'],
+      )!,
+      depositPaid: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}deposit_paid'],
+      )!,
+      amountPaid: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}amount_paid'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      isCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_completed'],
+      )!,
+      dueDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}due_date'],
+      ),
+    );
+  }
+
+  @override
+  $SavingsPlanItemTableTable createAlias(String alias) {
+    return $SavingsPlanItemTableTable(attachedDatabase, alias);
+  }
+}
+
+class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+
+  /// FK to [SavingsPlanTable] — the plan this item belongs to.
+  final String planId;
+
+  /// Sort order for fractional indexing (allows inserting between items without renumbering).
+  /// Start at 1000.0, increment by 1000.0. Insert between: average of neighbors.
+  final double sortOrder;
+
+  /// Item name/description (Perkara in Malay).
+  final String name;
+
+  /// Total cost for this item (Jumlah in Malay).
+  final double totalCost;
+
+  /// Deposit amount paid (Deposit in Malay).
+  final double depositPaid;
+
+  /// Total amount paid so far (Telah Bayar in Malay).
+  final double amountPaid;
+
+  /// Optional notes/remarks (e.g., "hujung bulan 3 dapat RM2000").
+  final String? notes;
+
+  /// Whether this item is fully paid/completed.
+  final bool isCompleted;
+
+  /// Optional deadline for payment/completion of this item.
+  final DateTime? dueDate;
+  const SvngPlnItem({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.planId,
+    required this.sortOrder,
+    required this.name,
+    required this.totalCost,
+    required this.depositPaid,
+    required this.amountPaid,
+    this.notes,
+    required this.isCompleted,
+    this.dueDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['plan_id'] = Variable<String>(planId);
+    map['sort_order'] = Variable<double>(sortOrder);
+    map['name'] = Variable<String>(name);
+    map['total_cost'] = Variable<double>(totalCost);
+    map['deposit_paid'] = Variable<double>(depositPaid);
+    map['amount_paid'] = Variable<double>(amountPaid);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['is_completed'] = Variable<bool>(isCompleted);
+    if (!nullToAbsent || dueDate != null) {
+      map['due_date'] = Variable<DateTime>(dueDate);
+    }
+    return map;
+  }
+
+  SavingsPlanItemTableCompanion toCompanion(bool nullToAbsent) {
+    return SavingsPlanItemTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      planId: Value(planId),
+      sortOrder: Value(sortOrder),
+      name: Value(name),
+      totalCost: Value(totalCost),
+      depositPaid: Value(depositPaid),
+      amountPaid: Value(amountPaid),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      isCompleted: Value(isCompleted),
+      dueDate: dueDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dueDate),
+    );
+  }
+
+  factory SvngPlnItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SvngPlnItem(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      planId: serializer.fromJson<String>(json['planId']),
+      sortOrder: serializer.fromJson<double>(json['sortOrder']),
+      name: serializer.fromJson<String>(json['name']),
+      totalCost: serializer.fromJson<double>(json['totalCost']),
+      depositPaid: serializer.fromJson<double>(json['depositPaid']),
+      amountPaid: serializer.fromJson<double>(json['amountPaid']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      isCompleted: serializer.fromJson<bool>(json['isCompleted']),
+      dueDate: serializer.fromJson<DateTime?>(json['dueDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'planId': serializer.toJson<String>(planId),
+      'sortOrder': serializer.toJson<double>(sortOrder),
+      'name': serializer.toJson<String>(name),
+      'totalCost': serializer.toJson<double>(totalCost),
+      'depositPaid': serializer.toJson<double>(depositPaid),
+      'amountPaid': serializer.toJson<double>(amountPaid),
+      'notes': serializer.toJson<String?>(notes),
+      'isCompleted': serializer.toJson<bool>(isCompleted),
+      'dueDate': serializer.toJson<DateTime?>(dueDate),
+    };
+  }
+
+  SvngPlnItem copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    String? planId,
+    double? sortOrder,
+    String? name,
+    double? totalCost,
+    double? depositPaid,
+    double? amountPaid,
+    Value<String?> notes = const Value.absent(),
+    bool? isCompleted,
+    Value<DateTime?> dueDate = const Value.absent(),
+  }) => SvngPlnItem(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    planId: planId ?? this.planId,
+    sortOrder: sortOrder ?? this.sortOrder,
+    name: name ?? this.name,
+    totalCost: totalCost ?? this.totalCost,
+    depositPaid: depositPaid ?? this.depositPaid,
+    amountPaid: amountPaid ?? this.amountPaid,
+    notes: notes.present ? notes.value : this.notes,
+    isCompleted: isCompleted ?? this.isCompleted,
+    dueDate: dueDate.present ? dueDate.value : this.dueDate,
+  );
+  SvngPlnItem copyWithCompanion(SavingsPlanItemTableCompanion data) {
+    return SvngPlnItem(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      planId: data.planId.present ? data.planId.value : this.planId,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      name: data.name.present ? data.name.value : this.name,
+      totalCost: data.totalCost.present ? data.totalCost.value : this.totalCost,
+      depositPaid: data.depositPaid.present
+          ? data.depositPaid.value
+          : this.depositPaid,
+      amountPaid: data.amountPaid.present
+          ? data.amountPaid.value
+          : this.amountPaid,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      isCompleted: data.isCompleted.present
+          ? data.isCompleted.value
+          : this.isCompleted,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SvngPlnItem(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('planId: $planId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('name: $name, ')
+          ..write('totalCost: $totalCost, ')
+          ..write('depositPaid: $depositPaid, ')
+          ..write('amountPaid: $amountPaid, ')
+          ..write('notes: $notes, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('dueDate: $dueDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    planId,
+    sortOrder,
+    name,
+    totalCost,
+    depositPaid,
+    amountPaid,
+    notes,
+    isCompleted,
+    dueDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SvngPlnItem &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.planId == this.planId &&
+          other.sortOrder == this.sortOrder &&
+          other.name == this.name &&
+          other.totalCost == this.totalCost &&
+          other.depositPaid == this.depositPaid &&
+          other.amountPaid == this.amountPaid &&
+          other.notes == this.notes &&
+          other.isCompleted == this.isCompleted &&
+          other.dueDate == this.dueDate);
+}
+
+class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> planId;
+  final Value<double> sortOrder;
+  final Value<String> name;
+  final Value<double> totalCost;
+  final Value<double> depositPaid;
+  final Value<double> amountPaid;
+  final Value<String?> notes;
+  final Value<bool> isCompleted;
+  final Value<DateTime?> dueDate;
+  final Value<int> rowid;
+  const SavingsPlanItemTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.planId = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.name = const Value.absent(),
+    this.totalCost = const Value.absent(),
+    this.depositPaid = const Value.absent(),
+    this.amountPaid = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SavingsPlanItemTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String planId,
+    this.sortOrder = const Value.absent(),
+    required String name,
+    this.totalCost = const Value.absent(),
+    this.depositPaid = const Value.absent(),
+    this.amountPaid = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       planId = Value(planId),
+       name = Value(name);
+  static Insertable<SvngPlnItem> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? planId,
+    Expression<double>? sortOrder,
+    Expression<String>? name,
+    Expression<double>? totalCost,
+    Expression<double>? depositPaid,
+    Expression<double>? amountPaid,
+    Expression<String>? notes,
+    Expression<bool>? isCompleted,
+    Expression<DateTime>? dueDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (planId != null) 'plan_id': planId,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (name != null) 'name': name,
+      if (totalCost != null) 'total_cost': totalCost,
+      if (depositPaid != null) 'deposit_paid': depositPaid,
+      if (amountPaid != null) 'amount_paid': amountPaid,
+      if (notes != null) 'notes': notes,
+      if (isCompleted != null) 'is_completed': isCompleted,
+      if (dueDate != null) 'due_date': dueDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SavingsPlanItemTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<String>? planId,
+    Value<double>? sortOrder,
+    Value<String>? name,
+    Value<double>? totalCost,
+    Value<double>? depositPaid,
+    Value<double>? amountPaid,
+    Value<String?>? notes,
+    Value<bool>? isCompleted,
+    Value<DateTime?>? dueDate,
+    Value<int>? rowid,
+  }) {
+    return SavingsPlanItemTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      planId: planId ?? this.planId,
+      sortOrder: sortOrder ?? this.sortOrder,
+      name: name ?? this.name,
+      totalCost: totalCost ?? this.totalCost,
+      depositPaid: depositPaid ?? this.depositPaid,
+      amountPaid: amountPaid ?? this.amountPaid,
+      notes: notes ?? this.notes,
+      isCompleted: isCompleted ?? this.isCompleted,
+      dueDate: dueDate ?? this.dueDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (planId.present) {
+      map['plan_id'] = Variable<String>(planId.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<double>(sortOrder.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (totalCost.present) {
+      map['total_cost'] = Variable<double>(totalCost.value);
+    }
+    if (depositPaid.present) {
+      map['deposit_paid'] = Variable<double>(depositPaid.value);
+    }
+    if (amountPaid.present) {
+      map['amount_paid'] = Variable<double>(amountPaid.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (isCompleted.present) {
+      map['is_completed'] = Variable<bool>(isCompleted.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<DateTime>(dueDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavingsPlanItemTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('planId: $planId, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('name: $name, ')
+          ..write('totalCost: $totalCost, ')
+          ..write('depositPaid: $depositPaid, ')
+          ..write('amountPaid: $amountPaid, ')
+          ..write('notes: $notes, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SavingsPlanDepositTableTable extends SavingsPlanDepositTable
     with TableInfo<$SavingsPlanDepositTableTable, SvngPlnDeposit> {
   @override
@@ -2714,6 +3556,18 @@ class $SavingsPlanDepositTableTable extends SavingsPlanDepositTable
       'REFERENCES savings_plan_table (id)',
     ),
   );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES savings_plan_item_table (id)',
+    ),
+  );
   static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
   late final GeneratedColumn<double> amount = GeneratedColumn<double>(
@@ -2771,6 +3625,7 @@ class $SavingsPlanDepositTableTable extends SavingsPlanDepositTable
     dateUpdated,
     lastModifiedBy,
     planId,
+    itemId,
     amount,
     note,
     source,
@@ -2838,6 +3693,12 @@ class $SavingsPlanDepositTableTable extends SavingsPlanDepositTable
       );
     } else if (isInserting) {
       context.missing(_planIdMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
     }
     if (data.containsKey('amount')) {
       context.handle(
@@ -2912,6 +3773,10 @@ class $SavingsPlanDepositTableTable extends SavingsPlanDepositTable
         DriftSqlType.string,
         data['${effectivePrefix}plan_id'],
       )!,
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      ),
       amount: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}amount'],
@@ -2951,6 +3816,9 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
   /// FK to [SavingsPlanTable] — the plan this deposit belongs to.
   final String planId;
 
+  /// FK to [SavingsPlanItemTable] — optional link to a specific budget item.
+  final String? itemId;
+
   /// Deposit amount (always positive).
   final double amount;
 
@@ -2972,6 +3840,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
     required this.dateUpdated,
     required this.lastModifiedBy,
     required this.planId,
+    this.itemId,
     required this.amount,
     this.note,
     this.source,
@@ -2987,6 +3856,9 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
     map['date_updated'] = Variable<DateTime>(dateUpdated);
     map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['plan_id'] = Variable<String>(planId);
+    if (!nullToAbsent || itemId != null) {
+      map['item_id'] = Variable<String>(itemId);
+    }
     map['amount'] = Variable<double>(amount);
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
@@ -3009,6 +3881,9 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
       dateUpdated: Value(dateUpdated),
       lastModifiedBy: Value(lastModifiedBy),
       planId: Value(planId),
+      itemId: itemId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(itemId),
       amount: Value(amount),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       source: source == null && nullToAbsent
@@ -3033,6 +3908,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
       lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       planId: serializer.fromJson<String>(json['planId']),
+      itemId: serializer.fromJson<String?>(json['itemId']),
       amount: serializer.fromJson<double>(json['amount']),
       note: serializer.fromJson<String?>(json['note']),
       source: serializer.fromJson<String?>(json['source']),
@@ -3050,6 +3926,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
       'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'planId': serializer.toJson<String>(planId),
+      'itemId': serializer.toJson<String?>(itemId),
       'amount': serializer.toJson<double>(amount),
       'note': serializer.toJson<String?>(note),
       'source': serializer.toJson<String?>(source),
@@ -3065,6 +3942,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
     DateTime? dateUpdated,
     String? lastModifiedBy,
     String? planId,
+    Value<String?> itemId = const Value.absent(),
     double? amount,
     Value<String?> note = const Value.absent(),
     Value<String?> source = const Value.absent(),
@@ -3077,6 +3955,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
     dateUpdated: dateUpdated ?? this.dateUpdated,
     lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
     planId: planId ?? this.planId,
+    itemId: itemId.present ? itemId.value : this.itemId,
     amount: amount ?? this.amount,
     note: note.present ? note.value : this.note,
     source: source.present ? source.value : this.source,
@@ -3099,6 +3978,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
           ? data.lastModifiedBy.value
           : this.lastModifiedBy,
       planId: data.planId.present ? data.planId.value : this.planId,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
       amount: data.amount.present ? data.amount.value : this.amount,
       note: data.note.present ? data.note.value : this.note,
       source: data.source.present ? data.source.value : this.source,
@@ -3120,6 +4000,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
           ..write('dateUpdated: $dateUpdated, ')
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('planId: $planId, ')
+          ..write('itemId: $itemId, ')
           ..write('amount: $amount, ')
           ..write('note: $note, ')
           ..write('source: $source, ')
@@ -3137,6 +4018,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
     dateUpdated,
     lastModifiedBy,
     planId,
+    itemId,
     amount,
     note,
     source,
@@ -3153,6 +4035,7 @@ class SvngPlnDeposit extends DataClass implements Insertable<SvngPlnDeposit> {
           other.dateUpdated == this.dateUpdated &&
           other.lastModifiedBy == this.lastModifiedBy &&
           other.planId == this.planId &&
+          other.itemId == this.itemId &&
           other.amount == this.amount &&
           other.note == this.note &&
           other.source == this.source &&
@@ -3167,6 +4050,7 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
   final Value<DateTime> dateUpdated;
   final Value<String> lastModifiedBy;
   final Value<String> planId;
+  final Value<String?> itemId;
   final Value<double> amount;
   final Value<String?> note;
   final Value<String?> source;
@@ -3180,6 +4064,7 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
     this.dateUpdated = const Value.absent(),
     this.lastModifiedBy = const Value.absent(),
     this.planId = const Value.absent(),
+    this.itemId = const Value.absent(),
     this.amount = const Value.absent(),
     this.note = const Value.absent(),
     this.source = const Value.absent(),
@@ -3194,6 +4079,7 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
     required DateTime dateUpdated,
     required String lastModifiedBy,
     required String planId,
+    this.itemId = const Value.absent(),
     required double amount,
     this.note = const Value.absent(),
     this.source = const Value.absent(),
@@ -3213,6 +4099,7 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
     Expression<DateTime>? dateUpdated,
     Expression<String>? lastModifiedBy,
     Expression<String>? planId,
+    Expression<String>? itemId,
     Expression<double>? amount,
     Expression<String>? note,
     Expression<String>? source,
@@ -3227,6 +4114,7 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
       if (dateUpdated != null) 'date_updated': dateUpdated,
       if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (planId != null) 'plan_id': planId,
+      if (itemId != null) 'item_id': itemId,
       if (amount != null) 'amount': amount,
       if (note != null) 'note': note,
       if (source != null) 'source': source,
@@ -3243,6 +4131,7 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
     Value<DateTime>? dateUpdated,
     Value<String>? lastModifiedBy,
     Value<String>? planId,
+    Value<String?>? itemId,
     Value<double>? amount,
     Value<String?>? note,
     Value<String?>? source,
@@ -3257,6 +4146,7 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
       dateUpdated: dateUpdated ?? this.dateUpdated,
       lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       planId: planId ?? this.planId,
+      itemId: itemId ?? this.itemId,
       amount: amount ?? this.amount,
       note: note ?? this.note,
       source: source ?? this.source,
@@ -3286,6 +4176,9 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
     }
     if (planId.present) {
       map['plan_id'] = Variable<String>(planId.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
     }
     if (amount.present) {
       map['amount'] = Variable<double>(amount.value);
@@ -3317,6 +4210,7 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
           ..write('dateUpdated: $dateUpdated, ')
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('planId: $planId, ')
+          ..write('itemId: $itemId, ')
           ..write('amount: $amount, ')
           ..write('note: $note, ')
           ..write('source: $source, ')
@@ -9868,6 +10762,18 @@ class $SavingsPlanSpendingTableTable extends SavingsPlanSpendingTable
       'REFERENCES savings_plan_table (id)',
     ),
   );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES savings_plan_item_table (id)',
+    ),
+  );
   static const VerificationMeta _transactionIdMeta = const VerificationMeta(
     'transactionId',
   );
@@ -9941,6 +10847,7 @@ class $SavingsPlanSpendingTableTable extends SavingsPlanSpendingTable
     dateUpdated,
     lastModifiedBy,
     planId,
+    itemId,
     transactionId,
     amount,
     description,
@@ -10009,6 +10916,12 @@ class $SavingsPlanSpendingTableTable extends SavingsPlanSpendingTable
       );
     } else if (isInserting) {
       context.missing(_planIdMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
     }
     if (data.containsKey('transaction_id')) {
       context.handle(
@@ -10095,6 +11008,10 @@ class $SavingsPlanSpendingTableTable extends SavingsPlanSpendingTable
         DriftSqlType.string,
         data['${effectivePrefix}plan_id'],
       )!,
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      ),
       transactionId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}transaction_id'],
@@ -10138,6 +11055,9 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
   /// FK to [SavingsPlanTable] — the plan this spending belongs to.
   final String planId;
 
+  /// FK to [SavingsPlanItemTable] — optional link to a specific budget item.
+  final String? itemId;
+
   /// FK to [TransactionTable] — optional link to the actual transaction.
   final String? transactionId;
 
@@ -10162,6 +11082,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
     required this.dateUpdated,
     required this.lastModifiedBy,
     required this.planId,
+    this.itemId,
     this.transactionId,
     required this.amount,
     this.description,
@@ -10178,6 +11099,9 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
     map['date_updated'] = Variable<DateTime>(dateUpdated);
     map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['plan_id'] = Variable<String>(planId);
+    if (!nullToAbsent || itemId != null) {
+      map['item_id'] = Variable<String>(itemId);
+    }
     if (!nullToAbsent || transactionId != null) {
       map['transaction_id'] = Variable<String>(transactionId);
     }
@@ -10203,6 +11127,9 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
       dateUpdated: Value(dateUpdated),
       lastModifiedBy: Value(lastModifiedBy),
       planId: Value(planId),
+      itemId: itemId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(itemId),
       transactionId: transactionId == null && nullToAbsent
           ? const Value.absent()
           : Value(transactionId),
@@ -10232,6 +11159,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
       dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
       lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       planId: serializer.fromJson<String>(json['planId']),
+      itemId: serializer.fromJson<String?>(json['itemId']),
       transactionId: serializer.fromJson<String?>(json['transactionId']),
       amount: serializer.fromJson<double>(json['amount']),
       description: serializer.fromJson<String?>(json['description']),
@@ -10250,6 +11178,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
       'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
       'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'planId': serializer.toJson<String>(planId),
+      'itemId': serializer.toJson<String?>(itemId),
       'transactionId': serializer.toJson<String?>(transactionId),
       'amount': serializer.toJson<double>(amount),
       'description': serializer.toJson<String?>(description),
@@ -10266,6 +11195,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
     DateTime? dateUpdated,
     String? lastModifiedBy,
     String? planId,
+    Value<String?> itemId = const Value.absent(),
     Value<String?> transactionId = const Value.absent(),
     double? amount,
     Value<String?> description = const Value.absent(),
@@ -10279,6 +11209,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
     dateUpdated: dateUpdated ?? this.dateUpdated,
     lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
     planId: planId ?? this.planId,
+    itemId: itemId.present ? itemId.value : this.itemId,
     transactionId: transactionId.present
         ? transactionId.value
         : this.transactionId,
@@ -10304,6 +11235,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
           ? data.lastModifiedBy.value
           : this.lastModifiedBy,
       planId: data.planId.present ? data.planId.value : this.planId,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
       transactionId: data.transactionId.present
           ? data.transactionId.value
           : this.transactionId,
@@ -10330,6 +11262,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
           ..write('dateUpdated: $dateUpdated, ')
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('planId: $planId, ')
+          ..write('itemId: $itemId, ')
           ..write('transactionId: $transactionId, ')
           ..write('amount: $amount, ')
           ..write('description: $description, ')
@@ -10348,6 +11281,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
     dateUpdated,
     lastModifiedBy,
     planId,
+    itemId,
     transactionId,
     amount,
     description,
@@ -10365,6 +11299,7 @@ class SvngPlnSpending extends DataClass implements Insertable<SvngPlnSpending> {
           other.dateUpdated == this.dateUpdated &&
           other.lastModifiedBy == this.lastModifiedBy &&
           other.planId == this.planId &&
+          other.itemId == this.itemId &&
           other.transactionId == this.transactionId &&
           other.amount == this.amount &&
           other.description == this.description &&
@@ -10381,6 +11316,7 @@ class SavingsPlanSpendingTableCompanion
   final Value<DateTime> dateUpdated;
   final Value<String> lastModifiedBy;
   final Value<String> planId;
+  final Value<String?> itemId;
   final Value<String?> transactionId;
   final Value<double> amount;
   final Value<String?> description;
@@ -10395,6 +11331,7 @@ class SavingsPlanSpendingTableCompanion
     this.dateUpdated = const Value.absent(),
     this.lastModifiedBy = const Value.absent(),
     this.planId = const Value.absent(),
+    this.itemId = const Value.absent(),
     this.transactionId = const Value.absent(),
     this.amount = const Value.absent(),
     this.description = const Value.absent(),
@@ -10410,6 +11347,7 @@ class SavingsPlanSpendingTableCompanion
     required DateTime dateUpdated,
     required String lastModifiedBy,
     required String planId,
+    this.itemId = const Value.absent(),
     this.transactionId = const Value.absent(),
     required double amount,
     this.description = const Value.absent(),
@@ -10430,6 +11368,7 @@ class SavingsPlanSpendingTableCompanion
     Expression<DateTime>? dateUpdated,
     Expression<String>? lastModifiedBy,
     Expression<String>? planId,
+    Expression<String>? itemId,
     Expression<String>? transactionId,
     Expression<double>? amount,
     Expression<String>? description,
@@ -10445,6 +11384,7 @@ class SavingsPlanSpendingTableCompanion
       if (dateUpdated != null) 'date_updated': dateUpdated,
       if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (planId != null) 'plan_id': planId,
+      if (itemId != null) 'item_id': itemId,
       if (transactionId != null) 'transaction_id': transactionId,
       if (amount != null) 'amount': amount,
       if (description != null) 'description': description,
@@ -10462,6 +11402,7 @@ class SavingsPlanSpendingTableCompanion
     Value<DateTime>? dateUpdated,
     Value<String>? lastModifiedBy,
     Value<String>? planId,
+    Value<String?>? itemId,
     Value<String?>? transactionId,
     Value<double>? amount,
     Value<String?>? description,
@@ -10477,6 +11418,7 @@ class SavingsPlanSpendingTableCompanion
       dateUpdated: dateUpdated ?? this.dateUpdated,
       lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       planId: planId ?? this.planId,
+      itemId: itemId ?? this.itemId,
       transactionId: transactionId ?? this.transactionId,
       amount: amount ?? this.amount,
       description: description ?? this.description,
@@ -10507,6 +11449,9 @@ class SavingsPlanSpendingTableCompanion
     }
     if (planId.present) {
       map['plan_id'] = Variable<String>(planId.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
     }
     if (transactionId.present) {
       map['transaction_id'] = Variable<String>(transactionId.value);
@@ -10541,6 +11486,7 @@ class SavingsPlanSpendingTableCompanion
           ..write('dateUpdated: $dateUpdated, ')
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('planId: $planId, ')
+          ..write('itemId: $itemId, ')
           ..write('transactionId: $transactionId, ')
           ..write('amount: $amount, ')
           ..write('description: $description, ')
@@ -11849,6 +12795,494 @@ class SavingsPlanMilestoneTableCompanion
           ..write('isCompleted: $isCompleted, ')
           ..write('dueDate: $dueDate, ')
           ..write('completedAt: $completedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SavingsPlanItemTagTableTable extends SavingsPlanItemTagTable
+    with TableInfo<$SavingsPlanItemTagTableTable, SvngPlnItemTag> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavingsPlanItemTagTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES savings_plan_item_table (id)',
+    ),
+  );
+  static const VerificationMeta _tagNameMeta = const VerificationMeta(
+    'tagName',
+  );
+  @override
+  late final GeneratedColumn<String> tagName = GeneratedColumn<String>(
+    'tag_name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(
+      minTextLength: 1,
+      maxTextLength: 50,
+    ),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    itemId,
+    tagName,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'savings_plan_item_tag_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SvngPlnItemTag> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('tag_name')) {
+      context.handle(
+        _tagNameMeta,
+        tagName.isAcceptableOrUnknown(data['tag_name']!, _tagNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tagNameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {itemId, tagName},
+  ];
+  @override
+  SvngPlnItemTag map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SvngPlnItemTag(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      )!,
+      tagName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tag_name'],
+      )!,
+    );
+  }
+
+  @override
+  $SavingsPlanItemTagTableTable createAlias(String alias) {
+    return $SavingsPlanItemTagTableTable(attachedDatabase, alias);
+  }
+}
+
+class SvngPlnItemTag extends DataClass implements Insertable<SvngPlnItemTag> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+
+  /// FK to [SavingsPlanItemTable] — the item this tag belongs to.
+  final String itemId;
+
+  /// Tag name (e.g., "Pelamin", "Hantaran", "Makeup").
+  final String tagName;
+  const SvngPlnItemTag({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.itemId,
+    required this.tagName,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['item_id'] = Variable<String>(itemId);
+    map['tag_name'] = Variable<String>(tagName);
+    return map;
+  }
+
+  SavingsPlanItemTagTableCompanion toCompanion(bool nullToAbsent) {
+    return SavingsPlanItemTagTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      itemId: Value(itemId),
+      tagName: Value(tagName),
+    );
+  }
+
+  factory SvngPlnItemTag.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SvngPlnItemTag(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      itemId: serializer.fromJson<String>(json['itemId']),
+      tagName: serializer.fromJson<String>(json['tagName']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'itemId': serializer.toJson<String>(itemId),
+      'tagName': serializer.toJson<String>(tagName),
+    };
+  }
+
+  SvngPlnItemTag copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    String? itemId,
+    String? tagName,
+  }) => SvngPlnItemTag(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    itemId: itemId ?? this.itemId,
+    tagName: tagName ?? this.tagName,
+  );
+  SvngPlnItemTag copyWithCompanion(SavingsPlanItemTagTableCompanion data) {
+    return SvngPlnItemTag(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      tagName: data.tagName.present ? data.tagName.value : this.tagName,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SvngPlnItemTag(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('itemId: $itemId, ')
+          ..write('tagName: $tagName')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    itemId,
+    tagName,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SvngPlnItemTag &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.itemId == this.itemId &&
+          other.tagName == this.tagName);
+}
+
+class SavingsPlanItemTagTableCompanion extends UpdateCompanion<SvngPlnItemTag> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> itemId;
+  final Value<String> tagName;
+  final Value<int> rowid;
+  const SavingsPlanItemTagTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.tagName = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SavingsPlanItemTagTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String itemId,
+    required String tagName,
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       itemId = Value(itemId),
+       tagName = Value(tagName);
+  static Insertable<SvngPlnItemTag> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? itemId,
+    Expression<String>? tagName,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (itemId != null) 'item_id': itemId,
+      if (tagName != null) 'tag_name': tagName,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SavingsPlanItemTagTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<String>? itemId,
+    Value<String>? tagName,
+    Value<int>? rowid,
+  }) {
+    return SavingsPlanItemTagTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      itemId: itemId ?? this.itemId,
+      tagName: tagName ?? this.tagName,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
+    }
+    if (tagName.present) {
+      map['tag_name'] = Variable<String>(tagName.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavingsPlanItemTagTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('itemId: $itemId, ')
+          ..write('tagName: $tagName, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -17299,6 +18733,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SavingsPlanTableTable savingsPlanTable = $SavingsPlanTableTable(
     this,
   );
+  late final $SavingsPlanItemTableTable savingsPlanItemTable =
+      $SavingsPlanItemTableTable(this);
   late final $SavingsPlanDepositTableTable savingsPlanDepositTable =
       $SavingsPlanDepositTableTable(this);
   late final $UserTableTable userTable = $UserTableTable(this);
@@ -17322,6 +18758,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $SavingsPlanLinkedAccountTableTable(this);
   late final $SavingsPlanMilestoneTableTable savingsPlanMilestoneTable =
       $SavingsPlanMilestoneTableTable(this);
+  late final $SavingsPlanItemTagTableTable savingsPlanItemTagTable =
+      $SavingsPlanItemTagTableTable(this);
   late final $ExchangeRateTableTable exchangeRateTable =
       $ExchangeRateTableTable(this);
   late final $GroupReferenceTableTable groupReferenceTable =
@@ -17346,6 +18784,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     categoryTable,
     spendingBudgetTable,
     savingsPlanTable,
+    savingsPlanItemTable,
     savingsPlanDepositTable,
     userTable,
     moneyStorageTable,
@@ -17358,6 +18797,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     savingsPlanSpendingTable,
     savingsPlanLinkedAccountTable,
     savingsPlanMilestoneTable,
+    savingsPlanItemTagTable,
     exchangeRateTable,
     groupReferenceTable,
     referenceTable,
@@ -18645,6 +20085,31 @@ final class $$SavingsPlanTableTableReferences
     super.$_typedResult,
   );
 
+  static MultiTypedResultKey<$SavingsPlanItemTableTable, List<SvngPlnItem>>
+  _savingsPlanItemTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.savingsPlanItemTable,
+        aliasName: $_aliasNameGenerator(
+          db.savingsPlanTable.id,
+          db.savingsPlanItemTable.planId,
+        ),
+      );
+
+  $$SavingsPlanItemTableTableProcessedTableManager
+  get savingsPlanItemTableRefs {
+    final manager = $$SavingsPlanItemTableTableTableManager(
+      $_db,
+      $_db.savingsPlanItemTable,
+    ).filter((f) => f.planId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _savingsPlanItemTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<
     $SavingsPlanDepositTableTable,
     List<SvngPlnDeposit>
@@ -18851,6 +20316,31 @@ class $$SavingsPlanTableTableFilterComposer
     column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> savingsPlanItemTableRefs(
+    Expression<bool> Function($$SavingsPlanItemTableTableFilterComposer f) f,
+  ) {
+    final $$SavingsPlanItemTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savingsPlanItemTable,
+      getReferencedColumn: (t) => t.planId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingsPlanItemTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingsPlanItemTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 
   Expression<bool> savingsPlanDepositTableRefs(
     Expression<bool> Function($$SavingsPlanDepositTableTableFilterComposer f) f,
@@ -19131,6 +20621,32 @@ class $$SavingsPlanTableTableAnnotationComposer
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
+  Expression<T> savingsPlanItemTableRefs<T extends Object>(
+    Expression<T> Function($$SavingsPlanItemTableTableAnnotationComposer a) f,
+  ) {
+    final $$SavingsPlanItemTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savingsPlanItemTable,
+          getReferencedColumn: (t) => t.planId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
   Expression<T> savingsPlanDepositTableRefs<T extends Object>(
     Expression<T> Function($$SavingsPlanDepositTableTableAnnotationComposer a)
     f,
@@ -19256,6 +20772,7 @@ class $$SavingsPlanTableTableTableManager
           (SvngPlnSavingsPlan, $$SavingsPlanTableTableReferences),
           SvngPlnSavingsPlan,
           PrefetchHooks Function({
+            bool savingsPlanItemTableRefs,
             bool savingsPlanDepositTableRefs,
             bool savingsPlanSpendingTableRefs,
             bool savingsPlanLinkedAccountTableRefs,
@@ -19365,6 +20882,7 @@ class $$SavingsPlanTableTableTableManager
               .toList(),
           prefetchHooksCallback:
               ({
+                savingsPlanItemTableRefs = false,
                 savingsPlanDepositTableRefs = false,
                 savingsPlanSpendingTableRefs = false,
                 savingsPlanLinkedAccountTableRefs = false,
@@ -19373,6 +20891,7 @@ class $$SavingsPlanTableTableTableManager
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (savingsPlanItemTableRefs) db.savingsPlanItemTable,
                     if (savingsPlanDepositTableRefs) db.savingsPlanDepositTable,
                     if (savingsPlanSpendingTableRefs)
                       db.savingsPlanSpendingTable,
@@ -19384,6 +20903,27 @@ class $$SavingsPlanTableTableTableManager
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (savingsPlanItemTableRefs)
+                        await $_getPrefetchedData<
+                          SvngPlnSavingsPlan,
+                          $SavingsPlanTableTable,
+                          SvngPlnItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SavingsPlanTableTableReferences
+                              ._savingsPlanItemTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SavingsPlanTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savingsPlanItemTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.planId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (savingsPlanDepositTableRefs)
                         await $_getPrefetchedData<
                           SvngPlnSavingsPlan,
@@ -19489,10 +21029,860 @@ typedef $$SavingsPlanTableTableProcessedTableManager =
       (SvngPlnSavingsPlan, $$SavingsPlanTableTableReferences),
       SvngPlnSavingsPlan,
       PrefetchHooks Function({
+        bool savingsPlanItemTableRefs,
         bool savingsPlanDepositTableRefs,
         bool savingsPlanSpendingTableRefs,
         bool savingsPlanLinkedAccountTableRefs,
         bool savingsPlanMilestoneTableRefs,
+      })
+    >;
+typedef $$SavingsPlanItemTableTableCreateCompanionBuilder =
+    SavingsPlanItemTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required String planId,
+      Value<double> sortOrder,
+      required String name,
+      Value<double> totalCost,
+      Value<double> depositPaid,
+      Value<double> amountPaid,
+      Value<String?> notes,
+      Value<bool> isCompleted,
+      Value<DateTime?> dueDate,
+      Value<int> rowid,
+    });
+typedef $$SavingsPlanItemTableTableUpdateCompanionBuilder =
+    SavingsPlanItemTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<String> planId,
+      Value<double> sortOrder,
+      Value<String> name,
+      Value<double> totalCost,
+      Value<double> depositPaid,
+      Value<double> amountPaid,
+      Value<String?> notes,
+      Value<bool> isCompleted,
+      Value<DateTime?> dueDate,
+      Value<int> rowid,
+    });
+
+final class $$SavingsPlanItemTableTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $SavingsPlanItemTableTable, SvngPlnItem> {
+  $$SavingsPlanItemTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $SavingsPlanTableTable _planIdTable(_$AppDatabase db) =>
+      db.savingsPlanTable.createAlias(
+        $_aliasNameGenerator(
+          db.savingsPlanItemTable.planId,
+          db.savingsPlanTable.id,
+        ),
+      );
+
+  $$SavingsPlanTableTableProcessedTableManager get planId {
+    final $_column = $_itemColumn<String>('plan_id')!;
+
+    final manager = $$SavingsPlanTableTableTableManager(
+      $_db,
+      $_db.savingsPlanTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_planIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SavingsPlanDepositTableTable,
+    List<SvngPlnDeposit>
+  >
+  _savingsPlanDepositTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.savingsPlanDepositTable,
+        aliasName: $_aliasNameGenerator(
+          db.savingsPlanItemTable.id,
+          db.savingsPlanDepositTable.itemId,
+        ),
+      );
+
+  $$SavingsPlanDepositTableTableProcessedTableManager
+  get savingsPlanDepositTableRefs {
+    final manager = $$SavingsPlanDepositTableTableTableManager(
+      $_db,
+      $_db.savingsPlanDepositTable,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _savingsPlanDepositTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SavingsPlanSpendingTableTable,
+    List<SvngPlnSpending>
+  >
+  _savingsPlanSpendingTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.savingsPlanSpendingTable,
+        aliasName: $_aliasNameGenerator(
+          db.savingsPlanItemTable.id,
+          db.savingsPlanSpendingTable.itemId,
+        ),
+      );
+
+  $$SavingsPlanSpendingTableTableProcessedTableManager
+  get savingsPlanSpendingTableRefs {
+    final manager = $$SavingsPlanSpendingTableTableTableManager(
+      $_db,
+      $_db.savingsPlanSpendingTable,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _savingsPlanSpendingTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SavingsPlanItemTagTableTable,
+    List<SvngPlnItemTag>
+  >
+  _savingsPlanItemTagTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.savingsPlanItemTagTable,
+        aliasName: $_aliasNameGenerator(
+          db.savingsPlanItemTable.id,
+          db.savingsPlanItemTagTable.itemId,
+        ),
+      );
+
+  $$SavingsPlanItemTagTableTableProcessedTableManager
+  get savingsPlanItemTagTableRefs {
+    final manager = $$SavingsPlanItemTagTableTableTableManager(
+      $_db,
+      $_db.savingsPlanItemTagTable,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _savingsPlanItemTagTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$SavingsPlanItemTableTableFilterComposer
+    extends Composer<_$AppDatabase, $SavingsPlanItemTableTable> {
+  $$SavingsPlanItemTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalCost => $composableBuilder(
+    column: $table.totalCost,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get depositPaid => $composableBuilder(
+    column: $table.depositPaid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$SavingsPlanTableTableFilterComposer get planId {
+    final $$SavingsPlanTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.planId,
+      referencedTable: $db.savingsPlanTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingsPlanTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingsPlanTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> savingsPlanDepositTableRefs(
+    Expression<bool> Function($$SavingsPlanDepositTableTableFilterComposer f) f,
+  ) {
+    final $$SavingsPlanDepositTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savingsPlanDepositTable,
+          getReferencedColumn: (t) => t.itemId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanDepositTableTableFilterComposer(
+                $db: $db,
+                $table: $db.savingsPlanDepositTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> savingsPlanSpendingTableRefs(
+    Expression<bool> Function($$SavingsPlanSpendingTableTableFilterComposer f)
+    f,
+  ) {
+    final $$SavingsPlanSpendingTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savingsPlanSpendingTable,
+          getReferencedColumn: (t) => t.itemId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanSpendingTableTableFilterComposer(
+                $db: $db,
+                $table: $db.savingsPlanSpendingTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> savingsPlanItemTagTableRefs(
+    Expression<bool> Function($$SavingsPlanItemTagTableTableFilterComposer f) f,
+  ) {
+    final $$SavingsPlanItemTagTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savingsPlanItemTagTable,
+          getReferencedColumn: (t) => t.itemId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTagTableTableFilterComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTagTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$SavingsPlanItemTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavingsPlanItemTableTable> {
+  $$SavingsPlanItemTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalCost => $composableBuilder(
+    column: $table.totalCost,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get depositPaid => $composableBuilder(
+    column: $table.depositPaid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dueDate => $composableBuilder(
+    column: $table.dueDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$SavingsPlanTableTableOrderingComposer get planId {
+    final $$SavingsPlanTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.planId,
+      referencedTable: $db.savingsPlanTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingsPlanTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.savingsPlanTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavingsPlanItemTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavingsPlanItemTableTable> {
+  $$SavingsPlanItemTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<double> get totalCost =>
+      $composableBuilder(column: $table.totalCost, builder: (column) => column);
+
+  GeneratedColumn<double> get depositPaid => $composableBuilder(
+    column: $table.depositPaid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get isCompleted => $composableBuilder(
+    column: $table.isCompleted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  $$SavingsPlanTableTableAnnotationComposer get planId {
+    final $$SavingsPlanTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.planId,
+      referencedTable: $db.savingsPlanTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingsPlanTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savingsPlanTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> savingsPlanDepositTableRefs<T extends Object>(
+    Expression<T> Function($$SavingsPlanDepositTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$SavingsPlanDepositTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savingsPlanDepositTable,
+          getReferencedColumn: (t) => t.itemId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanDepositTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savingsPlanDepositTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> savingsPlanSpendingTableRefs<T extends Object>(
+    Expression<T> Function($$SavingsPlanSpendingTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$SavingsPlanSpendingTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savingsPlanSpendingTable,
+          getReferencedColumn: (t) => t.itemId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanSpendingTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savingsPlanSpendingTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> savingsPlanItemTagTableRefs<T extends Object>(
+    Expression<T> Function($$SavingsPlanItemTagTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$SavingsPlanItemTagTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.savingsPlanItemTagTable,
+          getReferencedColumn: (t) => t.itemId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTagTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTagTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$SavingsPlanItemTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavingsPlanItemTableTable,
+          SvngPlnItem,
+          $$SavingsPlanItemTableTableFilterComposer,
+          $$SavingsPlanItemTableTableOrderingComposer,
+          $$SavingsPlanItemTableTableAnnotationComposer,
+          $$SavingsPlanItemTableTableCreateCompanionBuilder,
+          $$SavingsPlanItemTableTableUpdateCompanionBuilder,
+          (SvngPlnItem, $$SavingsPlanItemTableTableReferences),
+          SvngPlnItem,
+          PrefetchHooks Function({
+            bool planId,
+            bool savingsPlanDepositTableRefs,
+            bool savingsPlanSpendingTableRefs,
+            bool savingsPlanItemTagTableRefs,
+          })
+        > {
+  $$SavingsPlanItemTableTableTableManager(
+    _$AppDatabase db,
+    $SavingsPlanItemTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavingsPlanItemTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavingsPlanItemTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SavingsPlanItemTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<String> planId = const Value.absent(),
+                Value<double> sortOrder = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<double> totalCost = const Value.absent(),
+                Value<double> depositPaid = const Value.absent(),
+                Value<double> amountPaid = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> isCompleted = const Value.absent(),
+                Value<DateTime?> dueDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavingsPlanItemTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                planId: planId,
+                sortOrder: sortOrder,
+                name: name,
+                totalCost: totalCost,
+                depositPaid: depositPaid,
+                amountPaid: amountPaid,
+                notes: notes,
+                isCompleted: isCompleted,
+                dueDate: dueDate,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required String planId,
+                Value<double> sortOrder = const Value.absent(),
+                required String name,
+                Value<double> totalCost = const Value.absent(),
+                Value<double> depositPaid = const Value.absent(),
+                Value<double> amountPaid = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<bool> isCompleted = const Value.absent(),
+                Value<DateTime?> dueDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavingsPlanItemTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                planId: planId,
+                sortOrder: sortOrder,
+                name: name,
+                totalCost: totalCost,
+                depositPaid: depositPaid,
+                amountPaid: amountPaid,
+                notes: notes,
+                isCompleted: isCompleted,
+                dueDate: dueDate,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SavingsPlanItemTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                planId = false,
+                savingsPlanDepositTableRefs = false,
+                savingsPlanSpendingTableRefs = false,
+                savingsPlanItemTagTableRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (savingsPlanDepositTableRefs) db.savingsPlanDepositTable,
+                    if (savingsPlanSpendingTableRefs)
+                      db.savingsPlanSpendingTable,
+                    if (savingsPlanItemTagTableRefs) db.savingsPlanItemTagTable,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (planId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.planId,
+                                    referencedTable:
+                                        $$SavingsPlanItemTableTableReferences
+                                            ._planIdTable(db),
+                                    referencedColumn:
+                                        $$SavingsPlanItemTableTableReferences
+                                            ._planIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (savingsPlanDepositTableRefs)
+                        await $_getPrefetchedData<
+                          SvngPlnItem,
+                          $SavingsPlanItemTableTable,
+                          SvngPlnDeposit
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SavingsPlanItemTableTableReferences
+                              ._savingsPlanDepositTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SavingsPlanItemTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savingsPlanDepositTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (savingsPlanSpendingTableRefs)
+                        await $_getPrefetchedData<
+                          SvngPlnItem,
+                          $SavingsPlanItemTableTable,
+                          SvngPlnSpending
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SavingsPlanItemTableTableReferences
+                              ._savingsPlanSpendingTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SavingsPlanItemTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savingsPlanSpendingTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (savingsPlanItemTagTableRefs)
+                        await $_getPrefetchedData<
+                          SvngPlnItem,
+                          $SavingsPlanItemTableTable,
+                          SvngPlnItemTag
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SavingsPlanItemTableTableReferences
+                              ._savingsPlanItemTagTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SavingsPlanItemTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savingsPlanItemTagTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$SavingsPlanItemTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavingsPlanItemTableTable,
+      SvngPlnItem,
+      $$SavingsPlanItemTableTableFilterComposer,
+      $$SavingsPlanItemTableTableOrderingComposer,
+      $$SavingsPlanItemTableTableAnnotationComposer,
+      $$SavingsPlanItemTableTableCreateCompanionBuilder,
+      $$SavingsPlanItemTableTableUpdateCompanionBuilder,
+      (SvngPlnItem, $$SavingsPlanItemTableTableReferences),
+      SvngPlnItem,
+      PrefetchHooks Function({
+        bool planId,
+        bool savingsPlanDepositTableRefs,
+        bool savingsPlanSpendingTableRefs,
+        bool savingsPlanItemTagTableRefs,
       })
     >;
 typedef $$SavingsPlanDepositTableTableCreateCompanionBuilder =
@@ -19503,6 +21893,7 @@ typedef $$SavingsPlanDepositTableTableCreateCompanionBuilder =
       required DateTime dateUpdated,
       required String lastModifiedBy,
       required String planId,
+      Value<String?> itemId,
       required double amount,
       Value<String?> note,
       Value<String?> source,
@@ -19518,6 +21909,7 @@ typedef $$SavingsPlanDepositTableTableUpdateCompanionBuilder =
       Value<DateTime> dateUpdated,
       Value<String> lastModifiedBy,
       Value<String> planId,
+      Value<String?> itemId,
       Value<double> amount,
       Value<String?> note,
       Value<String?> source,
@@ -19555,6 +21947,28 @@ final class $$SavingsPlanDepositTableTableReferences
       $_db.savingsPlanTable,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_planIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $SavingsPlanItemTableTable _itemIdTable(_$AppDatabase db) =>
+      db.savingsPlanItemTable.createAlias(
+        $_aliasNameGenerator(
+          db.savingsPlanDepositTable.itemId,
+          db.savingsPlanItemTable.id,
+        ),
+      );
+
+  $$SavingsPlanItemTableTableProcessedTableManager? get itemId {
+    final $_column = $_itemColumn<String>('item_id');
+    if ($_column == null) return null;
+    final manager = $$SavingsPlanItemTableTableTableManager(
+      $_db,
+      $_db.savingsPlanItemTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_itemIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -19635,6 +22049,29 @@ class $$SavingsPlanDepositTableTableFilterComposer
           }) => $$SavingsPlanTableTableFilterComposer(
             $db: $db,
             $table: $db.savingsPlanTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SavingsPlanItemTableTableFilterComposer get itemId {
+    final $$SavingsPlanItemTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.savingsPlanItemTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingsPlanItemTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingsPlanItemTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -19726,6 +22163,30 @@ class $$SavingsPlanDepositTableTableOrderingComposer
     );
     return composer;
   }
+
+  $$SavingsPlanItemTableTableOrderingComposer get itemId {
+    final $$SavingsPlanItemTableTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.itemId,
+          referencedTable: $db.savingsPlanItemTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTableTableOrderingComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
 }
 
 class $$SavingsPlanDepositTableTableAnnotationComposer
@@ -19799,6 +22260,30 @@ class $$SavingsPlanDepositTableTableAnnotationComposer
     );
     return composer;
   }
+
+  $$SavingsPlanItemTableTableAnnotationComposer get itemId {
+    final $$SavingsPlanItemTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.itemId,
+          referencedTable: $db.savingsPlanItemTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
 }
 
 class $$SavingsPlanDepositTableTableTableManager
@@ -19814,7 +22299,7 @@ class $$SavingsPlanDepositTableTableTableManager
           $$SavingsPlanDepositTableTableUpdateCompanionBuilder,
           (SvngPlnDeposit, $$SavingsPlanDepositTableTableReferences),
           SvngPlnDeposit,
-          PrefetchHooks Function({bool planId})
+          PrefetchHooks Function({bool planId, bool itemId})
         > {
   $$SavingsPlanDepositTableTableTableManager(
     _$AppDatabase db,
@@ -19846,6 +22331,7 @@ class $$SavingsPlanDepositTableTableTableManager
                 Value<DateTime> dateUpdated = const Value.absent(),
                 Value<String> lastModifiedBy = const Value.absent(),
                 Value<String> planId = const Value.absent(),
+                Value<String?> itemId = const Value.absent(),
                 Value<double> amount = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String?> source = const Value.absent(),
@@ -19859,6 +22345,7 @@ class $$SavingsPlanDepositTableTableTableManager
                 dateUpdated: dateUpdated,
                 lastModifiedBy: lastModifiedBy,
                 planId: planId,
+                itemId: itemId,
                 amount: amount,
                 note: note,
                 source: source,
@@ -19874,6 +22361,7 @@ class $$SavingsPlanDepositTableTableTableManager
                 required DateTime dateUpdated,
                 required String lastModifiedBy,
                 required String planId,
+                Value<String?> itemId = const Value.absent(),
                 required double amount,
                 Value<String?> note = const Value.absent(),
                 Value<String?> source = const Value.absent(),
@@ -19887,6 +22375,7 @@ class $$SavingsPlanDepositTableTableTableManager
                 dateUpdated: dateUpdated,
                 lastModifiedBy: lastModifiedBy,
                 planId: planId,
+                itemId: itemId,
                 amount: amount,
                 note: note,
                 source: source,
@@ -19902,7 +22391,7 @@ class $$SavingsPlanDepositTableTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({planId = false}) {
+          prefetchHooksCallback: ({planId = false, itemId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -19937,6 +22426,21 @@ class $$SavingsPlanDepositTableTableTableManager
                               )
                               as T;
                     }
+                    if (itemId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.itemId,
+                                referencedTable:
+                                    $$SavingsPlanDepositTableTableReferences
+                                        ._itemIdTable(db),
+                                referencedColumn:
+                                    $$SavingsPlanDepositTableTableReferences
+                                        ._itemIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
 
                     return state;
                   },
@@ -19961,7 +22465,7 @@ typedef $$SavingsPlanDepositTableTableProcessedTableManager =
       $$SavingsPlanDepositTableTableUpdateCompanionBuilder,
       (SvngPlnDeposit, $$SavingsPlanDepositTableTableReferences),
       SvngPlnDeposit,
-      PrefetchHooks Function({bool planId})
+      PrefetchHooks Function({bool planId, bool itemId})
     >;
 typedef $$UserTableTableCreateCompanionBuilder =
     UserTableCompanion Function({
@@ -26658,6 +29162,7 @@ typedef $$SavingsPlanSpendingTableTableCreateCompanionBuilder =
       required DateTime dateUpdated,
       required String lastModifiedBy,
       required String planId,
+      Value<String?> itemId,
       Value<String?> transactionId,
       required double amount,
       Value<String?> description,
@@ -26674,6 +29179,7 @@ typedef $$SavingsPlanSpendingTableTableUpdateCompanionBuilder =
       Value<DateTime> dateUpdated,
       Value<String> lastModifiedBy,
       Value<String> planId,
+      Value<String?> itemId,
       Value<String?> transactionId,
       Value<double> amount,
       Value<String?> description,
@@ -26712,6 +29218,28 @@ final class $$SavingsPlanSpendingTableTableReferences
       $_db.savingsPlanTable,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_planIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $SavingsPlanItemTableTable _itemIdTable(_$AppDatabase db) =>
+      db.savingsPlanItemTable.createAlias(
+        $_aliasNameGenerator(
+          db.savingsPlanSpendingTable.itemId,
+          db.savingsPlanItemTable.id,
+        ),
+      );
+
+  $$SavingsPlanItemTableTableProcessedTableManager? get itemId {
+    final $_column = $_itemColumn<String>('item_id');
+    if ($_column == null) return null;
+    final manager = $$SavingsPlanItemTableTableTableManager(
+      $_db,
+      $_db.savingsPlanItemTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_itemIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -26814,6 +29342,29 @@ class $$SavingsPlanSpendingTableTableFilterComposer
           }) => $$SavingsPlanTableTableFilterComposer(
             $db: $db,
             $table: $db.savingsPlanTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$SavingsPlanItemTableTableFilterComposer get itemId {
+    final $$SavingsPlanItemTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.savingsPlanItemTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingsPlanItemTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingsPlanItemTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -26929,6 +29480,30 @@ class $$SavingsPlanSpendingTableTableOrderingComposer
     return composer;
   }
 
+  $$SavingsPlanItemTableTableOrderingComposer get itemId {
+    final $$SavingsPlanItemTableTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.itemId,
+          referencedTable: $db.savingsPlanItemTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTableTableOrderingComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
   $$TransactionTableTableOrderingComposer get transactionId {
     final $$TransactionTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -27027,6 +29602,30 @@ class $$SavingsPlanSpendingTableTableAnnotationComposer
     return composer;
   }
 
+  $$SavingsPlanItemTableTableAnnotationComposer get itemId {
+    final $$SavingsPlanItemTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.itemId,
+          referencedTable: $db.savingsPlanItemTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+
   $$TransactionTableTableAnnotationComposer get transactionId {
     final $$TransactionTableTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -27064,7 +29663,7 @@ class $$SavingsPlanSpendingTableTableTableManager
           $$SavingsPlanSpendingTableTableUpdateCompanionBuilder,
           (SvngPlnSpending, $$SavingsPlanSpendingTableTableReferences),
           SvngPlnSpending,
-          PrefetchHooks Function({bool planId, bool transactionId})
+          PrefetchHooks Function({bool planId, bool itemId, bool transactionId})
         > {
   $$SavingsPlanSpendingTableTableTableManager(
     _$AppDatabase db,
@@ -27096,6 +29695,7 @@ class $$SavingsPlanSpendingTableTableTableManager
                 Value<DateTime> dateUpdated = const Value.absent(),
                 Value<String> lastModifiedBy = const Value.absent(),
                 Value<String> planId = const Value.absent(),
+                Value<String?> itemId = const Value.absent(),
                 Value<String?> transactionId = const Value.absent(),
                 Value<double> amount = const Value.absent(),
                 Value<String?> description = const Value.absent(),
@@ -27110,6 +29710,7 @@ class $$SavingsPlanSpendingTableTableTableManager
                 dateUpdated: dateUpdated,
                 lastModifiedBy: lastModifiedBy,
                 planId: planId,
+                itemId: itemId,
                 transactionId: transactionId,
                 amount: amount,
                 description: description,
@@ -27126,6 +29727,7 @@ class $$SavingsPlanSpendingTableTableTableManager
                 required DateTime dateUpdated,
                 required String lastModifiedBy,
                 required String planId,
+                Value<String?> itemId = const Value.absent(),
                 Value<String?> transactionId = const Value.absent(),
                 required double amount,
                 Value<String?> description = const Value.absent(),
@@ -27140,6 +29742,7 @@ class $$SavingsPlanSpendingTableTableTableManager
                 dateUpdated: dateUpdated,
                 lastModifiedBy: lastModifiedBy,
                 planId: planId,
+                itemId: itemId,
                 transactionId: transactionId,
                 amount: amount,
                 description: description,
@@ -27156,64 +29759,80 @@ class $$SavingsPlanSpendingTableTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({planId = false, transactionId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (planId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.planId,
-                                referencedTable:
-                                    $$SavingsPlanSpendingTableTableReferences
-                                        ._planIdTable(db),
-                                referencedColumn:
-                                    $$SavingsPlanSpendingTableTableReferences
-                                        ._planIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-                    if (transactionId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.transactionId,
-                                referencedTable:
-                                    $$SavingsPlanSpendingTableTableReferences
-                                        ._transactionIdTable(db),
-                                referencedColumn:
-                                    $$SavingsPlanSpendingTableTableReferences
-                                        ._transactionIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
+          prefetchHooksCallback:
+              ({planId = false, itemId = false, transactionId = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (planId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.planId,
+                                    referencedTable:
+                                        $$SavingsPlanSpendingTableTableReferences
+                                            ._planIdTable(db),
+                                    referencedColumn:
+                                        $$SavingsPlanSpendingTableTableReferences
+                                            ._planIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (itemId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.itemId,
+                                    referencedTable:
+                                        $$SavingsPlanSpendingTableTableReferences
+                                            ._itemIdTable(db),
+                                    referencedColumn:
+                                        $$SavingsPlanSpendingTableTableReferences
+                                            ._itemIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (transactionId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.transactionId,
+                                    referencedTable:
+                                        $$SavingsPlanSpendingTableTableReferences
+                                            ._transactionIdTable(db),
+                                    referencedColumn:
+                                        $$SavingsPlanSpendingTableTableReferences
+                                            ._transactionIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -27230,7 +29849,7 @@ typedef $$SavingsPlanSpendingTableTableProcessedTableManager =
       $$SavingsPlanSpendingTableTableUpdateCompanionBuilder,
       (SvngPlnSpending, $$SavingsPlanSpendingTableTableReferences),
       SvngPlnSpending,
-      PrefetchHooks Function({bool planId, bool transactionId})
+      PrefetchHooks Function({bool planId, bool itemId, bool transactionId})
     >;
 typedef $$SavingsPlanLinkedAccountTableTableCreateCompanionBuilder =
     SavingsPlanLinkedAccountTableCompanion Function({
@@ -28225,6 +30844,396 @@ typedef $$SavingsPlanMilestoneTableTableProcessedTableManager =
       (SvngPlnMilestone, $$SavingsPlanMilestoneTableTableReferences),
       SvngPlnMilestone,
       PrefetchHooks Function({bool planId})
+    >;
+typedef $$SavingsPlanItemTagTableTableCreateCompanionBuilder =
+    SavingsPlanItemTagTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required String itemId,
+      required String tagName,
+      Value<int> rowid,
+    });
+typedef $$SavingsPlanItemTagTableTableUpdateCompanionBuilder =
+    SavingsPlanItemTagTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<String> itemId,
+      Value<String> tagName,
+      Value<int> rowid,
+    });
+
+final class $$SavingsPlanItemTagTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $SavingsPlanItemTagTableTable,
+          SvngPlnItemTag
+        > {
+  $$SavingsPlanItemTagTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $SavingsPlanItemTableTable _itemIdTable(_$AppDatabase db) =>
+      db.savingsPlanItemTable.createAlias(
+        $_aliasNameGenerator(
+          db.savingsPlanItemTagTable.itemId,
+          db.savingsPlanItemTable.id,
+        ),
+      );
+
+  $$SavingsPlanItemTableTableProcessedTableManager get itemId {
+    final $_column = $_itemColumn<String>('item_id')!;
+
+    final manager = $$SavingsPlanItemTableTableTableManager(
+      $_db,
+      $_db.savingsPlanItemTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_itemIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SavingsPlanItemTagTableTableFilterComposer
+    extends Composer<_$AppDatabase, $SavingsPlanItemTagTableTable> {
+  $$SavingsPlanItemTagTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get tagName => $composableBuilder(
+    column: $table.tagName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$SavingsPlanItemTableTableFilterComposer get itemId {
+    final $$SavingsPlanItemTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.savingsPlanItemTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingsPlanItemTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingsPlanItemTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SavingsPlanItemTagTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavingsPlanItemTagTableTable> {
+  $$SavingsPlanItemTagTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get tagName => $composableBuilder(
+    column: $table.tagName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$SavingsPlanItemTableTableOrderingComposer get itemId {
+    final $$SavingsPlanItemTableTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.itemId,
+          referencedTable: $db.savingsPlanItemTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTableTableOrderingComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$SavingsPlanItemTagTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavingsPlanItemTagTableTable> {
+  $$SavingsPlanItemTagTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get tagName =>
+      $composableBuilder(column: $table.tagName, builder: (column) => column);
+
+  $$SavingsPlanItemTableTableAnnotationComposer get itemId {
+    final $$SavingsPlanItemTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.itemId,
+          referencedTable: $db.savingsPlanItemTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SavingsPlanItemTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.savingsPlanItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$SavingsPlanItemTagTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavingsPlanItemTagTableTable,
+          SvngPlnItemTag,
+          $$SavingsPlanItemTagTableTableFilterComposer,
+          $$SavingsPlanItemTagTableTableOrderingComposer,
+          $$SavingsPlanItemTagTableTableAnnotationComposer,
+          $$SavingsPlanItemTagTableTableCreateCompanionBuilder,
+          $$SavingsPlanItemTagTableTableUpdateCompanionBuilder,
+          (SvngPlnItemTag, $$SavingsPlanItemTagTableTableReferences),
+          SvngPlnItemTag,
+          PrefetchHooks Function({bool itemId})
+        > {
+  $$SavingsPlanItemTagTableTableTableManager(
+    _$AppDatabase db,
+    $SavingsPlanItemTagTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavingsPlanItemTagTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$SavingsPlanItemTagTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SavingsPlanItemTagTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<String> itemId = const Value.absent(),
+                Value<String> tagName = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavingsPlanItemTagTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                itemId: itemId,
+                tagName: tagName,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required String itemId,
+                required String tagName,
+                Value<int> rowid = const Value.absent(),
+              }) => SavingsPlanItemTagTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                itemId: itemId,
+                tagName: tagName,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SavingsPlanItemTagTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({itemId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (itemId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.itemId,
+                                referencedTable:
+                                    $$SavingsPlanItemTagTableTableReferences
+                                        ._itemIdTable(db),
+                                referencedColumn:
+                                    $$SavingsPlanItemTagTableTableReferences
+                                        ._itemIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SavingsPlanItemTagTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavingsPlanItemTagTableTable,
+      SvngPlnItemTag,
+      $$SavingsPlanItemTagTableTableFilterComposer,
+      $$SavingsPlanItemTagTableTableOrderingComposer,
+      $$SavingsPlanItemTagTableTableAnnotationComposer,
+      $$SavingsPlanItemTagTableTableCreateCompanionBuilder,
+      $$SavingsPlanItemTagTableTableUpdateCompanionBuilder,
+      (SvngPlnItemTag, $$SavingsPlanItemTagTableTableReferences),
+      SvngPlnItemTag,
+      PrefetchHooks Function({bool itemId})
     >;
 typedef $$ExchangeRateTableTableCreateCompanionBuilder =
     ExchangeRateTableCompanion Function({
@@ -32658,6 +35667,8 @@ class $AppDatabaseManager {
       $$SpendingBudgetTableTableTableManager(_db, _db.spendingBudgetTable);
   $$SavingsPlanTableTableTableManager get savingsPlanTable =>
       $$SavingsPlanTableTableTableManager(_db, _db.savingsPlanTable);
+  $$SavingsPlanItemTableTableTableManager get savingsPlanItemTable =>
+      $$SavingsPlanItemTableTableTableManager(_db, _db.savingsPlanItemTable);
   $$SavingsPlanDepositTableTableTableManager get savingsPlanDepositTable =>
       $$SavingsPlanDepositTableTableTableManager(
         _db,
@@ -32694,6 +35705,11 @@ class $AppDatabaseManager {
       $$SavingsPlanMilestoneTableTableTableManager(
         _db,
         _db.savingsPlanMilestoneTable,
+      );
+  $$SavingsPlanItemTagTableTableTableManager get savingsPlanItemTagTable =>
+      $$SavingsPlanItemTagTableTableTableManager(
+        _db,
+        _db.savingsPlanItemTagTable,
       );
   $$ExchangeRateTableTableTableManager get exchangeRateTable =>
       $$ExchangeRateTableTableTableManager(_db, _db.exchangeRateTable);

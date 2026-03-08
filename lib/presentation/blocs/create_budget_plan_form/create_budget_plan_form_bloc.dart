@@ -41,6 +41,7 @@ class CreateBudgetPlanFormBloc
     on<SelectBudgetPlanCategory>(_onSelectCategory);
     on<ToggleMilestone>(_onToggleMilestone);
     on<AddMilestone>(_onAddMilestone);
+    on<RemoveMilestone>(_onRemoveMilestone);
     on<ClearCreateBudgetPlanForm>(_onClear);
     on<ChangeAccentColor>(_onChangeAccentColor);
     on<ChangeCurrentStep>(_onChangeCurrentStep);
@@ -157,6 +158,20 @@ class CreateBudgetPlanFormBloc
           'targetAmount': event.targetAmount,
           'isCompleted': false,
         });
+      emit(current.copyWith(milestones: updated));
+    }
+  }
+
+  void _onRemoveMilestone(
+    RemoveMilestone event,
+    Emitter<CreateBudgetPlanFormState> emit,
+  ) {
+    if (state is CreateBudgetPlanFormReady) {
+      final current = state as CreateBudgetPlanFormReady;
+      final updated = List<Map<String, dynamic>>.from(current.milestones);
+      if (event.index >= 0 && event.index < updated.length) {
+        updated.removeAt(event.index);
+      }
       emit(current.copyWith(milestones: updated));
     }
   }

@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:wise_spends/core/constants/constant/domain/domain_table_constant.dart';
 import 'package:wise_spends/data/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/data/db/domain/savings_plan/savings_plan_table.dart';
+import 'package:wise_spends/data/db/domain/savings_plan/savings_plan_item_table.dart';
 import 'package:wise_spends/data/db/domain/transaction/transaction_table.dart';
 
 /// Savings Plan Spending table for tracking money spent from a savings plan.
@@ -14,10 +15,14 @@ import 'package:wise_spends/data/db/domain/transaction/transaction_table.dart';
 ///
 /// Each spending entry reduces the available funds in the plan.
 /// Optionally links to a [TransactionTable] for detailed tracking.
+/// Optionally links to a [SavingsPlanItemTable] for item-level tracking.
 @DataClassName("${DomainTableConstant.savingsPlanTablePrefix}Spending")
 class SavingsPlanSpendingTable extends BaseEntityTable {
   /// FK to [SavingsPlanTable] — the plan this spending belongs to.
   TextColumn get planId => text().references(SavingsPlanTable, #id)();
+
+  /// FK to [SavingsPlanItemTable] — optional link to a specific budget item.
+  TextColumn get itemId => text().nullable().references(SavingsPlanItemTable, #id)();
 
   /// FK to [TransactionTable] — optional link to the actual transaction.
   TextColumn get transactionId => text().nullable().references(TransactionTable, #id)();
@@ -51,6 +56,7 @@ class SavingsPlanSpendingTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() => {
     'planId': planId.name,
+    'itemId': itemId.name,
     'transactionId': transactionId.name,
     'amount': amount.name,
     'description': description.name,

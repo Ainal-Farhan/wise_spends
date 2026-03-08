@@ -18,6 +18,8 @@ import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_deposi
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_spending_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_milestone_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_linked_account_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_item_repository.dart';
+import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_item_tag_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_tag_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_tag_map_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_recurring_transaction_repository.dart';
@@ -53,6 +55,8 @@ abstract class IRepositoryLocator extends ILocator {
   ISavingsPlanSpendingRepository getSavingsPlanSpendingRepository();
   ISavingsPlanMilestoneRepository getSavingsPlanMilestoneRepository();
   ISavingsPlanLinkedAccountRepository getSavingsPlanLinkedAccountRepository();
+  ISavingsPlanItemRepository getSavingsPlanItemRepository();
+  ISavingsPlanItemTagRepository getSavingsPlanItemTagRepository();
 
   // Transaction Child Repositories
   ITransactionTagRepository getTransactionTagRepository();
