@@ -838,5 +838,28 @@ class MalayStrings {
 
     // ── Pengesahan ralat ──────────────────────────────────────────────────────
     'error.validation.invalid_number': 'Sila masukkan nombor yang sah',
+
+    // ── Borang cipta belanjawan ───────────────────────────────────────────────────
+    'budgets.field_name': 'Nama Belanjawan',
+    'budgets.field_name_hint': 'cth. Barang Runcit, Makan Luar',
+    'budgets.field_amount': 'Had Perbelanjaan',
+    'budgets.field_category': 'Kategori',
+    'budgets.field_category_hint': 'Pilih kategori',
+    'budgets.field_period': 'Tempoh Belanjawan',
+    'budgets.no_categories': 'Tiada kategori tersedia',
+
+    // ── Pengesahan borang belanjawan ──────────────────────────────────────────────
+    'budgets.error_name_required': 'Sila masukkan nama belanjawan',
+    'budgets.error_name_too_long': 'Nama mestilah 100 aksara atau kurang',
+    'budgets.error_amount_required': 'Sila masukkan had perbelanjaan',
+    'budgets.error_amount_invalid': 'Sila masukkan jumlah yang sah melebihi 0',
+    'budgets.error_category_required': 'Sila pilih kategori',
+
+    // ── Label status kad belanjawan ───────────────────────────────────────────────
+    'budgets.over_by': 'Terlebih',
+    'budgets.remaining': 'Baki',
+    'budgets.status_active': 'Aktif',
+    'budgets.status_inactive': 'Tidak Aktif',
+    'budgets.date_from': 'Dari',
   };
 }

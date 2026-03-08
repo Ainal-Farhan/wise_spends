@@ -2,28 +2,56 @@ import 'package:bloc/bloc.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wise_spends/domain/entities/budget/budget_entity.dart';
 import 'package:wise_spends/data/repositories/budget/i_budget_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
+import 'package:wise_spends/data/repositories/transaction/impl/transaction_repository.dart';
+import 'package:wise_spends/data/repositories/category/impl/category_repository.dart';
+import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'budget_event.dart';
 import 'budget_state.dart';
 
-/// Budget BLoC - manages budget state and business logic
+/// Budget BLoC — manages budget state and business logic.
+///
+/// Key design decisions:
+/// - Client-side filtering: [BudgetsLoaded] carries both [allBudgets] and the
+///   filtered [budgets] list so that [FilterBudgetsByPeriodEvent] and
+///   [ClearBudgetFiltersEvent] never need a database round-trip.
+/// - Optimistic delete: the delete handler emits [BudgetDeleted] before
+///   reloading so the UI can immediately show a confirmation snack-bar.
 class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   final IBudgetRepository _repository;
+  // Transaction repository is used only for budget sync — it self-instantiates
+  // its own AppDatabase (same pattern as CategoryRepository).
+  final ITransactionRepository _transactionRepository;
+  final CategoryRepository _categoryRepository;
 
-  BudgetBloc(this._repository) : super(BudgetInitial()) {
+  BudgetBloc(
+    this._repository, {
+    ITransactionRepository? transactionRepository,
+    CategoryRepository? categoryRepository,
+  }) : _transactionRepository =
+           transactionRepository ?? TransactionRepository(),
+       _categoryRepository = categoryRepository ?? CategoryRepository(),
+       super(BudgetInitial()) {
     on<LoadBudgetsEvent>(_onLoadBudgets);
     on<LoadActiveBudgetsEvent>(_onLoadActiveBudgets);
     on<LoadBudgetsByCategoryEvent>(_onLoadBudgetsByCategory);
     on<CreateBudgetEvent>(_onCreateBudget);
     on<UpdateBudgetEvent>(_onUpdateBudget);
+    on<UpdateBudgetSpentAmountEvent>(_onUpdateBudgetSpentAmount);
     on<DeleteBudgetEvent>(_onDeleteBudget);
     on<DeleteMultipleBudgetsEvent>(_onDeleteMultipleBudgets);
     on<RefreshBudgetsEvent>(_onRefreshBudgets);
     on<ReloadBudgetsEvent>(_onReloadBudgets);
     on<FilterBudgetsByPeriodEvent>(_onFilterByPeriod);
     on<ClearBudgetFiltersEvent>(_onClearFilters);
+    on<SyncBudgetSpentAmountEvent>(_onSyncBudgetSpentAmount);
+    on<SyncAllBudgetsSpentAmountEvent>(_onSyncAllBudgetsSpentAmount);
   }
 
-  /// Load all budgets
+  // ──────────────────────────────────────────────────────────────────────────
+  // LOAD HANDLERS
+  // ──────────────────────────────────────────────────────────────────────────
+
   Future<void> _onLoadBudgets(
     LoadBudgetsEvent event,
     Emitter<BudgetState> emit,
@@ -34,26 +62,36 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
 
       if (budgets.isEmpty) {
         emit(const BudgetEmpty('You haven\'t set any budgets yet'));
-      } else {
-        // Calculate how many budgets are on track
-        final onTrackCount = budgets.where((budget) {
-          return !budget.isExceeded;
-        }).length;
-
-        emit(
-          BudgetsLoaded(
-            budgets: budgets,
-            activeCount: budgets.where((b) => b.isActive).length,
-            onTrackCount: onTrackCount,
-          ),
-        );
+        return;
       }
+
+      // Resolve category names for card subtitles. Failures are non-fatal.
+      final categoryNames = <String, String>{};
+      try {
+        final uniqueCategoryIds = budgets.map((b) => b.categoryId).toSet();
+        for (final id in uniqueCategoryIds) {
+          final cat = await _categoryRepository.getCategoryById(id);
+          if (cat != null) categoryNames[id] = cat.name;
+        }
+      } catch (_) {}
+
+      final activeCount = budgets.where((b) => b.isActive).length;
+      final onTrackCount = budgets.where((b) => !b.isExceeded).length;
+
+      emit(
+        BudgetsLoaded(
+          budgets: budgets,
+          allBudgets: budgets,
+          activeCount: activeCount,
+          onTrackCount: onTrackCount,
+          categoryNames: categoryNames,
+        ),
+      );
     } catch (e) {
       emit(BudgetError('Failed to load budgets: ${e.toString()}'));
     }
   }
 
-  /// Load active budgets only
   Future<void> _onLoadActiveBudgets(
     LoadActiveBudgetsEvent event,
     Emitter<BudgetState> emit,
@@ -64,15 +102,22 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
 
       if (budgets.isEmpty) {
         emit(const BudgetEmpty('No active budgets'));
-      } else {
-        emit(BudgetsLoaded(budgets: budgets));
+        return;
       }
+
+      emit(
+        BudgetsLoaded(
+          budgets: budgets,
+          allBudgets: budgets,
+          activeCount: budgets.length,
+          onTrackCount: budgets.where((b) => !b.isExceeded).length,
+        ),
+      );
     } catch (e) {
       emit(BudgetError('Failed to load active budgets: ${e.toString()}'));
     }
   }
 
-  /// Load budgets by category
   Future<void> _onLoadBudgetsByCategory(
     LoadBudgetsByCategoryEvent event,
     Emitter<BudgetState> emit,
@@ -80,75 +125,111 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     emit(BudgetLoading());
     try {
       final budgets = await _repository.getBudgetsByCategory(event.categoryId);
-      emit(BudgetsLoaded(budgets: budgets));
+
+      if (budgets.isEmpty) {
+        emit(const BudgetEmpty('No budgets for this category'));
+        return;
+      }
+
+      emit(
+        BudgetsLoaded(
+          budgets: budgets,
+          allBudgets: budgets,
+          activeCount: budgets.where((b) => b.isActive).length,
+          onTrackCount: budgets.where((b) => !b.isExceeded).length,
+        ),
+      );
     } catch (e) {
       emit(BudgetError('Failed to load budgets: ${e.toString()}'));
     }
   }
 
-  /// Create a new budget
+  // ──────────────────────────────────────────────────────────────────────────
+  // CREATE / UPDATE / DELETE HANDLERS
+  // ──────────────────────────────────────────────────────────────────────────
+
   Future<void> _onCreateBudget(
     CreateBudgetEvent event,
     Emitter<BudgetState> emit,
   ) async {
     emit(BudgetLoading());
     try {
+      final now = DateTime.now();
       final budget = BudgetEntity(
         id: const Uuid().v4(),
         name: event.name,
         categoryId: event.categoryId,
         limitAmount: event.amount,
-        period: _getPeriodFromDates(event.startDate, event.endDate),
+        spentAmount: 0,
+        period: event.period,
         startDate: event.startDate,
         endDate: event.endDate,
         isActive: true,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        createdAt: now,
+        updatedAt: now,
       );
 
-      await _repository.createBudget(budget);
-      emit(BudgetCreated(budget));
+      final created = await _repository.createBudget(budget);
+      emit(BudgetCreated(created));
 
-      // Reload budgets after creation
+      // Reload the full list after creation.
       add(LoadBudgetsEvent());
     } catch (e) {
       emit(BudgetError('Failed to create budget: ${e.toString()}'));
     }
   }
 
-  /// Update an existing budget
   Future<void> _onUpdateBudget(
     UpdateBudgetEvent event,
     Emitter<BudgetState> emit,
   ) async {
     emit(BudgetLoading());
     try {
-      final currentBudget = await _repository.getBudgetById(event.budgetId);
-      if (currentBudget == null) {
+      final current = await _repository.getBudgetById(event.budgetId);
+      if (current == null) {
         emit(const BudgetError('Budget not found'));
         return;
       }
 
-      final updatedBudget = currentBudget.copyWith(
-        name: event.name ?? currentBudget.name,
-        limitAmount: event.amount ?? currentBudget.limitAmount,
-        categoryId: event.categoryId ?? currentBudget.categoryId,
-        startDate: event.startDate ?? currentBudget.startDate,
-        endDate: event.endDate ?? currentBudget.endDate,
+      final updated = current.copyWith(
+        name: event.name,
+        limitAmount: event.amount,
+        categoryId: event.categoryId,
+        period: event.period,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        isActive: event.isActive,
         updatedAt: DateTime.now(),
       );
 
-      await _repository.updateBudget(updatedBudget);
-      emit(BudgetUpdated(updatedBudget));
+      final saved = await _repository.updateBudget(updated);
+      emit(BudgetUpdated(saved));
 
-      // Reload budgets after update
+      // Reload the full list after update.
       add(LoadBudgetsEvent());
     } catch (e) {
       emit(BudgetError('Failed to update budget: ${e.toString()}'));
     }
   }
 
-  /// Delete a budget
+  Future<void> _onUpdateBudgetSpentAmount(
+    UpdateBudgetSpentAmountEvent event,
+    Emitter<BudgetState> emit,
+  ) async {
+    try {
+      final updated = await _repository.updateBudgetSpentAmount(
+        event.budgetId,
+        event.spentAmount,
+      );
+      emit(BudgetUpdated(updated));
+
+      // Refresh the list so progress bars reflect the new amount.
+      add(LoadBudgetsEvent());
+    } catch (e) {
+      emit(BudgetError('Failed to update spent amount: ${e.toString()}'));
+    }
+  }
+
   Future<void> _onDeleteBudget(
     DeleteBudgetEvent event,
     Emitter<BudgetState> emit,
@@ -157,14 +238,13 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       await _repository.deleteBudget(event.budgetId);
       emit(BudgetDeleted(event.budgetId));
 
-      // Reload budgets after deletion
+      // Reload the full list after deletion.
       add(LoadBudgetsEvent());
     } catch (e) {
       emit(BudgetError('Failed to delete budget: ${e.toString()}'));
     }
   }
 
-  /// Delete multiple budgets
   Future<void> _onDeleteMultipleBudgets(
     DeleteMultipleBudgetsEvent event,
     Emitter<BudgetState> emit,
@@ -175,27 +255,43 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       }
       emit(const BudgetDeleted('multiple'));
 
-      // Reload budgets after batch deletion
       add(LoadBudgetsEvent());
     } catch (e) {
       emit(BudgetError('Failed to delete budgets: ${e.toString()}'));
     }
   }
 
-  /// Refresh budgets
+  // ──────────────────────────────────────────────────────────────────────────
+  // REFRESH HANDLERS
+  // ──────────────────────────────────────────────────────────────────────────
+
   Future<void> _onRefreshBudgets(
     RefreshBudgetsEvent event,
     Emitter<BudgetState> emit,
   ) async {
+    // Pull-to-refresh: silently reload without showing a full loading spinner
+    // so the RefreshIndicator handles the visual feedback.
     try {
       final budgets = await _repository.getAllBudgets();
-      emit(BudgetsLoaded(budgets: budgets));
+
+      if (budgets.isEmpty) {
+        emit(const BudgetEmpty('You haven\'t set any budgets yet'));
+        return;
+      }
+
+      emit(
+        BudgetsLoaded(
+          budgets: budgets,
+          allBudgets: budgets,
+          activeCount: budgets.where((b) => b.isActive).length,
+          onTrackCount: budgets.where((b) => !b.isExceeded).length,
+        ),
+      );
     } catch (e) {
       emit(BudgetError('Failed to refresh budgets: ${e.toString()}'));
     }
   }
 
-  /// Reload budgets
   Future<void> _onReloadBudgets(
     ReloadBudgetsEvent event,
     Emitter<BudgetState> emit,
@@ -203,51 +299,153 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     add(LoadBudgetsEvent());
   }
 
-  /// Filter budgets by period
+  // ──────────────────────────────────────────────────────────────────────────
+  // FILTER HANDLERS
+  // ──────────────────────────────────────────────────────────────────────────
+
   Future<void> _onFilterByPeriod(
     FilterBudgetsByPeriodEvent event,
     Emitter<BudgetState> emit,
   ) async {
-    try {
-      final currentState = state;
-      if (currentState is BudgetsLoaded) {
-        final filtered = event.period == null
-            ? currentState.budgets
-            : currentState.budgets
-                  .where((b) => b.period == event.period)
-                  .toList();
+    final current = state;
+    if (current is! BudgetsLoaded) return;
 
-        emit(
-          BudgetsLoaded(
-            budgets: filtered,
-            activeCount: filtered.where((b) => b.isActive).length,
-            onTrackCount: filtered.where((b) => !b.isExceeded).length,
-            filterPeriod: event.period,
-          ),
-        );
-      }
+    try {
+      // Filter against the full list so toggling never loses data.
+      final source = current.allBudgets;
+
+      final filtered = event.period == null
+          ? source
+          : source.where((b) => b.period == event.period).toList();
+
+      emit(
+        current.copyWith(
+          budgets: filtered,
+          activeCount: filtered.where((b) => b.isActive).length,
+          onTrackCount: filtered.where((b) => !b.isExceeded).length,
+          filterPeriod: event.period,
+          clearFilter: event.period == null,
+        ),
+      );
     } catch (e) {
       emit(BudgetError('Failed to filter budgets: ${e.toString()}'));
     }
   }
 
-  /// Clear budget filters
   Future<void> _onClearFilters(
     ClearBudgetFiltersEvent event,
     Emitter<BudgetState> emit,
   ) async {
-    add(LoadBudgetsEvent());
+    final current = state;
+    if (current is! BudgetsLoaded) {
+      // If we're not in a loaded state, do a full reload instead.
+      add(LoadBudgetsEvent());
+      return;
+    }
+
+    // Restore the full unfiltered list without a DB round-trip.
+    final all = current.allBudgets;
+    emit(
+      current.copyWith(
+        budgets: all,
+        activeCount: all.where((b) => b.isActive).length,
+        onTrackCount: all.where((b) => !b.isExceeded).length,
+        clearFilter: true,
+      ),
+    );
   }
 
-  /// Helper method to determine budget period from dates
-  BudgetPeriod _getPeriodFromDates(DateTime startDate, DateTime? endDate) {
-    if (endDate == null) return BudgetPeriod.monthly;
+  // ─────────────────────────────────────────────────────────────────────────
+  // SYNC HANDLER
+  // ─────────────────────────────────────────────────────────────────────────
 
-    final difference = endDate.difference(startDate).inDays;
+  /// Recalculates spentAmount for every active budget whose category matches
+  /// the changed transaction and whose date window contains the transaction date.
+  ///
+  /// Algorithm:
+  ///   1. Load all active budgets for the category.
+  ///   2. For each matching budget, fetch all expense transactions in the
+  ///      budget's [startDate, endDate] window for the same category.
+  ///   3. Sum their amounts and persist via updateBudgetSpentAmount.
+  ///   4. Reload the list so progress bars update immediately.
+  Future<void> _onSyncBudgetSpentAmount(
+    SyncBudgetSpentAmountEvent event,
+    Emitter<BudgetState> emit,
+  ) async {
+    try {
+      // Find every active budget for this category.
+      final budgets = await _repository.getBudgetsByCategory(event.categoryId);
+      final activeBudgets = budgets.where((b) => b.isActive).toList();
 
-    if (difference <= 1) return BudgetPeriod.daily;
-    if (difference <= 7) return BudgetPeriod.weekly;
-    if (difference <= 31) return BudgetPeriod.monthly;
-    return BudgetPeriod.yearly;
+      if (activeBudgets.isEmpty) return;
+
+      for (final budget in activeBudgets) {
+        // Only sync budgets whose date window covers the transaction date.
+        final endDate = budget.endDate ?? DateTime(9999);
+        final isInWindow =
+            !event.transactionDate.isBefore(budget.startDate) &&
+            !event.transactionDate.isAfter(endDate);
+        if (!isInWindow) continue;
+
+        // Sum all expense transactions for this category in the budget window.
+        final transactions = await _transactionRepository.fetchByDateRange(
+          from: budget.startDate,
+          to: endDate == DateTime(9999) ? DateTime.now() : endDate,
+        );
+
+        final spent = transactions
+            .where(
+              (t) =>
+                  t.categoryId == event.categoryId &&
+                  t.type == TransactionType.expense,
+            )
+            .fold<double>(0.0, (sum, t) => sum + t.amount);
+
+        await _repository.updateBudgetSpentAmount(budget.id, spent);
+      }
+
+      // Reload so the UI reflects the updated spentAmount values.
+      add(LoadBudgetsEvent());
+    } catch (e) {
+      // Sync failures are silent — they should not disrupt the transaction flow.
+      // Budget amounts will correct themselves on next manual refresh.
+    }
+  }
+
+  /// Convenience handler: syncs spentAmount for every active budget.
+  /// Called once on screen open so progress bars always show real data.
+  Future<void> _onSyncAllBudgetsSpentAmount(
+    SyncAllBudgetsSpentAmountEvent event,
+    Emitter<BudgetState> emit,
+  ) async {
+    try {
+      final budgets = await _repository.getAllBudgets();
+      final active = budgets.where((b) => b.isActive).toList();
+
+      if (active.isEmpty) return;
+
+      for (final budget in active) {
+        final endDate = budget.endDate ?? DateTime.now();
+        final transactions = await _transactionRepository.fetchByDateRange(
+          from: budget.startDate,
+          to: endDate,
+        );
+
+        final spent = transactions
+            .where(
+              (t) =>
+                  t.categoryId == budget.categoryId &&
+                  t.type == TransactionType.expense,
+            )
+            .fold<double>(0.0, (sum, t) => sum + t.amount);
+
+        await _repository.updateBudgetSpentAmount(budget.id, spent);
+      }
+
+      // Reload so the UI reflects all updated spentAmount values.
+      add(LoadBudgetsEvent());
+    } catch (_) {
+      // Silent failure — progress bars will refresh on next pull-to-refresh.
+    }
   }
 }

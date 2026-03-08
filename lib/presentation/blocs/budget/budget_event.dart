@@ -39,27 +39,30 @@ class CreateBudgetEvent extends BudgetEvent {
   final double amount;
   final String categoryId;
   final DateTime startDate;
-  final DateTime endDate;
+  final DateTime? endDate;
   final bool isRecurring;
+  final BudgetPeriod period;
 
   const CreateBudgetEvent({
     required this.name,
     required this.amount,
     required this.categoryId,
     required this.startDate,
-    required this.endDate,
+    this.endDate,
     this.isRecurring = true,
+    this.period = BudgetPeriod.monthly,
   });
 
   @override
   List<Object?> get props => [
-        name,
-        amount,
-        categoryId,
-        startDate,
-        endDate,
-        isRecurring,
-      ];
+    name,
+    amount,
+    categoryId,
+    startDate,
+    endDate,
+    isRecurring,
+    period,
+  ];
 }
 
 /// Update an existing budget
@@ -71,6 +74,8 @@ class UpdateBudgetEvent extends BudgetEvent {
   final DateTime? startDate;
   final DateTime? endDate;
   final bool? isRecurring;
+  final BudgetPeriod? period;
+  final bool? isActive;
 
   const UpdateBudgetEvent({
     required this.budgetId,
@@ -80,18 +85,22 @@ class UpdateBudgetEvent extends BudgetEvent {
     this.startDate,
     this.endDate,
     this.isRecurring,
+    this.period,
+    this.isActive,
   });
 
   @override
   List<Object?> get props => [
-        budgetId,
-        name,
-        amount,
-        categoryId,
-        startDate,
-        endDate,
-        isRecurring,
-      ];
+    budgetId,
+    name,
+    amount,
+    categoryId,
+    startDate,
+    endDate,
+    isRecurring,
+    period,
+    isActive,
+  ];
 }
 
 /// Delete a budget
@@ -115,6 +124,24 @@ class DeleteMultipleBudgetsEvent extends BudgetEvent {
 }
 
 // ============================================================================
+// SPENT AMOUNT EVENTS
+// ============================================================================
+
+/// Update spent amount for a specific budget (e.g. after a transaction)
+class UpdateBudgetSpentAmountEvent extends BudgetEvent {
+  final String budgetId;
+  final double spentAmount;
+
+  const UpdateBudgetSpentAmountEvent({
+    required this.budgetId,
+    required this.spentAmount,
+  });
+
+  @override
+  List<Object> get props => [budgetId, spentAmount];
+}
+
+// ============================================================================
 // REFRESH EVENTS
 // ============================================================================
 
@@ -123,6 +150,10 @@ class RefreshBudgetsEvent extends BudgetEvent {}
 
 /// Reload budgets
 class ReloadBudgetsEvent extends BudgetEvent {}
+
+// ============================================================================
+// FILTER EVENTS
+// ============================================================================
 
 /// Filter budgets by period
 class FilterBudgetsByPeriodEvent extends BudgetEvent {
@@ -136,3 +167,34 @@ class FilterBudgetsByPeriodEvent extends BudgetEvent {
 
 /// Clear budget filters
 class ClearBudgetFiltersEvent extends BudgetEvent {}
+
+// ============================================================================
+// SYNC EVENTS
+// ============================================================================
+
+/// Recalculate spentAmount for ALL active budgets at once.
+/// Dispatch on screen open to ensure progress bars always reflect real data.
+class SyncAllBudgetsSpentAmountEvent extends BudgetEvent {
+  const SyncAllBudgetsSpentAmountEvent();
+}
+
+/// Recalculate and persist spentAmount for every active budget whose category
+/// and date range cover the given transaction.
+///
+/// Dispatch this from TransactionBloc after any save / edit / delete so that
+/// budget progress bars always reflect the real transaction total.
+class SyncBudgetSpentAmountEvent extends BudgetEvent {
+  /// The category of the transaction that changed.
+  final String categoryId;
+
+  /// The date of the transaction — used to find which budgets it falls under.
+  final DateTime transactionDate;
+
+  const SyncBudgetSpentAmountEvent({
+    required this.categoryId,
+    required this.transactionDate,
+  });
+
+  @override
+  List<Object> get props => [categoryId, transactionDate];
+}

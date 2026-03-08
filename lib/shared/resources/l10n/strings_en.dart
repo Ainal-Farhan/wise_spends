@@ -824,5 +824,29 @@ class EnglishStrings {
     'loading.please_wait': 'Please wait…',
     'loading.fetching_data': 'Fetching your data',
     'loading.almost_ready': 'Almost ready',
+
+    // ── Budget create form ───────────────────────────────────────────────────────
+    'budgets.field_name': 'Budget Name',
+    'budgets.field_name_hint': 'e.g., Groceries, Dining Out',
+    'budgets.field_amount': 'Spending Limit',
+    'budgets.field_category': 'Category',
+    'budgets.field_category_hint': 'Select a category',
+    'budgets.field_period': 'Budget Period',
+    'budgets.no_categories': 'No categories available',
+
+    // ── Budget form validation ────────────────────────────────────────────────────
+    'budgets.error_name_required': 'Please enter a budget name',
+    'budgets.error_name_too_long': 'Name must be 100 characters or fewer',
+    'budgets.error_amount_required': 'Please enter a spending limit',
+    'budgets.error_amount_invalid':
+        'Please enter a valid amount greater than 0',
+    'budgets.error_category_required': 'Please select a category',
+
+    // ── Budget card status labels ─────────────────────────────────────────────────
+    'budgets.over_by': 'Over by',
+    'budgets.remaining': 'Remaining',
+    'budgets.status_active': 'Active',
+    'budgets.status_inactive': 'Inactive',
+    'budgets.date_from': 'From',
   };
 }
