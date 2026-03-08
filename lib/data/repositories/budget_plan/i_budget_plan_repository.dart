@@ -9,6 +9,7 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_milestone_en
 import 'package:wise_spends/domain/entities/budget_plan/linked_account_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
+import 'package:wise_spends/domain/entities/impl/saving/saving_vo.dart';
 import '../../../domain/entities/budget_plan/budget_plan_params.dart';
 
 /// Budget Plan Repository Interface - defines contract for data layer
@@ -107,9 +108,11 @@ abstract class IBudgetPlanRepository
   /// Link an account to a plan
   Future<void> linkAccount(
     String planId,
-    String accountId, {
-    double? allocatedPercentage,
-  });
+    String accountId,
+    double allocatedAmount,
+  );
+
+  Future<List<SavingVO>> getAvailableSavingsAccounts(String planId);
 
   /// Unlink an account from a plan
   Future<void> unlinkAccount(String planId, String accountId);

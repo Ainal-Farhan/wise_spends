@@ -28,4 +28,8 @@ class SavingsPlanDepositRepository extends ISavingsPlanDepositRepository {
       db.savingsPlanDepositTable,
     )..where((tbl) => tbl.planId.equals(planId))).go();
   }
+
+  @override
+  SvngPlnDeposit fromJson(Map<String, dynamic> json) =>
+      SvngPlnDeposit.fromJson(json);
 }

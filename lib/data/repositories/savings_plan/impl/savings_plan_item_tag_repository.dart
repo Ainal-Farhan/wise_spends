@@ -91,22 +91,26 @@ class SavingsPlanItemTagRepository extends ISavingsPlanItemTagRepository {
   }
 
   @override
-  Future<List<SvngPlnItem>> getItemsByTag(
-    String planId,
-    String tagName,
-  ) async {
-    final query = db.select(db.savingsPlanItemTable).join([
-      leftOuterJoin(
-        db.savingsPlanItemTagTable,
-        db.savingsPlanItemTable.id.equalsExp(db.savingsPlanItemTagTable.itemId),
-      ),
-    ])
-      ..where(db.savingsPlanItemTable.planId.equals(planId))
-      ..where(db.savingsPlanItemTagTable.tagName.equals(tagName));
+  Future<List<SvngPlnItem>> getItemsByTag(String planId, String tagName) async {
+    final query =
+        db.select(db.savingsPlanItemTable).join([
+            leftOuterJoin(
+              db.savingsPlanItemTagTable,
+              db.savingsPlanItemTable.id.equalsExp(
+                db.savingsPlanItemTagTable.itemId,
+              ),
+            ),
+          ])
+          ..where(db.savingsPlanItemTable.planId.equals(planId))
+          ..where(db.savingsPlanItemTagTable.tagName.equals(tagName));
 
     final results = await query.get();
     return results.map((row) {
       return row.readTable(db.savingsPlanItemTable);
     }).toList();
   }
+
+  @override
+  SvngPlnItemTag fromJson(Map<String, dynamic> json) =>
+      SvngPlnItemTag.fromJson(json);
 }

@@ -97,4 +97,8 @@ class CommitmentTaskRepository extends ICommitmentTaskRepository {
       table,
     )..where((t) => t.commitmentId.equals(commitmentId))).go();
   }
+
+  @override
+  ExpnsCommitmentTask fromJson(Map<String, dynamic> json) =>
+      ExpnsCommitmentTask.fromJson(json);
 }

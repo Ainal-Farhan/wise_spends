@@ -29,4 +29,8 @@ class SavingsPlanLinkedAccountRepository
       db.savingsPlanLinkedAccountTable,
     )..where((tbl) => tbl.planId.equals(planId))).go();
   }
+
+  @override
+  SvngPlnLinkedAccount fromJson(Map<String, dynamic> json) =>
+      SvngPlnLinkedAccount.fromJson(json);
 }

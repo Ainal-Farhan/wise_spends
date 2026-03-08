@@ -21,4 +21,8 @@ class ReferenceDataRepository extends IReferenceDataRepository {
       db.referenceDataTable,
     )..where((tbl) => tbl.referenceId.equals(referenceId))).get();
   }
+
+  @override
+  MstrdtReferenceData fromJson(Map<String, dynamic> json) =>
+      MstrdtReferenceData.fromJson(json);
 }

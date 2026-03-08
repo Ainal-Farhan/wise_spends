@@ -17,4 +17,8 @@ class TransactionTagRepository extends ITransactionTagRepository {
   Future<List<TransactionTag>> getAll() async {
     return db.select(db.transactionTagTable).get();
   }
+
+  @override
+  TransactionTag fromJson(Map<String, dynamic> json) =>
+      TransactionTag.fromJson(json);
 }

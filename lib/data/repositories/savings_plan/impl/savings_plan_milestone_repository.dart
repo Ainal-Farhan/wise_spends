@@ -28,4 +28,8 @@ class SavingsPlanMilestoneRepository extends ISavingsPlanMilestoneRepository {
       db.savingsPlanMilestoneTable,
     )..where((tbl) => tbl.planId.equals(planId))).go();
   }
+
+  @override
+  SvngPlnMilestone fromJson(Map<String, dynamic> json) =>
+      SvngPlnMilestone.fromJson(json);
 }

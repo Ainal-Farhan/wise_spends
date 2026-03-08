@@ -10,6 +10,7 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.da
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_params.dart';
+import 'package:wise_spends/domain/entities/impl/saving/saving_vo.dart';
 
 /// Budget Plan Repository Implementation
 /// Handles all database operations for savings plans
@@ -402,19 +403,20 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       final accounts = <LinkedAccountSummaryEntity>[];
 
       for (final row in rows) {
-        // Note: Full account table join requires schema updates
-        // For now, return basic linked account info
+        // Join to get real account name and balance
+        final saving = await (_db.select(
+          _db.savingTable,
+        )..where((t) => t.id.equals(row.accountId))).getSingleOrNull();
+
         accounts.add(
           LinkedAccountSummaryEntity(
             id: row.id,
             planId: row.planId,
             accountId: row.accountId,
-            accountName: 'Account ${row.accountId}',
-            accountType: 'Linked',
-            accountBalance:
-                0, // Would require joining with actual account table
-            allocatedPercentage: row.allocatedPercentage,
-            allocatedAmount: 0, // Would require account balance
+            accountName: saving?.name ?? 'Account ${row.accountId}',
+            accountType: saving?.type ?? 'Linked',
+            accountBalance: saving?.currentAmount ?? 0.0,
+            allocatedAmount: row.allocatedAmount ?? 0.0,
             linkedAt: row.linkedAt,
           ),
         );
@@ -427,9 +429,9 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   @override
   Future<void> linkAccount(
     String planId,
-    String accountId, {
-    double? allocatedPercentage,
-  }) async {
+    String accountId,
+    double allocatedAmount,
+  ) async {
     final plan = await getPlanByUuid(planId);
     if (plan == null) throw Exception('Plan not found');
 
@@ -438,7 +440,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       id: Value(id),
       planId: plan.id,
       accountId: accountId,
-      allocatedPercentage: Value(allocatedPercentage),
+      allocatedAmount: Value(allocatedAmount),
       createdBy: 'system',
       dateCreated: Value(DateTime.now()),
       dateUpdated: DateTime.now(),
@@ -893,4 +895,21 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       completedAt: row.completedAt,
     );
   }
+
+  @override
+  Future<List<SavingVO>> getAvailableSavingsAccounts(String planId) async {
+    final linkedIds = db.selectOnly(db.savingsPlanLinkedAccountTable)
+      ..addColumns([db.savingsPlanLinkedAccountTable.accountId])
+      ..where(db.savingsPlanLinkedAccountTable.planId.equals(planId));
+
+    final result = await (db.select(
+      db.savingTable,
+    )..where((t) => t.id.isNotInQuery(linkedIds))).get();
+
+    return result.map((s) => SavingVO.fromSvngSaving(s)).toList();
+  }
+
+  @override
+  SvngPlnSavingsPlan fromJson(Map<String, dynamic> json) =>
+      SvngPlnSavingsPlan.fromJson(json);
 }

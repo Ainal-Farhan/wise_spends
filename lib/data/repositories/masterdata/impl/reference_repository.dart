@@ -3,7 +3,11 @@ import 'package:wise_spends/data/repositories/masterdata/i_reference_repository.
 
 class ReferenceRepository extends IReferenceRepository {
   ReferenceRepository() : super(AppDatabase());
-  
+
   @override
   String getTypeName() => 'ReferenceTable';
+
+  @override
+  MstrdtReference fromJson(Map<String, dynamic> json) =>
+      MstrdtReference.fromJson(json);
 }

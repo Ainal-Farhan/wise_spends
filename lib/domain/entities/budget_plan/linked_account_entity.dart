@@ -8,7 +8,6 @@ class LinkedAccountSummaryEntity extends Equatable {
   final String accountName;
   final String accountType;
   final double accountBalance;
-  final double? allocatedPercentage;
   final double allocatedAmount;
   final DateTime linkedAt;
 
@@ -19,23 +18,21 @@ class LinkedAccountSummaryEntity extends Equatable {
     required this.accountName,
     required this.accountType,
     required this.accountBalance,
-    this.allocatedPercentage,
     required this.allocatedAmount,
     required this.linkedAt,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        planId,
-        accountId,
-        accountName,
-        accountType,
-        accountBalance,
-        allocatedPercentage,
-        allocatedAmount,
-        linkedAt,
-      ];
+    id,
+    planId,
+    accountId,
+    accountName,
+    accountType,
+    accountBalance,
+    allocatedAmount,
+    linkedAt,
+  ];
 
   LinkedAccountSummaryEntity copyWith({
     String? id,
@@ -55,7 +52,6 @@ class LinkedAccountSummaryEntity extends Equatable {
       accountName: accountName ?? this.accountName,
       accountType: accountType ?? this.accountType,
       accountBalance: accountBalance ?? this.accountBalance,
-      allocatedPercentage: allocatedPercentage ?? this.allocatedPercentage,
       allocatedAmount: allocatedAmount ?? this.allocatedAmount,
       linkedAt: linkedAt ?? this.linkedAt,
     );
@@ -80,12 +76,12 @@ class BudgetPlanLinkedAccountEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        planId,
-        accountId,
-        allocatedPercentage,
-        linkedAt,
-      ];
+    id,
+    planId,
+    accountId,
+    allocatedPercentage,
+    linkedAt,
+  ];
 
   BudgetPlanLinkedAccountEntity copyWith({
     String? id,

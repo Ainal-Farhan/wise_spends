@@ -23,4 +23,7 @@ class PayeeRepository extends IPayeeRepository {
           ..orderBy([(t) => OrderingTerm.asc(t.name)]))
         .watch();
   }
+
+  @override
+  ExpnsPayee fromJson(Map<String, dynamic> json) => ExpnsPayee.fromJson(json);
 }

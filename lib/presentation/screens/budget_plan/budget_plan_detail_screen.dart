@@ -11,6 +11,7 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_milestone_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_transaction_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/linked_account_entity.dart';
+import 'package:wise_spends/domain/entities/impl/saving/saving_vo.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_bloc.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_event.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_state.dart';
@@ -462,7 +463,7 @@ class _OverviewTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Progress card (using SectionHeader.card)
+          // Progress card
           SectionHeader.card(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -477,28 +478,12 @@ class _OverviewTab extends StatelessWidget {
             learnMoreLabel: 'general.details'.tr,
             learnLessLabel: 'general.less'.tr,
           ),
+          const SizedBox(height: AppSpacing.xxl),
 
-          // Quick actions
-          SectionHeader(title: 'budget_plans.quick_actions'.tr),
-          const SizedBox(height: AppSpacing.sm),
-          Row(
-            children: [
-              Expanded(
-                child: AppButton.primary(
-                  label: 'budget_plans.add_deposit'.tr,
-                  icon: Icons.add,
-                  onPressed: onAddDeposit,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: AppButton.secondary(
-                  label: 'budget_plans.add_spending'.tr,
-                  icon: Icons.remove,
-                  onPressed: onAddSpending,
-                ),
-              ),
-            ],
+          // Quick actions — enhanced
+          _QuickActionsSection(
+            onAddDeposit: onAddDeposit,
+            onAddSpending: onAddSpending,
           ),
           const SizedBox(height: AppSpacing.xxl),
 
@@ -532,33 +517,67 @@ class _OverviewTab extends StatelessWidget {
           const SizedBox(height: AppSpacing.xxl),
 
           // Linked accounts
-          SectionHeader(title: 'budget_plans.linked_accounts'.tr),
-          const SizedBox(height: AppSpacing.sm),
-          if (state.linkedAccounts.isEmpty)
-            _EmptySection(
-              icon: Icons.account_balance,
-              messageKey: 'budget_plans.no_linked_accounts',
-            )
-          else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: state.linkedAccounts.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-              itemBuilder: (_, i) => _LinkedAccountCard(
-                account: state.linkedAccounts[i],
-                planId: state.plan.id,
-                onUnlink: onUnlinkAccount,
-              ),
+          SectionHeader(
+            title: 'budget_plans.linked_accounts'.tr,
+            trailing: TextButton.icon(
+              onPressed: () => _showLinkAccountSheet(context),
+              icon: const Icon(Icons.add_link, size: AppIconSize.sm),
+              label: Text('budget_plans.link_account'.tr),
             ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          // Explanation text
+          Text(
+            'budget_plans.linked_accounts_desc'.tr,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: WiseSpendsColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          if (state.linkedAccounts.isEmpty)
+            _LinkedAccountsEmpty(onLink: () => _showLinkAccountSheet(context))
+          else
+            Column(
+              children: [
+                // Total allocated banner
+                _LinkedAccountsTotalBanner(
+                  accounts: state.linkedAccounts,
+                  planTarget: state.plan.targetAmount,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: state.linkedAccounts.length,
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.sm),
+                  itemBuilder: (_, i) => _LinkedAccountCard(
+                    account: state.linkedAccounts[i],
+                    planId: state.plan.id,
+                    onUnlink: onUnlinkAccount,
+                  ),
+                ),
+              ],
+            ),
+          const SizedBox(height: AppSpacing.xxl),
         ],
+      ),
+    );
+  }
+
+  void _showLinkAccountSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => BlocProvider.value(
+        value: context.read<BudgetPlanDetailBloc>(),
+        child: _LinkAccountSheet(planId: state.plan.id),
       ),
     );
   }
 
   String _progressSubtitle(BudgetPlanEntity plan) {
     final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 0);
-    // Prevent overflow in days calculation
     final days = plan.daysRemaining.clamp(0, 9999);
     return '${fmt.format(plan.currentAmount)} / ${fmt.format(plan.targetAmount)} · $days ${'general.days'.tr} ${'general.remaining'.tr}';
   }
@@ -578,7 +597,521 @@ class _OverviewTab extends StatelessWidget {
   }
 }
 
-/// Collapsible body shown inside the SectionHeader.card progress card.
+// =============================================================================
+// Quick Actions — enhanced mobile-friendly layout
+// =============================================================================
+
+class _QuickActionsSection extends StatelessWidget {
+  final VoidCallback onAddDeposit;
+  final VoidCallback onAddSpending;
+
+  const _QuickActionsSection({
+    required this.onAddDeposit,
+    required this.onAddSpending,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(title: 'budget_plans.quick_actions'.tr),
+        const SizedBox(height: AppSpacing.md),
+        Row(
+          children: [
+            Expanded(
+              child: _ActionCard(
+                icon: Icons.add_circle_outline,
+                label: 'budget_plans.add_deposit'.tr,
+                sublabel: 'budget_plans.add_deposit_desc'.tr,
+                color: WiseSpendsColors.success,
+                onTap: onAddDeposit,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: _ActionCard(
+                icon: Icons.remove_circle_outline,
+                label: 'budget_plans.add_spending'.tr,
+                sublabel: 'budget_plans.add_spending_desc'.tr,
+                color: WiseSpendsColors.secondary,
+                onTap: onAddSpending,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String sublabel;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActionCard({
+    required this.icon,
+    required this.label,
+    required this.sublabel,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: color.withValues(alpha: 0.08),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: color.withValues(alpha: 0.25)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Icon(icon, color: color, size: AppIconSize.md),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                label,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                sublabel,
+                style: AppTextStyles.caption.copyWith(
+                  color: WiseSpendsColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Linked Accounts — total banner + empty state + link sheet
+// =============================================================================
+
+class _LinkedAccountsTotalBanner extends StatelessWidget {
+  final List<LinkedAccountSummaryEntity> accounts;
+  final double planTarget;
+
+  const _LinkedAccountsTotalBanner({
+    required this.accounts,
+    required this.planTarget,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final totalAllocated = accounts.fold<double>(
+      0.0,
+      (s, a) => s + a.allocatedAmount,
+    );
+    final progress = planTarget > 0
+        ? (totalAllocated / planTarget).clamp(0.0, 1.0)
+        : 0.0;
+    final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 2);
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: WiseSpendsColors.primary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: WiseSpendsColors.primary.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.account_balance_outlined,
+                size: 16,
+                color: WiseSpendsColors.primary,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                'budget_plans.total_allocated'.tr,
+                style: AppTextStyles.caption.copyWith(
+                  color: WiseSpendsColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${accounts.length} ${'budget_plans.accounts'.tr}',
+                style: AppTextStyles.caption.copyWith(
+                  color: WiseSpendsColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            fmt.format(totalAllocated),
+            style: AppTextStyles.amountMedium.copyWith(
+              color: WiseSpendsColors.primary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            child: LinearProgressIndicator(
+              value: progress,
+              minHeight: 6,
+              backgroundColor: WiseSpendsColors.primary.withValues(alpha: 0.15),
+              valueColor: const AlwaysStoppedAnimation(
+                WiseSpendsColors.primary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${(progress * 100).toStringAsFixed(1)}% ${'budget_plans.of_target'.tr}',
+            style: AppTextStyles.caption.copyWith(
+              color: WiseSpendsColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LinkedAccountsEmpty extends StatelessWidget {
+  final VoidCallback onLink;
+
+  const _LinkedAccountsEmpty({required this.onLink});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xxl),
+      decoration: BoxDecoration(
+        color: WiseSpendsColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: WiseSpendsColors.divider,
+          style: BorderStyle.solid,
+        ),
+      ),
+      child: Column(
+        children: [
+          const Icon(
+            Icons.account_balance_outlined,
+            size: 40,
+            color: WiseSpendsColors.textHint,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'budget_plans.no_linked_accounts'.tr,
+            style: AppTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'budget_plans.no_linked_accounts_desc'.tr,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: WiseSpendsColors.textSecondary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          AppButton.primary(
+            label: 'budget_plans.link_account'.tr,
+            icon: Icons.add_link,
+            onPressed: onLink,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Link Account bottom sheet
+// ---------------------------------------------------------------------------
+
+class _LinkAccountSheet extends StatefulWidget {
+  final String planId;
+
+  const _LinkAccountSheet({required this.planId});
+
+  @override
+  State<_LinkAccountSheet> createState() => _LinkAccountSheetState();
+}
+
+class _LinkAccountSheetState extends State<_LinkAccountSheet> {
+  final _amountCtrl = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  String? _selectedAccountId;
+
+  @override
+  void dispose() {
+    _amountCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final repository = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getBudgetPlanRepository();
+
+    return Container(
+      padding: EdgeInsets.only(
+        left: AppSpacing.xxl,
+        right: AppSpacing.xxl,
+        top: AppSpacing.xxl,
+        bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.xxl,
+      ),
+      decoration: const BoxDecoration(
+        color: WiseSpendsColors.background,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.xxl),
+        ),
+      ),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: WiseSpendsColors.divider,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    decoration: BoxDecoration(
+                      color: WiseSpendsColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                    child: const Icon(
+                      Icons.add_link,
+                      color: WiseSpendsColors.primary,
+                      size: AppIconSize.md,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Text('budget_plans.link_account'.tr, style: AppTextStyles.h2),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                'budget_plans.link_account_desc'.tr,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: WiseSpendsColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+
+              // Account picker
+              SectionHeaderCompact(
+                title: 'budget_plans.select_savings_account'.tr,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              FutureBuilder<List<SavingVO>>(
+                future: repository.getAvailableSavingsAccounts(widget.planId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const ShimmerCard(height: 56);
+                  }
+                  final accounts = snapshot.data ?? [];
+                  if (accounts.isEmpty) {
+                    return Container(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      decoration: BoxDecoration(
+                        color: WiseSpendsColors.surface,
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        border: Border.all(color: WiseSpendsColors.divider),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.info_outline,
+                            color: WiseSpendsColors.textHint,
+                            size: 20,
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Text(
+                            'budget_plans.no_savings_to_link'.tr,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: WiseSpendsColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return Column(
+                    children: accounts.map((account) {
+                      final isSelected = _selectedAccountId == account.savingId;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: InkWell(
+                          onTap: () => setState(() {
+                            _selectedAccountId = account.savingId;
+                          }),
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.lg),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? WiseSpendsColors.primary.withValues(
+                                      alpha: 0.08,
+                                    )
+                                  : WiseSpendsColors.surface,
+                              borderRadius: BorderRadius.circular(AppRadius.md),
+                              border: Border.all(
+                                color: isSelected
+                                    ? WiseSpendsColors.primary
+                                    : WiseSpendsColors.divider,
+                                width: isSelected ? 1.5 : 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(AppSpacing.sm),
+                                  decoration: BoxDecoration(
+                                    color: WiseSpendsColors.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.sm,
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.savings_outlined,
+                                    color: WiseSpendsColors.primary,
+                                    size: 18,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        account.savingName ?? '',
+                                        style: AppTextStyles.bodyMedium
+                                            .copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      Text(
+                                        'RM ${(account.currentAmount ?? .0).toStringAsFixed(2)}',
+                                        style: AppTextStyles.caption.copyWith(
+                                          color: WiseSpendsColors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (isSelected)
+                                  const Icon(
+                                    Icons.check_circle,
+                                    color: WiseSpendsColors.primary,
+                                    size: 20,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
+              // Allocation amount
+              AppTextField(
+                label: 'budget_plans.allocated_amount'.tr,
+                hint: '0.00',
+                prefixText: 'RM ',
+                controller: _amountCtrl,
+                keyboardType: AppTextFieldKeyboardType.decimal,
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return 'budget_plans.required'.tr;
+                  }
+                  final val = double.tryParse(v);
+                  if (val == null || val <= 0) {
+                    return 'error.validation.invalid_amount'.tr;
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+
+              AppButton.primary(
+                label: 'budget_plans.link_account'.tr,
+                icon: Icons.add_link,
+                isFullWidth: true,
+                onPressed: _selectedAccountId == null ? null : _submit,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    if (_selectedAccountId == null) return;
+
+    context.read<BudgetPlanDetailBloc>().add(
+      LinkAccountEvent(
+        accountId: _selectedAccountId!,
+        allocatedAmount: double.parse(_amountCtrl.text),
+      ),
+    );
+    Navigator.pop(context);
+  }
+}
+
+// =============================================================================
+// Unchanged widgets — kept as-is
+// =============================================================================
+
 class _ProgressBody extends StatelessWidget {
   final BudgetPlanEntity plan;
   final Color color;
@@ -589,7 +1122,6 @@ class _ProgressBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final progress = plan.progressPercentage.clamp(0.0, 1.0);
     final healthStatus = plan.healthStatus;
-    // Safe health status label with fallback
     final String healthLabel;
     switch (healthStatus) {
       case BudgetHealthStatus.onTrack:
@@ -603,14 +1135,11 @@ class _ProgressBody extends StatelessWidget {
       case BudgetHealthStatus.completed:
         healthLabel = 'budget_plans.health_completed'.tr;
     }
-
-    // Prevent overflow in percentage display
     final percentageDisplay = (progress * 100).clamp(0, 100).toInt();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Progress bar
         ClipRRect(
           borderRadius: BorderRadius.circular(AppRadius.full),
           child: LinearProgressIndicator(
@@ -772,14 +1301,37 @@ class _LinkedAccountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: EdgeInsets.zero,
       child: ListTile(
-        leading: const CircleAvatar(child: Icon(Icons.account_balance)),
-        title: Text(account.accountName),
+        leading: Container(
+          padding: const EdgeInsets.all(AppSpacing.sm),
+          decoration: BoxDecoration(
+            color: WiseSpendsColors.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
+          child: const Icon(
+            Icons.savings_outlined,
+            color: WiseSpendsColors.primary,
+            size: AppIconSize.md,
+          ),
+        ),
+        title: Text(
+          account.accountName,
+          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+        ),
         subtitle: Text(
           '${'budget_plans.allocated'.tr}: RM ${account.allocatedAmount.toStringAsFixed(2)}',
+          style: AppTextStyles.caption.copyWith(
+            color: WiseSpendsColors.textSecondary,
+          ),
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.link_off),
+          icon: const Icon(
+            Icons.link_off,
+            color: WiseSpendsColors.textHint,
+            size: 20,
+          ),
+          tooltip: 'budget_plans.unlink'.tr,
           onPressed: () => onUnlink(account.accountId, planId),
         ),
       ),
@@ -790,7 +1342,6 @@ class _LinkedAccountCard extends StatelessWidget {
 // =============================================================================
 // Transactions tab
 // =============================================================================
-
 class _TransactionsTab extends StatelessWidget {
   final BudgetPlanDetailLoaded state;
 
@@ -798,21 +1349,52 @@ class _TransactionsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final totalDeposited = state.deposits.fold<double>(
+      0.0,
+      (s, d) => s + d.amount,
+    );
+    final totalSpent = state.transactions.fold<double>(
+      0.0,
+      (s, t) => s + t.amount,
+    );
+    final net = totalDeposited - totalSpent;
+
     return DefaultTabController(
       length: 2,
       child: Column(
         children: [
+          // Summary strip
+          _TransactionSummaryStrip(
+            totalDeposited: totalDeposited,
+            totalSpent: totalSpent,
+            net: net,
+          ),
+
+          // Sub-tabs
           TabBar(
             tabs: [
-              Tab(text: 'budget_plans.deposits'.tr),
-              Tab(text: 'budget_plans.spending'.tr),
+              Tab(
+                icon: const Icon(Icons.arrow_downward, size: 16),
+                text: 'budget_plans.deposits'.tr,
+              ),
+              Tab(
+                icon: const Icon(Icons.arrow_upward, size: 16),
+                text: 'budget_plans.spending'.tr,
+              ),
             ],
           ),
+
           Expanded(
             child: TabBarView(
               children: [
-                _DepositsList(deposits: state.deposits),
-                _SpendingList(transactions: state.transactions),
+                _DepositsList(
+                  deposits: state.deposits,
+                  totalDeposited: totalDeposited,
+                ),
+                _SpendingList(
+                  transactions: state.transactions,
+                  totalSpent: totalSpent,
+                ),
               ],
             ),
           ),
@@ -822,16 +1404,140 @@ class _TransactionsTab extends StatelessWidget {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Summary Strip
+// ---------------------------------------------------------------------------
+
+class _TransactionSummaryStrip extends StatelessWidget {
+  final double totalDeposited;
+  final double totalSpent;
+  final double net;
+
+  const _TransactionSummaryStrip({
+    required this.totalDeposited,
+    required this.totalSpent,
+    required this.net,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: WiseSpendsColors.surface,
+        border: Border(
+          bottom: BorderSide(color: WiseSpendsColors.divider, width: 1),
+        ),
+      ),
+      child: Row(
+        children: [
+          _SummaryCell(
+            label: 'budget_plans.deposits'.tr,
+            amount: totalDeposited,
+            color: WiseSpendsColors.success,
+            icon: Icons.arrow_downward,
+          ),
+          _SummaryDivider(),
+          _SummaryCell(
+            label: 'budget_plans.spending'.tr,
+            amount: totalSpent,
+            color: WiseSpendsColors.secondary,
+            icon: Icons.arrow_upward,
+          ),
+          _SummaryDivider(),
+          _SummaryCell(
+            label: 'budget_plans.net'.tr,
+            amount: net,
+            color: net >= 0
+                ? WiseSpendsColors.success
+                : WiseSpendsColors.secondary,
+            icon: net >= 0 ? Icons.trending_up : Icons.trending_down,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryCell extends StatelessWidget {
+  final String label;
+  final double amount;
+  final Color color;
+  final IconData icon;
+
+  const _SummaryCell({
+    required this.label,
+    required this.amount,
+    required this.color,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 12, color: color),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: AppTextStyles.caption.copyWith(
+                  color: WiseSpendsColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          AmountText(
+            amount: amount,
+            type: AmountType.neutral,
+            showPrefix: false,
+            style: AppTextStyles.bodySemiBold.copyWith(color: color),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 36,
+      color: WiseSpendsColors.divider,
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Deposits list
+// ---------------------------------------------------------------------------
+
 class _DepositsList extends StatelessWidget {
   final List<BudgetPlanDepositEntity> deposits;
+  final double totalDeposited;
 
-  const _DepositsList({required this.deposits});
+  const _DepositsList({required this.deposits, required this.totalDeposited});
 
   @override
   Widget build(BuildContext context) {
     if (deposits.isEmpty) {
-      return Center(child: Text('budget_plans.no_deposits'.tr));
+      return _EmptyTransactions(
+        icon: Icons.savings_outlined,
+        messageKey: 'budget_plans.no_deposits',
+      );
     }
+
     return ListView.separated(
       padding: const EdgeInsets.all(AppSpacing.lg),
       itemCount: deposits.length,
@@ -848,36 +1554,239 @@ class _DepositCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: const CircleAvatar(
-          backgroundColor: WiseSpendsColors.success,
-          child: Icon(Icons.arrow_downward, color: Colors.white),
-        ),
-        title: Text(deposit.sourceDisplayName),
-        subtitle: Text(DateFormat('MMM d, y').format(deposit.depositDate)),
-        trailing: Text(
-          '+ RM ${deposit.amount.toStringAsFixed(2)}',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: WiseSpendsColors.success,
-            fontWeight: FontWeight.bold,
+    return Dismissible(
+      key: Key('deposit_${deposit.id}'),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) => _confirmDelete(
+        context,
+        message: 'budget_plans.delete_deposit_msg'.tr,
+      ),
+      onDismissed: (_) =>
+          context.read<BudgetPlanDetailBloc>().add(DeleteDeposit(deposit.id)),
+      background: _DeleteSlideBackground(),
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: InkWell(
+          onTap: () => _showDepositDetail(context),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Row(
+              children: [
+                // Icon
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: WiseSpendsColors.success.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: Icon(
+                    _sourceIcon(deposit.source),
+                    color: WiseSpendsColors.success,
+                    size: AppIconSize.md,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.lg),
+
+                // Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        deposit.sourceDisplayName,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        DateFormat('EEE, MMM d, y').format(deposit.depositDate),
+                        style: AppTextStyles.caption.copyWith(
+                          color: WiseSpendsColors.textSecondary,
+                        ),
+                      ),
+                      if (deposit.note != null && deposit.note!.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          deposit.note!,
+                          style: AppTextStyles.caption.copyWith(
+                            color: WiseSpendsColors.textHint,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                // Amount + delete
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '+ RM ${deposit.amount.toStringAsFixed(2)}',
+                      style: AppTextStyles.bodySemiBold.copyWith(
+                        color: WiseSpendsColors.success,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: () async {
+                        final confirmed = await _confirmDelete(
+                          context,
+                          message: 'budget_plans.delete_deposit_msg'.tr,
+                        );
+                        if (confirmed == true && context.mounted) {
+                          context.read<BudgetPlanDetailBloc>().add(
+                            DeleteDeposit(deposit.id),
+                          );
+                        }
+                      },
+                      child: Icon(
+                        Icons.delete_outline,
+                        size: 18,
+                        color: WiseSpendsColors.textHint,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  IconData _sourceIcon(String? source) {
+    switch (source) {
+      case 'linked_account':
+        return Icons.account_balance;
+      case 'salary':
+        return Icons.work_outline;
+      case 'bonus':
+        return Icons.card_giftcard_outlined;
+      default:
+        return Icons.add_circle_outline;
+    }
+  }
+
+  void _showDepositDetail(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _DepositDetailSheet(deposit: deposit),
+    );
+  }
 }
+
+class _DepositDetailSheet extends StatelessWidget {
+  final BudgetPlanDepositEntity deposit;
+
+  const _DepositDetailSheet({required this.deposit});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xxl),
+      decoration: const BoxDecoration(
+        color: WiseSpendsColors.background,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.xxl),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: WiseSpendsColors.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: WiseSpendsColors.success.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: const Icon(
+                  Icons.arrow_downward,
+                  color: WiseSpendsColors.success,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(deposit.sourceDisplayName, style: AppTextStyles.h2),
+                    Text(
+                      'budget_plans.deposit'.tr,
+                      style: AppTextStyles.caption.copyWith(
+                        color: WiseSpendsColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                '+ RM ${deposit.amount.toStringAsFixed(2)}',
+                style: AppTextStyles.amountMedium.copyWith(
+                  color: WiseSpendsColors.success,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+          _DetailRow(
+            icon: Icons.calendar_today_outlined,
+            label: 'general.date'.tr,
+            value: DateFormat('EEEE, MMMM d, y').format(deposit.depositDate),
+          ),
+          if (deposit.note != null && deposit.note!.isNotEmpty)
+            _DetailRow(
+              icon: Icons.note_outlined,
+              label: 'general.note'.tr,
+              value: deposit.note!,
+            ),
+          const SizedBox(height: AppSpacing.xxl),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Spending list
+// ---------------------------------------------------------------------------
 
 class _SpendingList extends StatelessWidget {
   final List<BudgetPlanTransactionEntity> transactions;
+  final double totalSpent;
 
-  const _SpendingList({required this.transactions});
+  const _SpendingList({required this.transactions, required this.totalSpent});
 
   @override
   Widget build(BuildContext context) {
     if (transactions.isEmpty) {
-      return Center(child: Text('budget_plans.no_spending'.tr));
+      return _EmptyTransactions(
+        icon: Icons.receipt_long_outlined,
+        messageKey: 'budget_plans.no_spending',
+      );
     }
+
     return ListView.separated(
       padding: const EdgeInsets.all(AppSpacing.lg),
       itemCount: transactions.length,
@@ -894,26 +1803,420 @@ class _SpendingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: const CircleAvatar(
-          backgroundColor: WiseSpendsColors.secondary,
-          child: Icon(Icons.arrow_upward, color: Colors.white),
-        ),
-        title: Text(transaction.description ?? 'Spending'),
-        subtitle: Text(
-          DateFormat('MMM d, y').format(transaction.transactionDate),
-        ),
-        trailing: Text(
-          '- RM ${transaction.amount.toStringAsFixed(2)}',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: WiseSpendsColors.secondary,
-            fontWeight: FontWeight.bold,
+    final hasReceipt =
+        transaction.receiptImagePath != null &&
+        transaction.receiptImagePath!.isNotEmpty;
+
+    return Dismissible(
+      key: Key('spending_${transaction.id}'),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) => _confirmDelete(
+        context,
+        message: 'budget_plans.delete_spending_msg'.tr,
+      ),
+      onDismissed: (_) => context.read<BudgetPlanDetailBloc>().add(
+        DeleteSpending(transaction.id),
+      ),
+      background: _DeleteSlideBackground(),
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: InkWell(
+          onTap: () => _showSpendingDetail(context),
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Row(
+              children: [
+                // Icon
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: WiseSpendsColors.secondary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: Icon(
+                    Icons.receipt_long_outlined,
+                    color: WiseSpendsColors.secondary,
+                    size: AppIconSize.md,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.lg),
+
+                // Details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        transaction.description ?? 'budget_plans.spending'.tr,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Text(
+                            DateFormat(
+                              'EEE, MMM d, y',
+                            ).format(transaction.transactionDate),
+                            style: AppTextStyles.caption.copyWith(
+                              color: WiseSpendsColors.textSecondary,
+                            ),
+                          ),
+                          if (transaction.vendor != null) ...[
+                            Text(
+                              '  ·  ',
+                              style: AppTextStyles.caption.copyWith(
+                                color: WiseSpendsColors.textHint,
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                transaction.vendor!,
+                                style: AppTextStyles.caption.copyWith(
+                                  color: WiseSpendsColors.textSecondary,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Amount + receipt + delete
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '- RM ${transaction.amount.toStringAsFixed(2)}',
+                      style: AppTextStyles.bodySemiBold.copyWith(
+                        color: WiseSpendsColors.secondary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (hasReceipt)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: Icon(
+                              Icons.receipt_outlined,
+                              size: 16,
+                              color: WiseSpendsColors.primary,
+                            ),
+                          ),
+                        GestureDetector(
+                          onTap: () async {
+                            final confirmed = await _confirmDelete(
+                              context,
+                              message: 'budget_plans.delete_spending_msg'.tr,
+                            );
+                            if (confirmed == true && context.mounted) {
+                              context.read<BudgetPlanDetailBloc>().add(
+                                DeleteSpending(transaction.id),
+                              );
+                            }
+                          },
+                          child: Icon(
+                            Icons.delete_outline,
+                            size: 18,
+                            color: WiseSpendsColors.textHint,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  void _showSpendingDetail(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => BlocProvider.value(
+        value: context.read<BudgetPlanDetailBloc>(),
+        child: _SpendingDetailSheet(transaction: transaction),
+      ),
+    );
+  }
+}
+
+class _SpendingDetailSheet extends StatelessWidget {
+  final BudgetPlanTransactionEntity transaction;
+
+  const _SpendingDetailSheet({required this.transaction});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasReceipt =
+        transaction.receiptImagePath != null &&
+        transaction.receiptImagePath!.isNotEmpty;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xxl),
+      decoration: const BoxDecoration(
+        color: WiseSpendsColors.background,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.xxl),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: WiseSpendsColors.divider,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+
+          // Header row
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: WiseSpendsColors.secondary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: const Icon(
+                  Icons.arrow_upward,
+                  color: WiseSpendsColors.secondary,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      transaction.description ?? 'budget_plans.spending'.tr,
+                      style: AppTextStyles.h2,
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                '- RM ${transaction.amount.toStringAsFixed(2)}',
+                style: AppTextStyles.amountMedium.copyWith(
+                  color: WiseSpendsColors.secondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+
+          // Detail rows
+          _DetailRow(
+            icon: Icons.calendar_today_outlined,
+            label: 'general.date'.tr,
+            value: DateFormat(
+              'EEEE, MMMM d, y',
+            ).format(transaction.transactionDate),
+          ),
+          if (transaction.vendor != null && transaction.vendor!.isNotEmpty)
+            _DetailRow(
+              icon: Icons.store_outlined,
+              label: 'budget_plans.vendor'.tr,
+              value: transaction.vendor!,
+            ),
+
+          // Receipt
+          if (hasReceipt) ...[
+            const SizedBox(height: AppSpacing.lg),
+            SectionHeaderCompact(title: 'budget_plans.receipt'.tr),
+            const SizedBox(height: AppSpacing.sm),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              child: Image.asset(
+                transaction.receiptImagePath!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Container(
+                  height: 160,
+                  decoration: BoxDecoration(
+                    color: WiseSpendsColors.surface,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    border: Border.all(color: WiseSpendsColors.divider),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.broken_image_outlined,
+                          color: WiseSpendsColors.textHint,
+                          size: 32,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'budget_plans.receipt_unavailable'.tr,
+                          style: AppTextStyles.caption.copyWith(
+                            color: WiseSpendsColors.textHint,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+
+          const SizedBox(height: AppSpacing.xxl),
+
+          // Delete action
+          AppButton.secondary(
+            label: 'budget_plans.delete_spending'.tr,
+            icon: Icons.delete_outline,
+            isFullWidth: true,
+            onPressed: () async {
+              final confirmed = await _confirmDelete(
+                context,
+                message: 'budget_plans.delete_spending_msg'.tr,
+              );
+              if (confirmed == true && context.mounted) {
+                context.read<BudgetPlanDetailBloc>().add(
+                  DeleteSpending(transaction.id),
+                );
+                Navigator.pop(context);
+              }
+            },
+          ),
+          const SizedBox(height: AppSpacing.lg),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shared helpers
+// ---------------------------------------------------------------------------
+
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _DetailRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: WiseSpendsColors.textSecondary),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: AppTextStyles.caption.copyWith(
+                    color: WiseSpendsColors.textHint,
+                  ),
+                ),
+                Text(value, style: AppTextStyles.bodyMedium),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DeleteSlideBackground extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: WiseSpendsColors.secondary,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.only(right: AppSpacing.xl),
+      child: const Icon(Icons.delete_outline, color: Colors.white, size: 24),
+    );
+  }
+}
+
+class _EmptyTransactions extends StatelessWidget {
+  final IconData icon;
+  final String messageKey;
+
+  const _EmptyTransactions({required this.icon, required this.messageKey});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 48, color: WiseSpendsColors.textHint),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            messageKey.tr,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: WiseSpendsColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Shared delete confirmation dialog
+Future<bool?> _confirmDelete(BuildContext context, {required String message}) {
+  return showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text('general.delete'.tr),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: Text('general.cancel'.tr),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: WiseSpendsColors.secondary,
+          ),
+          child: Text('general.delete'.tr),
+        ),
+      ],
+    ),
+  );
 }
 
 // =============================================================================

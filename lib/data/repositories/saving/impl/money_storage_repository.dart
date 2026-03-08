@@ -98,4 +98,8 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
 
   @override
   String getTypeName() => 'MoneyStorageTable';
+
+  @override
+  SvngMoneyStorage fromJson(Map<String, dynamic> json) =>
+      SvngMoneyStorage.fromJson(json);
 }

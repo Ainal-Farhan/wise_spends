@@ -78,4 +78,11 @@ abstract class ICrudRepository<
     }
     await db.batch((batch) => batch.insertAll(table, items));
   }
+
+  D fromJson(Map<String, dynamic> json);
+
+  Future<void> saveAllFromJson(List<Map<String, dynamic>> jsonList) async {
+    final items = jsonList.map((d) => fromJson(d) as Insertable<D>).toList();
+    await saveAll(items);
+  }
 }

@@ -142,4 +142,8 @@ class CategoryRepository extends ICategoryRepository {
 
   @override
   String getTypeName() => 'CategoryTable';
+
+  @override
+  TrnsctnCategory fromJson(Map<String, dynamic> json) =>
+      TrnsctnCategory.fromJson(json);
 }

@@ -20,8 +20,8 @@ class SavingsPlanLinkedAccountTable extends BaseEntityTable {
   /// FK to [SavingTable] — the savings account being linked.
   TextColumn get accountId => text().references(SavingTable, #id)();
 
-  /// Optional percentage of the account balance allocated to this plan.
-  RealColumn get allocatedPercentage => real().nullable()();
+  /// Optional allocated amount of the account balance allocated to this plan.
+  RealColumn get allocatedAmount => real().nullable()();
 
   /// When the account was linked.
   DateTimeColumn get linkedAt => dateTime().withDefault(currentDateAndTime)();
@@ -44,7 +44,7 @@ class SavingsPlanLinkedAccountTable extends BaseEntityTable {
   Map<String, dynamic> toMapFromSubClass() => {
     'planId': planId.name,
     'accountId': accountId.name,
-    'allocatedPercentage': allocatedPercentage.name,
+    'allocatedAmount': allocatedAmount.name,
     'linkedAt': linkedAt.name,
   };
 }

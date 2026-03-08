@@ -9,8 +9,12 @@ class CommitmentRepository extends ICommitmentRepository {
 
   @override
   Stream<List<ExpnsCommitment>> watchAllByUser(CmmnUser user) {
-    return (db.select(db.commitmentTable)
-          ..where((table) => table.userId.equals(user.id)))
-        .watch();
+    return (db.select(
+      db.commitmentTable,
+    )..where((table) => table.userId.equals(user.id))).watch();
   }
+
+  @override
+  ExpnsCommitment fromJson(Map<String, dynamic> json) =>
+      ExpnsCommitment.fromJson(json);
 }

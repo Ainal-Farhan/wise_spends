@@ -182,4 +182,8 @@ class BudgetRepository extends IBudgetRepository {
       updatedAt: row.dateUpdated,
     );
   }
+
+  @override
+  BdgtSpendingBudget fromJson(Map<String, dynamic> json) =>
+      BdgtSpendingBudget.fromJson(json);
 }

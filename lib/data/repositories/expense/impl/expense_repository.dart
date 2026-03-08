@@ -6,4 +6,8 @@ class ExpenseRepository extends IExpenseRepository {
 
   @override
   String getTypeName() => 'ExpenseTable';
+
+  @override
+  ExpnsExpense fromJson(Map<String, dynamic> json) =>
+      ExpnsExpense.fromJson(json);
 }

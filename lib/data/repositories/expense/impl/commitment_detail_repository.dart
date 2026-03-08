@@ -9,14 +9,19 @@ class CommitmentDetailRepository extends ICommitmentDetailRepository {
 
   @override
   Stream<List<ExpnsCommitmentDetail>> watchAllByCommitment(
-      ExpnsCommitment commitment) {
-    return (db.select(db.commitmentDetailTable)
-          ..where((table) => table.commitmentId.equals(commitment.id)))
-        .watch();
+    ExpnsCommitment commitment,
+  ) {
+    return (db.select(
+      db.commitmentDetailTable,
+    )..where((table) => table.commitmentId.equals(commitment.id))).watch();
   }
 
   @override
   Future<void> deleteByCommitmentId(String commitmentId) async {
     db.delete(table).where((tbl) => tbl.commitmentId.equals(commitmentId));
   }
+
+  @override
+  ExpnsCommitmentDetail fromJson(Map<String, dynamic> json) =>
+      ExpnsCommitmentDetail.fromJson(json);
 }

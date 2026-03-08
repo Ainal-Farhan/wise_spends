@@ -226,4 +226,8 @@ class TransactionRepository extends ITransactionRepository {
       updatedAt: row.dateUpdated,
     );
   }
+
+  @override
+  TrnsctnTransaction fromJson(Map<String, dynamic> json) =>
+      TrnsctnTransaction.fromJson(json);
 }

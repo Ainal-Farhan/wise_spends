@@ -28,4 +28,8 @@ class SavingsPlanSpendingRepository extends ISavingsPlanSpendingRepository {
       db.savingsPlanSpendingTable,
     )..where((tbl) => tbl.planId.equals(planId))).go();
   }
+
+  @override
+  SvngPlnSpending fromJson(Map<String, dynamic> json) =>
+      SvngPlnSpending.fromJson(json);
 }

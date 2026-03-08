@@ -247,4 +247,7 @@ class SavingRepository extends ISavingRepository {
 
   @override
   String getTypeName() => 'SavingTable';
+
+  @override
+  SvngSaving fromJson(Map<String, dynamic> json) => SvngSaving.fromJson(json);
 }

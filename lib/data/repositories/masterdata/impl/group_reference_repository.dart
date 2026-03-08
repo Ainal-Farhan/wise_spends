@@ -6,4 +6,8 @@ class GroupReferenceRepository extends IGroupReferenceRepository {
 
   @override
   String getTypeName() => 'GroupReferenceTable';
+
+  @override
+  MstrdtGroupReference fromJson(Map<String, dynamic> json) =>
+      MstrdtGroupReference.fromJson(json);
 }

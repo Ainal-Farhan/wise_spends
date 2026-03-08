@@ -21,4 +21,8 @@ class TransactionTagMapRepository extends ITransactionTagMapRepository {
       db.transactionTagMapTable,
     )..where((tbl) => tbl.transactionId.equals(transactionId))).go();
   }
+
+  @override
+  TransactionTagMap fromJson(Map<String, dynamic> json) =>
+      TransactionTagMap.fromJson(json);
 }

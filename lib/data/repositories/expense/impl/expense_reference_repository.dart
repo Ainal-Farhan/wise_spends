@@ -17,4 +17,8 @@ class ExpenseReferenceRepository extends IExpenseReferenceRepository {
   Future<List<MstrdtExpenseReference>> getAll() async {
     return db.select(db.expenseReferenceTable).get();
   }
+
+  @override
+  MstrdtExpenseReference fromJson(Map<String, dynamic> json) =>
+      MstrdtExpenseReference.fromJson(json);
 }

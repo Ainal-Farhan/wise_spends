@@ -62,7 +62,13 @@ class AddSpending extends BudgetPlanDetailEvent {
   });
 
   @override
-  List<Object?> get props => [amount, description, vendor, transactionDate, receiptPath];
+  List<Object?> get props => [
+    amount,
+    description,
+    vendor,
+    transactionDate,
+    receiptPath,
+  ];
 }
 
 /// Add milestone
@@ -133,3 +139,22 @@ class DeletePlanEvent extends BudgetPlanDetailEvent {
 
 /// Refresh plan data
 class RefreshPlanEvent extends BudgetPlanDetailEvent {}
+
+class DeleteDeposit extends BudgetPlanDetailEvent {
+  final String depositId;
+  const DeleteDeposit(this.depositId);
+}
+
+class DeleteSpending extends BudgetPlanDetailEvent {
+  final String transactionId;
+  const DeleteSpending(this.transactionId);
+}
+
+class LinkAccountEvent extends BudgetPlanDetailEvent {
+  final String accountId;
+  final double allocatedAmount;
+  const LinkAccountEvent({
+    required this.accountId,
+    required this.allocatedAmount,
+  });
+}

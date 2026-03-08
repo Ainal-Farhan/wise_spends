@@ -231,7 +231,6 @@ class MalayStrings {
     'budget_plans.link_transaction': 'Paut Transaksi',
     'budget_plans.unlink_transaction': 'Nyahpaut Transaksi',
     'budget_plans.linked_accounts': 'Akaun Dipaut',
-    'budget_plans.link_account': 'Paut Akaun',
     'budget_plans.unlink_account': 'Nyahpaut Akaun',
     'budget_plans.allocated_percentage': 'Peruntukan %',
     'budget_plans.overview': 'Gambaran Keseluruhan',
@@ -931,5 +930,30 @@ class MalayStrings {
     "budget_plans.item_created": "Item berjaya ditambah",
     "budget_plans.item_updated": "Item berjaya dikemaskini",
     "budget_plans.item_deleted": "Item berjaya dipadam",
+    "budget_plans.net": "Baki",
+    "budget_plans.deposit": "Deposit",
+    "budget_plans.delete_deposit_msg":
+        "Padam deposit ini? Tindakan ini tidak boleh dibuat alik.",
+    "budget_plans.delete_spending_msg":
+        "Padam rekod perbelanjaan ini? Tindakan ini tidak boleh dibuat alik.",
+    "budget_plans.delete_spending": "Padam Perbelanjaan",
+    "budget_plans.receipt": "Resit",
+    "budget_plans.receipt_unavailable": "Fail resit tidak dijumpai",
+
+    "budget_plans.add_deposit_desc": "Rekod wang masuk ke plan",
+    "budget_plans.add_spending_desc": "Rekod perbelanjaan plan",
+    "budget_plans.linked_accounts_desc":
+        "Akaun simpanan yang diperuntukkan untuk plan ini",
+    "budget_plans.link_account": "Hubung Akaun",
+    "budget_plans.total_allocated": "Jumlah Diperuntukkan",
+    "budget_plans.accounts": "akaun",
+    "budget_plans.of_target": "daripada sasaran",
+    "budget_plans.no_linked_accounts_desc":
+        "Hubungkan akaun simpanan untuk menjejak peruntukan.",
+    "budget_plans.select_savings_account": "Pilih Akaun Simpanan",
+    "budget_plans.no_savings_to_link": "Tiada akaun simpanan tersedia.",
+    "budget_plans.allocated_amount": "Jumlah Diperuntukkan",
+    "budget_plans.link_account_desc":
+        "Pilih akaun simpanan dan masukkan jumlah yang diperuntukkan untuk plan ini.",
   };
 }

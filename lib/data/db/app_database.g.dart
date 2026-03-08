@@ -11633,17 +11633,17 @@ class $SavingsPlanLinkedAccountTableTable extends SavingsPlanLinkedAccountTable
       'REFERENCES saving_table (id)',
     ),
   );
-  static const VerificationMeta _allocatedPercentageMeta =
-      const VerificationMeta('allocatedPercentage');
+  static const VerificationMeta _allocatedAmountMeta = const VerificationMeta(
+    'allocatedAmount',
+  );
   @override
-  late final GeneratedColumn<double> allocatedPercentage =
-      GeneratedColumn<double>(
-        'allocated_percentage',
-        aliasedName,
-        true,
-        type: DriftSqlType.double,
-        requiredDuringInsert: false,
-      );
+  late final GeneratedColumn<double> allocatedAmount = GeneratedColumn<double>(
+    'allocated_amount',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _linkedAtMeta = const VerificationMeta(
     'linkedAt',
   );
@@ -11665,7 +11665,7 @@ class $SavingsPlanLinkedAccountTableTable extends SavingsPlanLinkedAccountTable
     lastModifiedBy,
     planId,
     accountId,
-    allocatedPercentage,
+    allocatedAmount,
     linkedAt,
   ];
   @override
@@ -11738,12 +11738,12 @@ class $SavingsPlanLinkedAccountTableTable extends SavingsPlanLinkedAccountTable
     } else if (isInserting) {
       context.missing(_accountIdMeta);
     }
-    if (data.containsKey('allocated_percentage')) {
+    if (data.containsKey('allocated_amount')) {
       context.handle(
-        _allocatedPercentageMeta,
-        allocatedPercentage.isAcceptableOrUnknown(
-          data['allocated_percentage']!,
-          _allocatedPercentageMeta,
+        _allocatedAmountMeta,
+        allocatedAmount.isAcceptableOrUnknown(
+          data['allocated_amount']!,
+          _allocatedAmountMeta,
         ),
       );
     }
@@ -11794,9 +11794,9 @@ class $SavingsPlanLinkedAccountTableTable extends SavingsPlanLinkedAccountTable
         DriftSqlType.string,
         data['${effectivePrefix}account_id'],
       )!,
-      allocatedPercentage: attachedDatabase.typeMapping.read(
+      allocatedAmount: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
-        data['${effectivePrefix}allocated_percentage'],
+        data['${effectivePrefix}allocated_amount'],
       ),
       linkedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -11825,8 +11825,8 @@ class SvngPlnLinkedAccount extends DataClass
   /// FK to [SavingTable] — the savings account being linked.
   final String accountId;
 
-  /// Optional percentage of the account balance allocated to this plan.
-  final double? allocatedPercentage;
+  /// Optional allocated amount of the account balance allocated to this plan.
+  final double? allocatedAmount;
 
   /// When the account was linked.
   final DateTime linkedAt;
@@ -11838,7 +11838,7 @@ class SvngPlnLinkedAccount extends DataClass
     required this.lastModifiedBy,
     required this.planId,
     required this.accountId,
-    this.allocatedPercentage,
+    this.allocatedAmount,
     required this.linkedAt,
   });
   @override
@@ -11851,8 +11851,8 @@ class SvngPlnLinkedAccount extends DataClass
     map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['plan_id'] = Variable<String>(planId);
     map['account_id'] = Variable<String>(accountId);
-    if (!nullToAbsent || allocatedPercentage != null) {
-      map['allocated_percentage'] = Variable<double>(allocatedPercentage);
+    if (!nullToAbsent || allocatedAmount != null) {
+      map['allocated_amount'] = Variable<double>(allocatedAmount);
     }
     map['linked_at'] = Variable<DateTime>(linkedAt);
     return map;
@@ -11867,9 +11867,9 @@ class SvngPlnLinkedAccount extends DataClass
       lastModifiedBy: Value(lastModifiedBy),
       planId: Value(planId),
       accountId: Value(accountId),
-      allocatedPercentage: allocatedPercentage == null && nullToAbsent
+      allocatedAmount: allocatedAmount == null && nullToAbsent
           ? const Value.absent()
-          : Value(allocatedPercentage),
+          : Value(allocatedAmount),
       linkedAt: Value(linkedAt),
     );
   }
@@ -11887,9 +11887,7 @@ class SvngPlnLinkedAccount extends DataClass
       lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       planId: serializer.fromJson<String>(json['planId']),
       accountId: serializer.fromJson<String>(json['accountId']),
-      allocatedPercentage: serializer.fromJson<double?>(
-        json['allocatedPercentage'],
-      ),
+      allocatedAmount: serializer.fromJson<double?>(json['allocatedAmount']),
       linkedAt: serializer.fromJson<DateTime>(json['linkedAt']),
     );
   }
@@ -11904,7 +11902,7 @@ class SvngPlnLinkedAccount extends DataClass
       'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'planId': serializer.toJson<String>(planId),
       'accountId': serializer.toJson<String>(accountId),
-      'allocatedPercentage': serializer.toJson<double?>(allocatedPercentage),
+      'allocatedAmount': serializer.toJson<double?>(allocatedAmount),
       'linkedAt': serializer.toJson<DateTime>(linkedAt),
     };
   }
@@ -11917,7 +11915,7 @@ class SvngPlnLinkedAccount extends DataClass
     String? lastModifiedBy,
     String? planId,
     String? accountId,
-    Value<double?> allocatedPercentage = const Value.absent(),
+    Value<double?> allocatedAmount = const Value.absent(),
     DateTime? linkedAt,
   }) => SvngPlnLinkedAccount(
     id: id ?? this.id,
@@ -11927,9 +11925,9 @@ class SvngPlnLinkedAccount extends DataClass
     lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
     planId: planId ?? this.planId,
     accountId: accountId ?? this.accountId,
-    allocatedPercentage: allocatedPercentage.present
-        ? allocatedPercentage.value
-        : this.allocatedPercentage,
+    allocatedAmount: allocatedAmount.present
+        ? allocatedAmount.value
+        : this.allocatedAmount,
     linkedAt: linkedAt ?? this.linkedAt,
   );
   SvngPlnLinkedAccount copyWithCompanion(
@@ -11949,9 +11947,9 @@ class SvngPlnLinkedAccount extends DataClass
           : this.lastModifiedBy,
       planId: data.planId.present ? data.planId.value : this.planId,
       accountId: data.accountId.present ? data.accountId.value : this.accountId,
-      allocatedPercentage: data.allocatedPercentage.present
-          ? data.allocatedPercentage.value
-          : this.allocatedPercentage,
+      allocatedAmount: data.allocatedAmount.present
+          ? data.allocatedAmount.value
+          : this.allocatedAmount,
       linkedAt: data.linkedAt.present ? data.linkedAt.value : this.linkedAt,
     );
   }
@@ -11966,7 +11964,7 @@ class SvngPlnLinkedAccount extends DataClass
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('planId: $planId, ')
           ..write('accountId: $accountId, ')
-          ..write('allocatedPercentage: $allocatedPercentage, ')
+          ..write('allocatedAmount: $allocatedAmount, ')
           ..write('linkedAt: $linkedAt')
           ..write(')'))
         .toString();
@@ -11981,7 +11979,7 @@ class SvngPlnLinkedAccount extends DataClass
     lastModifiedBy,
     planId,
     accountId,
-    allocatedPercentage,
+    allocatedAmount,
     linkedAt,
   );
   @override
@@ -11995,7 +11993,7 @@ class SvngPlnLinkedAccount extends DataClass
           other.lastModifiedBy == this.lastModifiedBy &&
           other.planId == this.planId &&
           other.accountId == this.accountId &&
-          other.allocatedPercentage == this.allocatedPercentage &&
+          other.allocatedAmount == this.allocatedAmount &&
           other.linkedAt == this.linkedAt);
 }
 
@@ -12008,7 +12006,7 @@ class SavingsPlanLinkedAccountTableCompanion
   final Value<String> lastModifiedBy;
   final Value<String> planId;
   final Value<String> accountId;
-  final Value<double?> allocatedPercentage;
+  final Value<double?> allocatedAmount;
   final Value<DateTime> linkedAt;
   final Value<int> rowid;
   const SavingsPlanLinkedAccountTableCompanion({
@@ -12019,7 +12017,7 @@ class SavingsPlanLinkedAccountTableCompanion
     this.lastModifiedBy = const Value.absent(),
     this.planId = const Value.absent(),
     this.accountId = const Value.absent(),
-    this.allocatedPercentage = const Value.absent(),
+    this.allocatedAmount = const Value.absent(),
     this.linkedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -12031,7 +12029,7 @@ class SavingsPlanLinkedAccountTableCompanion
     required String lastModifiedBy,
     required String planId,
     required String accountId,
-    this.allocatedPercentage = const Value.absent(),
+    this.allocatedAmount = const Value.absent(),
     this.linkedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdBy = Value(createdBy),
@@ -12047,7 +12045,7 @@ class SavingsPlanLinkedAccountTableCompanion
     Expression<String>? lastModifiedBy,
     Expression<String>? planId,
     Expression<String>? accountId,
-    Expression<double>? allocatedPercentage,
+    Expression<double>? allocatedAmount,
     Expression<DateTime>? linkedAt,
     Expression<int>? rowid,
   }) {
@@ -12059,8 +12057,7 @@ class SavingsPlanLinkedAccountTableCompanion
       if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (planId != null) 'plan_id': planId,
       if (accountId != null) 'account_id': accountId,
-      if (allocatedPercentage != null)
-        'allocated_percentage': allocatedPercentage,
+      if (allocatedAmount != null) 'allocated_amount': allocatedAmount,
       if (linkedAt != null) 'linked_at': linkedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -12074,7 +12071,7 @@ class SavingsPlanLinkedAccountTableCompanion
     Value<String>? lastModifiedBy,
     Value<String>? planId,
     Value<String>? accountId,
-    Value<double?>? allocatedPercentage,
+    Value<double?>? allocatedAmount,
     Value<DateTime>? linkedAt,
     Value<int>? rowid,
   }) {
@@ -12086,7 +12083,7 @@ class SavingsPlanLinkedAccountTableCompanion
       lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       planId: planId ?? this.planId,
       accountId: accountId ?? this.accountId,
-      allocatedPercentage: allocatedPercentage ?? this.allocatedPercentage,
+      allocatedAmount: allocatedAmount ?? this.allocatedAmount,
       linkedAt: linkedAt ?? this.linkedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -12116,8 +12113,8 @@ class SavingsPlanLinkedAccountTableCompanion
     if (accountId.present) {
       map['account_id'] = Variable<String>(accountId.value);
     }
-    if (allocatedPercentage.present) {
-      map['allocated_percentage'] = Variable<double>(allocatedPercentage.value);
+    if (allocatedAmount.present) {
+      map['allocated_amount'] = Variable<double>(allocatedAmount.value);
     }
     if (linkedAt.present) {
       map['linked_at'] = Variable<DateTime>(linkedAt.value);
@@ -12138,7 +12135,7 @@ class SavingsPlanLinkedAccountTableCompanion
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('planId: $planId, ')
           ..write('accountId: $accountId, ')
-          ..write('allocatedPercentage: $allocatedPercentage, ')
+          ..write('allocatedAmount: $allocatedAmount, ')
           ..write('linkedAt: $linkedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -29926,7 +29923,7 @@ typedef $$SavingsPlanLinkedAccountTableTableCreateCompanionBuilder =
       required String lastModifiedBy,
       required String planId,
       required String accountId,
-      Value<double?> allocatedPercentage,
+      Value<double?> allocatedAmount,
       Value<DateTime> linkedAt,
       Value<int> rowid,
     });
@@ -29939,7 +29936,7 @@ typedef $$SavingsPlanLinkedAccountTableTableUpdateCompanionBuilder =
       Value<String> lastModifiedBy,
       Value<String> planId,
       Value<String> accountId,
-      Value<double?> allocatedPercentage,
+      Value<double?> allocatedAmount,
       Value<DateTime> linkedAt,
       Value<int> rowid,
     });
@@ -30036,8 +30033,8 @@ class $$SavingsPlanLinkedAccountTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get allocatedPercentage => $composableBuilder(
-    column: $table.allocatedPercentage,
+  ColumnFilters<double> get allocatedAmount => $composableBuilder(
+    column: $table.allocatedAmount,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -30127,8 +30124,8 @@ class $$SavingsPlanLinkedAccountTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get allocatedPercentage => $composableBuilder(
-    column: $table.allocatedPercentage,
+  ColumnOrderings<double> get allocatedAmount => $composableBuilder(
+    column: $table.allocatedAmount,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -30214,8 +30211,8 @@ class $$SavingsPlanLinkedAccountTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<double> get allocatedPercentage => $composableBuilder(
-    column: $table.allocatedPercentage,
+  GeneratedColumn<double> get allocatedAmount => $composableBuilder(
+    column: $table.allocatedAmount,
     builder: (column) => column,
   );
 
@@ -30318,7 +30315,7 @@ class $$SavingsPlanLinkedAccountTableTableTableManager
                 Value<String> lastModifiedBy = const Value.absent(),
                 Value<String> planId = const Value.absent(),
                 Value<String> accountId = const Value.absent(),
-                Value<double?> allocatedPercentage = const Value.absent(),
+                Value<double?> allocatedAmount = const Value.absent(),
                 Value<DateTime> linkedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SavingsPlanLinkedAccountTableCompanion(
@@ -30329,7 +30326,7 @@ class $$SavingsPlanLinkedAccountTableTableTableManager
                 lastModifiedBy: lastModifiedBy,
                 planId: planId,
                 accountId: accountId,
-                allocatedPercentage: allocatedPercentage,
+                allocatedAmount: allocatedAmount,
                 linkedAt: linkedAt,
                 rowid: rowid,
               ),
@@ -30342,7 +30339,7 @@ class $$SavingsPlanLinkedAccountTableTableTableManager
                 required String lastModifiedBy,
                 required String planId,
                 required String accountId,
-                Value<double?> allocatedPercentage = const Value.absent(),
+                Value<double?> allocatedAmount = const Value.absent(),
                 Value<DateTime> linkedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SavingsPlanLinkedAccountTableCompanion.insert(
@@ -30353,7 +30350,7 @@ class $$SavingsPlanLinkedAccountTableTableTableManager
                 lastModifiedBy: lastModifiedBy,
                 planId: planId,
                 accountId: accountId,
-                allocatedPercentage: allocatedPercentage,
+                allocatedAmount: allocatedAmount,
                 linkedAt: linkedAt,
                 rowid: rowid,
               ),

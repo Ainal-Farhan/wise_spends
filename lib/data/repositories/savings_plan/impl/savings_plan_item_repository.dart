@@ -11,9 +11,7 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
 
   @override
   Stream<List<SvngPlnItem>> watchByPlanId(String planId) {
-    return (db.select(
-      db.savingsPlanItemTable,
-    )
+    return (db.select(db.savingsPlanItemTable)
           ..where((tbl) => tbl.planId.equals(planId))
           ..orderBy([(tbl) => OrderingTerm.asc(tbl.sortOrder)]))
         .watch();
@@ -21,9 +19,7 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
 
   @override
   Future<List<SvngPlnItem>> getByPlanId(String planId) async {
-    return (db.select(
-      db.savingsPlanItemTable,
-    )
+    return (db.select(db.savingsPlanItemTable)
           ..where((tbl) => tbl.planId.equals(planId))
           ..orderBy([(tbl) => OrderingTerm.asc(tbl.sortOrder)]))
         .get();
@@ -45,9 +41,7 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
 
   @override
   Future<void> updateSortOrder(String itemId, double newSortOrder) async {
-    await (db.update(
-      db.savingsPlanItemTable,
-    )
+    await (db.update(db.savingsPlanItemTable)
           ..where((tbl) => tbl.id.equals(itemId)))
         .write(SavingsPlanItemTableCompanion(sortOrder: Value(newSortOrder)));
   }
@@ -56,7 +50,12 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
   Future<double> getNextSortOrder(String planId) async {
     final items = await getByPlanId(planId);
     if (items.isEmpty) return 1000.0;
-    final maxSortOrder = items.map((i) => i.sortOrder).reduce((a, b) => a > b ? a : b);
+    final maxSortOrder = items
+        .map((i) => i.sortOrder)
+        .reduce((a, b) => a > b ? a : b);
     return maxSortOrder + 1000.0;
   }
+
+  @override
+  SvngPlnItem fromJson(Map<String, dynamic> json) => SvngPlnItem.fromJson(json);
 }

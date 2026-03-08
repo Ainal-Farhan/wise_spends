@@ -262,7 +262,6 @@ class EnglishStrings {
     'budget_plans.link_transaction': 'Link Transaction',
     'budget_plans.unlink_transaction': 'Unlink Transaction',
     'budget_plans.linked_accounts': 'Linked Accounts',
-    'budget_plans.link_account': 'Link Account',
     'budget_plans.unlink_account': 'Unlink Account',
     'budget_plans.allocated_percentage': 'Allocated %',
     'budget_plans.overview': 'Overview',
@@ -917,5 +916,30 @@ class EnglishStrings {
     "budget_plans.status_fully_paid": "Fully Paid",
     "budget_plans.status_deposit_paid": "Deposit Paid",
     "budget_plans.status_not_paid": "Not Paid",
+
+    "budget_plans.net": "Net",
+    "budget_plans.deposit": "Deposit",
+    "budget_plans.delete_deposit_msg":
+        "Delete this deposit? This cannot be undone.",
+    "budget_plans.delete_spending_msg":
+        "Delete this spending record? This cannot be undone.",
+    "budget_plans.delete_spending": "Delete Spending",
+    "budget_plans.receipt": "Receipt",
+    "budget_plans.receipt_unavailable": "Receipt file not found",
+    "budget_plans.add_deposit_desc": "Record money going into the plan",
+    "budget_plans.add_spending_desc": "Record a plan expense",
+    "budget_plans.linked_accounts_desc":
+        "Savings accounts allocated toward this plan",
+    "budget_plans.link_account": "Link Account",
+    "budget_plans.total_allocated": "Total Allocated",
+    "budget_plans.accounts": "accounts",
+    "budget_plans.of_target": "of target",
+    "budget_plans.no_linked_accounts_desc":
+        "Link a savings account to track allocation.",
+    "budget_plans.select_savings_account": "Select Savings Account",
+    "budget_plans.no_savings_to_link": "No savings accounts available to link.",
+    "budget_plans.allocated_amount": "Allocated Amount",
+    "budget_plans.link_account_desc":
+        "Choose a savings account and enter the amount allocated to this plan.",
   };
 }

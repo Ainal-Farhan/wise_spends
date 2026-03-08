@@ -47,12 +47,15 @@ class UserRepository extends IUserRepository {
         lastModifiedBy: Value('user'),
       );
 
-      await (db.update(db.userTable)
-            ..where((tbl) => tbl.id.equals(profile.id)))
-          .write(companion);
+      await (db.update(
+        db.userTable,
+      )..where((tbl) => tbl.id.equals(profile.id))).write(companion);
       return true;
     } catch (e) {
       return false;
     }
   }
+
+  @override
+  CmmnUser fromJson(Map<String, dynamic> json) => CmmnUser.fromJson(json);
 }

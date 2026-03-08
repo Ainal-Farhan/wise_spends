@@ -24,4 +24,8 @@ class RecurringTransactionRepository extends IRecurringTransactionRepository {
       db.recurringTransactionTable,
     )..where((tbl) => tbl.savingId.equals(savingId))).watch();
   }
+
+  @override
+  RecurringTransaction fromJson(Map<String, dynamic> json) =>
+      RecurringTransaction.fromJson(json);
 }

@@ -21,6 +21,9 @@ class BudgetPlanDetailBloc
     on<UpdatePlanStatusEvent>(_onUpdatePlanStatus);
     on<DeletePlanEvent>(_onDeletePlan);
     on<RefreshPlanEvent>(_onRefreshPlan);
+    on<DeleteDeposit>(_onDeleteDeposit);
+    on<DeleteSpending>(_onDeleteSpending);
+    on<LinkAccountEvent>(_onLinkAccount);
   }
 
   /// Load plan detail with all related data
@@ -257,5 +260,54 @@ class BudgetPlanDetailBloc
 
     final currentState = state as BudgetPlanDetailLoaded;
     add(LoadPlanDetail(currentState.plan.id));
+  }
+
+  Future<void> _onDeleteDeposit(
+    DeleteDeposit event,
+    Emitter<BudgetPlanDetailState> emit,
+  ) async {
+    if (state is! BudgetPlanDetailLoaded) return;
+    final current = state as BudgetPlanDetailLoaded;
+    try {
+      await _repository.deleteDeposit(event.depositId);
+      add(LoadPlanDetail(current.plan.id));
+    } catch (e) {
+      emit(BudgetPlanDetailError('Failed to delete deposit: ${e.toString()}'));
+      emit(current);
+    }
+  }
+
+  Future<void> _onDeleteSpending(
+    DeleteSpending event,
+    Emitter<BudgetPlanDetailState> emit,
+  ) async {
+    if (state is! BudgetPlanDetailLoaded) return;
+    final current = state as BudgetPlanDetailLoaded;
+    try {
+      await _repository.deletePlanTransaction(event.transactionId);
+      add(LoadPlanDetail(current.plan.id));
+    } catch (e) {
+      emit(BudgetPlanDetailError('Failed to delete spending: ${e.toString()}'));
+      emit(current);
+    }
+  }
+
+  Future<void> _onLinkAccount(
+    LinkAccountEvent event,
+    Emitter<BudgetPlanDetailState> emit,
+  ) async {
+    if (state is! BudgetPlanDetailLoaded) return;
+    final current = state as BudgetPlanDetailLoaded;
+    try {
+      await _repository.linkAccount(
+        current.plan.id,
+        event.accountId,
+        event.allocatedAmount,
+      );
+      add(LoadPlanDetail(current.plan.id));
+    } catch (e) {
+      emit(BudgetPlanDetailError('Failed to link account: ${e.toString()}'));
+      emit(current);
+    }
   }
 }
