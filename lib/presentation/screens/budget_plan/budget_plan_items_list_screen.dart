@@ -391,11 +391,7 @@ class _SummaryCard extends StatelessWidget {
           ),
           icon: Icons.format_list_bulleted,
           label: 'budget_plans.items_summary'.tr,
-          title: AmountText.large(
-            amount: summary.totalCost,
-            type: AmountType.neutral,
-            showPrefix: false,
-          ).toString(), // SectionHeader.card takes a String title
+          title: 'Total Cost: RM ${summary.totalCost.toStringAsFixed(2)}',
           subtitle: '${summary.totalItems} ${'budget_plans.items_count'.tr}',
           collapsibleBody: _SummaryDetail(summary: summary),
           learnMoreLabel: 'general.details'.tr,
