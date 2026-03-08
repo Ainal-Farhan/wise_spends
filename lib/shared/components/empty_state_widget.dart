@@ -15,6 +15,7 @@ enum EmptyStateType {
   noTransactions,
   noBudgets,
   noBudgetPlans,
+  noBudgetPlanItems,
   noSavings,
   noSearchResults,
   noNotifications,
@@ -131,6 +132,15 @@ class EmptyStateWidget extends StatelessWidget {
           actionLabel: 'empty.no_budget_plans.action'.tr,
           onAction: onAction,
           iconColor: AppColors.tertiary,
+        );
+      case EmptyStateType.noBudgetPlanItems:
+        return EmptyStateWidget(
+          icon: Icons.format_list_bulleted_outlined,
+          title: 'empty.no_budget_plan_items.title'.tr,
+          subtitle: 'empty.no_budget_plan_items.subtitle'.tr,
+          actionLabel: 'empty.no_budget_plan_items.action'.tr,
+          onAction: onAction,
+          iconColor: AppColors.primary,
         );
       case EmptyStateType.noSavings:
         return EmptyStateWidget(
@@ -340,6 +350,17 @@ class NoBudgetPlansEmptyState extends StatelessWidget {
   Widget build(BuildContext context) => EmptyStateWidget.type(
     type: EmptyStateType.noBudgetPlans,
     onAction: onCreatePlan,
+  );
+}
+
+class NoBudgetPlanItemsEmptyState extends StatelessWidget {
+  final VoidCallback? onAddItem;
+  const NoBudgetPlanItemsEmptyState({super.key, this.onAddItem});
+
+  @override
+  Widget build(BuildContext context) => EmptyStateWidget.type(
+    type: EmptyStateType.noBudgetPlanItems,
+    onAction: onAddItem,
   );
 }
 

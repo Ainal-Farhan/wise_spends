@@ -14,7 +14,9 @@ import 'package:wise_spends/domain/entities/budget_plan/linked_account_entity.da
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_bloc.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_event.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan_detail/budget_plan_detail_state.dart';
+import 'package:wise_spends/presentation/blocs/transaction/transaction_bloc.dart';
 import 'package:wise_spends/presentation/screens/budget_plan/add_spending_bottom_sheet.dart';
+import 'package:wise_spends/presentation/screens/budget_plan/budget_plan_items_list_screen.dart';
 import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
 import 'package:wise_spends/presentation/widgets/charts/budget_charts.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.dart';
@@ -59,7 +61,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -110,6 +112,10 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
               text: 'budget_plans.overview'.tr,
             ),
             Tab(
+              icon: const Icon(Icons.format_list_bulleted),
+              text: 'budget_plans.items'.tr,
+            ),
+            Tab(
               icon: const Icon(Icons.receipt_long),
               text: 'budget_plans.transactions'.tr,
             ),
@@ -141,6 +147,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
                   onUnlinkAccount: (accountId, planId) =>
                       _confirmUnlinkAccount(context, accountId, planId),
                 ),
+                BudgetPlanItemsListScreen(planId: widget.planUuid),
                 _TransactionsTab(state: state),
                 _ChartsTab(state: state),
               ],
@@ -218,6 +225,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
   }
 
   void _showAddDepositSheet() {
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -229,11 +237,22 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
   }
 
   void _showAddSpendingSheet() {
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => BlocProvider.value(
-        value: context.read<BudgetPlanDetailBloc>(),
+      builder: (_) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: context.read<BudgetPlanDetailBloc>()),
+          BlocProvider(
+            create: (_) => TransactionBloc(
+              SingletonUtil.getSingleton<IRepositoryLocator>()!
+                  .getTransactionRepository(),
+              SingletonUtil.getSingleton<IRepositoryLocator>()!
+                  .getSavingRepository(),
+            ),
+          ),
+        ],
         child: AddSpendingBottomSheet(planUuid: widget.planUuid),
       ),
     );
@@ -909,20 +928,14 @@ class _ChartsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate totals with overflow protection
-    final totalDeposited = state.deposits.fold<double>(
-      0.0,
-      (s, d) {
-        final sum = s + d.amount;
-        return sum.isInfinite ? double.maxFinite : sum;
-      },
-    );
-    final totalSpent = state.transactions.fold<double>(
-      0.0,
-      (s, t) {
-        final sum = s + t.amount;
-        return sum.isInfinite ? double.maxFinite : sum;
-      },
-    );
+    final totalDeposited = state.deposits.fold<double>(0.0, (s, d) {
+      final sum = s + d.amount;
+      return sum.isInfinite ? double.maxFinite : sum;
+    });
+    final totalSpent = state.transactions.fold<double>(0.0, (s, t) {
+      final sum = s + t.amount;
+      return sum.isInfinite ? double.maxFinite : sum;
+    });
 
     final spendingByCategory = _buildCategoryData(totalSpent);
 
@@ -1014,15 +1027,21 @@ class _DetailFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        if (tabController.index == 1) {
-          onSpending();
-        } else {
-          onDeposit();
-        }
+    return AnimatedBuilder(
+      animation: tabController,
+      builder: (context, _) {
+        // Tab 1 = Items — that tab has its own FAB via Stack, hide this one
+        if (tabController.index == 1) return const SizedBox.shrink();
+
+        // Tab 2 = Transactions — spending action
+        // Tab 0 = Overview, Tab 3 = Charts — deposit action
+        final onPressed = tabController.index == 2 ? onSpending : onDeposit;
+
+        return FloatingActionButton(
+          onPressed: onPressed,
+          child: const Icon(Icons.add),
+        );
       },
-      child: const Icon(Icons.add),
     );
   }
 }

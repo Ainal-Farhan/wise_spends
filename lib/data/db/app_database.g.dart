@@ -2726,6 +2726,15 @@ class $SavingsPlanItemTableTable extends SavingsPlanItemTable
     requiredDuringInsert: false,
     defaultValue: const Constant(1000.0),
   );
+  static const VerificationMeta _bilMeta = const VerificationMeta('bil');
+  @override
+  late final GeneratedColumn<String> bil = GeneratedColumn<String>(
+    'bil',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -2819,6 +2828,7 @@ class $SavingsPlanItemTableTable extends SavingsPlanItemTable
     lastModifiedBy,
     planId,
     sortOrder,
+    bil,
     name,
     totalCost,
     depositPaid,
@@ -2893,6 +2903,12 @@ class $SavingsPlanItemTableTable extends SavingsPlanItemTable
       context.handle(
         _sortOrderMeta,
         sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('bil')) {
+      context.handle(
+        _bilMeta,
+        bil.isAcceptableOrUnknown(data['bil']!, _bilMeta),
       );
     }
     if (data.containsKey('name')) {
@@ -2986,6 +3002,10 @@ class $SavingsPlanItemTableTable extends SavingsPlanItemTable
         DriftSqlType.double,
         data['${effectivePrefix}sort_order'],
       )!,
+      bil: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bil'],
+      ),
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
@@ -3037,6 +3057,9 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
   /// Start at 1000.0, increment by 1000.0. Insert between: average of neighbors.
   final double sortOrder;
 
+  /// Item Bil
+  final String? bil;
+
   /// Item name/description (Perkara in Malay).
   final String name;
 
@@ -3065,6 +3088,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
     required this.lastModifiedBy,
     required this.planId,
     required this.sortOrder,
+    this.bil,
     required this.name,
     required this.totalCost,
     required this.depositPaid,
@@ -3083,6 +3107,9 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
     map['last_modified_by'] = Variable<String>(lastModifiedBy);
     map['plan_id'] = Variable<String>(planId);
     map['sort_order'] = Variable<double>(sortOrder);
+    if (!nullToAbsent || bil != null) {
+      map['bil'] = Variable<String>(bil);
+    }
     map['name'] = Variable<String>(name);
     map['total_cost'] = Variable<double>(totalCost);
     map['deposit_paid'] = Variable<double>(depositPaid);
@@ -3106,6 +3133,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
       lastModifiedBy: Value(lastModifiedBy),
       planId: Value(planId),
       sortOrder: Value(sortOrder),
+      bil: bil == null && nullToAbsent ? const Value.absent() : Value(bil),
       name: Value(name),
       totalCost: Value(totalCost),
       depositPaid: Value(depositPaid),
@@ -3133,6 +3161,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
       lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
       planId: serializer.fromJson<String>(json['planId']),
       sortOrder: serializer.fromJson<double>(json['sortOrder']),
+      bil: serializer.fromJson<String?>(json['bil']),
       name: serializer.fromJson<String>(json['name']),
       totalCost: serializer.fromJson<double>(json['totalCost']),
       depositPaid: serializer.fromJson<double>(json['depositPaid']),
@@ -3153,6 +3182,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
       'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
       'planId': serializer.toJson<String>(planId),
       'sortOrder': serializer.toJson<double>(sortOrder),
+      'bil': serializer.toJson<String?>(bil),
       'name': serializer.toJson<String>(name),
       'totalCost': serializer.toJson<double>(totalCost),
       'depositPaid': serializer.toJson<double>(depositPaid),
@@ -3171,6 +3201,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
     String? lastModifiedBy,
     String? planId,
     double? sortOrder,
+    Value<String?> bil = const Value.absent(),
     String? name,
     double? totalCost,
     double? depositPaid,
@@ -3186,6 +3217,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
     lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
     planId: planId ?? this.planId,
     sortOrder: sortOrder ?? this.sortOrder,
+    bil: bil.present ? bil.value : this.bil,
     name: name ?? this.name,
     totalCost: totalCost ?? this.totalCost,
     depositPaid: depositPaid ?? this.depositPaid,
@@ -3209,6 +3241,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
           : this.lastModifiedBy,
       planId: data.planId.present ? data.planId.value : this.planId,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      bil: data.bil.present ? data.bil.value : this.bil,
       name: data.name.present ? data.name.value : this.name,
       totalCost: data.totalCost.present ? data.totalCost.value : this.totalCost,
       depositPaid: data.depositPaid.present
@@ -3235,6 +3268,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('planId: $planId, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('bil: $bil, ')
           ..write('name: $name, ')
           ..write('totalCost: $totalCost, ')
           ..write('depositPaid: $depositPaid, ')
@@ -3255,6 +3289,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
     lastModifiedBy,
     planId,
     sortOrder,
+    bil,
     name,
     totalCost,
     depositPaid,
@@ -3274,6 +3309,7 @@ class SvngPlnItem extends DataClass implements Insertable<SvngPlnItem> {
           other.lastModifiedBy == this.lastModifiedBy &&
           other.planId == this.planId &&
           other.sortOrder == this.sortOrder &&
+          other.bil == this.bil &&
           other.name == this.name &&
           other.totalCost == this.totalCost &&
           other.depositPaid == this.depositPaid &&
@@ -3291,6 +3327,7 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
   final Value<String> lastModifiedBy;
   final Value<String> planId;
   final Value<double> sortOrder;
+  final Value<String?> bil;
   final Value<String> name;
   final Value<double> totalCost;
   final Value<double> depositPaid;
@@ -3307,6 +3344,7 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
     this.lastModifiedBy = const Value.absent(),
     this.planId = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.bil = const Value.absent(),
     this.name = const Value.absent(),
     this.totalCost = const Value.absent(),
     this.depositPaid = const Value.absent(),
@@ -3324,6 +3362,7 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
     required String lastModifiedBy,
     required String planId,
     this.sortOrder = const Value.absent(),
+    this.bil = const Value.absent(),
     required String name,
     this.totalCost = const Value.absent(),
     this.depositPaid = const Value.absent(),
@@ -3345,6 +3384,7 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
     Expression<String>? lastModifiedBy,
     Expression<String>? planId,
     Expression<double>? sortOrder,
+    Expression<String>? bil,
     Expression<String>? name,
     Expression<double>? totalCost,
     Expression<double>? depositPaid,
@@ -3362,6 +3402,7 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
       if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
       if (planId != null) 'plan_id': planId,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (bil != null) 'bil': bil,
       if (name != null) 'name': name,
       if (totalCost != null) 'total_cost': totalCost,
       if (depositPaid != null) 'deposit_paid': depositPaid,
@@ -3381,6 +3422,7 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
     Value<String>? lastModifiedBy,
     Value<String>? planId,
     Value<double>? sortOrder,
+    Value<String?>? bil,
     Value<String>? name,
     Value<double>? totalCost,
     Value<double>? depositPaid,
@@ -3398,6 +3440,7 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
       lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
       planId: planId ?? this.planId,
       sortOrder: sortOrder ?? this.sortOrder,
+      bil: bil ?? this.bil,
       name: name ?? this.name,
       totalCost: totalCost ?? this.totalCost,
       depositPaid: depositPaid ?? this.depositPaid,
@@ -3432,6 +3475,9 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
     }
     if (sortOrder.present) {
       map['sort_order'] = Variable<double>(sortOrder.value);
+    }
+    if (bil.present) {
+      map['bil'] = Variable<String>(bil.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -3470,6 +3516,7 @@ class SavingsPlanItemTableCompanion extends UpdateCompanion<SvngPlnItem> {
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('planId: $planId, ')
           ..write('sortOrder: $sortOrder, ')
+          ..write('bil: $bil, ')
           ..write('name: $name, ')
           ..write('totalCost: $totalCost, ')
           ..write('depositPaid: $depositPaid, ')
@@ -21045,6 +21092,7 @@ typedef $$SavingsPlanItemTableTableCreateCompanionBuilder =
       required String lastModifiedBy,
       required String planId,
       Value<double> sortOrder,
+      Value<String?> bil,
       required String name,
       Value<double> totalCost,
       Value<double> depositPaid,
@@ -21063,6 +21111,7 @@ typedef $$SavingsPlanItemTableTableUpdateCompanionBuilder =
       Value<String> lastModifiedBy,
       Value<String> planId,
       Value<double> sortOrder,
+      Value<String?> bil,
       Value<String> name,
       Value<double> totalCost,
       Value<double> depositPaid,
@@ -21225,6 +21274,11 @@ class $$SavingsPlanItemTableTableFilterComposer
 
   ColumnFilters<double> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bil => $composableBuilder(
+    column: $table.bil,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -21405,6 +21459,11 @@ class $$SavingsPlanItemTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get bil => $composableBuilder(
+    column: $table.bil,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
@@ -21496,6 +21555,9 @@ class $$SavingsPlanItemTableTableAnnotationComposer
 
   GeneratedColumn<double> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<String> get bil =>
+      $composableBuilder(column: $table.bil, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -21677,6 +21739,7 @@ class $$SavingsPlanItemTableTableTableManager
                 Value<String> lastModifiedBy = const Value.absent(),
                 Value<String> planId = const Value.absent(),
                 Value<double> sortOrder = const Value.absent(),
+                Value<String?> bil = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<double> totalCost = const Value.absent(),
                 Value<double> depositPaid = const Value.absent(),
@@ -21693,6 +21756,7 @@ class $$SavingsPlanItemTableTableTableManager
                 lastModifiedBy: lastModifiedBy,
                 planId: planId,
                 sortOrder: sortOrder,
+                bil: bil,
                 name: name,
                 totalCost: totalCost,
                 depositPaid: depositPaid,
@@ -21711,6 +21775,7 @@ class $$SavingsPlanItemTableTableTableManager
                 required String lastModifiedBy,
                 required String planId,
                 Value<double> sortOrder = const Value.absent(),
+                Value<String?> bil = const Value.absent(),
                 required String name,
                 Value<double> totalCost = const Value.absent(),
                 Value<double> depositPaid = const Value.absent(),
@@ -21727,6 +21792,7 @@ class $$SavingsPlanItemTableTableTableManager
                 lastModifiedBy: lastModifiedBy,
                 planId: planId,
                 sortOrder: sortOrder,
+                bil: bil,
                 name: name,
                 totalCost: totalCost,
                 depositPaid: depositPaid,

@@ -25,6 +25,9 @@ class SavingsPlanItemTable extends BaseEntityTable {
   /// Start at 1000.0, increment by 1000.0. Insert between: average of neighbors.
   RealColumn get sortOrder => real().withDefault(const Constant(1000.0))();
 
+  /// Item Bil
+  TextColumn get bil => text().nullable()();
+
   /// Item name/description (Perkara in Malay).
   TextColumn get name => text().withLength(min: 1, max: 200)();
 
@@ -63,6 +66,7 @@ class SavingsPlanItemTable extends BaseEntityTable {
   @override
   Map<String, dynamic> toMapFromSubClass() => {
     'planId': planId.name,
+    'bil': bil.name,
     'sortOrder': sortOrder.name,
     'name': name.name,
     'totalCost': totalCost.name,

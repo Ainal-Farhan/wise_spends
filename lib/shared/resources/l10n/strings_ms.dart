@@ -891,5 +891,45 @@ class MalayStrings {
     'budget_plans.period_quarter': 'Suku Tahun',
     'budget_plans.period_year': 'Tahun',
     'budget_plans.period_all': 'Semua',
+
+    "budget_plans.items_summary": "Ringkasan Item",
+    "budget_plans.items_count": "item",
+
+    "budget_plans.add_item": "Tambah Item",
+    "budget_plans.edit_item": "Edit Item",
+    "budget_plans.delete_item": "Padam Item",
+    "budget_plans.delete_item_msg":
+        "Padam '{name}'? Tindakan ini tidak boleh dibuat alik.",
+
+    "budget_plans.item_name": "Perkara",
+    "budget_plans.item_name_hint": "Nama item...",
+    "budget_plans.total_cost": "Jumlah Kos",
+    "budget_plans.deposit_paid": "Deposit",
+    "budget_plans.amount_paid": "Telah Bayar",
+    "budget_plans.due_date": "Tarikh Akhir",
+    "budget_plans.select_due_date": "Pilih tarikh",
+    "budget_plans.notes": "Nota",
+    "budget_plans.notes_hint": "Nota tambahan...",
+    "budget_plans.tags": "Tag",
+    "budget_plans.add_tags": "Tambah Tag",
+    "budget_plans.select_tags": "Pilih atau taip tag",
+    "budget_plans.custom_tag_hint": "Tag baharu...",
+    "budget_plans.required": "Wajib diisi",
+
+    "budget_plans.fully_paid": "Bayar Penuh",
+    "budget_plans.outstanding": "Belum Bayar",
+    "budget_plans.payment_status": "Status Bayaran",
+
+    "budget_plans.total_deposit": "Jumlah Deposit",
+    "budget_plans.total_paid": "Jumlah Bayar",
+    "budget_plans.total_outstanding": "Jumlah Belum Bayar",
+
+    "budget_plans.status_fully_paid": "Bayar Penuh",
+    "budget_plans.status_deposit_paid": "Deposit Dibayar",
+    "budget_plans.status_not_paid": "Belum Bayar",
+
+    "budget_plans.item_created": "Item berjaya ditambah",
+    "budget_plans.item_updated": "Item berjaya dikemaskini",
+    "budget_plans.item_deleted": "Item berjaya dipadam",
   };
 }

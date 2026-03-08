@@ -1,15 +1,19 @@
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 
 /// Budget Plan Item Entity - represents a line item in a budget plan
-/// 
+///
 /// This entity tracks individual budget items (e.g., "Pelamin", "Makeup", "Hantaran")
 /// with cost breakdown: total cost, deposit paid, amount paid.
-/// 
+///
 /// The `outstanding` amount is computed as `totalCost - amountPaid`.
+/// The `bil` field is a user-editable display number (e.g. "1", "28") that is
+/// separate from `sortOrder` which is used only for fractional ordering.
 class BudgetPlanItemEntity extends Equatable {
   final String id;
   final String planId;
   final double sortOrder;
+  final String bil; // User-editable display number e.g. "1", "28"
   final String name;
   final double totalCost;
   final double depositPaid;
@@ -25,6 +29,7 @@ class BudgetPlanItemEntity extends Equatable {
     required this.id,
     required this.planId,
     required this.sortOrder,
+    required this.bil,
     required this.name,
     required this.totalCost,
     this.depositPaid = 0.0,
@@ -38,7 +43,7 @@ class BudgetPlanItemEntity extends Equatable {
   });
 
   /// Computed: Outstanding amount (what's still owed)
-  /// This is a getter to ensure it's always accurate and never out of sync.
+  /// Getter ensures it's always accurate and never out of sync.
   double get outstanding => totalCost - amountPaid;
 
   /// Computed: Whether the item is fully paid
@@ -50,12 +55,14 @@ class BudgetPlanItemEntity extends Equatable {
     return (amountPaid / totalCost).clamp(0.0, 1.0);
   }
 
-  /// Computed: Payment status label
+  /// Computed: Localized payment status label
   String get paymentStatusLabel {
-    if (isFullyPaid) return 'Fully Paid';
-    if (depositPaid > 0 && amountPaid < totalCost) return 'Deposit Paid';
-    if (amountPaid == 0) return 'Not Paid';
-    return 'Partially Paid';
+    if (isFullyPaid) return 'budget_plans.status_fully_paid'.tr;
+    if (depositPaid > 0 && amountPaid < totalCost) {
+      return 'budget_plans.status_deposit_paid'.tr;
+    }
+    if (amountPaid == 0) return 'budget_plans.status_not_paid'.tr;
+    return 'budget_plans.status_partially_paid'.tr;
   }
 
   @override
@@ -63,6 +70,7 @@ class BudgetPlanItemEntity extends Equatable {
     id,
     planId,
     sortOrder,
+    bil,
     name,
     totalCost,
     depositPaid,
@@ -79,6 +87,7 @@ class BudgetPlanItemEntity extends Equatable {
     String? id,
     String? planId,
     double? sortOrder,
+    String? bil,
     String? name,
     double? totalCost,
     double? depositPaid,
@@ -94,6 +103,7 @@ class BudgetPlanItemEntity extends Equatable {
       id: id ?? this.id,
       planId: planId ?? this.planId,
       sortOrder: sortOrder ?? this.sortOrder,
+      bil: bil ?? this.bil,
       name: name ?? this.name,
       totalCost: totalCost ?? this.totalCost,
       depositPaid: depositPaid ?? this.depositPaid,

@@ -42,6 +42,7 @@ dependencies:
   open_file: ^3.5.11
   image_picker: ^1.2.1
   shared_preferences: ^2.5.4
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:

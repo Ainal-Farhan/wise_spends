@@ -364,7 +364,9 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
     );
 
     if (_linkToMainTransaction) {
-      context.read<TransactionBloc>().add(
+      // Guard: TransactionBloc may not be provided in all entry points
+      final transactionBloc = context.read<TransactionBloc?>();
+      transactionBloc?.add(
         CreateTransactionEvent(
           title: _descriptionController.text,
           amount: amount,
