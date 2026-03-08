@@ -22,3 +22,21 @@ class NavigationTabTapped extends NavigationEvent {
 class NavigationReturned extends NavigationEvent {
   const NavigationReturned();
 }
+
+class OpenNavigationEvent extends NavigationEvent {}
+
+class CloseNavigationEvent extends NavigationEvent {}
+
+class ToggleNavigationEvent extends NavigationEvent {}
+
+class NavigateToScreenEvent extends NavigationEvent {
+  final String route;
+  final Map<String, dynamic>? extraData;
+
+  const NavigateToScreenEvent(this.route, {this.extraData});
+
+  @override
+  List<Object?> get props => [route, extraData];
+}
+
+class RefreshDashboardEvent extends NavigationEvent {}

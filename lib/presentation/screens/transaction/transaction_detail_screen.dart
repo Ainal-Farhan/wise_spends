@@ -11,6 +11,7 @@ import 'package:wise_spends/presentation/blocs/transaction/transaction_event.dar
 import 'package:wise_spends/presentation/blocs/transaction/transaction_state.dart';
 import 'package:wise_spends/router/route_arguments.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -498,35 +499,17 @@ class _TransactionDetailScreenContent extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
-    showDialog(
+    showDeleteDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.warning_amber_rounded, color: AppColors.error),
-            const SizedBox(width: AppSpacing.md),
-            Text('transaction.detail.delete_title'.tr),
-          ],
-        ),
-        content: Text(
-          'transaction.delete_confirm'.tr,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text('general.cancel'.tr),
-          ),
-          AppButton.destructive(
-            label: 'general.delete'.tr,
-            onPressed: () {
-              context.read<TransactionBloc>().add(
-                DeleteTransactionEvent(transactionId),
-              );
-              Navigator.pop(dialogContext);
-            },
-          ),
-        ],
-      ),
+      title: 'transaction.detail.delete_title'.tr,
+      message: 'transaction.delete_confirm'.tr,
+      deleteText: 'general.delete'.tr,
+      cancelText: 'general.cancel'.tr,
+      onDelete: () {
+        context.read<TransactionBloc>().add(
+          DeleteTransactionEvent(transactionId),
+        );
+      },
     );
   }
 

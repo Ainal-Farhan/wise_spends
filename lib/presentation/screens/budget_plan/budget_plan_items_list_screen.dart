@@ -687,27 +687,12 @@ class _ItemCard extends StatelessWidget {
     return Dismissible(
       key: Key('dismiss_${item.id}'),
       direction: DismissDirection.endToStart,
-      confirmDismiss: (_) => showDialog<bool>(
+      confirmDismiss: (_) => showDeleteDialog(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text('budget_plans.delete_item'.tr),
-          content: Text(
-            'budget_plans.delete_item_msg'.trWith({'name': item.name}),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text('general.cancel'.tr),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: WiseSpendsColors.secondary,
-              ),
-              child: Text('general.delete'.tr),
-            ),
-          ],
-        ),
+        title: 'budget_plans.delete_item'.tr,
+        message: 'budget_plans.delete_item_msg'.trWith({'name': item.name}),
+        deleteText: 'general.delete'.tr,
+        cancelText: 'general.cancel'.tr,
       ),
       onDismissed: (_) => onDelete(),
       background: Container(

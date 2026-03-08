@@ -5,9 +5,6 @@ import 'package:wise_spends/core/services/preferences_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
-import 'package:wise_spends/presentation/screens/commitment/commitment_screen.dart';
-import 'package:wise_spends/presentation/screens/payee/payee_management_screen.dart';
-import 'package:wise_spends/presentation/screens/settings/category_management_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
@@ -48,7 +45,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // Track which panels are expanded
   bool _isAccountExpanded = false;
   bool _isNotificationsExpanded = false;
-  bool _isFinanceExpanded = false;
   bool _isPreferencesExpanded = false;
   bool _isDataExpanded = false;
   bool _isSupportExpanded = false;
@@ -176,105 +172,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         'settings.budget_reminders'.tr,
                       );
                     }
-                  },
-                ),
-              ],
-            ),
-
-            // Finance Management Section
-            _buildExpansionPanel(
-              id: 'finance',
-              title: 'settings.finance_management'.tr,
-              description: 'settings.finance_management_desc'.tr,
-              leadingIcon: Icons.attach_money,
-              leadingBackgroundColor: AppColors.tertiaryContainer,
-              isExpanded: _isFinanceExpanded,
-              onExpansionChanged: (expanded) {
-                setState(() => _isFinanceExpanded = expanded);
-              },
-              children: [
-                SettingsTile(
-                  leadingIcon: Icons.savings,
-                  title: 'savings.title'.tr,
-                  subtitle: 'savings.manage'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.savings);
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.pie_chart_outline,
-                  title: 'spending_budgets.title'.tr,
-                  subtitle: 'spending_budgets.manage'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.budgetList);
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.savings_outlined,
-                  title: 'savings_plans.title'.tr,
-                  subtitle: 'savings_plans.manage'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.budgetPlansList);
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.account_balance,
-                  title: 'money_storage.title'.tr,
-                  subtitle: 'money_storage.manage'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.moneyStorage);
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.calendar_month_outlined,
-                  title: 'commitments.title'.tr,
-                  subtitle: 'commitments.subtitle'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CommitmentScreen(),
-                      ),
-                    );
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.people_outline,
-                  title: 'payees.title'.tr,
-                  subtitle: 'payees.subtitle'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PayeeManagementScreen(),
-                      ),
-                    );
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.category_outlined,
-                  title: 'categories.manage'.tr,
-                  subtitle: 'categories.subtitle'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CategoryManagementScreen(),
-                      ),
-                    );
                   },
                 ),
               ],

@@ -7,10 +7,12 @@ import 'package:wise_spends/data/repositories/saving/i_saving_repository.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
+import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_bloc.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_event.dart';
 import 'package:wise_spends/presentation/blocs/transaction/transaction_state.dart';
 import 'package:wise_spends/presentation/widgets/components/transaction_card.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/router/route_arguments.dart';
 import 'package:wise_spends/shared/components/components.dart';
@@ -24,11 +26,18 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => TransactionBloc(
-        context.read<ITransactionRepository>(),
-        context.read<ISavingRepository>(),
-      )..add(LoadRecentTransactionsEvent(limit: 10)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => NavigationBloc(),
+        ),
+        BlocProvider(
+          create: (context) => TransactionBloc(
+            context.read<ITransactionRepository>(),
+            context.read<ISavingRepository>(),
+          )..add(LoadRecentTransactionsEvent(limit: 10)),
+        ),
+      ],
       child: const _HomeScreenContent(),
     );
   }
@@ -43,11 +52,27 @@ class _HomeScreenContent extends StatefulWidget {
 
 class _HomeScreenContentState extends State<_HomeScreenContent> {
   int _pendingTaskCount = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     _loadPendingTasks();
+    _setupNavigationListener();
+  }
+
+  void _setupNavigationListener() {
+    // Listen to navigation events to refresh dashboard
+    context.read<NavigationBloc>().stream.listen((state) {
+      if (state is DashboardRefreshRequested || state is NavigationNavigating) {
+        // Refresh the transaction data when navigating back
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            context.read<TransactionBloc>().add(RefreshTransactionsEvent());
+          }
+        });
+      }
+    });
   }
 
   Future<void> _loadPendingTasks() async {
@@ -65,28 +90,42 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: () async {
+      key: _scaffoldKey,
+      drawer: NavigationSidebar(
+        onNavigate: () {
+          // Refresh dashboard when navigating back
           context.read<TransactionBloc>().add(RefreshTransactionsEvent());
         },
-        child: CustomScrollView(
-          slivers: [
-            // App Bar with greeting
-            SliverAppBar(
-              floating: true,
-              backgroundColor: AppColors.background,
-              surfaceTintColor: Colors.transparent,
-              leading: IconButton(
-                icon: const Icon(Icons.settings),
-                onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.settings);
-                },
-                tooltip: 'Settings',
-                constraints: const BoxConstraints(
-                  minWidth: AppTouchTarget.min,
-                  minHeight: AppTouchTarget.min,
+      ),
+      body: BlocListener<NavigationBloc, NavigationState>(
+        listener: (context, state) {
+          if (state is NavigationNavigating) {
+            // Close drawer when navigation starts
+            _scaffoldKey.currentState?.closeDrawer();
+          }
+        },
+        child: RefreshIndicator(
+          onRefresh: () async {
+            context.read<TransactionBloc>().add(RefreshTransactionsEvent());
+          },
+          child: CustomScrollView(
+            slivers: [
+              // App Bar with greeting
+              SliverAppBar(
+                floating: true,
+                backgroundColor: AppColors.background,
+                surfaceTintColor: Colors.transparent,
+                leading: IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () {
+                    _scaffoldKey.currentState?.openDrawer();
+                  },
+                  tooltip: 'Menu',
+                  constraints: const BoxConstraints(
+                    minWidth: AppTouchTarget.min,
+                    minHeight: AppTouchTarget.min,
+                  ),
                 ),
-              ),
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -220,6 +259,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
           ],
         ),
+      ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showTransactionTypeDialog(context),

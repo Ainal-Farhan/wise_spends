@@ -1,52 +1,51 @@
+import 'dart:async';
+import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/core/constants/app_routes.dart';
 
 part 'navigation_event.dart';
 part 'navigation_state.dart';
 
 class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
-  NavigationBloc() : super(const NavigationState()) {
-    on<NavigationTabTapped>(_onTabTapped);
-    on<NavigationReturned>(_onReturned);
+  NavigationBloc() : super(NavigationClosed()) {
+    on<OpenNavigationEvent>(_onOpen);
+    on<CloseNavigationEvent>(_onClose);
+    on<ToggleNavigationEvent>(_onToggle);
+    on<NavigateToScreenEvent>(_onNavigate);
+    on<RefreshDashboardEvent>(_onRefreshDashboard);
   }
 
-  Future<void> _onTabTapped(
-    NavigationTabTapped event,
+  void _onOpen(OpenNavigationEvent event, Emitter<NavigationState> emit) {
+    emit(NavigationOpened());
+  }
+
+  void _onClose(CloseNavigationEvent event, Emitter<NavigationState> emit) {
+    emit(NavigationClosed());
+  }
+
+  void _onToggle(ToggleNavigationEvent event, Emitter<NavigationState> emit) {
+    if (state is NavigationOpened) {
+      emit(NavigationClosed());
+    } else {
+      emit(NavigationOpened());
+    }
+  }
+
+  Future<void> _onNavigate(
+    NavigateToScreenEvent event,
     Emitter<NavigationState> emit,
   ) async {
-    // Guard against double-taps while already navigating
-    if (state.isNavigating) return;
-    // Tapping the current tab does nothing
-    if (event.index == state.selectedIndex) return;
-
-    emit(state.copyWith(selectedIndex: event.index, isNavigating: true));
-
-    final route = _routeForIndex(event.index);
-
-    if (route != null) {
-      await Navigator.pushNamed(event.context, route);
-      // Returned from pushed route — reset to Home
-      add(const NavigationReturned());
-    } else {
-      // Index 0 is Home — already there, just clear the lock
-      emit(state.copyWith(isNavigating: false));
-    }
+    emit(NavigationNavigating(event.route, extraData: event.extraData));
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!isClosed && !emit.isDone) emit(NavigationClosed());
   }
 
-  void _onReturned(NavigationReturned event, Emitter<NavigationState> emit) {
-    emit(const NavigationState(selectedIndex: 0, isNavigating: false));
-  }
-
-  String? _routeForIndex(int index) {
-    switch (index) {
-      case 1:
-        return AppRoutes.savings;
-      case 2:
-        return AppRoutes.settings;
-      default:
-        return null; // 0 = Home, no push needed
-    }
+  Future<void> _onRefreshDashboard(
+    RefreshDashboardEvent event,
+    Emitter<NavigationState> emit,
+  ) async {
+    emit(DashboardRefreshRequested());
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (!isClosed && !emit.isDone) emit(NavigationClosed());
   }
 }

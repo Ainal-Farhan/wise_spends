@@ -22,6 +22,8 @@ import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
 import 'package:wise_spends/presentation/widgets/charts/budget_charts.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
@@ -260,28 +262,17 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
   }
 
   void _confirmDelete(String uuid) {
-    showDialog(
+    showConfirmDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('budget_plans.delete_plan'.tr),
-        content: Text('budget_plans.delete_plan_msg'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('general.cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<BudgetPlanDetailBloc>().add(DeletePlanEvent(uuid));
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: WiseSpendsColors.secondary,
-            ),
-            child: Text('general.delete'.tr),
-          ),
-        ],
-      ),
+      title: 'budget_plans.delete_plan'.tr,
+      message: 'budget_plans.delete_plan_msg'.tr,
+      confirmText: 'general.delete'.tr,
+      cancelText: 'general.cancel'.tr,
+      icon: Icons.delete_outline,
+      iconColor: AppColors.error,
+      onConfirm: () {
+        context.read<BudgetPlanDetailBloc>().add(DeletePlanEvent(uuid));
+      },
     );
   }
 
@@ -293,77 +284,75 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     // Constants for milestone date picker
     const maxYearsFuture = 5;
 
-    showDialog(
+    showCustomContentDialog(
       context: context,
-      builder: (_) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          title: Text('budget_plans.add_milestone_title'.tr),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AppTextField(
-                label: 'budget_plans.milestone_title'.tr,
-                hint: 'budget_plans.milestone_title_hint'.tr,
-                controller: titleCtrl,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              AppTextField(
-                label: 'budget_plans.target_amount'.tr,
-                hint: '0.00',
-                prefixText: 'RM ',
-                controller: amountCtrl,
-                keyboardType: AppTextFieldKeyboardType.decimal,
-              ),
-              const SizedBox(height: AppSpacing.lg),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.calendar_today),
-                title: Text(
-                  dueDate != null
-                      ? '${'general.due'.tr}: ${DateFormat('MMM d, y').format(dueDate!)}'
-                      : 'budget_plans.due_date_optional'.tr,
-                ),
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: ctx,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(
-                      const Duration(days: 365 * maxYearsFuture),
-                    ),
-                  );
-                  if (picked != null) {
-                    setDialogState(() => dueDate = picked);
-                  }
-                },
-              ),
-            ],
-          ),
-          actions: [
-            AppButton.text(
-              label: 'general.cancel'.tr,
-              onPressed: () => Navigator.pop(ctx),
+      title: 'budget_plans.add_milestone_title'.tr,
+      content: StatefulBuilder(
+        builder: (ctx, setDialogState) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppTextField(
+              label: 'budget_plans.milestone_title'.tr,
+              hint: 'budget_plans.milestone_title_hint'.tr,
+              controller: titleCtrl,
             ),
-            AppButton.primary(
-              label: 'general.add'.tr,
-              onPressed: () {
-                if (titleCtrl.text.isNotEmpty && amountCtrl.text.isNotEmpty) {
-                  context.read<BudgetPlanDetailBloc>().add(
-                    AddMilestoneEvent(
-                      title: titleCtrl.text,
-                      targetAmount: double.parse(amountCtrl.text),
-                      dueDate:
-                          dueDate ??
-                          DateTime.now().add(const Duration(days: 30)),
-                    ),
-                  );
-                  Navigator.pop(ctx);
+            const SizedBox(height: AppSpacing.lg),
+            AppTextField(
+              label: 'budget_plans.target_amount'.tr,
+              hint: '0.00',
+              prefixText: 'RM ',
+              controller: amountCtrl,
+              keyboardType: AppTextFieldKeyboardType.decimal,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.calendar_today),
+              title: Text(
+                dueDate != null
+                    ? '${'general.due'.tr}: ${DateFormat('MMM d, y').format(dueDate!)}'
+                    : 'budget_plans.due_date_optional'.tr,
+              ),
+              onTap: () async {
+                final picked = await showDatePicker(
+                  context: ctx,
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(
+                    const Duration(days: 365 * maxYearsFuture),
+                  ),
+                );
+                if (picked != null) {
+                  setDialogState(() => dueDate = picked);
                 }
               },
             ),
           ],
         ),
       ),
+      actions: [
+        DialogAction(
+          text: 'general.cancel'.tr,
+          onPressed: () => Navigator.pop(context),
+        ),
+        DialogAction(
+          text: 'general.add'.tr,
+          isPrimary: true,
+          onPressed: () {
+            if (titleCtrl.text.isNotEmpty && amountCtrl.text.isNotEmpty) {
+              context.read<BudgetPlanDetailBloc>().add(
+                AddMilestoneEvent(
+                  title: titleCtrl.text,
+                  targetAmount: double.parse(amountCtrl.text),
+                  dueDate:
+                      dueDate ?? DateTime.now().add(const Duration(days: 30)),
+                ),
+              );
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -372,30 +361,19 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     String milestoneId,
     String planId,
   ) {
-    showDialog(
+    showConfirmDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('budget_plans.complete_milestone'.tr),
-        content: Text('budget_plans.complete_milestone_msg'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('general.cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<BudgetPlanDetailBloc>().add(
-                CompleteMilestoneEvent(milestoneId),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: WiseSpendsColors.success,
-            ),
-            child: Text('budget_plans.complete'.tr),
-          ),
-        ],
-      ),
+      title: 'budget_plans.complete_milestone'.tr,
+      message: 'budget_plans.complete_milestone_msg'.tr,
+      confirmText: 'budget_plans.complete'.tr,
+      cancelText: 'general.cancel'.tr,
+      icon: Icons.check_circle_outline,
+      iconColor: AppColors.success,
+      onConfirm: () {
+        context.read<BudgetPlanDetailBloc>().add(
+          CompleteMilestoneEvent(milestoneId),
+        );
+      },
     );
   }
 
@@ -404,30 +382,17 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     String accountId,
     String planId,
   ) {
-    showDialog(
+    showConfirmDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('budget_plans.unlink_account'.tr),
-        content: Text('budget_plans.unlink_account_msg'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('general.cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<BudgetPlanDetailBloc>().add(
-                UnlinkAccountEvent(accountId),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: WiseSpendsColors.secondary,
-            ),
-            child: Text('budget_plans.unlink'.tr),
-          ),
-        ],
-      ),
+      title: 'budget_plans.unlink_account'.tr,
+      message: 'budget_plans.unlink_account_msg'.tr,
+      confirmText: 'general.unlink'.tr,
+      cancelText: 'general.cancel'.tr,
+      icon: Icons.link_off,
+      iconColor: AppColors.warning,
+      onConfirm: () {
+        context.read<BudgetPlanDetailBloc>().add(UnlinkAccountEvent(accountId));
+      },
     );
   }
 }
@@ -2200,25 +2165,12 @@ class _EmptyTransactions extends StatelessWidget {
 
 /// Shared delete confirmation dialog
 Future<bool?> _confirmDelete(BuildContext context, {required String message}) {
-  return showDialog<bool>(
+  return showDeleteDialog(
     context: context,
-    builder: (ctx) => AlertDialog(
-      title: Text('general.delete'.tr),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: Text('general.cancel'.tr),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: WiseSpendsColors.secondary,
-          ),
-          child: Text('general.delete'.tr),
-        ),
-      ],
-    ),
+    title: 'general.delete'.tr,
+    message: message,
+    deleteText: 'general.delete'.tr,
+    cancelText: 'general.cancel'.tr,
   );
 }
 

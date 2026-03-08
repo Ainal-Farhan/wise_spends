@@ -14,6 +14,7 @@ import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_even
 import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_state.dart';
 import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
@@ -580,28 +581,15 @@ class _PlanOptionsSheet extends StatelessWidget {
 
   // WAS: void _confirmDelete(BuildContext context, dynamic plan)
   void _confirmDelete(BuildContext context) {
-    showDialog(
+    showDeleteDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('budget_plans.delete_plan'.tr),
-        content: Text('budget_plans.delete_plan_msg'.tr),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('general.cancel'.tr),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<BudgetPlanListBloc>().add(DeleteBudgetPlan(plan.id));
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: WiseSpendsColors.secondary,
-            ),
-            child: Text('general.delete'.tr),
-          ),
-        ],
-      ),
+      title: 'budget_plans.delete_plan'.tr,
+      message: 'budget_plans.delete_plan_msg'.tr,
+      deleteText: 'general.delete'.tr,
+      cancelText: 'general.cancel'.tr,
+      onDelete: () {
+        context.read<BudgetPlanListBloc>().add(DeleteBudgetPlan(plan.id));
+      },
     );
   }
 }
@@ -626,42 +614,45 @@ class _FilterDialog extends StatelessWidget {
           Navigator.pop(context);
         }
 
-        return AlertDialog(
-          title: Text('general.filter'.tr),
-          content: RadioGroup<BudgetPlanStatus?>(
-            groupValue: current,
-            onChanged: select,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RadioListTile<BudgetPlanStatus?>(
-                  title: Text('budget_plans.filter_all'.tr),
-                  value: null,
-                ),
-                RadioListTile<BudgetPlanStatus?>(
-                  title: Text('budget_plans.filter_active'.tr),
-                  value: BudgetPlanStatus.active,
-                ),
-                RadioListTile<BudgetPlanStatus?>(
-                  title: Text('budget_plans.filter_completed'.tr),
-                  value: BudgetPlanStatus.completed,
-                ),
-              ],
+        return CustomDialog(
+          config: CustomDialogConfig(
+            title: 'general.filter'.tr,
+            content: RadioGroup<BudgetPlanStatus?>(
+              groupValue: current,
+              onChanged: select,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile<BudgetPlanStatus?>(
+                    title: Text('budget_plans.filter_all'.tr),
+                    value: null,
+                  ),
+                  RadioListTile<BudgetPlanStatus?>(
+                    title: Text('budget_plans.filter_active'.tr),
+                    value: BudgetPlanStatus.active,
+                  ),
+                  RadioListTile<BudgetPlanStatus?>(
+                    title: Text('budget_plans.filter_completed'.tr),
+                    value: BudgetPlanStatus.completed,
+                  ),
+                ],
+              ),
             ),
+            buttons: [
+              CustomDialogButton(
+                text: 'general.clear'.tr,
+                onPressed: () {
+                  context.read<BudgetPlanListBloc>().add(FilterBudgetPlans());
+                  Navigator.pop(context);
+                },
+              ),
+              CustomDialogButton(
+                text: 'general.close'.tr,
+                isDefault: true,
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                context.read<BudgetPlanListBloc>().add(FilterBudgetPlans());
-                Navigator.pop(context);
-              },
-              child: Text('general.clear'.tr),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('general.close'.tr),
-            ),
-          ],
         );
       },
     );

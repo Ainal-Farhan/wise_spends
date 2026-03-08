@@ -16,6 +16,7 @@ import 'package:wise_spends/presentation/blocs/edit_budget_plan_form/edit_budget
 import 'package:wise_spends/presentation/blocs/edit_budget_plan_form/edit_budget_plan_form_event.dart';
 import 'package:wise_spends/presentation/blocs/edit_budget_plan_form/edit_budget_plan_form_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -432,48 +433,47 @@ class _Step3Milestones extends StatelessWidget {
     final titleCtrl = TextEditingController();
     final amountCtrl = TextEditingController();
 
-    showDialog(
+    showCustomContentDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('budget_plans.add_milestone_title'.tr),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppTextField(
-              label: 'budget_plans.milestone_title'.tr,
-              hint: 'budget_plans.milestone_title_hint'.tr,
-              controller: titleCtrl,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            AppTextField(
-              label: 'budget_plans.target_amount'.tr,
-              hint: '0.00',
-              prefixText: 'RM ',
-              controller: amountCtrl,
-              keyboardType: AppTextFieldKeyboardType.decimal,
-            ),
-          ],
-        ),
-        actions: [
-          AppButton.text(
-            label: 'general.cancel'.tr,
-            onPressed: () => Navigator.pop(context),
+      title: 'budget_plans.add_milestone_title'.tr,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppTextField(
+            label: 'budget_plans.milestone_title'.tr,
+            hint: 'budget_plans.milestone_title_hint'.tr,
+            controller: titleCtrl,
           ),
-          AppButton.primary(
-            label: 'general.add'.tr,
-            onPressed: () {
-              final title = titleCtrl.text;
-              final amount = double.tryParse(amountCtrl.text) ?? 0.0;
-              if (title.isNotEmpty && amount > 0) {
-                context.read<CreateBudgetPlanFormBloc>().add(
-                  AddMilestone(title, amount),
-                );
-                Navigator.pop(context);
-              }
-            },
+          const SizedBox(height: AppSpacing.lg),
+          AppTextField(
+            label: 'budget_plans.target_amount'.tr,
+            hint: '0.00',
+            prefixText: 'RM ',
+            controller: amountCtrl,
+            keyboardType: AppTextFieldKeyboardType.decimal,
           ),
         ],
       ),
+      actions: [
+        DialogAction(
+          text: 'general.cancel'.tr,
+          onPressed: () => Navigator.pop(context),
+        ),
+        DialogAction(
+          text: 'general.add'.tr,
+          isPrimary: true,
+          onPressed: () {
+            final title = titleCtrl.text;
+            final amount = double.tryParse(amountCtrl.text) ?? 0.0;
+            if (title.isNotEmpty && amount > 0) {
+              context.read<CreateBudgetPlanFormBloc>().add(
+                AddMilestone(title, amount),
+              );
+              Navigator.pop(context);
+            }
+          },
+        ),
+      ],
     );
   }
 }

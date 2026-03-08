@@ -5,6 +5,7 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
@@ -145,7 +146,10 @@ class _CommitmentTaskScreenContentState
                       color: AppColors.secondary,
                     ),
                     const SizedBox(height: 16),
-                    Text('commitment_tasks.something_wrong'.tr, style: AppTextStyles.h3),
+                    Text(
+                      'commitment_tasks.something_wrong'.tr,
+                      style: AppTextStyles.h3,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       state.message,
@@ -478,72 +482,56 @@ class _CommitmentTaskScreenContentState
   void _showTaskDetailDialog(CommitmentTaskVO task) {
     final isDone = task.isDone == true;
 
-    showDialog(
+    showCustomContentDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(
-          task.name ?? 'Unnamed Task',
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
+      title: task.name ?? 'Unnamed Task',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildDetailRow(
+            'Amount',
+            NumberFormat.currency(
+              symbol: 'RM ',
+              decimalDigits: 2,
+            ).format(task.amount ?? 0.0),
           ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDetailRow(
-              'Amount',
-              NumberFormat.currency(
-                symbol: 'RM ',
-                decimalDigits: 2,
-              ).format(task.amount ?? 0.0),
-            ),
-            _buildDetailRow('Status', isDone ? 'Completed' : 'Pending'),
-            _buildDetailRow('Type', _labelForType(task.type)),
-            if (task.type == CommitmentTaskType.internalTransfer) ...[
-              _buildDetailRow('From', task.sourceSavingName),
-              _buildDetailRow('To', task.targetSavingName),
-            ] else if (task.type == CommitmentTaskType.thirdPartyPayment) ...[
-              _buildDetailRow('From', task.sourceSavingName),
-              _buildDetailRow('Payee', task.payeeName),
-              if (task.payeeVO?.bankName != null)
-                _buildDetailRow('Bank', task.payeeVO!.bankName!),
-              if (task.payeeVO?.accountNumber != null)
-                _buildDetailRow('Account', task.payeeVO!.accountNumber!),
-            ] else if (task.type == CommitmentTaskType.cash) ...[
-              _buildDetailRow('Method', 'Cash'),
-            ],
-            if (task.note?.isNotEmpty == true)
-              _buildDetailRow('Note', task.note!),
-            if (task.paymentReference?.isNotEmpty == true)
-              _buildDetailRow('Reference', task.paymentReference!),
+          _buildDetailRow('Status', isDone ? 'Completed' : 'Pending'),
+          _buildDetailRow('Type', _labelForType(task.type)),
+          if (task.type == CommitmentTaskType.internalTransfer) ...[
+            _buildDetailRow('From', task.sourceSavingName),
+            _buildDetailRow('To', task.targetSavingName),
+          ] else if (task.type == CommitmentTaskType.thirdPartyPayment) ...[
+            _buildDetailRow('From', task.sourceSavingName),
+            _buildDetailRow('Payee', task.payeeName),
+            if (task.payeeVO?.bankName != null)
+              _buildDetailRow('Bank', task.payeeVO!.bankName!),
+            if (task.payeeVO?.accountNumber != null)
+              _buildDetailRow('Account', task.payeeVO!.accountNumber!),
+          ] else if (task.type == CommitmentTaskType.cash) ...[
+            _buildDetailRow('Method', 'Cash'),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'general.close'.tr,
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          if (!isDone)
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                _confirmCompleteTask(task);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.success,
-                foregroundColor: Colors.white,
-              ),
-              child: Text('commitment_tasks.mark_complete'.tr),
-            ),
+          if (task.note?.isNotEmpty == true)
+            _buildDetailRow('Note', task.note!),
+          if (task.paymentReference?.isNotEmpty == true)
+            _buildDetailRow('Reference', task.paymentReference!),
         ],
       ),
+      actions: [
+        DialogAction(
+          text: 'general.close'.tr,
+          onPressed: () => Navigator.pop(context),
+        ),
+        if (!isDone)
+          DialogAction(
+            text: 'commitment_tasks.mark_complete'.tr,
+            isPrimary: true,
+            onPressed: () {
+              Navigator.pop(context);
+              _confirmCompleteTask(task);
+            },
+          ),
+      ],
     );
   }
 
@@ -600,9 +588,11 @@ class _CommitmentTaskScreenContentState
     String? selectedTargetId = initial?.targetSavingId;
     String? selectedPayeeId = initial?.payeeId;
 
-    showDialog(
+    showCustomContentDialog(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
+      title: title,
+      isScrollable: true,
+      content: StatefulBuilder(
         builder: (ctx, setDialogState) {
           // Rebuild type-specific fields on type change
           Widget typeSpecificFields() {
@@ -716,188 +706,169 @@ class _CommitmentTaskScreenContentState
             }
           }
 
-          return AlertDialog(
-            backgroundColor: AppColors.surface,
-            title: Text(
-              title,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AppTextField(
-                    label: 'Task Name',
-                    controller: nameController,
-                    hint: 'e.g., Monthly rent — March 2026',
-                    prefixIcon: Icons.label_outline,
-                  ),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    label: 'Amount (RM)',
-                    controller: amountController,
-                    prefixText: 'RM ',
-                    keyboardType: AppTextFieldKeyboardType.decimal,
-                    prefixIcon: Icons.attach_money,
-                  ),
-                  const SizedBox(height: 16),
-                  // Payment type — drives which extra fields are shown
-                  DropdownButtonFormField<CommitmentTaskType>(
-                    initialValue: selectedType,
-                    decoration: const InputDecoration(
-                      labelText: 'Payment Type',
-                      prefixIcon: Icon(Icons.category_outlined),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
+          return CustomDialog(
+            config: CustomDialogConfig(
+              title: title,
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppTextField(
+                      label: 'Task Name',
+                      controller: nameController,
+                      hint: 'e.g., Monthly rent — March 2026',
+                      prefixIcon: Icons.label_outline,
                     ),
-                    items: CommitmentTaskType.values
-                        .map(
-                          (t) => DropdownMenuItem(
-                            value: t,
-                            child: Text(_labelForType(t)),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        setDialogState(() {
-                          selectedType = value;
-                          // Clear irrelevant fields when type changes
-                          selectedSourceId = null;
-                          selectedTargetId = null;
-                          selectedPayeeId = null;
-                        });
-                      }
-                    },
-                  ),
-                  // Type-specific pickers rendered inline
-                  typeSpecificFields(),
-                  const SizedBox(height: 16),
-                  AppTextField(
-                    label: 'Note (Optional)',
-                    controller: noteController,
-                    hint: 'Any additional info',
-                    maxLines: 2,
-                  ),
-                  if (initial != null) ...[
                     const SizedBox(height: 16),
                     AppTextField(
-                      label: 'Payment Reference (Optional)',
-                      controller: referenceController,
-                      hint: 'Receipt no., FPX ref., etc.',
-                      prefixIcon: Icons.receipt_outlined,
+                      label: 'Amount (RM)',
+                      controller: amountController,
+                      prefixText: 'RM ',
+                      keyboardType: AppTextFieldKeyboardType.decimal,
+                      prefixIcon: Icons.attach_money,
                     ),
+                    const SizedBox(height: 16),
+                    // Payment type — drives which extra fields are shown
+                    DropdownButtonFormField<CommitmentTaskType>(
+                      initialValue: selectedType,
+                      decoration: const InputDecoration(
+                        labelText: 'Payment Type',
+                        prefixIcon: Icon(Icons.category_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                      ),
+                      items: CommitmentTaskType.values
+                          .map(
+                            (t) => DropdownMenuItem(
+                              value: t,
+                              child: Text(_labelForType(t)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setDialogState(() {
+                            selectedType = value;
+                            // Clear irrelevant fields when type changes
+                            selectedSourceId = null;
+                            selectedTargetId = null;
+                            selectedPayeeId = null;
+                          });
+                        }
+                      },
+                    ),
+                    // Type-specific pickers rendered inline
+                    typeSpecificFields(),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      label: 'Note (Optional)',
+                      controller: noteController,
+                      hint: 'Any additional info',
+                      maxLines: 2,
+                    ),
+                    if (initial != null) ...[
+                      const SizedBox(height: 16),
+                      AppTextField(
+                        label: 'Payment Reference (Optional)',
+                        controller: referenceController,
+                        hint: 'Receipt no., FPX ref., etc.',
+                        prefixIcon: Icons.receipt_outlined,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(
-                  'general.cancel'.tr,
-                  style: const TextStyle(color: AppColors.textSecondary),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  final name = nameController.text.trim();
-                  final amount = double.tryParse(amountController.text.trim());
-
-                  if (name.isEmpty) {
-                    _showInlineError('Please enter a task name');
-                    return;
-                  }
-                  if (amount == null || amount <= 0) {
-                    _showInlineError('Please enter a valid amount');
-                    return;
-                  }
-                  if (selectedType == CommitmentTaskType.internalTransfer) {
-                    if (selectedSourceId == null) {
-                      _showInlineError(
-                        'Please select a source savings account',
-                      );
-                      return;
-                    }
-                    if (selectedTargetId == null) {
-                      _showInlineError(
-                        'Please select a target savings account',
-                      );
-                      return;
-                    }
-                    if (selectedSourceId == selectedTargetId) {
-                      _showInlineError(
-                        'Source and target savings must be different',
-                      );
-                      return;
-                    }
-                  }
-                  if (selectedType == CommitmentTaskType.thirdPartyPayment) {
-                    if (selectedSourceId == null) {
-                      _showInlineError(
-                        'Please select a source savings account',
-                      );
-                      return;
-                    }
-                    if (selectedPayeeId == null) {
-                      _showInlineError('Please select a payee');
-                      return;
-                    }
-                  }
-
-                  Navigator.pop(dialogContext);
-
-                  final taskVO = (initial ?? CommitmentTaskVO())
-                    ..name = name
-                    ..amount = amount
-                    ..type = selectedType
-                    ..isDone = initial?.isDone ?? false
-                    ..sourceSavingId = selectedSourceId
-                    ..targetSavingId = selectedTargetId
-                    ..payeeId = selectedPayeeId
-                    ..note = noteController.text.trim().isEmpty
-                        ? null
-                        : noteController.text.trim()
-                    ..paymentReference = referenceController.text.trim().isEmpty
-                        ? null
-                        : referenceController.text.trim();
-
-                  // Attach VO objects so the card subtitle renders immediately
-                  // without waiting for a reload
-                  if (selectedSourceId != null) {
-                    taskVO.sourceSavingVO = savings
-                        .where((s) => s.saving.id == selectedSourceId)
-                        .map((s) => SavingVO.fromSvngSaving(s.saving))
-                        .firstOrNull;
-                  }
-                  if (selectedTargetId != null) {
-                    taskVO.targetSavingVO = savings
-                        .where((s) => s.saving.id == selectedTargetId)
-                        .map((s) => SavingVO.fromSvngSaving(s.saving))
-                        .firstOrNull;
-                  }
-                  if (selectedPayeeId != null) {
-                    taskVO.payeeVO = payees
-                        .where((p) => p.id == selectedPayeeId)
-                        .firstOrNull;
-                  }
-
-                  onConfirm(taskVO);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(confirmLabel),
-              ),
-            ],
           );
         },
       ),
+      actions: [
+        DialogAction(
+          text: 'general.cancel'.tr,
+          onPressed: () => Navigator.pop(context),
+        ),
+        DialogAction(
+          text: confirmLabel,
+          isPrimary: true,
+          onPressed: () {
+            final name = nameController.text.trim();
+            final amount = double.tryParse(amountController.text.trim());
+
+            if (name.isEmpty) {
+              _showInlineError('Please enter a task name');
+              return;
+            }
+            if (amount == null || amount <= 0) {
+              _showInlineError('Please enter a valid amount');
+              return;
+            }
+            if (selectedType == CommitmentTaskType.internalTransfer) {
+              if (selectedSourceId == null) {
+                _showInlineError('Please select a source savings account');
+                return;
+              }
+              if (selectedTargetId == null) {
+                _showInlineError('Please select a target savings account');
+                return;
+              }
+              if (selectedSourceId == selectedTargetId) {
+                _showInlineError('Source and target savings must be different');
+                return;
+              }
+            }
+            if (selectedType == CommitmentTaskType.thirdPartyPayment) {
+              if (selectedSourceId == null) {
+                _showInlineError('Please select a source savings account');
+                return;
+              }
+              if (selectedPayeeId == null) {
+                _showInlineError('Please select a payee');
+                return;
+              }
+            }
+
+            Navigator.pop(context);
+
+            final taskVO = (initial ?? CommitmentTaskVO())
+              ..name = name
+              ..amount = amount
+              ..type = selectedType
+              ..isDone = initial?.isDone ?? false
+              ..sourceSavingId = selectedSourceId
+              ..targetSavingId = selectedTargetId
+              ..payeeId = selectedPayeeId
+              ..note = noteController.text.trim().isEmpty
+                  ? null
+                  : noteController.text.trim()
+              ..paymentReference = referenceController.text.trim().isEmpty
+                  ? null
+                  : referenceController.text.trim();
+
+            // Attach VO objects so the card subtitle renders immediately
+            // without waiting for a reload
+            if (selectedSourceId != null) {
+              taskVO.sourceSavingVO = savings
+                  .where((s) => s.saving.id == selectedSourceId)
+                  .map((s) => SavingVO.fromSvngSaving(s.saving))
+                  .firstOrNull;
+            }
+            if (selectedTargetId != null) {
+              taskVO.targetSavingVO = savings
+                  .where((s) => s.saving.id == selectedTargetId)
+                  .map((s) => SavingVO.fromSvngSaving(s.saving))
+                  .firstOrNull;
+            }
+            if (selectedPayeeId != null) {
+              taskVO.payeeVO = payees
+                  .where((p) => p.id == selectedPayeeId)
+                  .firstOrNull;
+            }
+
+            onConfirm(taskVO);
+          },
+        ),
+      ],
     );
   }
 
@@ -906,103 +877,51 @@ class _CommitmentTaskScreenContentState
   // ---------------------------------------------------------------------------
 
   void _confirmCompleteTask(CommitmentTaskVO task) {
-    showDialog(
+    showConfirmDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(
-          'Complete Task?',
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Mark this task as completed? This will update your savings balance.',
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 12),
-            _buildDetailRow('Type', _labelForType(task.type)),
-            if (task.type == CommitmentTaskType.internalTransfer) ...[
-              _buildDetailRow('From', task.sourceSavingName),
-              _buildDetailRow('To', task.targetSavingName),
-            ] else if (task.type == CommitmentTaskType.thirdPartyPayment) ...[
-              _buildDetailRow('From', task.sourceSavingName),
-              _buildDetailRow('Payee', task.payeeName),
-            ] else if (task.type == CommitmentTaskType.cash) ...[
-              _buildDetailRow('Method', 'Cash — no account affected'),
-            ],
+      title: 'Complete Task?',
+      message:
+          'Mark this task as completed? This will update your savings balance.',
+      confirmText: 'commitment_tasks.mark_complete'.tr,
+      cancelText: 'general.cancel'.tr,
+      icon: Icons.check_circle_outline,
+      iconColor: AppColors.success,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 12),
+          _buildDetailRow('Type', _labelForType(task.type)),
+          if (task.type == CommitmentTaskType.internalTransfer) ...[
+            _buildDetailRow('From', task.sourceSavingName),
+            _buildDetailRow('To', task.targetSavingName),
+          ] else if (task.type == CommitmentTaskType.thirdPartyPayment) ...[
+            _buildDetailRow('From', task.sourceSavingName),
+            _buildDetailRow('Payee', task.payeeName),
+          ] else if (task.type == CommitmentTaskType.cash) ...[
+            _buildDetailRow('Method', 'Cash — no account affected'),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'general.cancel'.tr,
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<CommitmentTaskBloc>().add(
-                UpdateStatusCommitmentTaskEvent(true, task),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.success,
-              foregroundColor: Colors.white,
-            ),
-            child: Text('commitment_tasks.complete'.tr),
-          ),
         ],
       ),
+      onConfirm: () {
+        context.read<CommitmentTaskBloc>().add(
+          UpdateStatusCommitmentTaskEvent(true, task),
+        );
+      },
     );
   }
 
   void _confirmDeleteTask(CommitmentTaskVO task) {
-    showDialog(
+    showDeleteDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(
-          'Delete Task?',
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: Text(
+      title: 'Delete Task?',
+      message:
           'Are you sure you want to delete this task? This cannot be undone.',
-          style: const TextStyle(color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'general.cancel'.tr,
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<CommitmentTaskBloc>().add(
-                DeleteCommitmentTaskEvent(task),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.secondary,
-              foregroundColor: Colors.white,
-            ),
-            child: Text('general.delete'.tr),
-          ),
-        ],
-      ),
+      deleteText: 'general.delete'.tr,
+      cancelText: 'general.cancel'.tr,
+      onDelete: () {
+        context.read<CommitmentTaskBloc>().add(DeleteCommitmentTaskEvent(task));
+      },
     );
   }
 
@@ -1054,34 +973,15 @@ class _CommitmentTaskScreenContentState
   }
 
   void _showInfoDialog() {
-    showDialog(
+    showInfoDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: Text(
-          'About Commitment Tasks',
-          style: const TextStyle(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        content: Text(
+      title: 'About Commitment Tasks',
+      message:
           'Commitment Tasks are generated when you distribute a commitment. '
           'Each task represents one payment — internal transfer between your savings, '
           'a payment to an external party, or a cash payment. '
           'Mark tasks complete to update your savings balance.',
-          style: const TextStyle(color: AppColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Got it',
-              style: TextStyle(color: AppColors.primary),
-            ),
-          ),
-        ],
-      ),
+      okText: 'Got it',
     );
   }
 }
