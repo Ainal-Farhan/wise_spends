@@ -69,10 +69,28 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
       ),
       body: BlocConsumer<CreateBudgetPlanFormBloc, CreateBudgetPlanFormState>(
         listener: (context, state) {
-          if (state is CreateBudgetPlanFormReady) {
-            if (_nameCtrl.text != state.name) {
-              _nameCtrl.text = state.name;
-            }
+          // Keep name controller in sync for the pre-fill path.
+          if (state is CreateBudgetPlanFormReady &&
+              _nameCtrl.text != state.name) {
+            _nameCtrl.text = state.name;
+          }
+
+          if (state is CreateBudgetPlanFormSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('budget_plans.created'.tr),
+                backgroundColor: AppColors.success,
+              ),
+            );
+            Navigator.pop(context);
+          } else if (state is CreateBudgetPlanFormError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -101,6 +119,7 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
               ),
               _WizardNavBar(
                 currentStep: state.currentStep,
+                isLoading: state.isLoading,
                 onBack: () => context.read<CreateBudgetPlanFormBloc>().add(
                   ChangeCurrentStep(state.currentStep - 1),
                 ),
@@ -118,7 +137,8 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
   }
 
   void _submit(CreateBudgetPlanFormReady state) {
-    if (state.name.isEmpty) {
+    // Client-side validation only — no DB call here.
+    if (state.name.trim().isEmpty) {
       _showError('budget_plans.enter_plan_name'.tr);
       return;
     }
@@ -126,19 +146,18 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
       _showError('budget_plans.enter_target'.tr);
       return;
     }
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('budget_plans.created'.tr),
-        backgroundColor: AppColors.success,
-      ),
-    );
-    context.read<BudgetPlanListBloc>().add(LoadBudgetPlans());
+
+    // Delegate the actual save to the bloc.
+    context.read<CreateBudgetPlanFormBloc>().add(const SaveCreateBudgetPlan());
   }
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppColors.error),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 }
@@ -481,6 +500,11 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
   final _descCtrl = TextEditingController();
   final _targetCtrl = TextEditingController();
 
+  /// Tracks whether controllers have been seeded from the loaded state.
+  /// Without this guard the listener would overwrite user edits on every
+  /// subsequent state emission (e.g. after changing a category chip).
+  bool _controllersSynced = false;
+
   @override
   void dispose() {
     _nameCtrl.dispose();
@@ -501,6 +525,24 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
       ),
       body: BlocConsumer<EditBudgetPlanFormBloc, EditBudgetPlanFormState>(
         listener: (context, state) {
+          // ── Sync controllers once when the plan data first arrives ─────────
+          // This is the fix for controllers showing empty strings after load.
+          // We only do it once (_controllersSynced guard) so user edits are
+          // not overwritten by subsequent Ready emissions (e.g. chip taps).
+          if (state is EditBudgetPlanFormReady && !_controllersSynced) {
+            _controllersSynced = true;
+            // Only update if different to avoid unnecessary cursor resets.
+            if (_nameCtrl.text != state.name) _nameCtrl.text = state.name;
+            if (_descCtrl.text != state.description) {
+              _descCtrl.text = state.description;
+            }
+            final targetStr = state.targetAmount > 0
+                ? state.targetAmount.toStringAsFixed(2)
+                : '';
+            if (_targetCtrl.text != targetStr) _targetCtrl.text = targetStr;
+          }
+
+          // ── Terminal states ─────────────────────────────────────────────────
           if (state is EditBudgetPlanFormSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -526,10 +568,10 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
           if (state is EditBudgetPlanFormReady) {
             return Column(
               children: [
-                _WizardStepBar(currentStep: 0, stepCount: 3),
+                _WizardStepBar(currentStep: state.currentStep, stepCount: 3),
                 Expanded(
                   child: IndexedStack(
-                    index: 0,
+                    index: state.currentStep,
                     children: [
                       _EditStep1(
                         state: state,
@@ -543,6 +585,37 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
                 ),
                 _EditNavBar(state: state),
               ],
+            );
+          }
+          // EditBudgetPlanFormError with no prior Ready state — show inline error.
+          if (state is EditBudgetPlanFormError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.xxl),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.error,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      state.message,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.bodyMedium,
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    AppButton.primary(
+                      label: 'general.retry'.tr,
+                      onPressed: () => context
+                          .read<EditBudgetPlanFormBloc>()
+                          .add(InitializeEditBudgetPlan(widget.planUuid)),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
           return const SizedBox.shrink();
@@ -733,13 +806,42 @@ class _EditNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _BottomNavBar(
-      child: AppButton.primary(
-        label: 'budget_plans.save_changes'.tr,
-        icon: Icons.save,
-        onPressed: () =>
-            context.read<EditBudgetPlanFormBloc>().add(SaveEditBudgetPlan()),
-        isLoading: state.isLoading,
-        isFullWidth: true,
+      child: Row(
+        children: [
+          if (state.currentStep > 0) ...[
+            Expanded(
+              child: AppButton.secondary(
+                label: 'general.back'.tr,
+                onPressed: () => context.read<EditBudgetPlanFormBloc>().add(
+                  EditChangeStep(state.currentStep - 1),
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.lg),
+          ],
+          Expanded(
+            flex: state.currentStep > 0 ? 1 : 2,
+            child: AppButton.primary(
+              label: state.currentStep == 2
+                  ? 'budget_plans.save_changes'.tr
+                  : 'general.next'.tr,
+              isLoading: state.isLoading,
+              onPressed: state.isLoading
+                  ? null
+                  : () {
+                      if (state.currentStep < 2) {
+                        context.read<EditBudgetPlanFormBloc>().add(
+                          EditChangeStep(state.currentStep + 1),
+                        );
+                      } else {
+                        context.read<EditBudgetPlanFormBloc>().add(
+                          SaveEditBudgetPlan(),
+                        );
+                      }
+                    },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -819,6 +921,7 @@ class _WizardStepBar extends StatelessWidget {
 
 class _WizardNavBar extends StatelessWidget {
   final int currentStep;
+  final bool isLoading;
   final VoidCallback onBack;
   final VoidCallback onNext;
 
@@ -826,6 +929,7 @@ class _WizardNavBar extends StatelessWidget {
     required this.currentStep,
     required this.onBack,
     required this.onNext,
+    this.isLoading = false,
   });
 
   @override
@@ -837,7 +941,7 @@ class _WizardNavBar extends StatelessWidget {
             Expanded(
               child: AppButton.secondary(
                 label: 'general.back'.tr,
-                onPressed: onBack,
+                onPressed: isLoading ? null : onBack,
               ),
             ),
             const SizedBox(width: AppSpacing.lg),
@@ -848,7 +952,8 @@ class _WizardNavBar extends StatelessWidget {
               label: currentStep == 2
                   ? 'budget_plans.create'.tr
                   : 'general.next'.tr,
-              onPressed: onNext,
+              isLoading: isLoading,
+              onPressed: isLoading ? null : onNext,
             ),
           ),
         ],

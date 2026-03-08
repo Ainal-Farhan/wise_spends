@@ -848,5 +848,35 @@ class EnglishStrings {
     'budgets.status_active': 'Active',
     'budgets.status_inactive': 'Inactive',
     'budgets.date_from': 'From',
+
+    // Budget Plan Categories
+    'budget_plans.cat_wedding': 'Wedding',
+    'budget_plans.cat_house': 'House',
+    'budget_plans.cat_travel': 'Travel',
+    'budget_plans.cat_education': 'Education',
+    'budget_plans.cat_emergency': 'Emergency',
+    'budget_plans.cat_vehicle': 'Vehicle',
+    'budget_plans.cat_medical': 'Medical',
+    'budget_plans.cat_custom': 'Custom',
+
+    // Budget Plan Statuses
+    'budget_plans.status_active': 'Active',
+    'budget_plans.status_completed': 'Completed',
+    'budget_plans.status_paused': 'Paused',
+    'budget_plans.status_cancelled': 'Cancelled',
+
+    // Budget Health Statuses
+    'budget_plans.health_on_track': 'On Track',
+    'budget_plans.health_slightly_behind': 'Slightly Behind',
+    'budget_plans.health_at_risk': 'At Risk',
+    'budget_plans.health_over_budget': 'Over Budget',
+    'budget_plans.health_completed': 'Completed',
+
+    // Analytics Periods
+    'budget_plans.period_week': 'Week',
+    'budget_plans.period_month': 'Month',
+    'budget_plans.period_quarter': 'Quarter',
+    'budget_plans.period_year': 'Year',
+    'budget_plans.period_all': 'All',
   };
 }

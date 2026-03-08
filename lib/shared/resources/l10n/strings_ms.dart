@@ -861,5 +861,35 @@ class MalayStrings {
     'budgets.status_active': 'Aktif',
     'budgets.status_inactive': 'Tidak Aktif',
     'budgets.date_from': 'Dari',
+
+    // Budget Plan Categories
+    'budget_plans.cat_wedding': 'Perkahwinan',
+    'budget_plans.cat_house': 'Rumah',
+    'budget_plans.cat_travel': 'Perjalanan',
+    'budget_plans.cat_education': 'Pendidikan',
+    'budget_plans.cat_emergency': 'Kecemasan',
+    'budget_plans.cat_vehicle': 'Kenderaan',
+    'budget_plans.cat_medical': 'Perubatan',
+    'budget_plans.cat_custom': 'Tersuai',
+
+    // Budget Plan Statuses
+    'budget_plans.status_active': 'Aktif',
+    'budget_plans.status_completed': 'Selesai',
+    'budget_plans.status_paused': 'Dijeda',
+    'budget_plans.status_cancelled': 'Dibatalkan',
+
+    // Budget Health Statuses
+    'budget_plans.health_on_track': 'Mengikut Jadual',
+    'budget_plans.health_slightly_behind': 'Sedikit Lewat',
+    'budget_plans.health_at_risk': 'Berisiko',
+    'budget_plans.health_over_budget': 'Melebihi Belanjawan',
+    'budget_plans.health_completed': 'Selesai',
+
+    // Analytics Periods
+    'budget_plans.period_week': 'Minggu',
+    'budget_plans.period_month': 'Bulan',
+    'budget_plans.period_quarter': 'Suku Tahun',
+    'budget_plans.period_year': 'Tahun',
+    'budget_plans.period_all': 'Semua',
   };
 }

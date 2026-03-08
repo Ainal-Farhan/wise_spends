@@ -91,3 +91,9 @@ class EditChangeAccentColor extends EditBudgetPlanFormEvent {
 
 /// Save plan
 class SaveEditBudgetPlan extends EditBudgetPlanFormEvent {}
+
+/// Navigate between wizard steps in the edit form.
+class EditChangeStep extends EditBudgetPlanFormEvent {
+  final int step;
+  const EditChangeStep(this.step);
+}

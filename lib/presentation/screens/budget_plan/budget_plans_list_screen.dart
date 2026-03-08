@@ -5,7 +5,9 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
 import 'package:wise_spends/data/services/budget_plan_export_service.dart';
+import 'package:wise_spends/domain/entities/budget_plan/budget_plan_entity.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_bloc.dart';
 import 'package:wise_spends/presentation/blocs/budget_plan/budget_plan_list_event.dart';
@@ -16,7 +18,13 @@ import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
-/// Budget Plans List Screen
+final RouteObserver<ModalRoute<void>> budgetPlanRouteObserver =
+    RouteObserver<ModalRoute<void>>();
+
+// =============================================================================
+// Root screen
+// =============================================================================
+
 class BudgetPlansListScreen extends StatelessWidget {
   const BudgetPlansListScreen({super.key});
 
@@ -32,8 +40,36 @@ class BudgetPlansListScreen extends StatelessWidget {
   }
 }
 
-class _BudgetPlansListContent extends StatelessWidget {
+// =============================================================================
+// Content — RouteAware so it silently refreshes after create/edit pop
+// =============================================================================
+
+class _BudgetPlansListContent extends StatefulWidget {
   const _BudgetPlansListContent();
+
+  @override
+  State<_BudgetPlansListContent> createState() =>
+      _BudgetPlansListContentState();
+}
+
+class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
+    with RouteAware {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    budgetPlanRouteObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    budgetPlanRouteObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    context.read<BudgetPlanListBloc>().add(RefreshBudgetPlans());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,79 +84,94 @@ class _BudgetPlansListContent extends StatelessWidget {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async =>
-            context.read<BudgetPlanListBloc>().add(RefreshBudgetPlans()),
-        child: CustomScrollView(
-          slivers: [
-            // ── Summary card ───────────────────────────────────────────────
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  0,
-                ),
-                child: _SummaryCard(),
+      body: BlocListener<BudgetPlanListBloc, BudgetPlanListState>(
+        listener: (context, state) {
+          if (state is BudgetPlanListDeleteError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: WiseSpendsColors.error,
+                behavior: SnackBarBehavior.floating,
               ),
-            ),
-
-            // ── Filter chips ───────────────────────────────────────────────
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
-                  vertical: AppSpacing.md,
-                ),
-                child: _FilterChips(),
+            );
+          } else if (state is BudgetPlanListRefreshError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: WiseSpendsColors.error,
+                behavior: SnackBarBehavior.floating,
               ),
-            ),
-
-            // ── Plans list ─────────────────────────────────────────────────
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              sliver: BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
-                builder: (context, state) {
-                  if (state is BudgetPlanListLoading) {
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, _) => const BudgetCardShimmer(),
-                        childCount: 5,
-                      ),
-                    );
-                  }
-                  if (state is BudgetPlanListLoaded) {
-                    if (state.filteredPlans.isEmpty) {
+            );
+          }
+        },
+        child: RefreshIndicator(
+          onRefresh: () async =>
+              context.read<BudgetPlanListBloc>().add(RefreshBudgetPlans()),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                    AppSpacing.lg,
+                    0,
+                  ),
+                  child: const _SummaryCard(),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
+                  child: const _FilterChips(),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                sliver: BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
+                  builder: (context, state) {
+                    if (state is BudgetPlanListLoading) {
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, _) => const BudgetCardShimmer(),
+                          childCount: 5,
+                        ),
+                      );
+                    }
+                    if (state is BudgetPlanListLoaded) {
+                      if (state.filteredPlans.isEmpty) {
+                        return SliverToBoxAdapter(child: _buildEmpty(context));
+                      }
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (_, i) => _PlanCard(plan: state.filteredPlans[i]),
+                          childCount: state.filteredPlans.length,
+                        ),
+                      );
+                    }
+                    if (state is BudgetPlanListEmpty) {
                       return SliverToBoxAdapter(child: _buildEmpty(context));
                     }
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, i) => _PlanCard(plan: state.filteredPlans[i]),
-                        childCount: state.filteredPlans.length,
-                      ),
-                    );
-                  }
-                  if (state is BudgetPlanListEmpty) {
-                    return SliverToBoxAdapter(child: _buildEmpty(context));
-                  }
-                  if (state is BudgetPlanListError) {
-                    return SliverToBoxAdapter(
-                      child: ErrorStateWidget(
-                        message: state.message,
-                        onAction: () => context.read<BudgetPlanListBloc>().add(
-                          LoadBudgetPlans(),
+                    if (state is BudgetPlanListError) {
+                      return SliverToBoxAdapter(
+                        child: ErrorStateWidget(
+                          message: state.message,
+                          onAction: () => context
+                              .read<BudgetPlanListBloc>()
+                              .add(LoadBudgetPlans()),
                         ),
-                      ),
-                    );
-                  }
-                  return const SliverToBoxAdapter(child: SizedBox.shrink());
-                },
+                      );
+                    }
+                    return const SliverToBoxAdapter(child: SizedBox.shrink());
+                  },
+                ),
               ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
-          ],
+              const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.md)),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -148,7 +199,7 @@ class _BudgetPlansListContent extends StatelessWidget {
       context: context,
       builder: (dialogCtx) => BlocProvider.value(
         value: context.read<BudgetPlanListBloc>(),
-        child: _FilterDialog(),
+        child: const _FilterDialog(),
       ),
     );
   }
@@ -159,15 +210,20 @@ class _BudgetPlansListContent extends StatelessWidget {
 // =============================================================================
 
 class _SummaryCard extends StatelessWidget {
+  const _SummaryCard();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
       builder: (context, state) {
         if (state is! BudgetPlanListLoaded) return const SizedBox.shrink();
 
-        final summary = state.summary;
-        final progress = summary.overallProgressPercentage;
-        final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 0);
+        final BudgetPlanSummary summary = state.summary;
+        final double progress = summary.overallProgressPercentage;
+        final NumberFormat fmt = NumberFormat.currency(
+          symbol: 'RM ',
+          decimalDigits: 0,
+        );
 
         return SectionHeader.card(
           gradient: const LinearGradient(
@@ -189,8 +245,9 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
+// WAS: final dynamic summary
 class _SummaryDetail extends StatelessWidget {
-  final dynamic summary;
+  final BudgetPlanSummary summary;
   final double progress;
 
   const _SummaryDetail({required this.summary, required this.progress});
@@ -200,7 +257,6 @@ class _SummaryDetail extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Progress bar
         ClipRRect(
           borderRadius: BorderRadius.circular(AppRadius.xs),
           child: LinearProgressIndicator(
@@ -211,19 +267,11 @@ class _SummaryDetail extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        Row(
-          children: [
-            SectionHeaderBullet(
-              '${summary.plansOnTrack} ${'budget_plans.plans_on_track'.tr}',
-            ),
-          ],
+        SectionHeaderBullet(
+          '${summary.plansOnTrack} ${'budget_plans.plans_on_track'.tr}',
         ),
-        Row(
-          children: [
-            SectionHeaderBullet(
-              '${summary.plansAtRisk} ${'budget_plans.plans_at_risk'.tr}',
-            ),
-          ],
+        SectionHeaderBullet(
+          '${summary.plansAtRisk} ${'budget_plans.plans_at_risk'.tr}',
         ),
       ],
     );
@@ -235,13 +283,15 @@ class _SummaryDetail extends StatelessWidget {
 // =============================================================================
 
 class _FilterChips extends StatelessWidget {
+  const _FilterChips();
+
   @override
   Widget build(BuildContext context) {
     return SectionHeaderCompact(
       title: 'general.filter'.tr,
       trailing: BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
         builder: (context, state) {
-          final current = state is BudgetPlanListLoaded
+          final BudgetPlanStatus? current = state is BudgetPlanListLoaded
               ? state.filterStatus
               : null;
 
@@ -278,12 +328,12 @@ class _FilterChips extends StatelessWidget {
     String label,
     BudgetPlanStatus? current,
   ) {
-    final isSelected = current == status;
+    final bool isSelected = current == status;
     return FilterChip(
       label: Text(label),
       selected: isSelected,
-      onSelected: (s) => context.read<BudgetPlanListBloc>().add(
-        FilterBudgetPlans(status: s ? status : null),
+      onSelected: (selected) => context.read<BudgetPlanListBloc>().add(
+        FilterBudgetPlans(status: selected ? status : null),
       ),
       selectedColor: WiseSpendsColors.primary.withValues(alpha: 0.2),
       checkmarkColor: WiseSpendsColors.primary,
@@ -292,18 +342,18 @@ class _FilterChips extends StatelessWidget {
 }
 
 // =============================================================================
-// Plan card
+// Plan card — WAS: final dynamic plan
 // =============================================================================
 
 class _PlanCard extends StatelessWidget {
-  final dynamic plan;
+  final BudgetPlanEntity plan;
 
   const _PlanCard({required this.plan});
 
   @override
   Widget build(BuildContext context) {
-    final progress = (plan.progressPercentage as double).clamp(0.0, 1.0);
-    final healthColor = _healthColor(plan.healthStatus);
+    final double progress = plan.progressPercentage.clamp(0.0, 1.0);
+    final Color healthColor = _healthColor(plan.healthStatus);
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -316,7 +366,7 @@ class _PlanCard extends StatelessWidget {
         onTap: () => Navigator.pushNamed(
           context,
           AppRoutes.budgetPlanDetail,
-          arguments: plan.uuid,
+          arguments: plan.id,
         ),
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
@@ -324,7 +374,6 @@ class _PlanCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header row
               Row(
                 children: [
                   Container(
@@ -351,6 +400,8 @@ class _PlanCard extends StatelessWidget {
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -364,13 +415,11 @@ class _PlanCard extends StatelessWidget {
                   ),
                   IconButton(
                     icon: const Icon(Icons.more_vert),
-                    onPressed: () => _showOptions(context, plan),
+                    onPressed: () => _showOptions(context),
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
-
-              // Progress bar
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.xs),
                 child: LinearProgressIndicator(
@@ -381,11 +430,11 @@ class _PlanCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
-
-              // Amount + health row using SectionHeaderCompact
               SectionHeaderCompact(
                 title:
-                    '${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(plan.currentAmount)} / ${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(plan.targetAmount)}',
+                    '${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(plan.currentAmount)}'
+                    ' / '
+                    '${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(plan.targetAmount)}',
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -413,7 +462,8 @@ class _PlanCard extends StatelessWidget {
     );
   }
 
-  Color _healthColor(dynamic healthStatus) {
+  // WAS: Color _healthColor(dynamic healthStatus)
+  Color _healthColor(BudgetHealthStatus healthStatus) {
     switch (healthStatus) {
       case BudgetHealthStatus.onTrack:
         return WiseSpendsColors.success;
@@ -424,12 +474,10 @@ class _PlanCard extends StatelessWidget {
         return WiseSpendsColors.secondary;
       case BudgetHealthStatus.completed:
         return WiseSpendsColors.primary;
-      default:
-        return WiseSpendsColors.textHint;
     }
   }
 
-  void _showOptions(BuildContext context, dynamic plan) {
+  void _showOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (_) => BlocProvider.value(
@@ -441,11 +489,11 @@ class _PlanCard extends StatelessWidget {
 }
 
 // =============================================================================
-// Plan options sheet
+// Plan options sheet — WAS: final dynamic plan
 // =============================================================================
 
 class _PlanOptionsSheet extends StatelessWidget {
-  final dynamic plan;
+  final BudgetPlanEntity plan;
 
   const _PlanOptionsSheet({required this.plan});
 
@@ -463,7 +511,7 @@ class _PlanOptionsSheet extends StatelessWidget {
               Navigator.pushNamed(
                 context,
                 AppRoutes.editBudgetPlan,
-                arguments: plan.uuid,
+                arguments: plan.id,
               );
             },
           ),
@@ -472,7 +520,7 @@ class _PlanOptionsSheet extends StatelessWidget {
             title: Text('budget_plans.export_plan'.tr),
             onTap: () async {
               Navigator.pop(context);
-              await _export(context, plan);
+              await _export(context);
             },
           ),
           ListTile(
@@ -486,7 +534,7 @@ class _PlanOptionsSheet extends StatelessWidget {
             ),
             onTap: () {
               Navigator.pop(context);
-              _confirmDelete(context, plan);
+              _confirmDelete(context);
             },
           ),
         ],
@@ -494,16 +542,17 @@ class _PlanOptionsSheet extends StatelessWidget {
     );
   }
 
-  Future<void> _export(BuildContext context, dynamic plan) async {
+  // WAS: Future<void> _export(BuildContext context, dynamic plan)
+  Future<void> _export(BuildContext context) async {
     try {
-      final planToExport =
+      final BudgetPlanEntity? planToExport =
           await SingletonUtil.getSingleton<IRepositoryLocator>()!
               .getBudgetPlanRepository()
-              .getPlanByUuid(plan.uuid);
+              .getPlanByUuid(plan.id);
 
       if (planToExport != null) {
-        final svc = BudgetPlanExportService();
-        final path = await svc.exportToCsv(planToExport);
+        final BudgetPlanExportService svc = BudgetPlanExportService();
+        final String path = await svc.exportToCsv(planToExport);
         await svc.shareExport(path);
 
         if (context.mounted) {
@@ -529,7 +578,8 @@ class _PlanOptionsSheet extends StatelessWidget {
     }
   }
 
-  void _confirmDelete(BuildContext context, dynamic plan) {
+  // WAS: void _confirmDelete(BuildContext context, dynamic plan)
+  void _confirmDelete(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -543,9 +593,7 @@ class _PlanOptionsSheet extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
-              context.read<BudgetPlanListBloc>().add(
-                DeleteBudgetPlan(plan.uuid),
-              );
+              context.read<BudgetPlanListBloc>().add(DeleteBudgetPlan(plan.id));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: WiseSpendsColors.secondary,
@@ -563,11 +611,13 @@ class _PlanOptionsSheet extends StatelessWidget {
 // =============================================================================
 
 class _FilterDialog extends StatelessWidget {
+  const _FilterDialog();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BudgetPlanListBloc, BudgetPlanListState>(
       builder: (context, state) {
-        final current = state is BudgetPlanListLoaded
+        final BudgetPlanStatus? current = state is BudgetPlanListLoaded
             ? state.filterStatus
             : null;
 

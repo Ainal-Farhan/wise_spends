@@ -78,3 +78,36 @@ class BudgetPlanListEmpty extends BudgetPlanListState {
   @override
   List<Object> get props => [message];
 }
+
+// ADD these two new states to budget_plan_list_state.dart
+// (after the existing BudgetPlanListError class)
+
+/// Emitted when a delete operation fails.
+/// Carries [previousState] so the screen can restore the list immediately
+/// while showing the error message as a snackbar.
+class BudgetPlanListDeleteError extends BudgetPlanListState {
+  final String message;
+  final BudgetPlanListLoaded? previousState;
+
+  const BudgetPlanListDeleteError({required this.message, this.previousState});
+
+  @override
+  List<Object?> get props => [message, previousState];
+}
+
+/// Emitted when a pull-to-refresh fails but a valid list is already showing.
+/// The bloc immediately re-emits the [previousState] after this, so the list
+/// is never replaced; the screen should listen for this state and show a
+/// snackbar.
+class BudgetPlanListRefreshError extends BudgetPlanListState {
+  final String message;
+  final BudgetPlanListLoaded previousState;
+
+  const BudgetPlanListRefreshError({
+    required this.message,
+    required this.previousState,
+  });
+
+  @override
+  List<Object?> get props => [message, previousState];
+}

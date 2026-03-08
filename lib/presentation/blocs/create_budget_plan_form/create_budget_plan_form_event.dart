@@ -118,3 +118,10 @@ class ChangeCurrentStep extends CreateBudgetPlanFormEvent {
   @override
   List<Object> get props => [step];
 }
+
+/// Triggers the actual [IBudgetPlanRepository.createPlan] call.
+/// Dispatched by [_CreateBudgetPlanContentState._submit] after
+/// client-side validation passes.
+class SaveCreateBudgetPlan extends CreateBudgetPlanFormEvent {
+  const SaveCreateBudgetPlan();
+}

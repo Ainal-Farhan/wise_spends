@@ -1,23 +1,34 @@
 import 'package:equatable/equatable.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
 
-/// Edit Budget Plan Form States
+// ─────────────────────────────────────────────────────────────────────────────
+// Base
+// ─────────────────────────────────────────────────────────────────────────────
+
 abstract class EditBudgetPlanFormState extends Equatable {
   const EditBudgetPlanFormState();
+}
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Loading — shown while the existing plan data is being fetched
+// ─────────────────────────────────────────────────────────────────────────────
+
+class EditBudgetPlanFormLoading extends EditBudgetPlanFormState {
   @override
   List<Object?> get props => [];
 }
 
-/// Initial state
-class EditBudgetPlanFormInitial extends EditBudgetPlanFormState {}
+// ─────────────────────────────────────────────────────────────────────────────
+// Ready — all form fields are live and editable
+// ─────────────────────────────────────────────────────────────────────────────
 
-/// Loading state
-class EditBudgetPlanFormLoading extends EditBudgetPlanFormState {}
-
-/// Form ready state
 class EditBudgetPlanFormReady extends EditBudgetPlanFormState {
-  final String planUuid;
+  // The plan's UUID — needed by the bloc to call updatePlan(id, ...).
+  // This was MISSING from the original state, which is why saves were silently
+  // dropped (the bloc had no id to pass to the repository).
+  final String planId;
+
   final String name;
   final String description;
   final double targetAmount;
@@ -27,9 +38,10 @@ class EditBudgetPlanFormReady extends EditBudgetPlanFormState {
   final BudgetPlanCategory category;
   final int accentColorValue;
   final bool isLoading;
+  final int currentStep;
 
   EditBudgetPlanFormReady({
-    this.planUuid = '',
+    this.planId = '',
     this.name = '',
     this.description = '',
     this.targetAmount = 0.0,
@@ -37,27 +49,15 @@ class EditBudgetPlanFormReady extends EditBudgetPlanFormState {
     DateTime? startDate,
     DateTime? endDate,
     this.category = BudgetPlanCategory.custom,
-    this.accentColorValue = 0xFF4CAF82,
+    int? accentColorValue,
     this.isLoading = false,
+    this.currentStep = 0,
   }) : startDate = startDate ?? DateTime.now(),
-       endDate = endDate ?? DateTime.now().add(const Duration(days: 365));
-
-  @override
-  List<Object?> get props => [
-    planUuid,
-    name,
-    description,
-    targetAmount,
-    currentAmount,
-    startDate,
-    endDate,
-    category,
-    accentColorValue,
-    isLoading,
-  ];
+       endDate = endDate ?? DateTime.now().add(const Duration(days: 365)),
+       accentColorValue = accentColorValue ?? AppColors.primary.toARGB32();
 
   EditBudgetPlanFormReady copyWith({
-    String? planUuid,
+    String? planId,
     String? name,
     String? description,
     double? targetAmount,
@@ -67,9 +67,10 @@ class EditBudgetPlanFormReady extends EditBudgetPlanFormState {
     BudgetPlanCategory? category,
     int? accentColorValue,
     bool? isLoading,
+    int? currentStep,
   }) {
     return EditBudgetPlanFormReady(
-      planUuid: planUuid ?? this.planUuid,
+      planId: planId ?? this.planId,
       name: name ?? this.name,
       description: description ?? this.description,
       targetAmount: targetAmount ?? this.targetAmount,
@@ -79,26 +80,44 @@ class EditBudgetPlanFormReady extends EditBudgetPlanFormState {
       category: category ?? this.category,
       accentColorValue: accentColorValue ?? this.accentColorValue,
       isLoading: isLoading ?? this.isLoading,
+      currentStep: currentStep ?? this.currentStep,
     );
   }
-}
-
-/// Form error state
-class EditBudgetPlanFormError extends EditBudgetPlanFormState {
-  final String message;
-
-  const EditBudgetPlanFormError(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [
+    planId,
+    name,
+    description,
+    targetAmount,
+    currentAmount,
+    startDate,
+    endDate,
+    category,
+    accentColorValue,
+    isLoading,
+    currentStep,
+  ];
 }
 
-/// Form success state
+// ─────────────────────────────────────────────────────────────────────────────
+// Terminal states
+// ─────────────────────────────────────────────────────────────────────────────
+
 class EditBudgetPlanFormSuccess extends EditBudgetPlanFormState {
   final String message;
 
   const EditBudgetPlanFormSuccess(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message];
+}
+
+class EditBudgetPlanFormError extends EditBudgetPlanFormState {
+  final String message;
+
+  const EditBudgetPlanFormError(this.message);
+
+  @override
+  List<Object?> get props => [message];
 }

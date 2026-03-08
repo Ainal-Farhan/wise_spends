@@ -29,9 +29,4 @@ class ChangePeriod extends BudgetAnalyticsEvent {
 }
 
 /// Analytics period enum
-enum AnalyticsPeriod {
-  week,
-  month,
-  year,
-  all,
-}
+enum AnalyticsPeriod { week, month, quarter, year, all }
