@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/presentation/screens/commitment/commitment_screen.dart';
 import 'package:wise_spends/presentation/screens/home/home_screen.dart';
 import 'package:wise_spends/presentation/screens/login/ui/login_page.dart';
 import 'package:wise_spends/presentation/screens/profile/profile_screen.dart';
 import 'package:wise_spends/presentation/screens/settings/backup_restore/backup_restore_screen.dart';
+import 'package:wise_spends/presentation/screens/settings/category_management_screen.dart';
 import 'package:wise_spends/presentation/screens/settings/ui/settings_screen_wrapper.dart';
 import 'package:wise_spends/presentation/screens/transaction/add_transaction_screen.dart'
     as transaction_screen;
@@ -171,6 +173,14 @@ abstract class AppRouter {
           settings,
         );
 
+      // Commitments routes
+      case AppRoutes.commitment:
+        return _createRoute(const CommitmentScreen(), settings);
+
+      // Commitments routes
+      case AppRoutes.categoryManage:
+        return _createRoute(const CategoryManagementScreen(), settings);
+
       // Commitment Task routes
       case AppRoutes.commitmentTask:
         return _createRoute(
@@ -189,22 +199,13 @@ abstract class AppRouter {
 
       // Developer/Debug routes
       case AppRoutes.hiddenUtilityMenu:
-        return _createRoute(
-          const HiddenUtilityMenuScreen(),
-          settings,
-        );
+        return _createRoute(const HiddenUtilityMenuScreen(), settings);
 
       case AppRoutes.logViewer:
-        return _createRoute(
-          const LogViewerScreen(),
-          settings,
-        );
+        return _createRoute(const LogViewerScreen(), settings);
 
       case AppRoutes.logSettings:
-        return _createRoute(
-          const LogSettingsScreen(),
-          settings,
-        );
+        return _createRoute(const LogSettingsScreen(), settings);
 
       // Default: Show error screen
       default:
