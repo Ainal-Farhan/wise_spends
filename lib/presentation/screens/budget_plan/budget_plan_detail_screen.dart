@@ -617,28 +617,31 @@ class _QuickActionsSection extends StatelessWidget {
       children: [
         SectionHeader(title: 'budget_plans.quick_actions'.tr),
         const SizedBox(height: AppSpacing.md),
-        Row(
-          children: [
-            Expanded(
-              child: _ActionCard(
-                icon: Icons.add_circle_outline,
-                label: 'budget_plans.add_deposit'.tr,
-                sublabel: 'budget_plans.add_deposit_desc'.tr,
-                color: WiseSpendsColors.success,
-                onTap: onAddDeposit,
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.add_circle_outline,
+                  label: 'budget_plans.add_deposit'.tr,
+                  sublabel: 'budget_plans.add_deposit_desc'.tr,
+                  color: WiseSpendsColors.success,
+                  onTap: onAddDeposit,
+                ),
               ),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: _ActionCard(
-                icon: Icons.remove_circle_outline,
-                label: 'budget_plans.add_spending'.tr,
-                sublabel: 'budget_plans.add_spending_desc'.tr,
-                color: WiseSpendsColors.secondary,
-                onTap: onAddSpending,
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: _ActionCard(
+                  icon: Icons.remove_circle_outline,
+                  label: 'budget_plans.add_spending'.tr,
+                  sublabel: 'budget_plans.add_spending_desc'.tr,
+                  color: WiseSpendsColors.secondary,
+                  onTap: onAddSpending,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -2317,6 +2320,22 @@ class _ChartsTab extends StatelessWidget {
 // FAB
 // =============================================================================
 
+/// Tab indices for [BudgetPlanDetailScreen].
+enum _DetailTab {
+  overview(0),
+  items(1),
+  transactions(2),
+  charts(3);
+
+  const _DetailTab(this.tabIndex);
+  final int tabIndex;
+
+  static _DetailTab fromTabIndex(int index) => _DetailTab.values.firstWhere(
+    (t) => t.tabIndex == index,
+    orElse: () => _DetailTab.overview,
+  );
+}
+
 class _DetailFAB extends StatelessWidget {
   final TabController tabController;
   final VoidCallback onDeposit;
@@ -2333,17 +2352,41 @@ class _DetailFAB extends StatelessWidget {
     return AnimatedBuilder(
       animation: tabController,
       builder: (context, _) {
-        // Tab 1 = Items — that tab has its own FAB via Stack, hide this one
-        if (tabController.index == 1) return const SizedBox.shrink();
+        final tab = _DetailTab.fromTabIndex(tabController.index);
 
-        // Tab 2 = Transactions — spending action
-        // Tab 0 = Overview, Tab 3 = Charts — deposit action
-        final onPressed = tabController.index == 2 ? onSpending : onDeposit;
+        return switch (tab) {
+          _DetailTab.overview => const SizedBox.shrink(),
 
-        return FloatingActionButton(
-          onPressed: onPressed,
-          child: const Icon(Icons.add),
-        );
+          // Items tab manages its own FAB via a Stack — hide this one.
+          _DetailTab.items => const SizedBox.shrink(),
+
+          // Transactions tab — add a spending entry.
+          _DetailTab.transactions => IntrinsicWidth(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FloatingActionButton.extended(
+                  onPressed: onDeposit,
+                  heroTag: 'fab_deposit',
+                  backgroundColor: WiseSpendsColors.success,
+                  icon: const Icon(Icons.add_circle_outline),
+                  label: Text('budget_plans.add_deposit'.tr),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                FloatingActionButton.extended(
+                  onPressed: onSpending,
+                  heroTag: 'fab_spending',
+                  backgroundColor: WiseSpendsColors.secondary,
+                  icon: const Icon(Icons.remove_circle_outline),
+                  label: Text('budget_plans.add_spending'.tr),
+                ),
+              ],
+            ),
+          ),
+
+          _DetailTab.charts => const SizedBox.shrink(),
+        };
       },
     );
   }

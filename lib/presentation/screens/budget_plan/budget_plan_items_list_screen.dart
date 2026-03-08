@@ -70,10 +70,17 @@ class _BudgetPlanItemsListContentState
   String? _selectedPaymentStatus;
   String? _selectedTag;
 
+  late final BudgetPlanItemsListBloc _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = context.read<BudgetPlanItemsListBloc>();
+  }
+
   @override
   void dispose() {
-    // Clear BLoC state when leaving the screen
-    context.read<BudgetPlanItemsListBloc>().add(const ClearBudgetPlanItems());
+    _bloc.add(const ClearBudgetPlanItems());
     super.dispose();
   }
 

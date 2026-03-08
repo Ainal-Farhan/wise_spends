@@ -16,23 +16,12 @@ class CustomDialogButton {
     this.isDefault = false,
   });
 
-  /// Pre-configured cancel button
-  static const cancel = CustomDialogButton(
-    text: 'Cancel',
-    isDestructive: false,
-  );
-
-  /// Pre-configured confirm button (destructive)
+  static const cancel = CustomDialogButton(text: 'Cancel');
   static const confirm = CustomDialogButton(
     text: 'Confirm',
     isDestructive: true,
   );
-
-  /// Pre-configured OK button
-  static const ok = CustomDialogButton(
-    text: 'OK',
-    isDefault: true,
-  );
+  static const ok = CustomDialogButton(text: 'OK', isDefault: true);
 }
 
 /// Custom Dialog Configuration
@@ -64,50 +53,10 @@ class CustomDialogConfig {
   });
 }
 
-/// A customizable, standardized dialog widget for WiseSpends
-///
-/// This dialog provides consistent UI/UX across the application with:
-/// - Consistent styling following Material 3 design
-/// - Flexible content support (text, widgets, forms)
-/// - Configurable button arrangements
-/// - Optional icon support
-/// - Proper accessibility support
-///
-/// Usage:
-/// ```dart
-/// showDialog(
-///   context: context,
-///   builder: (context) => CustomDialog(
-///     config: CustomDialogConfig(
-///       title: 'Delete Item',
-///       message: 'Are you sure you want to delete this item?',
-///       icon: Icons.delete_outline,
-///       iconColor: AppColors.secondary,
-///       buttons: [
-///         CustomDialogButton(
-///           text: 'Cancel',
-///           onPressed: () => Navigator.pop(context),
-///         ),
-///         CustomDialogButton(
-///           text: 'Delete',
-///           isDestructive: true,
-///           onPressed: () {
-///             // Delete logic
-///             Navigator.pop(context);
-///           },
-///         ),
-///       ],
-///     ),
-///   ),
-/// );
-/// ```
 class CustomDialog extends StatelessWidget {
   final CustomDialogConfig config;
 
-  const CustomDialog({
-    super.key,
-    required this.config,
-  });
+  const CustomDialog({super.key, required this.config});
 
   @override
   Widget build(BuildContext context) {
@@ -121,31 +70,39 @@ class CustomDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.dialog),
       ),
       child: Padding(
-        padding: config.contentPadding ??
-            const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.sm),
+        padding:
+            config.contentPadding ??
+            const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.sm,
+            ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Icon (if provided)
             if (config.icon != null) ...[
-              Container(
-                width: 56,
-                height: 56,
-                margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: (config.iconColor ?? AppColors.primary).withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  config.icon,
-                  color: config.iconColor ?? AppColors.primary,
-                  size: 28,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  margin: const EdgeInsets.only(bottom: AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: (config.iconColor ?? AppColors.primary).withValues(
+                      alpha: 0.1,
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    config.icon,
+                    color: config.iconColor ?? AppColors.primary,
+                    size: 28,
+                  ),
                 ),
               ),
             ],
-
-            // Title
             if (config.title != null || config.titleWidget != null) ...[
               config.titleWidget ??
                   Text(
@@ -157,31 +114,21 @@ class CustomDialog extends StatelessWidget {
                   ),
               if (config.message != null) const SizedBox(height: AppSpacing.xs),
             ],
-
-            // Message
             if (config.message != null)
               Text(
                 config.message!,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
+                  color: AppColors.textSecondary,
                 ),
               ),
-
-            // Custom content
             if (config.content != null) ...[
               if (config.title != null || config.message != null)
                 const SizedBox(height: AppSpacing.md),
               if (config.isScrollable)
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: config.content!,
-                  ),
-                )
+                Flexible(child: SingleChildScrollView(child: config.content!))
               else
                 config.content!,
             ],
-
-            // Buttons
             if (config.buttons.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.md),
               _buildButtonBar(context, theme),
@@ -193,96 +140,87 @@ class CustomDialog extends StatelessWidget {
   }
 
   Widget _buildButtonBar(BuildContext context, ThemeData theme) {
-    final buttonCount = config.buttons.length;
-    final isSingleButton = buttonCount == 1;
-
-    // Sort buttons: default action first, then others
-    final sortedButtons = [...config.buttons]
+    // Sort: non-default (cancel) first, default/destructive last — natural
+    // dialog convention (Cancel | OK).
+    final sorted = [...config.buttons]
       ..sort((a, b) {
-        if (a.isDefault && !b.isDefault) return -1;
-        if (!a.isDefault && b.isDefault) return 1;
+        if (a.isDefault && !b.isDefault) return 1;
+        if (!a.isDefault && b.isDefault) return -1;
         return 0;
       });
 
-    if (isSingleButton) {
-      // Single button - full width
-      return _buildButton(context, sortedButtons.first, isFullWidth: true);
+    if (sorted.length == 1) {
+      return _buildButton(context, sorted.first, expand: true);
     }
 
-    // Multiple buttons - row layout
-    return Wrap(
-      spacing: AppSpacing.sm,
-      runSpacing: AppSpacing.sm,
-      alignment: WrapAlignment.end,
-      children: sortedButtons
-          .map((button) => _buildButton(context, button))
-          .toList(),
+    // Multiple buttons — Row so Expanded works correctly.
+    return IntrinsicHeight(
+      child: Row(
+        children: sorted
+            .map(
+              (btn) =>
+                  Expanded(child: _buildButton(context, btn, expand: true)),
+            )
+            .toList(),
+      ),
     );
   }
 
+  /// Builds a single button.
+  ///
+  /// [expand] makes the button fill its parent's width. When placed inside
+  /// an [Expanded] in a [Row], width is already constrained — never use a
+  /// bare [Expanded] here since this widget may also be used outside a Flex.
   Widget _buildButton(
     BuildContext context,
     CustomDialogButton button, {
-    bool isFullWidth = false,
+    bool expand = false,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    const buttonHeight = 48.0;
+
+    Widget child = Text(
+      button.text,
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+    );
+
+    Widget builtButton;
+
     if (button.isDestructive) {
-      // Destructive button (e.g., Delete, Remove)
-      return Expanded(
-        child: FilledButton(
-          onPressed: () {
-            button.onPressed?.call();
-          },
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.secondary,
-            foregroundColor: Colors.white,
-            minimumSize: const Size(0, AppTouchTarget.min),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.button),
-            ),
-          ),
-          child: Text(
-            button.text,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+      builtButton = FilledButton(
+        onPressed: button.onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.secondary,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(0, buttonHeight),
+          maximumSize: const Size(double.infinity, buttonHeight),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.button),
           ),
         ),
+        child: child,
       );
     } else if (button.isDefault) {
-      // Default/primary button
-      return Expanded(
-        child: FilledButton(
-          onPressed: () {
-            button.onPressed?.call();
-          },
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            minimumSize: const Size(0, AppTouchTarget.min),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.button),
-            ),
-          ),
-          child: Text(
-            button.text,
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+      builtButton = FilledButton(
+        onPressed: button.onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          minimumSize: const Size(0, buttonHeight),
+          maximumSize: const Size(double.infinity, buttonHeight),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.button),
           ),
         ),
+        child: child,
       );
     } else {
-      // Secondary/cancel button
-      return OutlinedButton(
-        onPressed: () {
-          button.onPressed?.call();
-        },
+      builtButton = OutlinedButton(
+        onPressed: button.onPressed,
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(0, AppTouchTarget.min),
+          minimumSize: const Size(0, buttonHeight),
+          maximumSize: const Size(double.infinity, buttonHeight),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.button),
           ),
@@ -295,15 +233,21 @@ class CustomDialog extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
+            color: AppColors.textSecondary,
           ),
         ),
       );
     }
+
+    // SizedBox constrains height; width expands only when caller wants it.
+    return SizedBox(
+      height: buttonHeight,
+      width: expand ? double.infinity : null,
+      child: builtButton,
+    );
   }
 }
 
-/// Extension method to show custom dialog easily
 extension CustomDialogExtension on BuildContext {
   Future<T?> showCustomDialog<T>({
     required CustomDialogConfig config,
