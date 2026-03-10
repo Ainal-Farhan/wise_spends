@@ -108,6 +108,7 @@ class AddPlanTransactionParams extends Equatable {
   final String? receiptImagePath;
   final DateTime transactionDate;
   final bool linkToMainTransaction;
+  final String? linkedAccountId;
 
   const AddPlanTransactionParams({
     required this.amount,
@@ -116,6 +117,7 @@ class AddPlanTransactionParams extends Equatable {
     this.receiptImagePath,
     required this.transactionDate,
     this.linkToMainTransaction = false,
+    this.linkedAccountId,
   });
 
   @override
@@ -126,6 +128,7 @@ class AddPlanTransactionParams extends Equatable {
     receiptImagePath,
     transactionDate,
     linkToMainTransaction,
+    linkedAccountId,
   ];
 }
 

@@ -86,6 +86,9 @@ class AppColors {
   /// Commitment transactions - Amber/Gold
   static const Color commitment = Color(0xFFF59E0B);
 
+  // Violet Purple
+  static const Color budgetPlan = Color(0xFF7C5CBF);
+
   // ==========================================================================
   // STATUS COLORS - Budget/Goal Health
   // ==========================================================================

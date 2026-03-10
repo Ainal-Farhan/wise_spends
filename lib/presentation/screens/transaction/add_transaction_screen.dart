@@ -575,7 +575,10 @@ class _AddTransactionScreenContentState
           children: [
             Row(
               children: [
-                Text('transaction.add.payee'.tr, style: AppTextStyles.bodySemiBold),
+                Text(
+                  'transaction.add.payee'.tr,
+                  style: AppTextStyles.bodySemiBold,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   '(optional)',
@@ -1319,8 +1322,11 @@ class _AddTransactionScreenContentState
       case TransactionType.expense:
         return AppColors.expense;
       case TransactionType.transfer:
-      case TransactionType.commitment:
         return AppColors.transfer;
+      case TransactionType.commitment:
+        return AppColors.commitment;
+      case TransactionType.budgetPlan:
+        return AppColors.budgetPlan;
     }
   }
 
@@ -1334,6 +1340,8 @@ class _AddTransactionScreenContentState
         return 'Transfer';
       case TransactionType.commitment:
         return 'Commitment';
+      case TransactionType.budgetPlan:
+        return 'Budget Plan';
     }
   }
 
@@ -1344,8 +1352,11 @@ class _AddTransactionScreenContentState
       case TransactionType.expense:
         return Icons.arrow_upward_rounded;
       case TransactionType.transfer:
+        return Icons.compare_arrows_rounded;
       case TransactionType.commitment:
-        return Icons.swap_horiz_rounded;
+        return Icons.repeat_rounded;
+      case TransactionType.budgetPlan:
+        return Icons.savings_outlined;
     }
   }
 }

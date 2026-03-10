@@ -118,6 +118,7 @@ class EnglishStrings {
     'transaction.type.expense': 'Expense',
     'transaction.type.transfer': 'Transfer',
     'transaction.type.commitment': 'Commitment',
+    'transaction.type.budget_plan': 'Budget Plan',
     'transaction.add': 'Add Transaction',
     'transaction.edit': 'Edit Transaction',
     'transaction.delete': 'Delete Transaction',
@@ -768,6 +769,13 @@ class EnglishStrings {
     'budget_plans.unlink': 'Unlink',
     'budget_plans.complete_milestone': 'Complete Milestone?',
     'budget_plans.complete_milestone_msg': 'Mark this milestone as completed?',
+    'budget_plans.delete_milestone': 'Delete Milestone?',
+    'budget_plans.delete_milestone_msg':
+        'Are you sure you want to delete this milestone?',
+    'budget_plans.milestone_deleted': 'Milestone deleted',
+    'budget_plans.select_linked_account': 'Select Account',
+    'budget_plans.select_linked_account_error':
+        'Please select a linked account',
     'budget_plans.complete': 'Complete',
     'budget_plans.start_date_label': 'Start Date',
 

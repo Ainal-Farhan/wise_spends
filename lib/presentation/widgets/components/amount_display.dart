@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
+import 'package:wise_spends/shared/theme/app_colors.dart';
 
 /// Widget to display formatted amount with color coding based on transaction type
 class AmountDisplay extends StatelessWidget {
@@ -31,7 +31,9 @@ class AmountDisplay extends StatelessWidget {
       decimalDigits: 2,
     ).format(amount.abs());
 
-    final displayText = showPrefix ? '$prefix$formattedAmount' : formattedAmount;
+    final displayText = showPrefix
+        ? '$prefix$formattedAmount'
+        : formattedAmount;
 
     return Text(
       displayText,
@@ -45,25 +47,30 @@ class AmountDisplay extends StatelessWidget {
   Color _getColorForType() {
     switch (type) {
       case TransactionType.income:
-        return WiseSpendsColors.success;
+        return AppColors.income;
       case TransactionType.expense:
-        return WiseSpendsColors.secondary;
+        return AppColors.expense;
       case TransactionType.transfer:
+        return AppColors.transfer;
       case TransactionType.commitment:
-        return WiseSpendsColors.tertiary;
+        return AppColors.commitment;
+      case TransactionType.budgetPlan:
+        return AppColors.budgetPlan;
     }
   }
 
   String _getPrefixForType() {
     switch (type) {
       case TransactionType.income:
-        return '+';
+        return '+'; // universally "gaining"
       case TransactionType.expense:
-        return '−'; // Unicode minus sign for better typography
+        return '−'; // universally "losing"
       case TransactionType.transfer:
-        return '↔ ';
+        return '⇄ '; // cleaner than ↔, reads better at small sizes
       case TransactionType.commitment:
-        return '';
+        return '↻ '; // signals recurring/scheduled
+      case TransactionType.budgetPlan:
+        return '◎ '; // target/goal — distinct, non-directional
     }
   }
 }

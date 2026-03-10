@@ -224,6 +224,7 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
   String? _selectedCategory;
   bool _linkToMainTransaction = false;
   String? _receiptPath;
+  String? _selectedAccountId;
 
   @override
   void dispose() {
@@ -321,6 +322,18 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
               ),
               const SizedBox(height: AppSpacing.lg),
 
+              // Linked Account Selector (mandatory)
+              SectionHeaderCompact(
+                title: 'budget_plans.select_linked_account'.tr,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _LinkedAccountSelector(
+                planUuid: widget.planUuid,
+                selectedId: _selectedAccountId,
+                onChanged: (v) => setState(() => _selectedAccountId = v),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
               // Attach receipt
               _AttachReceiptTile(
                 receiptPath: _receiptPath,
@@ -351,6 +364,17 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedAccountId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('budget_plans.select_linked_account_error'.tr),
+          backgroundColor: WiseSpendsColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
     final amount = double.parse(_amountController.text);
 
     context.read<BudgetPlanDetailBloc>().add(
@@ -360,6 +384,7 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
         vendor: _vendorController.text.isEmpty ? null : _vendorController.text,
         transactionDate: _selectedDate,
         receiptPath: _receiptPath,
+        linkedAccountId: _selectedAccountId,
       ),
     );
 

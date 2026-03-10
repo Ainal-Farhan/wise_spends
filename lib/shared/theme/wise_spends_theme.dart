@@ -26,6 +26,7 @@ class WiseSpendsColors {
   static const Color tertiaryDark = Color(0xFF1976D2);
   static const Color tertiaryContainer = Color(0xFFBBDEFB);
   static const Color commitmentContainer = Color(0xFFFEF3C7);
+  static const Color budgetPlanContainer = Color(0xFFFEF3C7);
   static const Color onTertiary = Color(0xFFFFFFFF);
 
   // Neutral colors

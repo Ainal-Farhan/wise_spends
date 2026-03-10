@@ -52,6 +52,7 @@ class AddSpending extends BudgetPlanDetailEvent {
   final String? vendor;
   final DateTime transactionDate;
   final String? receiptPath;
+  final String? linkedAccountId;
 
   const AddSpending({
     required this.amount,
@@ -59,6 +60,7 @@ class AddSpending extends BudgetPlanDetailEvent {
     this.vendor,
     required this.transactionDate,
     this.receiptPath,
+    this.linkedAccountId,
   });
 
   @override
@@ -68,6 +70,7 @@ class AddSpending extends BudgetPlanDetailEvent {
     vendor,
     transactionDate,
     receiptPath,
+    linkedAccountId,
   ];
 }
 

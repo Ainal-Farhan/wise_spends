@@ -103,6 +103,16 @@ class MilestoneAdded extends BudgetPlanDetailState {
   List<Object> get props => [milestone];
 }
 
+/// Milestone deleted success
+class MilestoneDeleted extends BudgetPlanDetailState {
+  final String milestoneId;
+
+  const MilestoneDeleted(this.milestoneId);
+
+  @override
+  List<Object> get props => [milestoneId];
+}
+
 /// Plan deleted success
 class PlanDeleted extends BudgetPlanDetailState {
   final String uuid;

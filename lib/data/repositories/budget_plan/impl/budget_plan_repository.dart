@@ -11,6 +11,7 @@ import 'package:wise_spends/domain/entities/budget_plan/budget_plan_enums.dart';
 import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_params.dart';
 import 'package:wise_spends/domain/entities/impl/saving/saving_vo.dart';
+import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 
 /// Budget Plan Repository Implementation
 /// Handles all database operations for savings plans
@@ -381,6 +382,19 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
     await _db.into(_db.savingsPlanSpendingTable).insert(companion);
 
+    // If linkedAccountId is provided, create actual transaction in transaction table
+    if (params.linkedAccountId != null) {
+      await _createTransactionForLinkedAccount(
+        accountId: params.linkedAccountId!,
+        amount: params.amount,
+        description:
+            params.description ?? params.vendor ?? 'Budget plan spending',
+        date: params.transactionDate,
+        planId: planId,
+        budgetPlanSpendingId: id,
+      );
+    }
+
     // Update plan's current amount (subtract spending)
     await _updatePlanCurrentAmount(plan.id);
 
@@ -393,6 +407,65 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       transactionDate: params.transactionDate,
       createdAt: DateTime.now(),
     );
+  }
+
+  /// Create a transaction in the main transaction table for linked account spending
+  Future<void> _createTransactionForLinkedAccount({
+    required String accountId,
+    required double amount,
+    required String description,
+    required DateTime date,
+    required String planId,
+    required String budgetPlanSpendingId,
+  }) async {
+    final transactionId = const Uuid().v4();
+
+    // Create transaction in main transactions table as expense
+    await _db
+        .into(_db.transactionTable)
+        .insert(
+          TransactionTableCompanion.insert(
+            id: Value(transactionId),
+            type: TransactionType.expense,
+            description: Value(description),
+            amount: amount,
+            savingId: accountId,
+            destinationSavingId: const Value(null),
+            categoryId: const Value(null),
+            commitmentTaskId: const Value(null),
+            payeeId: const Value(null),
+            transactionDateTime: Value(date),
+            note: Value('Budget Plan: $planId'),
+            createdBy: 'system',
+            dateCreated: Value(DateTime.now()),
+            dateUpdated: DateTime.now(),
+            lastModifiedBy: 'system',
+          ),
+        );
+
+    // Update the savings account balance (deduct the amount)
+    await _updateSavingAccountBalance(accountId, -amount);
+  }
+
+  /// Update savings account balance by a delta amount
+  Future<void> _updateSavingAccountBalance(
+    String accountId,
+    double delta,
+  ) async {
+    final saving = await (_db.select(
+      _db.savingTable,
+    )..where((tbl) => tbl.id.equals(accountId))).getSingleOrNull();
+
+    if (saving != null) {
+      final newBalance = saving.currentAmount + delta;
+      final updating = SavingTableCompanion(
+        currentAmount: Value(newBalance),
+        dateUpdated: Value(DateTime.now()),
+      );
+      final query = _db.update(_db.savingTable)
+        ..where((tbl) => tbl.id.equals(accountId));
+      await query.write(updating);
+    }
   }
 
   @override
@@ -507,6 +580,9 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     );
 
     await _db.into(_db.savingsPlanLinkedAccountTable).insert(companion);
+
+    // Update plan's current amount to include the allocated amount
+    await _updatePlanCurrentAmount(plan.id);
   }
 
   @override
@@ -519,6 +595,9 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
         (tbl) => tbl.planId.equals(plan.id) & tbl.accountId.equals(accountId),
       );
     await query.go();
+
+    // Update plan's current amount after removing the allocated amount
+    await _updatePlanCurrentAmount(plan.id);
   }
 
   // ============================================================================
@@ -852,7 +931,8 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   // Helper Methods
   // ============================================================================
 
-  /// Update plan's current amount based on deposits, transactions, and item payments
+  /// Update plan's current amount based on deposits, transactions, item payments,
+  /// and allocated amounts from linked accounts
   Future<void> _updatePlanCurrentAmount(String planId) async {
     // Get total deposits from manual deposits
     final depositsQuery = _db.select(_db.savingsPlanDepositTable)
@@ -881,8 +961,18 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       (sum, i) => sum + i.amountPaid,
     );
 
-    // Update plan: currentAmount = manual deposits + item payments - spending
-    final currentAmount = totalDeposits + totalItemPayments - totalSpending;
+    // Get total allocated amounts from linked accounts
+    final linkedAccountsQuery = _db.select(_db.savingsPlanLinkedAccountTable)
+      ..where((tbl) => tbl.planId.equals(planId));
+    final linkedAccounts = await linkedAccountsQuery.get();
+    final totalAllocated = linkedAccounts.fold<double>(
+      0.0,
+      (sum, a) => sum + (a.allocatedAmount ?? 0.0),
+    );
+
+    // Update plan: currentAmount = manual deposits + item payments - spending + allocated from linked accounts
+    final currentAmount =
+        totalDeposits + totalItemPayments - totalSpending + totalAllocated;
 
     final updating = SavingsPlanTableCompanion(
       currentAmount: Value(currentAmount),

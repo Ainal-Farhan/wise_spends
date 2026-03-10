@@ -162,6 +162,9 @@ class TransactionCard extends StatelessWidget {
       case TransactionType.commitment:
         backgroundColor = WiseSpendsColors.commitmentContainer;
         break;
+      case TransactionType.budgetPlan:
+        backgroundColor = WiseSpendsColors.budgetPlanContainer;
+        break;
     }
 
     return Container(

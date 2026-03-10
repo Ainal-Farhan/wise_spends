@@ -118,6 +118,7 @@ class BudgetPlanDetailBloc
           vendor: event.vendor,
           receiptImagePath: event.receiptPath,
           transactionDate: event.transactionDate,
+          linkedAccountId: event.linkedAccountId,
         ),
       );
 
@@ -188,6 +189,11 @@ class BudgetPlanDetailBloc
 
     try {
       await _repository.deleteMilestone(event.milestoneId);
+
+      // Emit transient notification for BlocListener (snackbar)
+      if (!emit.isDone) {
+        emit(MilestoneDeleted(event.milestoneId));
+      }
 
       // Reload plan detail
       add(LoadPlanDetail(currentState.plan.id));

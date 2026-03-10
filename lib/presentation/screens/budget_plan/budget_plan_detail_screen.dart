@@ -148,6 +148,8 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
                       _showAddMilestoneDialog(context, planUuid),
                   onCompleteMilestone: (milestoneId, planId) =>
                       _confirmCompleteMilestone(context, milestoneId, planId),
+                  onDeleteMilestone: (milestoneId, planId) =>
+                      _confirmDeleteMilestone(context, milestoneId, planId),
                   onUnlinkAccount: (accountId, planId) =>
                       _confirmUnlinkAccount(context, accountId, planId),
                 ),
@@ -188,6 +190,14 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       messenger.showSnackBar(
         SnackBar(
           content: Text('budget_plans.spending_added'.tr),
+          backgroundColor: WiseSpendsColors.success,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else if (state is MilestoneDeleted) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('budget_plans.milestone_deleted'.tr),
           backgroundColor: WiseSpendsColors.success,
           behavior: SnackBarBehavior.floating,
         ),
@@ -378,6 +388,27 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     );
   }
 
+  void _confirmDeleteMilestone(
+    BuildContext context,
+    String milestoneId,
+    String planId,
+  ) {
+    showConfirmDialog(
+      context: context,
+      title: 'budget_plans.delete_milestone'.tr,
+      message: 'budget_plans.delete_milestone_msg'.tr,
+      confirmText: 'general.delete'.tr,
+      cancelText: 'general.cancel'.tr,
+      icon: Icons.delete_outline,
+      iconColor: AppColors.error,
+      onConfirm: () {
+        context.read<BudgetPlanDetailBloc>().add(
+          DeleteMilestoneEvent(milestoneId),
+        );
+      },
+    );
+  }
+
   void _confirmUnlinkAccount(
     BuildContext context,
     String accountId,
@@ -387,7 +418,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       context: context,
       title: 'budget_plans.unlink_account'.tr,
       message: 'budget_plans.unlink_account_msg'.tr,
-      confirmText: 'general.unlink'.tr,
+      confirmText: 'budget_plans.unlink_account'.tr,
       cancelText: 'general.cancel'.tr,
       icon: Icons.link_off,
       iconColor: AppColors.warning,
@@ -408,6 +439,7 @@ class _OverviewTab extends StatelessWidget {
   final VoidCallback onAddSpending;
   final ValueChanged<String> onAddMilestone;
   final void Function(String milestoneId, String planId) onCompleteMilestone;
+  final void Function(String milestoneId, String planId) onDeleteMilestone;
   final void Function(String accountId, String planId) onUnlinkAccount;
 
   const _OverviewTab({
@@ -416,6 +448,7 @@ class _OverviewTab extends StatelessWidget {
     required this.onAddSpending,
     required this.onAddMilestone,
     required this.onCompleteMilestone,
+    required this.onDeleteMilestone,
     required this.onUnlinkAccount,
   });
 
@@ -478,6 +511,7 @@ class _OverviewTab extends StatelessWidget {
                 milestone: state.milestones[i],
                 planId: state.plan.id,
                 onComplete: onCompleteMilestone,
+                onDelete: onDeleteMilestone,
               ),
             ),
           const SizedBox(height: AppSpacing.xxl),
@@ -1212,8 +1246,52 @@ class _MilestoneCard extends StatelessWidget {
   final BudgetPlanMilestoneEntity milestone;
   final String planId;
   final void Function(String milestoneId, String planId) onComplete;
+  final void Function(String milestoneId, String planId) onDelete;
 
   const _MilestoneCard({
+    required this.milestone,
+    required this.planId,
+    required this.onComplete,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dismissible(
+      key: Key('milestone_${milestone.id}'),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) => showDeleteDialog(
+        context: context,
+        title: 'budget_plans.delete_milestone'.tr,
+        message: 'budget_plans.delete_milestone_msg'.trWith({'title': milestone.title}),
+        deleteText: 'general.delete'.tr,
+        cancelText: 'general.cancel'.tr,
+      ),
+      onDismissed: (_) => onDelete(milestone.id, planId),
+      background: Container(
+        decoration: BoxDecoration(
+          color: WiseSpendsColors.secondary,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: AppSpacing.xl),
+        child: const Icon(Icons.delete_outline, color: Colors.white, size: 24),
+      ),
+      child: _MilestoneCardContent(
+        milestone: milestone,
+        planId: planId,
+        onComplete: onComplete,
+      ),
+    );
+  }
+}
+
+class _MilestoneCardContent extends StatelessWidget {
+  final BudgetPlanMilestoneEntity milestone;
+  final String planId;
+  final void Function(String milestoneId, String planId) onComplete;
+
+  const _MilestoneCardContent({
     required this.milestone,
     required this.planId,
     required this.onComplete,
