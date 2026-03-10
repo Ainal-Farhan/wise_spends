@@ -926,6 +926,11 @@ class MalayStrings {
     "budget_plans.status_fully_paid": "Bayar Penuh",
     "budget_plans.status_deposit_paid": "Deposit Dibayar",
     "budget_plans.status_not_paid": "Belum Bayar",
+    "budget_plans.status_partially_paid": "Sebahagian Dibayar",
+
+    // Payment status helpers
+    "budget_plans.has_deposit": "Ada Deposit",
+    "budget_plans.custom_payment": "Bayaran Tersuai",
 
     "budget_plans.item_created": "Item berjaya ditambah",
     "budget_plans.item_updated": "Item berjaya dikemaskini",

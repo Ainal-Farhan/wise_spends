@@ -6,50 +6,8 @@ import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 
 /// A widget that catches all uncaught Flutter and async errors and shows
 /// a user-friendly error dialog.
-///
-/// ## Placement
-///
-/// [RunGuard] must be placed **inside** [MaterialApp] (as its `home` or
-/// via [builder]), not wrapping it. [showDialog] requires
-/// [MaterialLocalizations] which is only available beneath [MaterialApp].
-///
-/// ### Correct — via `builder` (recommended):
-/// ```dart
-/// MaterialApp(
-///   builder: (context, child) => RunGuard(child: child!),
-///   home: MyHomePage(),
-/// )
-/// ```
-///
-/// ### Correct — via `navigatorKey`:
-/// ```dart
-/// final _navigatorKey = GlobalKey<NavigatorState>();
-///
-/// MaterialApp(
-///   navigatorKey: _navigatorKey,
-///   home: RunGuard(
-///     navigatorKey: _navigatorKey,
-///     child: MyHomePage(),
-///   ),
-/// )
-/// ```
-///
-/// ### Incorrect — wrapping MaterialApp:
-/// ```dart
-/// // ❌ No MaterialLocalizations above RunGuard
-/// RunGuard(child: MaterialApp(...))
-/// ```
 class RunGuard extends StatefulWidget {
   final Widget child;
-
-  /// A [GlobalKey<NavigatorState>] pointing to the [MaterialApp] navigator.
-  ///
-  /// Pass the same key you give to [MaterialApp.navigatorKey]. This gives
-  /// [RunGuard] a context that is always inside [MaterialApp] — even if
-  /// this widget's own context has been unmounted.
-  ///
-  /// Not required when using [MaterialApp.builder] placement, but always
-  /// recommended as a safety net.
   final GlobalKey<NavigatorState>? navigatorKey;
 
   final void Function(Object error, StackTrace stackTrace)? onError;

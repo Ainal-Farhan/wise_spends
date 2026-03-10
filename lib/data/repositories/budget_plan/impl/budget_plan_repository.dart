@@ -52,7 +52,16 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   Future<List<BudgetPlanEntity>> getAllPlans() async {
     final query = _db.select(_db.savingsPlanTable);
     final rows = await query.get();
-    return rows.map(_mapPlanToEntity).toList();
+    final plans = rows.map(_mapPlanToEntity).toList();
+
+    // Enrich each plan with calculated values (note: this makes multiple DB calls)
+    // For better performance with many plans, consider batch calculation
+    final enrichedPlans = <BudgetPlanEntity>[];
+    for (final plan in plans) {
+      enrichedPlans.add(await _enrichPlanWithCalculatedValues(plan));
+    }
+
+    return enrichedPlans;
   }
 
   @override
@@ -61,7 +70,63 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       ..where((tbl) => tbl.id.equals(id));
     final rows = await query.get();
     if (rows.isEmpty) return null;
-    return _mapPlanToEntity(rows.first);
+
+    final plan = _mapPlanToEntity(rows.first);
+
+    // Calculate totalDeposited and totalSpent asynchronously
+    return _enrichPlanWithCalculatedValues(plan);
+  }
+
+  /// Enrich plan with calculated totalDeposited and totalSpent values
+  Future<BudgetPlanEntity> _enrichPlanWithCalculatedValues(
+    BudgetPlanEntity plan,
+  ) async {
+    try {
+      // Get total deposits from manual deposits
+      final deposits = await getDeposits(plan.id);
+      final totalManualDeposits = deposits.fold<double>(
+        0.0,
+        (sum, d) => sum + d.amount,
+      );
+
+      // Get total spending from manual spending
+      final transactions = await getPlanTransactions(plan.id);
+      final totalManualSpending = transactions.fold<double>(
+        0.0,
+        (sum, t) => sum + t.amount,
+      );
+
+      // Get items for this plan to calculate item-based totals
+      final itemsQuery = _db.select(_db.savingsPlanItemTable)
+        ..where((tbl) => tbl.planId.equals(plan.id));
+      final items = await itemsQuery.get();
+
+      final totalItemDeposits = items.fold<double>(
+        0.0,
+        (sum, i) => sum + i.depositPaid,
+      );
+
+      final totalItemPayments = items.fold<double>(
+        0.0,
+        (sum, i) => sum + i.amountPaid,
+      );
+
+      // totalDeposited = manual deposits + item deposits
+      final totalDeposited = totalManualDeposits + totalItemDeposits;
+
+      // totalSpent = manual spending + (item payments - item deposits)
+      // The (item payments - item deposits) represents the remaining payments beyond deposits
+      final totalSpent =
+          totalManualSpending + (totalItemPayments - totalItemDeposits);
+
+      return plan.copyWith(
+        totalDeposited: totalDeposited,
+        totalSpent: totalSpent,
+      );
+    } catch (e) {
+      // If calculation fails, return plan with default values
+      return plan;
+    }
   }
 
   @override
@@ -205,11 +270,8 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   @override
   Future<List<BudgetPlanDepositEntity>> getDeposits(String planId) async {
-    final plan = await getPlanByUuid(planId);
-    if (plan == null) return [];
-
     final query = _db.select(_db.savingsPlanDepositTable)
-      ..where((tbl) => tbl.planId.equals(plan.id));
+      ..where((tbl) => tbl.planId.equals(planId)); // use planId directly
     final rows = await query.get();
     return rows.map(_mapDepositToEntity).toList();
   }
@@ -288,11 +350,8 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   Future<List<BudgetPlanTransactionEntity>> getPlanTransactions(
     String planId,
   ) async {
-    final plan = await getPlanByUuid(planId);
-    if (plan == null) return [];
-
     final query = _db.select(_db.savingsPlanSpendingTable)
-      ..where((tbl) => tbl.planId.equals(plan.id));
+      ..where((tbl) => tbl.planId.equals(planId)); // use planId directly
     final rows = await query.get();
     return rows.map(_mapTransactionToEntity).toList();
   }
@@ -793,9 +852,9 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   // Helper Methods
   // ============================================================================
 
-  /// Update plan's current amount based on deposits and transactions
+  /// Update plan's current amount based on deposits, transactions, and item payments
   Future<void> _updatePlanCurrentAmount(String planId) async {
-    // Get total deposits
+    // Get total deposits from manual deposits
     final depositsQuery = _db.select(_db.savingsPlanDepositTable)
       ..where((tbl) => tbl.planId.equals(planId));
     final deposits = await depositsQuery.get();
@@ -804,7 +863,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       (sum, d) => sum + d.amount,
     );
 
-    // Get total spending
+    // Get total spending from manual spending
     final transactionsQuery = _db.select(_db.savingsPlanSpendingTable)
       ..where((tbl) => tbl.planId.equals(planId));
     final transactions = await transactionsQuery.get();
@@ -813,8 +872,17 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       (sum, t) => sum + t.amount,
     );
 
-    // Update plan
-    final currentAmount = totalDeposits - totalSpending;
+    // Get total payments from budget plan items
+    final itemsQuery = _db.select(_db.savingsPlanItemTable)
+      ..where((tbl) => tbl.planId.equals(planId));
+    final items = await itemsQuery.get();
+    final totalItemPayments = items.fold<double>(
+      0.0,
+      (sum, i) => sum + i.amountPaid,
+    );
+
+    // Update plan: currentAmount = manual deposits + item payments - spending
+    final currentAmount = totalDeposits + totalItemPayments - totalSpending;
 
     final updating = SavingsPlanTableCompanion(
       currentAmount: Value(currentAmount),
@@ -839,8 +907,8 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       ),
       targetAmount: row.targetAmount,
       currentAmount: row.currentAmount,
-      totalSpent: 0, // Would need calculation
-      totalDeposited: 0, // Would need calculation
+      totalSpent: 0, // Will be calculated asynchronously in getPlanByUuid
+      totalDeposited: 0, // Will be calculated asynchronously in getPlanByUuid
       currency: row.currency,
       startDate: row.startDate,
       targetDate: row.targetDate,

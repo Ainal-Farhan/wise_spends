@@ -86,9 +86,6 @@ class _BudgetPlanItemsListContentState
 
   @override
   Widget build(BuildContext context) {
-    // No Scaffold here — BudgetPlanDetailScreen owns the root Scaffold.
-    // Using a nested Scaffold causes ScaffoldMessenger to lose its root
-    // ancestor, breaking snackbar display. FAB is rendered via Stack instead.
     return BlocListener<BudgetPlanItemsListBloc, BudgetPlanItemsListState>(
       listenWhen: (_, current) =>
           current is BudgetPlanItemsListError ||
@@ -134,25 +131,11 @@ class _BudgetPlanItemsListContentState
                       horizontal: AppSpacing.lg,
                       vertical: AppSpacing.md,
                     ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: _FilterChips(
-                            selectedPaymentStatus: _selectedPaymentStatus,
-                            selectedTag: _selectedTag,
-                            onPaymentStatusSelected: _onPaymentStatusSelected,
-                            onTagSelected: _onTagSelected,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.filter_list),
-                          onPressed: () => _showFilterDialog(context),
-                          tooltip: 'general.filter'.tr,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                      ],
+                    child: _FilterChips(
+                      selectedPaymentStatus: _selectedPaymentStatus,
+                      selectedTag: _selectedTag,
+                      onPaymentStatusSelected: _onPaymentStatusSelected,
+                      onTagSelected: _onTagSelected,
                     ),
                   ),
                 ),
@@ -291,56 +274,6 @@ class _BudgetPlanItemsListContentState
     );
   }
 
-  void _showFilterDialog(BuildContext context) {
-    String? localStatus = _selectedPaymentStatus;
-
-    showCustomContentDialog(
-      context: context,
-      title: 'general.filter'.tr,
-      content: StatefulBuilder(
-        builder: (_, setLocalState) {
-          return RadioGroup<String?>(
-            groupValue: localStatus,
-            onChanged: (v) => setLocalState(() => localStatus = v),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'budget_plans.payment_status'.tr,
-                  style: AppTextStyles.bodySemiBold,
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                ..._kPaymentFilters.map(
-                  (f) => RadioListTile<String?>(
-                    title: Text(f.labelKey.tr),
-                    value: f.value,
-                    contentPadding: EdgeInsets.zero,
-                    dense: true,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      actions: [
-        DialogAction(
-          text: 'general.clear'.tr,
-          onPressed: () {
-            _onPaymentStatusSelected(null);
-            _onTagSelected(null);
-          },
-        ),
-        DialogAction(
-          text: 'general.apply'.tr,
-          isPrimary: true,
-          onPressed: () => _onPaymentStatusSelected(localStatus),
-        ),
-      ],
-    );
-  }
-
   void _showSnackBar(
     BuildContext context,
     String message, {
@@ -362,6 +295,184 @@ class _BudgetPlanItemsListContentState
 }
 
 // =============================================================================
+// Filter Chips
+// =============================================================================
+class _FilterChips extends StatelessWidget {
+  final String? selectedPaymentStatus;
+  final String? selectedTag;
+  final ValueChanged<String?> onPaymentStatusSelected;
+  final ValueChanged<String?> onTagSelected;
+
+  const _FilterChips({
+    required this.selectedPaymentStatus,
+    required this.selectedTag,
+    required this.onPaymentStatusSelected,
+    required this.onTagSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasActiveFilter =
+        selectedPaymentStatus != null || selectedTag != null;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: AppSpacing.xs,
+                runSpacing: AppSpacing.xs,
+                children: _kPaymentFilters.map((f) {
+                  final isSelected = selectedPaymentStatus == f.value;
+                  return FilterChip(
+                    label: Text(f.labelKey.tr),
+                    selected: isSelected,
+                    onSelected: (selected) =>
+                        onPaymentStatusSelected(selected ? f.value : null),
+                    selectedColor: WiseSpendsColors.primary.withValues(
+                      alpha: 0.2,
+                    ),
+                    checkmarkColor: WiseSpendsColors.primary,
+                  );
+                }).toList(),
+              ),
+              BlocBuilder<BudgetPlanItemsListBloc, BudgetPlanItemsListState>(
+                buildWhen: (_, current) => current is BudgetPlanItemsListLoaded,
+                builder: (context, state) {
+                  if (state is! BudgetPlanItemsListLoaded) {
+                    return const SizedBox.shrink();
+                  }
+
+                  final allTags = state.items
+                      .expand((i) => i.tags)
+                      .toSet()
+                      .toList();
+                  if (allTags.isEmpty) return const SizedBox.shrink();
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: AppSpacing.md),
+                      SectionHeaderCompact(title: 'budget_plans.tags'.tr),
+                      const SizedBox(height: AppSpacing.sm),
+                      Wrap(
+                        spacing: AppSpacing.xs,
+                        runSpacing: AppSpacing.xs,
+                        children: [
+                          FilterChip(
+                            label: Text('budget_plans.filter_all'.tr),
+                            selected: selectedTag == null,
+                            onSelected: (_) => onTagSelected(null),
+                            selectedColor: WiseSpendsColors.primary.withValues(
+                              alpha: 0.2,
+                            ),
+                            checkmarkColor: WiseSpendsColors.primary,
+                          ),
+                          ...allTags.map(
+                            (tag) => FilterChip(
+                              label: Text(tag),
+                              selected: selectedTag == tag,
+                              onSelected: (selected) =>
+                                  onTagSelected(selected ? tag : null),
+                              selectedColor: WiseSpendsColors.primary
+                                  .withValues(alpha: 0.2),
+                              checkmarkColor: WiseSpendsColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        Stack(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () => _showFilterDialog(context),
+              tooltip: 'general.filter'.tr,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
+            if (hasActiveFilter)
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: WiseSpendsColors.primary,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void _showFilterDialog(BuildContext context) {
+    String? localStatus = selectedPaymentStatus;
+
+    showCustomContentDialog(
+      context: context,
+      title: 'general.filter'.tr,
+      content: StatefulBuilder(
+        builder: (_, setLocalState) => RadioGroup<String?>(
+          groupValue: localStatus,
+          onChanged: (v) => setLocalState(() => localStatus = v),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'budget_plans.payment_status'.tr,
+                style: AppTextStyles.bodySemiBold,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              ..._kPaymentFilters.map(
+                (f) => RadioListTile<String?>(
+                  title: Text(f.labelKey.tr),
+                  value: f.value,
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        DialogAction(
+          text: 'general.clear'.tr,
+          onPressed: () {
+            onPaymentStatusSelected(null);
+            onTagSelected(null);
+            Navigator.pop(context);
+          },
+        ),
+        DialogAction(
+          text: 'general.apply'.tr,
+          isPrimary: true,
+          onPressed: () {
+            onPaymentStatusSelected(localStatus);
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+  }
+}
+
+// =============================================================================
 // Summary Card
 // =============================================================================
 
@@ -373,30 +484,30 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<BudgetPlanItemsListBloc, BudgetPlanItemsListState>(
-      buildWhen: (_, current) =>
-          current is BudgetPlanItemsListLoaded ||
-          current is BudgetPlanItemsListLoading,
       builder: (context, state) {
-        if (state is! BudgetPlanItemsListLoaded) {
+        if (state is BudgetPlanItemsListLoading) {
           return const ShimmerCard(height: 120);
         }
 
-        final summary = state.summary;
+        if (state is BudgetPlanItemsListLoaded) {
+          final summary = state.summary;
+          return SectionHeader.card(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [WiseSpendsColors.primary, WiseSpendsColors.primaryDark],
+            ),
+            icon: Icons.format_list_bulleted,
+            label: 'budget_plans.items_summary'.tr,
+            title: 'Total Cost: RM ${summary.totalCost.toStringAsFixed(2)}',
+            subtitle: '${summary.totalItems} ${'budget_plans.items_count'.tr}',
+            collapsibleBody: _SummaryDetail(summary: summary),
+            learnMoreLabel: 'general.details'.tr,
+            learnLessLabel: 'general.less'.tr,
+          );
+        }
 
-        return SectionHeader.card(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [WiseSpendsColors.primary, WiseSpendsColors.primaryDark],
-          ),
-          icon: Icons.format_list_bulleted,
-          label: 'budget_plans.items_summary'.tr,
-          title: 'Total Cost: RM ${summary.totalCost.toStringAsFixed(2)}',
-          subtitle: '${summary.totalItems} ${'budget_plans.items_count'.tr}',
-          collapsibleBody: _SummaryDetail(summary: summary),
-          learnMoreLabel: 'general.details'.tr,
-          learnLessLabel: 'general.less'.tr,
-        );
+        return const SizedBox.shrink();
       },
     );
   }
@@ -531,98 +642,6 @@ class _SummaryChip extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-// =============================================================================
-// Filter Chips
-// =============================================================================
-
-class _FilterChips extends StatelessWidget {
-  final String? selectedPaymentStatus;
-  final String? selectedTag;
-  final ValueChanged<String?> onPaymentStatusSelected;
-  final ValueChanged<String?> onTagSelected;
-
-  const _FilterChips({
-    required this.selectedPaymentStatus,
-    required this.selectedTag,
-    required this.onPaymentStatusSelected,
-    required this.onTagSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Payment Status Filter — uses shared _kPaymentFilters constant
-        Wrap(
-          spacing: AppSpacing.xs,
-          runSpacing: AppSpacing.xs,
-          children: _kPaymentFilters.map((f) {
-            final isSelected = selectedPaymentStatus == f.value;
-            return FilterChip(
-              label: Text(f.labelKey.tr),
-              selected: isSelected,
-              onSelected: (selected) =>
-                  onPaymentStatusSelected(selected ? f.value : null),
-              selectedColor: WiseSpendsColors.primary.withValues(alpha: 0.2),
-              checkmarkColor: WiseSpendsColors.primary,
-            );
-          }).toList(),
-        ),
-
-        // Tag Filter — only shown when tags exist in the loaded items
-        BlocBuilder<BudgetPlanItemsListBloc, BudgetPlanItemsListState>(
-          buildWhen: (_, current) => current is BudgetPlanItemsListLoaded,
-          builder: (context, state) {
-            if (state is! BudgetPlanItemsListLoaded) {
-              return const SizedBox.shrink();
-            }
-
-            final allTags = state.items.expand((i) => i.tags).toSet().toList();
-            if (allTags.isEmpty) return const SizedBox.shrink();
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: AppSpacing.md),
-                SectionHeaderCompact(title: 'budget_plans.tags'.tr),
-                const SizedBox(height: AppSpacing.sm),
-                Wrap(
-                  spacing: AppSpacing.xs,
-                  runSpacing: AppSpacing.xs,
-                  children: [
-                    FilterChip(
-                      label: Text('budget_plans.filter_all'.tr),
-                      selected: selectedTag == null,
-                      onSelected: (_) => onTagSelected(null),
-                      selectedColor: WiseSpendsColors.primary.withValues(
-                        alpha: 0.2,
-                      ),
-                      checkmarkColor: WiseSpendsColors.primary,
-                    ),
-                    ...allTags.map((tag) {
-                      return FilterChip(
-                        label: Text(tag),
-                        selected: selectedTag == tag,
-                        onSelected: (selected) =>
-                            onTagSelected(selected ? tag : null),
-                        selectedColor: WiseSpendsColors.primary.withValues(
-                          alpha: 0.2,
-                        ),
-                        checkmarkColor: WiseSpendsColors.primary,
-                      );
-                    }),
-                  ],
-                ),
-              ],
-            );
-          },
-        ),
-      ],
     );
   }
 }

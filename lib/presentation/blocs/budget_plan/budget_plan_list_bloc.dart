@@ -5,15 +5,6 @@ import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_reposito
 import 'budget_plan_list_event.dart';
 import 'budget_plan_list_state.dart';
 
-/// Budget Plan List BLoC — manages the list of budget plans.
-///
-/// Fixes applied:
-///   • [_onDeleteBudgetPlan]: on error, emits [BudgetPlanListDeleteError]
-///     (a sub-state that carries the message WITHOUT wiping the current list)
-///     so the UI can show a snackbar while the list stays intact.
-///   • [_onRefreshBudgetPlans]: does NOT emit [BudgetPlanListLoading], so the
-///     pull-to-refresh indicator plays without replacing the list with
-///     shimmer skeletons.
 class BudgetPlanListBloc
     extends Bloc<BudgetPlanListEvent, BudgetPlanListState> {
   final IBudgetPlanRepository _repository;
@@ -138,9 +129,6 @@ class BudgetPlanListBloc
     RefreshBudgetPlans event,
     Emitter<BudgetPlanListState> emit,
   ) async {
-    // Do NOT emit BudgetPlanListLoading here.
-    // The RefreshIndicator already shows its own spinner; replacing the list
-    // with shimmer skeletons during a pull-to-refresh is jarring.
     try {
       final plans = await _repository.getAllPlans();
       final summary = await _repository.getOverallSummary();

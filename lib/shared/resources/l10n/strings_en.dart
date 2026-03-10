@@ -916,6 +916,11 @@ class EnglishStrings {
     "budget_plans.status_fully_paid": "Fully Paid",
     "budget_plans.status_deposit_paid": "Deposit Paid",
     "budget_plans.status_not_paid": "Not Paid",
+    "budget_plans.status_partially_paid": "Partially Paid",
+
+    // Payment status helpers
+    "budget_plans.has_deposit": "Has Deposit",
+    "budget_plans.custom_payment": "Custom Payment",
 
     "budget_plans.net": "Net",
     "budget_plans.deposit": "Deposit",

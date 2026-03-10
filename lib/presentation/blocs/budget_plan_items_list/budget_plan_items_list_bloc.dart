@@ -135,6 +135,9 @@ class BudgetPlanItemsListBloc
     try {
       final sortOrder = await _itemRepository.getNextSortOrder(event.planId);
 
+      // Auto-set isCompleted if fully paid
+      final isFullyPaid = event.amountPaid >= event.totalCost;
+
       // insertOne is the correct ICrudRepository method name
       final inserted = await _itemRepository.insertOne(
         SavingsPlanItemTableCompanion.insert(
@@ -148,6 +151,7 @@ class BudgetPlanItemsListBloc
           amountPaid: Value(event.amountPaid),
           notes: Value(event.notes),
           dueDate: Value(event.dueDate),
+          isCompleted: Value(isFullyPaid),
           dateUpdated: DateTime.now(),
           lastModifiedBy: 'system',
         ),
@@ -167,21 +171,18 @@ class BudgetPlanItemsListBloc
         filterTag: currentTag,
       );
 
-      // Transient notification — BlocListener picks this up for snackbar
+      // Emit transient notification for BlocListener (snackbar)
+      // Don't await this - it's just a notification
       final created = itemsWithTags.firstWhereOrNull(
         (i) => i.id == inserted.id,
       );
-      if (created != null) emit(BudgetPlanItemCreated(created));
-
-      // Restore loaded state so BlocBuilder list is never broken
-      _emitLoaded(
-        emit,
-        itemsWithTags,
-        filterPaymentStatus: currentFilter,
-        filterTag: currentTag,
-      );
+      if (created != null && !emit.isDone) {
+        emit(BudgetPlanItemCreated(created));
+      }
     } catch (e) {
-      emit(BudgetPlanItemsListError('Failed to create item: ${e.toString()}'));
+      if (!emit.isDone) {
+        emit(BudgetPlanItemsListError('Failed to create item: ${e.toString()}'));
+      }
     }
   }
 
@@ -197,6 +198,19 @@ class BudgetPlanItemsListBloc
     final current = state as BudgetPlanItemsListLoaded;
 
     try {
+      // Auto-calculate isCompleted based on payment amounts
+      // Only auto-calculate if user didn't explicitly set isCompleted
+      final bool isCompleted;
+      if (event.isCompleted != null) {
+        // User explicitly set isCompleted, use their value
+        isCompleted = event.isCompleted!;
+      } else {
+        // Auto-calculate: mark as completed if fully paid
+        final totalCost = event.totalCost ?? current.items.firstWhere((i) => i.id == event.itemId).totalCost;
+        final amountPaid = event.amountPaid ?? current.items.firstWhere((i) => i.id == event.itemId).amountPaid;
+        isCompleted = amountPaid >= totalCost;
+      }
+
       // updatePart is the correct ICrudRepository method name
       await _itemRepository.updatePart(
         tableCompanion: SavingsPlanItemTableCompanion(
@@ -207,9 +221,7 @@ class BudgetPlanItemsListBloc
           amountPaid: Value(event.amountPaid ?? .0),
           // clearNotes sentinel: explicit null vs no-change
           notes: event.clearNotes ? const Value(null) : Value(event.notes),
-          isCompleted: event.isCompleted != null
-              ? Value(event.isCompleted!)
-              : const Value.absent(),
+          isCompleted: Value(isCompleted),
           dueDate: event.clearDueDate
               ? const Value(null)
               : Value(event.dueDate),
@@ -231,19 +243,17 @@ class BudgetPlanItemsListBloc
         filterTag: current.filterTag,
       );
 
+      // Emit transient notification for BlocListener (snackbar)
       final updated = itemsWithTags.firstWhereOrNull(
         (i) => i.id == event.itemId,
       );
-      if (updated != null) emit(BudgetPlanItemUpdated(updated));
-
-      _emitLoaded(
-        emit,
-        itemsWithTags,
-        filterPaymentStatus: current.filterPaymentStatus,
-        filterTag: current.filterTag,
-      );
+      if (updated != null && !emit.isDone) {
+        emit(BudgetPlanItemUpdated(updated));
+      }
     } catch (e) {
-      emit(BudgetPlanItemsListError('Failed to update item: ${e.toString()}'));
+      if (!emit.isDone) {
+        emit(BudgetPlanItemsListError('Failed to update item: ${e.toString()}'));
+      }
     }
   }
 
@@ -266,18 +276,20 @@ class BudgetPlanItemsListBloc
       final itemsWithTags = await _fetchItemsWithTags(event.planId);
       _emitLoaded(emit, itemsWithTags);
 
-      emit(BudgetPlanItemDeleted(event.itemId));
-
-      // Restore loaded so BlocBuilder list is valid after notification
-      _emitLoaded(emit, itemsWithTags);
+      // Emit transient notification for BlocListener (snackbar)
+      if (!emit.isDone) {
+        emit(BudgetPlanItemDeleted(event.itemId));
+      }
     } catch (e) {
-      emit(
-        BudgetPlanItemsListDeleteError(
-          message: 'Failed to delete item: ${e.toString()}',
-          previousState: snapshot,
-        ),
-      );
-      if (snapshot != null) emit(snapshot);
+      if (!emit.isDone && snapshot != null) {
+        emit(
+          BudgetPlanItemsListDeleteError(
+            message: 'Failed to delete item: ${e.toString()}',
+            previousState: snapshot,
+          ),
+        );
+        emit(snapshot);
+      }
     }
   }
 

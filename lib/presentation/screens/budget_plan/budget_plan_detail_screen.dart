@@ -22,6 +22,7 @@ import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
 import 'package:wise_spends/presentation/widgets/charts/budget_charts.dart';
 import 'package:wise_spends/domain/entities/budget_plan/budget_plan_analytics.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/components/speed_dial_fab.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
@@ -2313,28 +2314,23 @@ class _DetailFAB extends StatelessWidget {
           _DetailTab.items => const SizedBox.shrink(),
 
           // Transactions tab — add a spending entry.
-          _DetailTab.transactions => IntrinsicWidth(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                FloatingActionButton.extended(
-                  onPressed: onDeposit,
-                  heroTag: 'fab_deposit',
-                  backgroundColor: WiseSpendsColors.success,
-                  icon: const Icon(Icons.add_circle_outline),
-                  label: Text('budget_plans.add_deposit'.tr),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                FloatingActionButton.extended(
-                  onPressed: onSpending,
-                  heroTag: 'fab_spending',
-                  backgroundColor: WiseSpendsColors.secondary,
-                  icon: const Icon(Icons.remove_circle_outline),
-                  label: Text('budget_plans.add_spending'.tr),
-                ),
-              ],
-            ),
+          _DetailTab.transactions => SpeedDialFab(
+            actions: [
+              SpeedDialAction(
+                label: 'budget_plans.add_deposit'.tr,
+                icon: Icons.add_circle_outline,
+                backgroundColor: WiseSpendsColors.success,
+                heroTag: 'fab_deposit',
+                onPressed: onDeposit,
+              ),
+              SpeedDialAction(
+                label: 'budget_plans.add_spending'.tr,
+                icon: Icons.remove_circle_outline,
+                backgroundColor: WiseSpendsColors.secondary,
+                heroTag: 'fab_spending',
+                onPressed: onSpending,
+              ),
+            ],
           ),
 
           _DetailTab.charts => const SizedBox.shrink(),

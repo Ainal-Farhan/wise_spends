@@ -55,10 +55,16 @@ class _BudgetPlansListContent extends StatefulWidget {
 
 class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
     with RouteAware {
+  bool _subscribed = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    budgetPlanRouteObserver.subscribe(this, ModalRoute.of(context)!);
+    if (!_subscribed) {
+      // Only subscribe once
+      budgetPlanRouteObserver.subscribe(this, ModalRoute.of(context)!);
+      _subscribed = true;
+    }
   }
 
   @override
@@ -545,6 +551,7 @@ class _PlanOptionsSheet extends StatelessWidget {
 
   // WAS: Future<void> _export(BuildContext context, dynamic plan)
   Future<void> _export(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
     try {
       final BudgetPlanEntity? planToExport =
           await SingletonUtil.getSingleton<IRepositoryLocator>()!
@@ -557,7 +564,7 @@ class _PlanOptionsSheet extends StatelessWidget {
         await svc.shareExport(path);
 
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          messenger.showSnackBar(
             SnackBar(
               content: Text('budget_plans.plan_exported'.tr),
               backgroundColor: WiseSpendsColors.success,
@@ -567,7 +574,7 @@ class _PlanOptionsSheet extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text(
               'budget_plans.export_failed'.trWith({'error': e.toString()}),
@@ -581,6 +588,8 @@ class _PlanOptionsSheet extends StatelessWidget {
 
   // WAS: void _confirmDelete(BuildContext context, dynamic plan)
   void _confirmDelete(BuildContext context) {
+    final bloc = context.read<BudgetPlanListBloc>();
+
     showDeleteDialog(
       context: context,
       title: 'budget_plans.delete_plan'.tr,
@@ -588,7 +597,7 @@ class _PlanOptionsSheet extends StatelessWidget {
       deleteText: 'general.delete'.tr,
       cancelText: 'general.cancel'.tr,
       onDelete: () {
-        context.read<BudgetPlanListBloc>().add(DeleteBudgetPlan(plan.id));
+        bloc.add(DeleteBudgetPlan(plan.id));
       },
     );
   }

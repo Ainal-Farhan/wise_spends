@@ -30,6 +30,42 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
     await (db.delete(
       db.savingsPlanItemTable,
     )..where((tbl) => tbl.planId.equals(planId))).go();
+    
+    // Update plan's current amount after deletion
+    await _updatePlanCurrentAmount(planId);
+  }
+
+  @override
+  Future<SvngPlnItem> insertOne(SavingsPlanItemTableCompanion companion) async {
+    final item = await db.into(table).insertReturning(companion);
+    // Update plan's current amount after insertion
+    await _updatePlanCurrentAmount(companion.planId.value);
+    return item;
+  }
+
+  @override
+  Future<void> updatePart({
+    required SavingsPlanItemTableCompanion tableCompanion,
+    required String id,
+  }) async {
+    // Get the item first to find the planId
+    final item = await getById(id);
+    if (item != null) {
+      await (db.update(table)..where((tbl) => tbl.id.equals(id))).write(tableCompanion);
+      // Update plan's current amount after update
+      await _updatePlanCurrentAmount(item.planId);
+    }
+  }
+
+  @override
+  Future<void> deleteById({required String id}) async {
+    // Get the item first to find the planId
+    final item = await getById(id);
+    if (item != null) {
+      await (db.delete(table)..where((tbl) => tbl.id.equals(id))).go();
+      // Update plan's current amount after deletion
+      await _updatePlanCurrentAmount(item.planId);
+    }
   }
 
   @override
@@ -54,6 +90,51 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
         .map((i) => i.sortOrder)
         .reduce((a, b) => a > b ? a : b);
     return maxSortOrder + 1000.0;
+  }
+
+  /// Helper method to update the parent plan's currentAmount
+  /// This ensures item payments are included in the plan's total
+  Future<void> _updatePlanCurrentAmount(String planId) async {
+    try {
+      // Get total payments from budget plan items
+      final items = await getByPlanId(planId);
+      final totalItemPayments = items.fold<double>(
+        0.0,
+        (sum, i) => sum + i.amountPaid,
+      );
+
+      // Get total deposits from manual deposits
+      final deposits = await (db.select(db.savingsPlanDepositTable)
+            ..where((tbl) => tbl.planId.equals(planId)))
+          .get();
+      final totalDeposits = deposits.fold<double>(
+        0.0,
+        (sum, d) => sum + d.amount,
+      );
+
+      // Get total spending from manual spending
+      final transactions = await (db.select(db.savingsPlanSpendingTable)
+            ..where((tbl) => tbl.planId.equals(planId)))
+          .get();
+      final totalSpending = transactions.fold<double>(
+        0.0,
+        (sum, t) => sum + t.amount,
+      );
+
+      // Update plan: currentAmount = manual deposits + item payments - spending
+      final currentAmount = totalDeposits + totalItemPayments - totalSpending;
+
+      await (db.update(db.savingsPlanTable)
+            ..where((tbl) => tbl.id.equals(planId)))
+        .write(SavingsPlanTableCompanion(
+          currentAmount: Value(currentAmount),
+          dateUpdated: Value(DateTime.now()),
+          lastModifiedBy: Value('system'),
+        ));
+    } catch (e) {
+      // Silently fail - don't block item operations if plan update fails
+      // The plan amount will be recalculated on next load
+    }
   }
 
   @override

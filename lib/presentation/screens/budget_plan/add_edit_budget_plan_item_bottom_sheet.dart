@@ -51,6 +51,11 @@ class _AddEditBudgetPlanItemBottomSheetState
   Set<String> _selectedTags = {};
   bool _showTagPicker = false;
 
+  // Payment status helpers
+  bool _hasDeposit = false;
+  bool _isFullyPaid = false;
+  bool _isCustomPayment = false;
+
   bool get _isEdit => widget.item != null;
 
   @override
@@ -71,6 +76,13 @@ class _AddEditBudgetPlanItemBottomSheetState
     _notesCtrl = TextEditingController(text: item?.notes ?? '');
     _selectedDueDate = item?.dueDate;
     _selectedTags = item?.tags.toSet() ?? {};
+    
+    // Initialize payment status helpers
+    if (item != null) {
+      _hasDeposit = item.depositPaid > 0;
+      _isFullyPaid = item.isFullyPaid;
+      _isCustomPayment = item.amountPaid > 0 && !item.isFullyPaid && item.depositPaid == 0;
+    }
   }
 
   @override
@@ -191,6 +203,7 @@ class _AddEditBudgetPlanItemBottomSheetState
                       label: 'budget_plans.deposit_paid'.tr,
                       hint: '0.00',
                       controller: _depositCtrl,
+                      onChanged: (_) => _updatePaymentStatusFromValues(),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
@@ -199,9 +212,65 @@ class _AddEditBudgetPlanItemBottomSheetState
                       label: 'budget_plans.amount_paid'.tr,
                       hint: '0.00',
                       controller: _paidCtrl,
+                      onChanged: (_) => _updatePaymentStatusFromValues(),
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+
+              // Payment Status Helpers
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: WiseSpendsColors.surface,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  border: Border.all(color: WiseSpendsColors.divider),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'budget_plans.payment_status'.tr,
+                      style: AppTextStyles.bodySemiBold,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _PaymentStatusCheckbox(
+                            label: 'budget_plans.has_deposit'.tr,
+                            icon: Icons.handshake_outlined,
+                            isChecked: _hasDeposit,
+                            onChanged: (value) => _setHasDeposit(value),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: _PaymentStatusCheckbox(
+                            label: 'budget_plans.fully_paid'.tr,
+                            icon: Icons.check_circle_outline,
+                            isChecked: _isFullyPaid,
+                            onChanged: (value) => _setFullyPaid(value),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _PaymentStatusCheckbox(
+                            label: 'budget_plans.custom_payment'.tr,
+                            icon: Icons.payment_outlined,
+                            isChecked: _isCustomPayment,
+                            onChanged: (value) => _setCustomPayment(value),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: AppSpacing.lg),
 
@@ -285,6 +354,74 @@ class _AddEditBudgetPlanItemBottomSheetState
         ),
       ),
     );
+  }
+
+  // =============================================================================
+  // Payment Status Helper Methods
+  // =============================================================================
+
+  /// Update payment status checkboxes based on current field values
+  void _updatePaymentStatusFromValues() {
+    final depositPaid = double.tryParse(_depositCtrl.text) ?? 0.0;
+    final amountPaid = double.tryParse(_paidCtrl.text) ?? 0.0;
+    final totalCost = double.tryParse(_totalCostCtrl.text) ?? 0.0;
+
+    setState(() {
+      _hasDeposit = depositPaid > 0;
+      _isFullyPaid = amountPaid >= totalCost && totalCost > 0;
+      _isCustomPayment = amountPaid > 0 && ! _isFullyPaid && depositPaid == 0;
+    });
+  }
+
+  /// Set has deposit status
+  void _setHasDeposit(bool value) {
+    setState(() {
+      _hasDeposit = value;
+      if (value) {
+        // Auto-fill deposit with 50% of total cost as suggestion
+        final totalCost = double.tryParse(_totalCostCtrl.text) ?? 0.0;
+        if (totalCost > 0 && _depositCtrl.text.isEmpty) {
+          _depositCtrl.text = (totalCost * 0.5).toStringAsFixed(2);
+        }
+      } else {
+        _depositCtrl.text = '0.00';
+      }
+      _updatePaymentStatusFromValues();
+    });
+  }
+
+  /// Set fully paid status
+  void _setFullyPaid(bool value) {
+    setState(() {
+      _isFullyPaid = value;
+      if (value) {
+        // Auto-fill amount paid to match total cost
+        final totalCost = double.tryParse(_totalCostCtrl.text) ?? 0.0;
+        _paidCtrl.text = totalCost.toStringAsFixed(2);
+        // Also set deposit to match if not set
+        if (_depositCtrl.text.isEmpty || double.tryParse(_depositCtrl.text) == 0) {
+          _depositCtrl.text = totalCost.toStringAsFixed(2);
+        }
+      } else {
+        _paidCtrl.text = '0.00';
+      }
+      _isCustomPayment = false;
+      _updatePaymentStatusFromValues();
+    });
+  }
+
+  /// Set custom payment status
+  void _setCustomPayment(bool value) {
+    setState(() {
+      _isCustomPayment = value;
+      if (value) {
+        // Clear deposit and allow manual amount paid entry
+        _depositCtrl.text = '0.00';
+        _paidCtrl.text = '0.00';
+        _isFullyPaid = false;
+      }
+      _updatePaymentStatusFromValues();
+    });
   }
 
   void _submit() {
@@ -612,6 +749,97 @@ class _BottomSheetHandle extends StatelessWidget {
         decoration: BoxDecoration(
           color: WiseSpendsColors.divider,
           borderRadius: BorderRadius.circular(2),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Payment Status Checkbox
+// =============================================================================
+
+class _PaymentStatusCheckbox extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool isChecked;
+  final ValueChanged<bool> onChanged;
+
+  const _PaymentStatusCheckbox({
+    required this.label,
+    required this.icon,
+    required this.isChecked,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => onChanged(!isChecked),
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          color: isChecked
+              ? WiseSpendsColors.primary.withValues(alpha: 0.1)
+              : WiseSpendsColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(
+            color: isChecked
+                ? WiseSpendsColors.primary
+                : WiseSpendsColors.divider,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              isChecked ? Icons.check_box : Icons.check_box_outline_blank,
+              color: isChecked
+                  ? WiseSpendsColors.primary
+                  : WiseSpendsColors.textSecondary,
+              size: 18,
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        icon,
+                        size: 14,
+                        color: isChecked
+                            ? WiseSpendsColors.primary
+                            : WiseSpendsColors.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          label,
+                          style: AppTextStyles.caption.copyWith(
+                            color: isChecked
+                                ? WiseSpendsColors.primary
+                                : WiseSpendsColors.textSecondary,
+                            fontWeight: isChecked
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

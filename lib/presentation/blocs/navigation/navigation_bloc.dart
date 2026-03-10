@@ -37,7 +37,10 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   ) async {
     emit(NavigationNavigating(event.route, extraData: event.extraData));
     await Future.delayed(const Duration(milliseconds: 300));
-    if (!isClosed && !emit.isDone) emit(NavigationClosed());
+    // Check if the BLoC is still active before emitting
+    if (!isClosed) {
+      emit(NavigationClosed());
+    }
   }
 
   Future<void> _onRefreshDashboard(
@@ -46,6 +49,9 @@ class NavigationBloc extends Bloc<NavigationEvent, NavigationState> {
   ) async {
     emit(DashboardRefreshRequested());
     await Future.delayed(const Duration(milliseconds: 100));
-    if (!isClosed && !emit.isDone) emit(NavigationClosed());
+    // Check if the BLoC is still active before emitting
+    if (!isClosed) {
+      emit(NavigationClosed());
+    }
   }
 }
