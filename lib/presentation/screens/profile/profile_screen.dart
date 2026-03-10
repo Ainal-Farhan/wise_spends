@@ -100,10 +100,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (_phoneController.text.isEmpty && state.profile.phone != null) {
               _phoneController.text = state.profile.phone!;
             }
-            if (_occupationController.text.isEmpty && state.profile.occupation != null) {
+            if (_occupationController.text.isEmpty &&
+                state.profile.occupation != null) {
               _occupationController.text = state.profile.occupation!;
             }
-            if (_addressController.text.isEmpty && state.profile.address != null) {
+            if (_addressController.text.isEmpty &&
+                state.profile.address != null) {
               _addressController.text = state.profile.address!;
             }
 
@@ -170,12 +172,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 controller: _emailController,
                 prefixIcon: Icons.email_outlined,
                 keyboardType: AppTextFieldKeyboardType.email,
-                validator: (value) {
-                  if (value != null && value.isNotEmpty) {
-                    return 'profile.email_invalid'.tr;
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: AppSpacing.lg),
 
@@ -184,12 +180,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 controller: _phoneController,
                 prefixIcon: Icons.phone_outlined,
                 keyboardType: AppTextFieldKeyboardType.phone,
-                validator: (value) {
-                  if (value != null && value.isNotEmpty) {
-                    return 'profile.phone_invalid'.tr;
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: AppSpacing.lg),
 
@@ -254,10 +244,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ? Colors.transparent
                       : AppColors.primaryContainer,
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.primary,
-                    width: 3,
-                  ),
+                  border: Border.all(color: AppColors.primary, width: 3),
                 ),
                 child: _profileImage != null
                     ? ClipOval(
@@ -289,10 +276,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white,
-                      width: 3,
-                    ),
+                    border: Border.all(color: Colors.white, width: 3),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.2),
@@ -308,8 +292,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: const EdgeInsets.all(8),
                           child: const CircularProgressIndicator(
                             strokeWidth: 3,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : Material(
@@ -339,9 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: AppSpacing.md),
           Text(
             profile.name,
-            style: AppTextStyles.h3.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTextStyles.h3.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: AppSpacing.xs),
           InkWell(
@@ -365,9 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
-                    _profileImage != null
-                        ? 'Change photo'
-                        : 'Add photo',
+                    _profileImage != null ? 'Change photo' : 'Add photo',
                     style: AppTextStyles.labelSmall.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,
@@ -403,11 +384,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: AppColors.primaryContainer,
               borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
-            child: Icon(
-              icon,
-              color: AppColors.primary,
-              size: AppIconSize.sm,
-            ),
+            child: Icon(icon, color: AppColors.primary, size: AppIconSize.sm),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -473,11 +450,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: AppIconSize.sm,
-            color: AppColors.textSecondary,
-          ),
+          Icon(icon, size: AppIconSize.sm, color: AppColors.textSecondary),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
@@ -511,9 +484,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: AppColors.secondaryContainer,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(
-          color: AppColors.secondary.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -650,7 +621,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('profile.failed_pick_image'.trWith({'error': e.toString()})),
+            content: Text(
+              'profile.failed_pick_image'.trWith({'error': e.toString()}),
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -776,7 +749,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 isDestructive: true,
                 onPressed: () {
                   Navigator.pop(dialogContext);
-                  _showComingSoonMessage(context, 'profile.account_deletion'.tr);
+                  _showComingSoonMessage(
+                    context,
+                    'profile.account_deletion'.tr,
+                  );
                 },
               ),
             ],

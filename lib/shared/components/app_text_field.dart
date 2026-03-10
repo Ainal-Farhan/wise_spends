@@ -152,6 +152,64 @@ class _AppTextFieldState extends State<AppTextField> {
     widget.onChanged?.call('');
   }
 
+  // Add to _AppTextFieldState
+  FormFieldValidator<String>? _buildAutoValidator() {
+    FormFieldValidator<String>? autoValidator;
+
+    switch (widget.keyboardType) {
+      case AppTextFieldKeyboardType.email:
+        autoValidator = (value) {
+          if (value != null && value.isNotEmpty) {
+            final emailRegex = RegExp(r'^[\w\-.]+@([\w-]+\.)+[\w-]{2,}$');
+            if (!emailRegex.hasMatch(value)) return 'Invalid email address';
+          }
+          return null;
+        };
+        break;
+      case AppTextFieldKeyboardType.phone:
+        autoValidator = (value) {
+          if (value != null && value.isNotEmpty) {
+            final phoneRegex = RegExp(r'^\+?[\d\s\-()]{7,15}$');
+            if (!phoneRegex.hasMatch(value)) return 'Invalid phone number';
+          }
+          return null;
+        };
+        break;
+      case AppTextFieldKeyboardType.url:
+        autoValidator = (value) {
+          if (value != null && value.isNotEmpty) {
+            final urlRegex = RegExp(r'^https?://[\w\-]+(\.[\w\-]+)+[/#?]?.*$');
+            if (!urlRegex.hasMatch(value)) return 'Invalid URL';
+          }
+          return null;
+        };
+        break;
+      case AppTextFieldKeyboardType.decimal:
+      case AppTextFieldKeyboardType.currency:
+        autoValidator = (value) {
+          if (value != null && value.isNotEmpty) {
+            if (double.tryParse(value) == null) return 'Invalid number';
+          }
+          return null;
+        };
+        break;
+      default:
+        break;
+    }
+
+    // If a custom validator is provided, chain it after auto-validation
+    if (widget.validator != null) {
+      final customValidator = widget.validator!;
+      if (autoValidator != null) {
+        final builtIn = autoValidator;
+        return (value) => builtIn(value) ?? customValidator(value);
+      }
+      return customValidator;
+    }
+
+    return autoValidator;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -189,7 +247,7 @@ class _AppTextFieldState extends State<AppTextField> {
           restorationId: widget.restorationId,
           enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
           autovalidateMode: widget.autovalidateMode,
-          validator: widget.validator,
+          validator: _buildAutoValidator(),
           onChanged: widget.onChanged,
           onFieldSubmitted: widget.onSubmitted,
           onTap: widget.onTap,
