@@ -1,10 +1,17 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
+import 'package:wise_spends/data/repositories/budget_plan/impl/budget_plan_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_item_repository.dart';
 
 /// Savings Plan Item Repository Implementation
+/// Uses IBudgetPlanRepository for centralized plan amount calculation
 class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
-  SavingsPlanItemRepository() : super(AppDatabase());
+  final IBudgetPlanRepository _budgetPlanRepository;
+
+  SavingsPlanItemRepository({IBudgetPlanRepository? budgetPlanRepository})
+    : _budgetPlanRepository = budgetPlanRepository ?? BudgetPlanRepository(),
+      super(AppDatabase());
 
   @override
   String getTypeName() => 'SavingsPlanItemTable';
@@ -31,15 +38,15 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
       db.savingsPlanItemTable,
     )..where((tbl) => tbl.planId.equals(planId))).go();
 
-    // Update plan's current amount after deletion
-    await _updatePlanCurrentAmount(planId);
+    // Recalculate plan's current amount using centralized method
+    await _budgetPlanRepository.recalculatePlanAmount(planId);
   }
 
   @override
   Future<SvngPlnItem> insertOne(SavingsPlanItemTableCompanion companion) async {
     final item = await db.into(table).insertReturning(companion);
-    // Update plan's current amount after insertion
-    await _updatePlanCurrentAmount(companion.planId.value);
+    // Recalculate plan's current amount using centralized method
+    await _budgetPlanRepository.recalculatePlanAmount(companion.planId.value);
     return item;
   }
 
@@ -54,8 +61,8 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
       await (db.update(
         table,
       )..where((tbl) => tbl.id.equals(id))).write(tableCompanion);
-      // Update plan's current amount after update
-      await _updatePlanCurrentAmount(item.planId);
+      // Recalculate plan's current amount using centralized method
+      await _budgetPlanRepository.recalculatePlanAmount(item.planId);
     }
   }
 
@@ -65,8 +72,8 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
     final item = await getById(id);
     if (item != null) {
       await (db.delete(table)..where((tbl) => tbl.id.equals(id))).go();
-      // Update plan's current amount after deletion
-      await _updatePlanCurrentAmount(item.planId);
+      // Recalculate plan's current amount using centralized method
+      await _budgetPlanRepository.recalculatePlanAmount(item.planId);
     }
   }
 
@@ -92,53 +99,6 @@ class SavingsPlanItemRepository extends ISavingsPlanItemRepository {
         .map((i) => i.sortOrder)
         .reduce((a, b) => a > b ? a : b);
     return maxSortOrder + 1000.0;
-  }
-
-  /// Helper method to update the parent plan's currentAmount
-  /// This ensures item payments are included in the plan's total
-  Future<void> _updatePlanCurrentAmount(String planId) async {
-    try {
-      // Get total payments from budget plan items
-      final items = await getByPlanId(planId);
-      final totalItemPayments = items.fold<double>(
-        0.0,
-        (sum, i) => sum + i.amountPaid + i.depositPaid,
-      );
-
-      // Get total deposits from manual deposits
-      final deposits = await (db.select(
-        db.savingsPlanDepositTable,
-      )..where((tbl) => tbl.planId.equals(planId))).get();
-      final totalDeposits = deposits.fold<double>(
-        0.0,
-        (sum, d) => sum + d.amount,
-      );
-
-      // Get total spending from manual spending
-      final transactions = await (db.select(
-        db.savingsPlanSpendingTable,
-      )..where((tbl) => tbl.planId.equals(planId))).get();
-      final totalSpending = transactions.fold<double>(
-        0.0,
-        (sum, t) => sum + t.amount,
-      );
-
-      // Update plan: currentAmount = manual deposits + item payments - spending
-      final currentAmount = totalDeposits + totalItemPayments - totalSpending;
-
-      await (db.update(
-        db.savingsPlanTable,
-      )..where((tbl) => tbl.id.equals(planId))).write(
-        SavingsPlanTableCompanion(
-          currentAmount: Value(currentAmount),
-          dateUpdated: Value(DateTime.now()),
-          lastModifiedBy: Value('system'),
-        ),
-      );
-    } catch (e) {
-      // Silently fail - don't block item operations if plan update fails
-      // The plan amount will be recalculated on next load
-    }
   }
 
   @override

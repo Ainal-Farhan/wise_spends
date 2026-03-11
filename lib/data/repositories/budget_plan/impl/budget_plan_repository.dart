@@ -302,8 +302,8 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
     await _db.into(_db.savingsPlanDepositTable).insert(companion);
 
-    // Update plan's current amount
-    await _updatePlanCurrentAmount(plan.id);
+    // Recalculate plan's current amount using centralized method
+    await recalculatePlanAmount(plan.id);
 
     return BudgetPlanDepositEntity(
       id: id,
@@ -319,12 +319,19 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   @override
   Future<void> deleteDeposit(String id) async {
-    final query = _db.delete(_db.savingsPlanDepositTable)
-      ..where((tbl) => tbl.id.equals(id));
-    await query.go();
+    // Get the deposit first to find the planId
+    final deposit = await (db.select(
+      db.savingsPlanDepositTable,
+    )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
-    // Update plan's current amount
-    // (In a real implementation, we'd recalculate from remaining deposits)
+    if (deposit != null) {
+      final query = db.delete(db.savingsPlanDepositTable)
+        ..where((tbl) => tbl.id.equals(id));
+      await query.go();
+
+      // Recalculate plan's current amount using centralized method
+      await recalculatePlanAmount(deposit.planId);
+    }
   }
 
   // ============================================================================
@@ -395,8 +402,8 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       );
     }
 
-    // Update plan's current amount (subtract spending)
-    await _updatePlanCurrentAmount(plan.id);
+    // Recalculate plan's current amount using centralized method
+    await recalculatePlanAmount(plan.id);
 
     return BudgetPlanTransactionEntity(
       id: id,
@@ -507,11 +514,19 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   @override
   Future<void> deletePlanTransaction(String id) async {
-    final query = _db.delete(_db.savingsPlanSpendingTable)
-      ..where((tbl) => tbl.id.equals(id));
-    await query.go();
+    // Get the transaction first to find the planId
+    final transaction = await (db.select(
+      db.savingsPlanSpendingTable,
+    )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
-    // Update plan's current amount
+    if (transaction != null) {
+      final query = db.delete(db.savingsPlanSpendingTable)
+        ..where((tbl) => tbl.id.equals(id));
+      await query.go();
+
+      // Recalculate plan's current amount using centralized method
+      await recalculatePlanAmount(transaction.planId);
+    }
   }
 
   // ============================================================================
@@ -581,8 +596,8 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
     await _db.into(_db.savingsPlanLinkedAccountTable).insert(companion);
 
-    // Update plan's current amount to include the allocated amount
-    await _updatePlanCurrentAmount(plan.id);
+    // Recalculate plan's current amount using centralized method
+    await recalculatePlanAmount(plan.id);
   }
 
   @override
@@ -596,8 +611,8 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       );
     await query.go();
 
-    // Update plan's current amount after removing the allocated amount
-    await _updatePlanCurrentAmount(plan.id);
+    // Recalculate plan's current amount using centralized method
+    await recalculatePlanAmount(plan.id);
   }
 
   // ============================================================================
@@ -935,7 +950,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   Future<void> recalculateAmounts() async {
     final plans = await getAllPlans();
     for (final plan in plans) {
-      await _updatePlanCurrentAmount(plan.id);
+      await recalculatePlanAmount(plan.id);
     }
   }
 
