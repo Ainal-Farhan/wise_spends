@@ -28,27 +28,24 @@ class AmountDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = _getColorForType();
     final prefix = _getPrefixForType();
-    
-    // For budget plan transactions, determine sign from note
-    bool isBudgetPlanDeposit = false;
-    if (type == TransactionType.budgetPlan && note != null) {
-      isBudgetPlanDeposit = note!.contains('Budget Plan Deposit');
-    }
-    
+
     // Format amount - show negative for budget plan spending
     final double displayAmount;
     final String amountPrefix;
-    
+
     if (type == TransactionType.budgetPlan) {
-      // For budget plan, use +/- based on deposit vs spending
       displayAmount = amount.abs();
-      amountPrefix = isBudgetPlanDeposit ? '+' : '−';
+      amountPrefix = amount > 0
+          ? '+'
+          : amount < 0
+          ? '−'
+          : '';
     } else {
       // For other types, use existing logic
       displayAmount = amount.abs();
       amountPrefix = prefix;
     }
-    
+
     final formattedAmount = NumberFormat.currency(
       symbol: showCurrencySymbol ? currencySymbol : '',
       decimalDigits: 2,

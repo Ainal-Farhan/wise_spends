@@ -15,7 +15,6 @@ import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
   final String transactionId;
@@ -90,25 +89,9 @@ class _TransactionDetailScreenContent extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Use the new enriched detail state that carries resolved names
+          // Use the enriched detail state that carries resolved names
           if (state is TransactionDetailLoaded) {
             return _buildContent(context, state);
-          }
-
-          // Fallback: plain loaded states without enriched data
-          if (state is TransactionLoadedById) {
-            return _buildContent(
-              context,
-              TransactionDetailLoaded(
-                transaction: state.transaction,
-                accountName: state.transaction.sourceAccountId,
-                payeeVO: state.payeeVO,
-                categoryName: state.transaction.categoryId ?? '',
-                categoryIcon: CategoryIconMapper.getIconForCategory(
-                  state.transaction.categoryId ?? '',
-                ),
-              ),
-            );
           }
 
           if (state is TransactionError) {
