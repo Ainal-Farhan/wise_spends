@@ -1,23 +1,44 @@
 import 'package:equatable/equatable.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 
-/// Budget Plan Item Entity - represents a line item in a budget plan
+/// Budget Plan Item Entity — represents a line item in a budget plan.
 ///
-/// This entity tracks individual budget items (e.g., "Pelamin", "Makeup", "Hantaran")
-/// with cost breakdown: total cost, deposit paid, amount paid.
+/// ## Field semantics
 ///
-/// The `outstanding` amount is computed as `totalCost - amountPaid`.
-/// The `bil` field is a user-editable display number (e.g. "1", "28") that is
-/// separate from `sortOrder` which is used only for fractional ordering.
+/// | Field         | Meaning                                                         |
+/// |---------------|-----------------------------------------------------------------|
+/// | totalCost     | Full agreed price of the item                                   |
+/// | depositPaid   | Amount paid as deposit (a partial upfront commitment)           |
+/// | amountPaid    | Amount paid toward the remaining balance, **excluding deposit** |
+///
+/// So the total money handed over is `depositPaid + amountPaid`, and the
+/// outstanding balance is `totalCost - depositPaid - amountPaid`.
+///
+/// ## Example
+///   totalCost  = 1000
+///   depositPaid = 500   ← deposit settled
+///   amountPaid  = 250   ← partial payment on remaining 500
+///   → totalPaid    = 750
+///   → outstanding  = 250
+///   → progress     = 75%
 class BudgetPlanItemEntity extends Equatable {
   final String id;
   final String planId;
   final double sortOrder;
-  final String bil; // User-editable display number e.g. "1", "28"
+
+  /// User-editable display number (e.g. "1", "28").
+  /// Separate from [sortOrder] which is used only for fractional ordering.
+  final String bil;
+
   final String name;
   final double totalCost;
+
+  /// Amount paid as deposit (upfront commitment).
   final double depositPaid;
+
+  /// Amount paid toward the remaining balance, **excluding** [depositPaid].
   final double amountPaid;
+
   final String? notes;
   final bool isCompleted;
   final DateTime? dueDate;
@@ -42,28 +63,66 @@ class BudgetPlanItemEntity extends Equatable {
     this.tags = const [],
   });
 
-  /// Computed: Outstanding amount (what's still owed)
-  /// Getter ensures it's always accurate and never out of sync.
-  double get outstanding => totalCost - amountPaid;
+  // ---------------------------------------------------------------------------
+  // Core computed values
+  // ---------------------------------------------------------------------------
 
-  /// Computed: Whether the item is fully paid
-  bool get isFullyPaid => outstanding <= 0;
+  /// Total money handed over: deposit + non-deposit payment.
+  double get totalPaid => depositPaid + amountPaid;
 
-  /// Computed: Payment progress percentage (0.0 to 1.0)
+  /// Remaining balance still owed: totalCost − depositPaid − amountPaid.
+  double get outstanding =>
+      (totalCost - depositPaid - amountPaid).clamp(0.0, double.infinity);
+
+  /// True when [outstanding] == 0 and totalCost > 0.
+  bool get isFullyPaid => totalCost > 0 && outstanding <= 0;
+
+  /// Payment progress as a fraction (0.0–1.0), based on [totalPaid].
   double get paymentProgress {
     if (totalCost <= 0) return 0.0;
-    return (amountPaid / totalCost).clamp(0.0, 1.0);
+    return (totalPaid / totalCost).clamp(0.0, 1.0);
   }
 
-  /// Computed: Localized payment status label
+  // ---------------------------------------------------------------------------
+  // Deposit helpers
+  // ---------------------------------------------------------------------------
+
+  /// True when a deposit has been recorded.
+  bool get hasDeposit => depositPaid > 0;
+
+  /// The balance still owed after the deposit (before any [amountPaid]).
+  double get remainingAfterDeposit =>
+      (totalCost - depositPaid).clamp(0.0, double.infinity);
+
+  /// True when deposit alone covers the full cost.
+  bool get depositCoversFullCost => depositPaid >= totalCost && totalCost > 0;
+
+  // ---------------------------------------------------------------------------
+  // Status labels
+  // ---------------------------------------------------------------------------
+
+  /// Localized payment status label — reflects both deposit and payment state.
   String get paymentStatusLabel {
     if (isFullyPaid) return 'budget_plans.status_fully_paid'.tr;
-    if (depositPaid > 0 && amountPaid < totalCost) {
-      return 'budget_plans.status_deposit_paid'.tr;
+    if (amountPaid > 0 && outstanding > 0) {
+      return 'budget_plans.status_partially_paid'.tr;
     }
-    if (amountPaid == 0) return 'budget_plans.status_not_paid'.tr;
-    return 'budget_plans.status_partially_paid'.tr;
+    if (hasDeposit && amountPaid == 0) {
+      return 'budget_plans.status_deposit_only'.tr;
+    }
+    return 'budget_plans.status_not_paid'.tr;
   }
+
+  /// Localized deposit status label.
+  String get depositStatusLabel {
+    if (!hasDeposit) return 'budget_plans.status_no_deposit'.tr;
+    if (depositCoversFullCost) return 'budget_plans.status_deposit_full'.tr;
+    return 'budget_plans.status_deposit_partial'.tr;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Equatable / copyWith
+  // ---------------------------------------------------------------------------
 
   @override
   List<Object?> get props => [

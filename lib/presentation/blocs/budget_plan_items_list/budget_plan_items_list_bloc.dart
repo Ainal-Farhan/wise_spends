@@ -112,9 +112,6 @@ class BudgetPlanItemsListBloc
     CreateBudgetPlanItem event,
     Emitter<BudgetPlanItemsListState> emit,
   ) async {
-    // NOTE: Do NOT guard on BudgetPlanItemsListLoaded here.
-    // When the list is empty the state is BudgetPlanItemsListEmpty, and
-    // blocking on that would silently drop every first-item insert.
     final currentFilter = state is BudgetPlanItemsListLoaded
         ? (state as BudgetPlanItemsListLoaded).filterPaymentStatus
         : null;
@@ -126,7 +123,8 @@ class BudgetPlanItemsListBloc
       final sortOrder = await _itemRepository.getNextSortOrder(event.planId);
 
       // Auto-set isCompleted if fully paid
-      final isFullyPaid = event.amountPaid >= event.totalCost;
+      final isFullyPaid =
+          event.amountPaid + event.depositPaid >= event.totalCost;
 
       // insertOne is the correct ICrudRepository method name
       final inserted = await _itemRepository.insertOne(
@@ -204,7 +202,7 @@ class BudgetPlanItemsListBloc
         final amountPaid =
             event.amountPaid ??
             current.items.firstWhere((i) => i.id == event.itemId).amountPaid;
-        isCompleted = amountPaid >= totalCost;
+        isCompleted = amountPaid + (event.depositPaid ?? .0) >= totalCost;
       }
 
       // updatePart is the correct ICrudRepository method name

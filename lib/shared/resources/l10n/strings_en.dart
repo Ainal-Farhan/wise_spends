@@ -343,6 +343,7 @@ class EnglishStrings {
     'error.validation.invalid': 'Invalid input',
     'error.validation.amount': 'Please enter a valid amount',
     'error.validation.amount_positive': 'Amount must be greater than 0',
+    'error.validation.invalid_amount': 'Please enter a valid amount',
     'error.validation.date': 'Please select a valid date',
     'error.validation.name': 'Please enter a name',
     'error.something_wrong.title': 'Something went wrong',
@@ -962,5 +963,36 @@ class EnglishStrings {
     "budget_plans.allocated_amount": "Allocated Amount",
     "budget_plans.link_account_desc":
         "Choose a savings account and enter the amount allocated to this plan.",
+
+    // Budget Plan Item Form
+    "budget_plans.item_details": "Item Details",
+    "budget_plans.payment": "Payment",
+    "budget_plans.schedule": "Schedule",
+    "budget_plans.has_deposit_sub":
+        "Record money going into the plan",
+    "budget_plans.deposit_amount": "Deposit Amount",
+    "budget_plans.deposit_payment_status": "Deposit Payment Status",
+    "budget_plans.payment_status_excl_deposit":
+        "Payment Status (Excl. Deposit)",
+    "budget_plans.amount_paid_excl_deposit": "Amount Paid (Excl. Deposit)",
+    "budget_plans.total_paid_summary": "Total Paid Summary",
+    "budget_plans.paid": "Paid",
+    "budget_plans.edit_item_sub": "Update item information",
+    "budget_plans.add_item_sub": "Add new item to plan",
+
+    // Budget Plan Item Payment Labels
+    "budget_plans.deposit_status": "Deposit Status",
+    "budget_plans.deposit_paid_label": "Deposit Paid",
+    "budget_plans.payment_paid_label": "Payment Paid",
+    "budget_plans.remaining_after_deposit": "Remaining after deposit",
+    "budget_plans.deposit_covers_full": "Deposit covers full amount",
+
+    // Form Validation
+    "budget_plans.end_date_after_start":
+        "End date must be after start date",
+
+    // Review Step
+    "budget_plans.no_milestones_review":
+        "No milestones added. Continue without milestones?",
   };
 }

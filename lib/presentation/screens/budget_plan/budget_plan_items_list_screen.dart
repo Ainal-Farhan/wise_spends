@@ -743,7 +743,7 @@ class _ItemCardContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = item.totalCost > 0
-        ? (item.amountPaid / item.totalCost).clamp(0.0, 1.0)
+        ? (item.totalPaid / item.totalCost).clamp(0.0, 1.0)
         : 0.0;
 
     final Color statusColor;
@@ -989,7 +989,7 @@ class _ItemCardContent extends StatelessWidget {
                 children: [
                   _AmountPill(
                     label: 'Paid',
-                    amount: item.amountPaid,
+                    amount: item.totalPaid,
                     color: WiseSpendsColors.success,
                   ),
                   if (item.depositPaid > 0) ...[

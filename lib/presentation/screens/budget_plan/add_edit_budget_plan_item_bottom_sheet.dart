@@ -34,8 +34,9 @@ class AddEditBudgetPlanItemBottomSheet extends StatefulWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Deposit payment status
+// Status enums — display only, always computed never manually set
 // ---------------------------------------------------------------------------
+
 enum _DepositStatus { unpaid, partial, paid }
 
 extension _DepositStatusX on _DepositStatus {
@@ -47,6 +48,17 @@ extension _DepositStatusX on _DepositStatus {
         return 'Partial';
       case _DepositStatus.paid:
         return 'Paid';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case _DepositStatus.unpaid:
+        return Icons.radio_button_unchecked;
+      case _DepositStatus.partial:
+        return Icons.pie_chart_outline;
+      case _DepositStatus.paid:
+        return Icons.check_circle_outline;
     }
   }
 
@@ -62,9 +74,6 @@ extension _DepositStatusX on _DepositStatus {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Main payment status (amount paid excluding deposit)
-// ---------------------------------------------------------------------------
 enum _PaymentStatus { unpaid, partial, paid }
 
 extension _PaymentStatusX on _PaymentStatus {
@@ -76,6 +85,17 @@ extension _PaymentStatusX on _PaymentStatus {
         return 'Partial';
       case _PaymentStatus.paid:
         return 'Paid';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case _PaymentStatus.unpaid:
+        return Icons.radio_button_unchecked;
+      case _PaymentStatus.partial:
+        return Icons.pie_chart_outline;
+      case _PaymentStatus.paid:
+        return Icons.check_circle_outline;
     }
   }
 
@@ -100,29 +120,44 @@ class _AddEditBudgetPlanItemBottomSheetState
   late final TextEditingController _bilCtrl;
   late final TextEditingController _nameCtrl;
   late final TextEditingController _totalCostCtrl;
-  late final TextEditingController _depositCtrl;
+
+  late final TextEditingController _depositPaidCtrl;
+
+  // Payment: amount paid toward the item (excluding deposit)
   late final TextEditingController _paidCtrl;
+
   late final TextEditingController _notesCtrl;
 
   DateTime? _selectedDueDate;
   bool _dueDateCleared = false;
-
   Set<String> _selectedTags = {};
   bool _showTagPicker = false;
 
-  // Deposit
   bool _hasDeposit = false;
-  _DepositStatus _depositStatus = _DepositStatus.unpaid;
-
-  // Payment (excluding deposit)
-  _PaymentStatus _paymentStatus = _PaymentStatus.unpaid;
 
   bool get _isEdit => widget.item != null;
 
-  double get _depositAmount => double.tryParse(_depositCtrl.text) ?? 0.0;
-  double get _paidAmount => double.tryParse(_paidCtrl.text) ?? 0.0;
+  // ---------------------------------------------------------------------------
+  // Computed values
+  // ---------------------------------------------------------------------------
+
   double get _totalCost => double.tryParse(_totalCostCtrl.text) ?? 0.0;
-  double get _totalPaid => _depositAmount + _paidAmount;
+  double get _depositPaid => double.tryParse(_depositPaidCtrl.text) ?? 0.0;
+  double get _paidAmount => double.tryParse(_paidCtrl.text) ?? 0.0;
+
+  /// Deposit status — derived from depositPaid vs depositAmount
+  _DepositStatus get _depositStatus {
+    if (_depositPaid <= 0) return _DepositStatus.unpaid;
+    return _DepositStatus.paid;
+  }
+
+  /// Payment status — derived from paidAmount vs (totalCost - depositAmount)
+  _PaymentStatus get _paymentStatus {
+    final remaining = (_totalCost - _depositPaid).clamp(0.0, double.infinity);
+    if (_paidAmount <= 0) return _PaymentStatus.unpaid;
+    if (remaining > 0 && _paidAmount >= remaining) return _PaymentStatus.paid;
+    return _PaymentStatus.partial;
+  }
 
   @override
   void initState() {
@@ -138,7 +173,9 @@ class _AddEditBudgetPlanItemBottomSheetState
     _totalCostCtrl = TextEditingController(
       text: item != null ? item.totalCost.toStringAsFixed(2) : '',
     );
-    _depositCtrl = TextEditingController(
+
+    // On load, treat existing depositPaid as fully settled (backward compat).
+    _depositPaidCtrl = TextEditingController(
       text: item != null && item.depositPaid > 0
           ? item.depositPaid.toStringAsFixed(2)
           : '',
@@ -151,28 +188,12 @@ class _AddEditBudgetPlanItemBottomSheetState
     _notesCtrl = TextEditingController(text: item?.notes ?? '');
     _selectedDueDate = item?.dueDate;
     _selectedTags = item?.tags.toSet() ?? {};
+    _hasDeposit = item != null && item.depositPaid > 0;
 
-    if (item != null) {
-      // Derive deposit state
-      _hasDeposit = item.depositPaid > 0;
-      if (_hasDeposit) {
-        _depositStatus = item.depositPaid >= item.totalCost
-            ? _DepositStatus.paid
-            : _DepositStatus.partial;
-      }
-
-      // Derive payment state
-      if (item.amountPaid >= item.totalCost) {
-        _paymentStatus = _PaymentStatus.paid;
-      } else if (item.amountPaid > 0) {
-        _paymentStatus = _PaymentStatus.partial;
-      }
+    // Rebuild on any amount change so statuses & summary stay live
+    for (final c in [_totalCostCtrl, _depositPaidCtrl, _paidCtrl]) {
+      c.addListener(() => setState(() {}));
     }
-
-    // Rebuild total paid display on any amount change
-    _depositCtrl.addListener(() => setState(() {}));
-    _paidCtrl.addListener(() => setState(() {}));
-    _totalCostCtrl.addListener(() => setState(() {}));
   }
 
   @override
@@ -180,52 +201,17 @@ class _AddEditBudgetPlanItemBottomSheetState
     _bilCtrl.dispose();
     _nameCtrl.dispose();
     _totalCostCtrl.dispose();
-    _depositCtrl.dispose();
+    _depositPaidCtrl.dispose();
     _paidCtrl.dispose();
     _notesCtrl.dispose();
     super.dispose();
   }
 
-  // ---------------------------------------------------------------------------
-  // Deposit handlers
-  // ---------------------------------------------------------------------------
-
   void _onDepositToggled(bool value) {
     setState(() {
       _hasDeposit = value;
       if (!value) {
-        _depositCtrl.text = '';
-        _depositStatus = _DepositStatus.unpaid;
-      }
-    });
-  }
-
-  void _onDepositStatusChanged(_DepositStatus status) {
-    setState(() {
-      _depositStatus = status;
-      if (status == _DepositStatus.paid && _totalCost > 0) {
-        _depositCtrl.text = _totalCost.toStringAsFixed(2);
-      } else if (status == _DepositStatus.unpaid) {
-        _depositCtrl.text = '';
-      }
-    });
-  }
-
-  // ---------------------------------------------------------------------------
-  // Payment handlers
-  // ---------------------------------------------------------------------------
-
-  void _onPaymentStatusChanged(_PaymentStatus status) {
-    setState(() {
-      _paymentStatus = status;
-      if (status == _PaymentStatus.paid && _totalCost > 0) {
-        final remaining = (_totalCost - _depositAmount).clamp(
-          0.0,
-          double.infinity,
-        );
-        _paidCtrl.text = remaining.toStringAsFixed(2);
-      } else if (status == _PaymentStatus.unpaid) {
-        _paidCtrl.text = '';
+        _depositPaidCtrl.text = '';
       }
     });
   }
@@ -277,24 +263,29 @@ class _AddEditBudgetPlanItemBottomSheetState
               _DepositSection(
                 hasDeposit: _hasDeposit,
                 depositStatus: _depositStatus,
-                depositCtrl: _depositCtrl,
+                depositPaidCtrl: _depositPaidCtrl,
                 onToggle: _onDepositToggled,
-                onStatusChanged: _onDepositStatusChanged,
               ),
               const SizedBox(height: AppSpacing.xl),
 
-              // ── Payment (excl. deposit) ───────────────────────────────────
+              // ── Payment (excl. deposit) ──────────────────────────────────
               _SectionLabel(label: 'budget_plans.payment'.tr),
               const SizedBox(height: AppSpacing.md),
               _PaymentSection(
                 paymentStatus: _paymentStatus,
                 paidCtrl: _paidCtrl,
-                onStatusChanged: _onPaymentStatusChanged,
+                totalCost: _totalCost,
+                depositPaid: _depositPaid,
               ),
               const SizedBox(height: AppSpacing.md),
 
               // ── Total Paid summary ───────────────────────────────────────
-              _TotalPaidCard(totalPaid: _totalPaid, totalCost: _totalCost),
+              _TotalPaidCard(
+                depositPaid: _depositPaid,
+                amountPaid: _paidAmount,
+                totalCost: _totalCost,
+                hasDeposit: _hasDeposit,
+              ),
               const SizedBox(height: AppSpacing.xl),
 
               // ── Schedule ─────────────────────────────────────────────────
@@ -360,7 +351,7 @@ class _AddEditBudgetPlanItemBottomSheetState
     if (!_formKey.currentState!.validate()) return;
 
     final totalCost = _totalCost;
-    final depositPaid = _depositAmount;
+    final depositPaid = _hasDeposit ? _depositPaid : 0.0;
     final amountPaid = _paidAmount;
     final notesText = _notesCtrl.text.trim();
 
@@ -404,7 +395,7 @@ class _AddEditBudgetPlanItemBottomSheetState
 }
 
 // =============================================================================
-// Item Details Card  —  Bil (horizontal stepper) / Name (full width) / Cost
+// Item Details Card
 // =============================================================================
 
 class _ItemDetailsCard extends StatelessWidget {
@@ -430,7 +421,6 @@ class _ItemDetailsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Bil row — label + stepper inline (compact, doesn't steal width from name)
           Row(
             children: [
               Text(
@@ -446,8 +436,6 @@ class _ItemDetailsCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           const Divider(height: 1, color: WiseSpendsColors.divider),
           const SizedBox(height: AppSpacing.md),
-
-          // Name — full width, supports long text
           AppTextField(
             label: 'budget_plans.item_name'.tr,
             hint: 'budget_plans.item_name_hint'.tr,
@@ -459,8 +447,6 @@ class _ItemDetailsCard extends StatelessWidget {
                 : null,
           ),
           const SizedBox(height: AppSpacing.md),
-
-          // Total Cost
           CurrencyTextField(
             label: 'budget_plans.total_cost'.tr,
             hint: '0.00',
@@ -482,22 +468,28 @@ class _ItemDetailsCard extends StatelessWidget {
 
 // =============================================================================
 // Deposit Section
-//   Toggle → (if on) Amount field + 3-pill status selector
+//
+// Fields:
+//   • Deposit Amount  — the agreed deposit value (e.g. RM 500)
+//   • Deposit Paid    — how much of that deposit has actually been paid
+//
+// Status badge is AUTO-COMPUTED:
+//   depositPaid == 0                      → Unpaid
+//   0 < depositPaid < depositAmount       → Partial
+//   depositPaid >= depositAmount          → Paid
 // =============================================================================
 
 class _DepositSection extends StatelessWidget {
   final bool hasDeposit;
   final _DepositStatus depositStatus;
-  final TextEditingController depositCtrl;
+  final TextEditingController depositPaidCtrl;
   final ValueChanged<bool> onToggle;
-  final ValueChanged<_DepositStatus> onStatusChanged;
 
   const _DepositSection({
     required this.hasDeposit,
     required this.depositStatus,
-    required this.depositCtrl,
+    required this.depositPaidCtrl,
     required this.onToggle,
-    required this.onStatusChanged,
   });
 
   @override
@@ -510,7 +502,7 @@ class _DepositSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Toggle row
+          // ── Toggle row ────────────────────────────────────────────────────
           InkWell(
             onTap: () => onToggle(!hasDeposit),
             borderRadius: hasDeposit
@@ -571,7 +563,7 @@ class _DepositSection extends StatelessWidget {
             ),
           ),
 
-          // Expandable content
+          // ── Expandable fields ─────────────────────────────────────────────
           AnimatedSize(
             duration: const Duration(milliseconds: 250),
             curve: Curves.easeInOut,
@@ -582,39 +574,10 @@ class _DepositSection extends StatelessWidget {
                       const Divider(height: 1, color: WiseSpendsColors.divider),
                       Padding(
                         padding: const EdgeInsets.all(AppSpacing.lg),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Deposit amount field
-                            CurrencyTextField(
-                              label: 'budget_plans.deposit_amount'.tr,
-                              hint: '0.00',
-                              controller: depositCtrl,
-                              readOnly: depositStatus == _DepositStatus.paid,
-                            ),
-                            const SizedBox(height: AppSpacing.md),
-
-                            // Deposit payment status label
-                            Text(
-                              'budget_plans.deposit_payment_status'.tr
-                                  .toUpperCase(),
-                              style: AppTextStyles.caption.copyWith(
-                                color: WiseSpendsColors.textSecondary,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.6,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.sm),
-
-                            // 3-pill selector
-                            _ThreePillSelector<_DepositStatus>(
-                              values: _DepositStatus.values,
-                              current: depositStatus,
-                              labelOf: (s) => s.label,
-                              colorOf: (s) => s.color,
-                              onChanged: onStatusChanged,
-                            ),
-                          ],
+                        child: CurrencyTextField(
+                          label: 'budget_plans.deposit_paid'.tr,
+                          hint: '0.00',
+                          controller: depositPaidCtrl,
                         ),
                       ),
                     ],
@@ -628,23 +591,26 @@ class _DepositSection extends StatelessWidget {
 }
 
 // =============================================================================
-// Payment Section  (amount paid excluding deposit)
-//   3-pill status → (if partial/paid) Amount field
+// Payment Section
 // =============================================================================
 
 class _PaymentSection extends StatelessWidget {
   final _PaymentStatus paymentStatus;
   final TextEditingController paidCtrl;
-  final ValueChanged<_PaymentStatus> onStatusChanged;
+  final double totalCost;
+  final double depositPaid;
 
   const _PaymentSection({
     required this.paymentStatus,
     required this.paidCtrl,
-    required this.onStatusChanged,
+    required this.totalCost,
+    required this.depositPaid,
   });
 
   @override
   Widget build(BuildContext context) {
+    final remaining = (totalCost - depositPaid).clamp(0.0, double.infinity);
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -655,39 +621,32 @@ class _PaymentSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Status pills (always visible)
-          Text(
-            'budget_plans.payment_status_excl_deposit'.tr.toUpperCase(),
-            style: AppTextStyles.caption.copyWith(
-              color: WiseSpendsColors.textSecondary,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.6,
+          // Helper text showing the expected remaining amount
+          if (totalCost > 0)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+              child: Text(
+                remaining > 0
+                    ? '${'budget_plans.remaining_after_deposit'.tr}: RM ${remaining.toStringAsFixed(2)}'
+                    : 'budget_plans.deposit_covers_full'.tr,
+                style: AppTextStyles.caption.copyWith(
+                  color: WiseSpendsColors.textSecondary,
+                ),
+              ),
             ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          _ThreePillSelector<_PaymentStatus>(
-            values: _PaymentStatus.values,
-            current: paymentStatus,
-            labelOf: (s) => s.label,
-            colorOf: (s) => s.color,
-            onChanged: onStatusChanged,
-          ),
 
-          // Amount field — shown only when partial or paid
-          AnimatedSize(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            child: paymentStatus != _PaymentStatus.unpaid
-                ? Padding(
-                    padding: const EdgeInsets.only(top: AppSpacing.md),
-                    child: CurrencyTextField(
-                      label: 'budget_plans.amount_paid_excl_deposit'.tr,
-                      hint: '0.00',
-                      controller: paidCtrl,
-                      readOnly: paymentStatus == _PaymentStatus.paid,
-                    ),
-                  )
-                : const SizedBox.shrink(),
+          // Amount paid field
+          CurrencyTextField(
+            label: 'budget_plans.amount_paid_excl_deposit'.tr,
+            hint: '0.00',
+            controller: paidCtrl,
+          ),
+          const SizedBox(height: AppSpacing.md),
+
+          // Auto-computed payment status
+          _ComputedStatusRow(
+            label: 'budget_plans.payment_status'.tr,
+            status: paymentStatus,
           ),
         ],
       ),
@@ -696,17 +655,105 @@ class _PaymentSection extends StatelessWidget {
 }
 
 // =============================================================================
-// Total Paid Summary Card  (readonly, computed, with progress bar)
+// Computed Status Row  — read-only indicator, never a manual selector
 // =============================================================================
 
-class _TotalPaidCard extends StatelessWidget {
-  final double totalPaid;
-  final double totalCost;
+class _ComputedStatusRow<T> extends StatelessWidget {
+  final String label;
+  final T status;
 
-  const _TotalPaidCard({required this.totalPaid, required this.totalCost});
+  const _ComputedStatusRow({required this.label, required this.status});
 
   @override
   Widget build(BuildContext context) {
+    final String statusLabel;
+    final Color statusColor;
+    final IconData statusIcon;
+
+    if (status is _DepositStatus) {
+      final s = status as _DepositStatus;
+      statusLabel = s.label;
+      statusColor = s.color;
+      statusIcon = s.icon;
+    } else if (status is _PaymentStatus) {
+      final s = status as _PaymentStatus;
+      statusLabel = s.label;
+      statusColor = s.color;
+      statusIcon = s.icon;
+    } else {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.caption.copyWith(
+            color: WiseSpendsColors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: 4,
+          ),
+          decoration: BoxDecoration(
+            color: statusColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            border: Border.all(color: statusColor.withValues(alpha: 0.35)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(statusIcon, size: 12, color: statusColor),
+              const SizedBox(width: 4),
+              Text(
+                statusLabel,
+                style: AppTextStyles.caption.copyWith(
+                  color: statusColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: AppSpacing.xs),
+        // "auto" hint so user knows this isn't editable
+        Text(
+          '(auto)',
+          style: AppTextStyles.caption.copyWith(
+            color: WiseSpendsColors.textHint,
+            fontSize: 10,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// =============================================================================
+// Total Paid Summary Card
+// =============================================================================
+
+class _TotalPaidCard extends StatelessWidget {
+  final double depositPaid;
+  final double amountPaid;
+  final double totalCost;
+  final bool hasDeposit;
+
+  const _TotalPaidCard({
+    required this.depositPaid,
+    required this.amountPaid,
+    required this.totalCost,
+    required this.hasDeposit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final totalPaid = depositPaid + amountPaid;
     final remaining = (totalCost - totalPaid).clamp(0.0, double.infinity);
     final progress = totalCost > 0
         ? (totalPaid / totalCost).clamp(0.0, 1.0)
@@ -729,7 +776,7 @@ class _TotalPaidCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header row
+          // Header
           Row(
             children: [
               Icon(
@@ -762,28 +809,47 @@ class _TotalPaidCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
 
-          // Values row
+          // Breakdown row
           Row(
             children: [
-              Expanded(
-                child: _SummaryValue(
-                  label: 'budget_plans.total_paid'.tr,
-                  value: 'RM ${totalPaid.toStringAsFixed(2)}',
-                  valueColor: isFullyPaid
-                      ? WiseSpendsColors.success
-                      : WiseSpendsColors.textPrimary,
-                ),
-              ),
-              if (!isFullyPaid && totalCost > 0) ...[
-                const SizedBox(width: AppSpacing.md),
+              if (hasDeposit) ...[
                 Expanded(
                   child: _SummaryValue(
-                    label: 'budget_plans.remaining'.tr,
-                    value: 'RM ${remaining.toStringAsFixed(2)}',
-                    valueColor: WiseSpendsColors.error,
+                    label: 'budget_plans.deposit_paid_label'.tr,
+                    value: 'RM ${depositPaid.toStringAsFixed(2)}',
+                    subLabel: null,
                   ),
                 ),
+                const SizedBox(width: AppSpacing.sm),
+                Container(
+                  width: 1,
+                  height: 36,
+                  color: WiseSpendsColors.divider,
+                ),
+                const SizedBox(width: AppSpacing.sm),
               ],
+              Expanded(
+                child: _SummaryValue(
+                  label: 'budget_plans.payment_paid_label'.tr,
+                  value: 'RM ${amountPaid.toStringAsFixed(2)}',
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Container(width: 1, height: 36, color: WiseSpendsColors.divider),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: _SummaryValue(
+                  label: isFullyPaid
+                      ? 'budget_plans.total_paid'.tr
+                      : 'budget_plans.remaining'.tr,
+                  value: isFullyPaid
+                      ? 'RM ${totalPaid.toStringAsFixed(2)}'
+                      : 'RM ${remaining.toStringAsFixed(2)}',
+                  valueColor: isFullyPaid
+                      ? WiseSpendsColors.success
+                      : WiseSpendsColors.error,
+                ),
+              ),
             ],
           ),
 
@@ -804,11 +870,22 @@ class _TotalPaidCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.xs),
-            Text(
-              '${(progress * 100).toStringAsFixed(0)}% ${'budget_plans.paid'.tr}',
-              style: AppTextStyles.caption.copyWith(
-                color: WiseSpendsColors.textSecondary,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${(progress * 100).toStringAsFixed(0)}% ${'budget_plans.paid'.tr}',
+                  style: AppTextStyles.caption.copyWith(
+                    color: WiseSpendsColors.textSecondary,
+                  ),
+                ),
+                Text(
+                  'RM ${totalCost.toStringAsFixed(2)}',
+                  style: AppTextStyles.caption.copyWith(
+                    color: WiseSpendsColors.textSecondary,
+                  ),
+                ),
+              ],
             ),
           ],
         ],
@@ -820,11 +897,13 @@ class _TotalPaidCard extends StatelessWidget {
 class _SummaryValue extends StatelessWidget {
   final String label;
   final String value;
+  final String? subLabel;
   final Color? valueColor;
 
   const _SummaryValue({
     required this.label,
     required this.value,
+    this.subLabel,
     this.valueColor,
   });
 
@@ -838,15 +917,29 @@ class _SummaryValue extends StatelessWidget {
           style: AppTextStyles.caption.copyWith(
             color: WiseSpendsColors.textSecondary,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 2),
         Text(
           value,
           style: AppTextStyles.bodyMedium.copyWith(
             fontWeight: FontWeight.w700,
-            color: valueColor,
+            color: valueColor ?? WiseSpendsColors.textPrimary,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
+        if (subLabel != null)
+          Text(
+            subLabel!,
+            style: AppTextStyles.caption.copyWith(
+              color: WiseSpendsColors.textHint,
+              fontSize: 10,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
       ],
     );
   }
@@ -883,74 +976,7 @@ class _StatusBadge extends StatelessWidget {
 }
 
 // =============================================================================
-// Generic 3-pill status selector
-// =============================================================================
-
-class _ThreePillSelector<T> extends StatelessWidget {
-  final List<T> values;
-  final T current;
-  final String Function(T) labelOf;
-  final Color Function(T) colorOf;
-  final ValueChanged<T> onChanged;
-
-  const _ThreePillSelector({
-    required this.values,
-    required this.current,
-    required this.labelOf,
-    required this.colorOf,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: values.map((v) {
-        final isSelected = v == current;
-        final color = colorOf(v);
-        final isLast = v == values.last;
-
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(right: isLast ? 0 : AppSpacing.xs),
-            child: GestureDetector(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                onChanged(v);
-              },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? color.withValues(alpha: 0.1)
-                      : WiseSpendsColors.background,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  border: Border.all(
-                    color: isSelected ? color : WiseSpendsColors.divider,
-                    width: isSelected ? 1.5 : 1.0,
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  labelOf(v),
-                  style: AppTextStyles.caption.copyWith(
-                    fontWeight: isSelected
-                        ? FontWeight.w700
-                        : FontWeight.normal,
-                    color: isSelected ? color : WiseSpendsColors.textSecondary,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-// =============================================================================
-// Bil Stepper  (compact horizontal)
+// Bil Stepper
 // =============================================================================
 
 class _BilStepper extends StatelessWidget {
@@ -1242,7 +1268,6 @@ class _TagsSection extends StatelessWidget {
 class _TagChip extends StatelessWidget {
   final String tag;
   final VoidCallback onRemove;
-
   const _TagChip({required this.tag, required this.onRemove});
 
   @override

@@ -975,7 +975,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final items = await itemsQuery.get();
     final totalItemPayments = items.fold<double>(
       0.0,
-      (sum, i) => sum + i.amountPaid,
+      (sum, i) => sum + i.amountPaid + i.depositPaid,
     );
 
     // Get total allocated amounts from linked accounts

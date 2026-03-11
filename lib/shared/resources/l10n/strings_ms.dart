@@ -312,6 +312,7 @@ class MalayStrings {
     'error.validation.invalid': 'Input tidak sah',
     'error.validation.amount': 'Sila masukkan jumlah yang sah',
     'error.validation.amount_positive': 'Jumlah mestilah lebih daripada 0',
+    'error.validation.invalid_amount': 'Sila masukkan jumlah yang sah',
     'error.validation.date': 'Sila pilih tarikh yang sah',
     'error.validation.name': 'Sila masukkan nama',
 
@@ -968,5 +969,37 @@ class MalayStrings {
     "budget_plans.allocated_amount": "Jumlah Diperuntukkan",
     "budget_plans.link_account_desc":
         "Pilih akaun simpanan dan masukkan jumlah yang diperuntukkan untuk plan ini.",
+
+    // Budget Plan Item Form
+    "budget_plans.item_details": "Butiran Perkara",
+    "budget_plans.payment": "Pembayaran",
+    "budget_plans.schedule": "Jadual",
+    "budget_plans.has_deposit_sub":
+        "Rekod wang masuk ke dalam pelan",
+    "budget_plans.deposit_amount": "Jumlah Deposit",
+    "budget_plans.deposit_payment_status": "Status Pembayaran Deposit",
+    "budget_plans.payment_status_excl_deposit":
+        "Status Pembayaran (Termasuk Deposit)",
+    "budget_plans.amount_paid_excl_deposit":
+        "Jumlah Dibayar (Termasuk Deposit)",
+    "budget_plans.total_paid_summary": "Ringkasan Jumlah Dibayar",
+    "budget_plans.paid": "Dibayar",
+    "budget_plans.edit_item_sub": "Kemas kini maklumat perkara",
+    "budget_plans.add_item_sub": "Tambah perkara baru ke pelan",
+
+    // Budget Plan Item Payment Labels
+    "budget_plans.deposit_status": "Status Deposit",
+    "budget_plans.deposit_paid_label": "Deposit Dibayar",
+    "budget_plans.payment_paid_label": "Pembayaran Dibayar",
+    "budget_plans.remaining_after_deposit": "Baki selepas deposit",
+    "budget_plans.deposit_covers_full": "Deposit mencakup jumlah penuh",
+
+    // Form Validation
+    "budget_plans.end_date_after_start":
+        "Tarikh tamat mesti selepas tarikh mula",
+
+    // Review Step
+    "budget_plans.no_milestones_review":
+        "Tiada milestone ditambah. Teruskan tanpa milestone?",
   };
 }
