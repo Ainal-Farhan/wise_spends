@@ -1291,15 +1291,7 @@ class _CategoryIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    IconData iconData;
-    try {
-      iconData = IconData(
-        int.parse(iconCodePoint ?? ''),
-        fontFamily: iconFontFamily,
-      );
-    } catch (_) {
-      iconData = Icons.category_outlined;
-    }
+    final iconData = _getIconData();
 
     return Container(
       width: AppTouchTarget.min,
@@ -1310,6 +1302,18 @@ class _CategoryIcon extends StatelessWidget {
       ),
       child: Icon(iconData, color: color, size: AppIconSize.lg),
     );
+  }
+
+  IconData _getIconData() {
+    try {
+      return IconData(
+        int.parse(iconCodePoint ?? ''),
+        fontFamily: iconFontFamily,
+        fontPackage: iconFontFamily,
+      );
+    } catch (_) {
+      return Icons.category_outlined;
+    }
   }
 }
 
@@ -1401,29 +1405,11 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
                     final cat = categories[i];
                     final isSelected = widget.selected?.id == cat.id;
 
-                    IconData iconData;
-                    try {
-                      iconData = IconData(
-                        int.parse(cat.iconCodePoint),
-                        fontFamily: cat.iconFontFamily,
-                      );
-                    } catch (_) {
-                      iconData = Icons.category_outlined;
-                    }
-
                     return ListTile(
-                      leading: Container(
-                        width: AppTouchTarget.min,
-                        height: AppTouchTarget.min,
-                        decoration: BoxDecoration(
-                          color: AppColors.tertiary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(AppRadius.sm),
-                        ),
-                        child: Icon(
-                          iconData,
-                          color: AppColors.tertiary,
-                          size: AppIconSize.md,
-                        ),
+                      leading: _CategoryIcon(
+                        color: AppColors.tertiary,
+                        iconCodePoint: cat.iconCodePoint,
+                        iconFontFamily: cat.iconFontFamily,
                       ),
                       title: Text(
                         cat.name,
