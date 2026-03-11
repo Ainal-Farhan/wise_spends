@@ -466,7 +466,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
         .insert(
           TransactionTableCompanion.insert(
             id: Value(transactionId),
-            type: TransactionType.budgetPlan,
+            type: TransactionType.budgetPlanExpense,
             description: Value(description),
             amount: amount,
             savingId: accountId,
@@ -504,7 +504,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
         .insert(
           TransactionTableCompanion.insert(
             id: Value(transactionId),
-            type: TransactionType.budgetPlan,
+            type: TransactionType.budgetPlanDeposit,
             description: Value(description),
             amount: amount,
             savingId: accountId,

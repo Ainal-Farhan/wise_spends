@@ -511,8 +511,10 @@ class _TransactionDetailScreenContent extends StatelessWidget {
         return 'Transfer';
       case TransactionType.commitment:
         return 'Commitment Payment';
-      case TransactionType.budgetPlan:
-        return 'Budget Plan';
+      case TransactionType.budgetPlanDeposit:
+        return 'Budget Plan Deposit';
+      case TransactionType.budgetPlanExpense:
+        return 'Budget Plan Spending';
     }
   }
 
@@ -526,7 +528,8 @@ class _TransactionDetailScreenContent extends StatelessWidget {
         return AppColors.transfer;
       case TransactionType.commitment:
         return AppColors.commitment;
-      case TransactionType.budgetPlan:
+      case TransactionType.budgetPlanDeposit:
+      case TransactionType.budgetPlanExpense:
         return AppColors.budgetPlan;
     }
   }

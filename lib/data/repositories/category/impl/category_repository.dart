@@ -136,7 +136,8 @@ class CategoryRepository extends ICategoryRepository {
             .toList();
       case TransactionType.transfer:
       case TransactionType.commitment:
-      case TransactionType.budgetPlan:
+      case TransactionType.budgetPlanDeposit:
+      case TransactionType.budgetPlanExpense:
         return [];
     }
   }

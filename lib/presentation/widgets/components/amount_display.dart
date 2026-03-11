@@ -33,13 +33,12 @@ class AmountDisplay extends StatelessWidget {
     final double displayAmount;
     final String amountPrefix;
 
-    if (type == TransactionType.budgetPlan) {
+    if (type == TransactionType.budgetPlanExpense) {
       displayAmount = amount.abs();
-      amountPrefix = amount > 0
-          ? '+'
-          : amount < 0
-          ? '−'
-          : '';
+      amountPrefix = amount < 0 ? '−' : '+';
+    } else if (type == TransactionType.budgetPlanDeposit) {
+      displayAmount = amount.abs();
+      amountPrefix = '+';
     } else {
       // For other types, use existing logic
       displayAmount = amount.abs();
@@ -74,7 +73,8 @@ class AmountDisplay extends StatelessWidget {
         return AppColors.transfer;
       case TransactionType.commitment:
         return AppColors.commitment;
-      case TransactionType.budgetPlan:
+      case TransactionType.budgetPlanDeposit:
+      case TransactionType.budgetPlanExpense:
         return AppColors.budgetPlan;
     }
   }
@@ -89,7 +89,8 @@ class AmountDisplay extends StatelessWidget {
         return '⇄ '; // cleaner than ↔, reads better at small sizes
       case TransactionType.commitment:
         return '↻ '; // signals recurring/scheduled
-      case TransactionType.budgetPlan:
+      case TransactionType.budgetPlanDeposit:
+      case TransactionType.budgetPlanExpense:
         return ''; // No prefix - amount sign will be shown via +/- based on context
     }
   }

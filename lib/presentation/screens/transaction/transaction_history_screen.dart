@@ -15,6 +15,7 @@ import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 
 /// Transaction History Screen
@@ -248,37 +249,15 @@ class _TransactionHistoryScreenContentState
           ),
           child: Row(
             children: [
-              // "All" chip
               Expanded(
-                child: _FilterTab(
-                  label: 'All',
-                  icon: Icons.all_inclusive,
-                  color: AppColors.textSecondary,
-                  isSelected: currentFilterType == null,
-                  onTap: () => context.read<TransactionBloc>().add(
-                    FilterTransactionsByTypeEvent(null),
-                  ),
+                child: _FilterDropdown(
+                  selectedType: currentFilterType,
+                  onTypeSelected: (type) {
+                    context.read<TransactionBloc>().add(
+                      FilterTransactionsByTypeEvent(type),
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              // One chip per TransactionType
-              ...TransactionType.values.expand(
-                (type) => [
-                  Expanded(
-                    child: _FilterTab(
-                      label: type.label,
-                      icon: type.icon,
-                      color: type.color,
-                      isSelected: currentFilterType == type,
-                      onTap: () => context.read<TransactionBloc>().add(
-                        FilterTransactionsByTypeEvent(
-                          currentFilterType == type ? null : type,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                ],
               ),
             ],
           ),
@@ -354,7 +333,8 @@ class _TransactionHistoryScreenContentState
                 date: transaction.date,
                 note: transaction.note,
                 showBudgetPlanIndicator:
-                    transaction.type == TransactionType.budgetPlan,
+                    transaction.type == TransactionType.budgetPlanDeposit ||
+                    transaction.type == TransactionType.budgetPlanExpense,
                 onTap: () {
                   Navigator.pushNamed(
                     context,
@@ -975,70 +955,80 @@ class _TransactionHistoryScreenContentState
   }
 }
 
-class _FilterTab extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color color;
-  final bool isSelected;
-  final VoidCallback onTap;
+class _FilterDropdown extends StatelessWidget {
+  final TransactionType? selectedType;
+  final void Function(TransactionType?) onTypeSelected;
 
-  const _FilterTab({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.isSelected,
-    required this.onTap,
+  const _FilterDropdown({
+    required this.selectedType,
+    required this.onTypeSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: isSelected ? color : color.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(
-            color: isSelected ? color : color.withValues(alpha: 0.2),
-            width: isSelected ? 1.5 : 1,
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: WiseSpendsColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: WiseSpendsColors.divider),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+      child: DropdownButton<TransactionType?>(
+        value: selectedType,
+        isExpanded: true,
+        underline: const SizedBox.shrink(),
+        icon: const Icon(Icons.filter_list, size: 20),
+        style: AppTextStyles.bodyMedium.copyWith(
+          color: WiseSpendsColors.textPrimary,
+          fontWeight: FontWeight.w500,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        hint: Row(
           children: [
-            Icon(icon, size: 16, color: isSelected ? Colors.white : color),
-            const SizedBox(height: 3),
+            Icon(
+              Icons.all_inclusive,
+              size: 18,
+              color: WiseSpendsColors.textSecondary,
+            ),
+            const SizedBox(width: AppSpacing.sm),
             Text(
-              // Shorten labels to fit narrow columns
-              _shortLabel(label),
-              style: AppTextStyles.labelSmall.copyWith(
-                color: isSelected ? Colors.white : color,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              'All Types',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: WiseSpendsColors.textSecondary,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
+        items: [
+          DropdownMenuItem<TransactionType?>(
+            value: null,
+            child: Row(
+              children: [
+                Icon(
+                  Icons.all_inclusive,
+                  size: 18,
+                  color: WiseSpendsColors.textSecondary,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Text('All Types'),
+              ],
+            ),
+          ),
+          ...TransactionType.values.map(
+            (type) => DropdownMenuItem<TransactionType?>(
+              value: type,
+              child: Row(
+                children: [
+                  Icon(type.icon, size: 18, color: type.color),
+                  const SizedBox(width: AppSpacing.sm),
+                  Text(type.label),
+                ],
+              ),
+            ),
+          ),
+        ],
+        onChanged: onTypeSelected,
       ),
     );
-  }
-
-  String _shortLabel(String label) {
-    switch (label) {
-      case 'Income':
-        return 'Income';
-      case 'Expense':
-        return 'Expense';
-      case 'Transfer':
-        return 'Transfer';
-      case 'Commitment':
-        return 'Commit';
-      default:
-        return label;
-    }
   }
 }
 

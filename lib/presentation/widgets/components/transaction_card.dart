@@ -9,7 +9,8 @@ import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 
 /// Check if transaction is a budget plan type
 bool isBudgetPlanType(TransactionType type) {
-  return type == TransactionType.budgetPlan;
+  return type == TransactionType.budgetPlanDeposit ||
+      type == TransactionType.budgetPlanExpense;
 }
 
 /// Reusable transaction card widget
@@ -207,7 +208,8 @@ class TransactionCard extends StatelessWidget {
       case TransactionType.commitment:
         backgroundColor = WiseSpendsColors.commitmentContainer;
         break;
-      case TransactionType.budgetPlan:
+      case TransactionType.budgetPlanDeposit:
+      case TransactionType.budgetPlanExpense:
         backgroundColor = WiseSpendsColors.budgetPlanContainer;
         break;
     }
@@ -249,13 +251,6 @@ class TransactionCard extends StatelessWidget {
 
   /// Format note for display - hides UIDs and shows friendly names
   String _formatNote(String note) {
-    // For budget plan notes, show friendly name instead of UUID
-    if (note.contains('Budget Plan:')) {
-      return note.replaceAll('Budget Plan:', 'Budget Plan');
-    }
-    if (note.contains('Budget Plan Deposit:')) {
-      return note.replaceAll('Budget Plan Deposit:', 'Budget Plan Deposit');
-    }
     return note;
   }
 }

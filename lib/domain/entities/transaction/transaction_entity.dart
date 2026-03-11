@@ -8,7 +8,8 @@ enum TransactionType {
   expense,
   transfer,
   commitment,
-  budgetPlan;
+  budgetPlanDeposit,
+  budgetPlanExpense;
 
   /// Get localized label for transaction type
   String get label {
@@ -21,8 +22,10 @@ enum TransactionType {
         return 'transaction.type.transfer'.tr;
       case commitment:
         return 'transaction.type.commitment'.tr;
-      case budgetPlan:
-        return 'transaction.type.budget_plan'.tr;
+      case budgetPlanDeposit:
+        return 'transaction.type.budget_plan_deposit'.tr;
+      case budgetPlanExpense:
+        return 'transaction.type.budget_plan_expense'.tr;
     }
   }
 
@@ -37,8 +40,10 @@ enum TransactionType {
         return Icons.swap_horiz_rounded;
       case commitment:
         return Icons.event_repeat_rounded;
-      case budgetPlan:
-        return Icons.account_balance_wallet_outlined;
+      case budgetPlanDeposit:
+        return Icons.add_card_rounded;
+      case budgetPlanExpense:
+        return Icons.payment_rounded;
     }
   }
 
@@ -53,8 +58,10 @@ enum TransactionType {
         return AppColors.transfer;
       case commitment:
         return AppColors.commitment;
-      case budgetPlan:
-        return AppColors.transfer;
+      case budgetPlanDeposit:
+        return AppColors.budgetPlan;
+      case budgetPlanExpense:
+        return AppColors.budgetPlan;
     }
   }
 }

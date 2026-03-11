@@ -1325,7 +1325,8 @@ class _AddTransactionScreenContentState
         return AppColors.transfer;
       case TransactionType.commitment:
         return AppColors.commitment;
-      case TransactionType.budgetPlan:
+      case TransactionType.budgetPlanDeposit:
+      case TransactionType.budgetPlanExpense:
         return AppColors.budgetPlan;
     }
   }
@@ -1340,8 +1341,10 @@ class _AddTransactionScreenContentState
         return 'Transfer';
       case TransactionType.commitment:
         return 'Commitment';
-      case TransactionType.budgetPlan:
-        return 'Budget Plan';
+      case TransactionType.budgetPlanDeposit:
+        return 'Budget Plan Deposit';
+      case TransactionType.budgetPlanExpense:
+        return 'Budget Plan Spending';
     }
   }
 
@@ -1355,8 +1358,10 @@ class _AddTransactionScreenContentState
         return Icons.compare_arrows_rounded;
       case TransactionType.commitment:
         return Icons.repeat_rounded;
-      case TransactionType.budgetPlan:
-        return Icons.savings_outlined;
+      case TransactionType.budgetPlanDeposit:
+        return Icons.add_card_rounded;
+      case TransactionType.budgetPlanExpense:
+        return Icons.payment_rounded;
     }
   }
 }
