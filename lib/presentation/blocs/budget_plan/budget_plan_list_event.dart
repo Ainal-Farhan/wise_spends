@@ -35,3 +35,6 @@ class DeleteBudgetPlan extends BudgetPlanListEvent {
 
 /// Refresh budget plans
 class RefreshBudgetPlans extends BudgetPlanListEvent {}
+
+/// Recalculate budget plans amounts
+class RecalculateBudgetPlans extends BudgetPlanListEvent {}

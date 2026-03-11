@@ -111,3 +111,30 @@ class BudgetPlanListRefreshError extends BudgetPlanListState {
   @override
   List<Object?> get props => [message, previousState];
 }
+
+/// Emitted when a recalculate operation fails.
+/// Carries [previousState] so the screen can restore the list immediately
+/// while showing the error message as a snackbar.
+class BudgetPlanListRecalculateError extends BudgetPlanListState {
+  final String message;
+  final BudgetPlanListLoaded? previousState;
+
+  const BudgetPlanListRecalculateError({
+    required this.message,
+    this.previousState,
+  });
+
+  @override
+  List<Object?> get props => [message, previousState];
+}
+
+/// Emitted when a recalculate operation succeeds.
+/// Useful to show a success message to the user.
+class BudgetPlanListRecalculated extends BudgetPlanListState {
+  final BudgetPlanListLoaded previousState;
+
+  const BudgetPlanListRecalculated({required this.previousState});
+
+  @override
+  List<Object?> get props => [previousState];
+}

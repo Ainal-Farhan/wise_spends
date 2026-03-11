@@ -163,6 +163,17 @@ abstract class IBudgetPlanRepository
 
   /// Get overall summary across all plans
   Future<BudgetPlanSummary> getOverallSummary();
+
+  // ============================================================================
+  // Recalculation Operations
+  // ============================================================================
+
+  /// Recalculate currentAmount for all budget plans
+  /// This is useful when data gets out of sync
+  Future<void> recalculateAmounts();
+
+  /// Recalculate currentAmount for a specific plan
+  Future<void> recalculatePlanAmount(String planUuid);
 }
 
 /// Budget Plan Summary - aggregated data across all plans

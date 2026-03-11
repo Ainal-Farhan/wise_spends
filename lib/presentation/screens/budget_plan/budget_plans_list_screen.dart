@@ -85,6 +85,11 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
         title: Text('budget_plans.title'.tr),
         actions: [
           IconButton(
+            icon: const Icon(Icons.sync),
+            onPressed: () => _confirmRecalculate(context),
+            tooltip: 'budget_plans.recalculate'.tr,
+          ),
+          IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () => _showFilterDialog(context),
             tooltip: 'general.filter'.tr,
@@ -106,6 +111,22 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: WiseSpendsColors.error,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          } else if (state is BudgetPlanListRecalculateError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: WiseSpendsColors.error,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          } else if (state is BudgetPlanListRecalculated) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('budget_plans.recalculated'.tr),
+                backgroundColor: WiseSpendsColors.success,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -208,6 +229,23 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
         value: context.read<BudgetPlanListBloc>(),
         child: const _FilterDialog(),
       ),
+    );
+  }
+
+  void _confirmRecalculate(BuildContext context) {
+    showConfirmDialog(
+      context: context,
+      title: 'budget_plans.recalculate'.tr,
+      message: 'budget_plans.recalculate_confirm'.tr,
+      confirmText: 'budget_plans.recalculate'.tr,
+      onConfirm: () {
+        // Use WidgetsBinding to ensure the context is still valid
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            context.read<BudgetPlanListBloc>().add(RecalculateBudgetPlans());
+          }
+        });
+      },
     );
   }
 }
@@ -523,6 +561,14 @@ class _PlanOptionsSheet extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.sync),
+            title: Text('budget_plans.recalculate_plan'.tr),
+            onTap: () {
+              Navigator.pop(context);
+              _confirmRecalculatePlan(context);
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.file_download_outlined),
             title: Text('budget_plans.export_plan'.tr),
             onTap: () async {
@@ -598,6 +644,23 @@ class _PlanOptionsSheet extends StatelessWidget {
       cancelText: 'general.cancel'.tr,
       onDelete: () {
         bloc.add(DeleteBudgetPlan(plan.id));
+      },
+    );
+  }
+
+  void _confirmRecalculatePlan(BuildContext context) {
+    showConfirmDialog(
+      context: context,
+      title: 'budget_plans.recalculate_plan'.tr,
+      message: 'budget_plans.recalculate_plan_confirm'.tr,
+      confirmText: 'budget_plans.recalculate'.tr,
+      onConfirm: () {
+        // Use WidgetsBinding to ensure the context is still valid
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) {
+            context.read<BudgetPlanListBloc>().add(RecalculateBudgetPlans());
+          }
+        });
       },
     );
   }

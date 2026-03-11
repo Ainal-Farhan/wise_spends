@@ -928,6 +928,23 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   }
 
   // ============================================================================
+  // Recalculation Operations
+  // ============================================================================
+
+  @override
+  Future<void> recalculateAmounts() async {
+    final plans = await getAllPlans();
+    for (final plan in plans) {
+      await _updatePlanCurrentAmount(plan.id);
+    }
+  }
+
+  @override
+  Future<void> recalculatePlanAmount(String planId) async {
+    await _updatePlanCurrentAmount(planId);
+  }
+
+  // ============================================================================
   // Helper Methods
   // ============================================================================
 

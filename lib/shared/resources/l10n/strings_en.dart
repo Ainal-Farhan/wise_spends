@@ -292,6 +292,13 @@ class EnglishStrings {
     'budget_plans.export_csv': 'Export as CSV',
     'budget_plans.exporting': 'Exporting...',
     'budget_plans.exported': 'Plan exported successfully',
+    'budget_plans.recalculate': 'Recalculate',
+    'budget_plans.recalculate_confirm':
+        'Recalculate all budget plan amounts? This will sync the data with actual transactions and deposits.',
+    'budget_plans.recalculated': 'Amounts recalculated successfully',
+    'budget_plans.recalculate_plan': 'Recalculate Plan',
+    'budget_plans.recalculate_plan_confirm':
+        'Recalculate this plan\'s amounts? This will sync the data with actual transactions and deposits.',
 
     // Reports/Analytics
     'reports.title': 'Reports',

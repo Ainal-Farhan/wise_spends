@@ -9,16 +9,6 @@ import 'budget_plan_items_list_state.dart';
 import 'package:collection/collection.dart';
 
 /// Budget Plan Items List BLoC — manages the list of budget plan items.
-///
-/// Key design decisions:
-///   • All DB writes go through the repository interface, never direct DB access.
-///   • [BudgetPlanItemCreated] / [BudgetPlanItemUpdated] / [BudgetPlanItemDeleted]
-///     are transient notification states — the BLoC immediately follows them with
-///     a [BudgetPlanItemsListLoaded] so the UI list is never left in a broken state.
-///   • [_onRefreshBudgetPlanItems] does NOT emit [BudgetPlanItemsListLoading],
-///     preserving the list during pull-to-refresh.
-///   • [_onDeleteBudgetPlanItem] emits [BudgetPlanItemsListDeleteError] on failure
-///     and restores the previous loaded state.
 class BudgetPlanItemsListBloc
     extends Bloc<BudgetPlanItemsListEvent, BudgetPlanItemsListState> {
   final ISavingsPlanItemRepository _itemRepository;
@@ -181,7 +171,9 @@ class BudgetPlanItemsListBloc
       }
     } catch (e) {
       if (!emit.isDone) {
-        emit(BudgetPlanItemsListError('Failed to create item: ${e.toString()}'));
+        emit(
+          BudgetPlanItemsListError('Failed to create item: ${e.toString()}'),
+        );
       }
     }
   }
@@ -206,8 +198,12 @@ class BudgetPlanItemsListBloc
         isCompleted = event.isCompleted!;
       } else {
         // Auto-calculate: mark as completed if fully paid
-        final totalCost = event.totalCost ?? current.items.firstWhere((i) => i.id == event.itemId).totalCost;
-        final amountPaid = event.amountPaid ?? current.items.firstWhere((i) => i.id == event.itemId).amountPaid;
+        final totalCost =
+            event.totalCost ??
+            current.items.firstWhere((i) => i.id == event.itemId).totalCost;
+        final amountPaid =
+            event.amountPaid ??
+            current.items.firstWhere((i) => i.id == event.itemId).amountPaid;
         isCompleted = amountPaid >= totalCost;
       }
 
@@ -252,7 +248,9 @@ class BudgetPlanItemsListBloc
       }
     } catch (e) {
       if (!emit.isDone) {
-        emit(BudgetPlanItemsListError('Failed to update item: ${e.toString()}'));
+        emit(
+          BudgetPlanItemsListError('Failed to update item: ${e.toString()}'),
+        );
       }
     }
   }

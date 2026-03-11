@@ -260,6 +260,13 @@ class MalayStrings {
     'budget_plans.export_csv': 'Eksport sebagai CSV',
     'budget_plans.exporting': 'Mengeksport...',
     'budget_plans.exported': 'Pelan berjaya dieksport',
+    'budget_plans.recalculate': 'Kira Semula',
+    'budget_plans.recalculate_confirm':
+        'Kira semula semua jumlah pelan belanjawan? Ini akan menyelaraskan data dengan transaksi dan deposit sebenar.',
+    'budget_plans.recalculated': 'Jumlah berjaya dikira semula',
+    'budget_plans.recalculate_plan': 'Kira Semula Pelan',
+    'budget_plans.recalculate_plan_confirm':
+        'Kira semula jumlah pelan ini? Ini akan menyelaraskan data dengan transaksi dan deposit sebenar.',
 
     // Reports/Analytics
     'reports.title': 'Laporan',

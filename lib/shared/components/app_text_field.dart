@@ -437,7 +437,14 @@ class CurrencyTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? errorText;
   final String currencySymbol;
+
+  /// Disables the field entirely (greyed out, not focusable).
   final bool enabled;
+
+  /// Makes the field non-editable but still looks normal (not greyed out).
+  /// Takes precedence over [enabled] for the read-only behaviour.
+  final bool readOnly;
+
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
 
@@ -449,6 +456,7 @@ class CurrencyTextField extends StatefulWidget {
     this.errorText,
     this.currencySymbol = 'RM',
     this.enabled = true,
+    this.readOnly = false,
     this.onChanged,
     this.validator,
   });
@@ -484,11 +492,12 @@ class _CurrencyTextFieldState extends State<CurrencyTextField> {
       prefixText: widget.currencySymbol,
       keyboardType: AppTextFieldKeyboardType.decimal,
       enabled: widget.enabled,
-      onChanged: widget.onChanged,
+      readOnly: widget.readOnly,
+      onChanged: widget.readOnly ? null : widget.onChanged,
       validator: widget.validator,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-      ],
+      inputFormatters: widget.readOnly
+          ? null
+          : [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
     );
   }
 }

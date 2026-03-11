@@ -14,6 +14,7 @@ class BudgetPlanListBloc
     on<FilterBudgetPlans>(_onFilterBudgetPlans);
     on<DeleteBudgetPlan>(_onDeleteBudgetPlan);
     on<RefreshBudgetPlans>(_onRefreshBudgetPlans);
+    on<RecalculateBudgetPlans>(_onRecalculateBudgetPlans);
   }
 
   // ---------------------------------------------------------------------------
@@ -176,6 +177,86 @@ class BudgetPlanListBloc
         );
         emit(state); // re-emit loaded state so BlocBuilder stays stable
       }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Recalculate — recalculate all plan amounts without Loading flicker
+  // ---------------------------------------------------------------------------
+
+  Future<void> _onRecalculateBudgetPlans(
+    RecalculateBudgetPlans event,
+    Emitter<BudgetPlanListState> emit,
+  ) async {
+    // Snapshot the current loaded state so we can restore it on failure.
+    final snapshot = state is BudgetPlanListLoaded
+        ? state as BudgetPlanListLoaded
+        : null;
+
+    try {
+      // Recalculate all plan amounts
+      await _repository.recalculateAmounts();
+
+      // After recalculation, reload the data to show updated amounts
+      final plans = await _repository.getAllPlans();
+      final summary = await _repository.getOverallSummary();
+
+      if (plans.isEmpty) {
+        emit(
+          const BudgetPlanListEmpty(
+            'No budget plans yet. Create your first financial goal!',
+          ),
+        );
+        return;
+      }
+
+      final currentFilter = snapshot?.filterStatus;
+      final currentCategory = snapshot?.filterCategory;
+
+      final filtered = _applyFilters(plans, currentFilter, currentCategory);
+      emit(
+        BudgetPlanListLoaded(
+          plans: plans,
+          filteredPlans: filtered,
+          summary: summary,
+          filterStatus: currentFilter,
+          filterCategory: currentCategory,
+        ),
+      );
+
+      // Emit success state for UI to show confirmation
+      emit(
+        BudgetPlanListRecalculated(
+          previousState: BudgetPlanListLoaded(
+            plans: plans,
+            filteredPlans: filtered,
+            summary: summary,
+            filterStatus: currentFilter,
+            filterCategory: currentCategory,
+          ),
+        ),
+      );
+      // Re-emit loaded state so UI stays on the list
+      emit(
+        BudgetPlanListLoaded(
+          plans: plans,
+          filteredPlans: filtered,
+          summary: summary,
+          filterStatus: currentFilter,
+          filterCategory: currentCategory,
+        ),
+      );
+    } catch (e) {
+      // Emit error state for UI to show error message
+      emit(
+        BudgetPlanListRecalculateError(
+          message: 'Failed to recalculate: ${e.toString()}',
+          previousState: snapshot,
+        ),
+      );
+
+      // If we had a list, put it back as the active state.
+      if (snapshot != null) emit(snapshot);
     }
   }
 
