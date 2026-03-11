@@ -3,8 +3,14 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
 import 'package:wise_spends/presentation/widgets/components/amount_display.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
+
+/// Check if transaction is a budget plan type
+bool isBudgetPlanType(TransactionType type) {
+  return type == TransactionType.budgetPlan;
+}
 
 /// Reusable transaction card widget
 /// Displays a single transaction with all relevant information
@@ -13,6 +19,7 @@ import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 /// - Color-coded amounts by transaction type
 /// - Relative date display (Today, Yesterday, etc.)
 /// - Optional note indicator
+/// - Budget plan indicator (if linked)
 /// - 48dp minimum touch targets
 class TransactionCard extends StatelessWidget {
   final String title;
@@ -25,6 +32,7 @@ class TransactionCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final VoidCallback? onDelete;
+  final bool showBudgetPlanIndicator;
 
   const TransactionCard({
     super.key,
@@ -38,6 +46,7 @@ class TransactionCard extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.onDelete,
+    this.showBudgetPlanIndicator = false,
   });
 
   @override
@@ -83,7 +92,42 @@ class TransactionCard extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(color: WiseSpendsColors.textHint),
                         ),
-                        if (note != null && note!.isNotEmpty) ...[
+                        if (showBudgetPlanIndicator) ...[
+                          const SizedBox(width: UIConstants.spacingXS),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: UIConstants.spacingXS,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: WiseSpendsColors.budgetPlanContainer,
+                              borderRadius: BorderRadius.circular(
+                                UIConstants.radiusSmall,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.account_balance_wallet_outlined,
+                                  size: 10,
+                                  color: WiseSpendsColors.primary,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'budget_plans.linked'.tr,
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: WiseSpendsColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                        if (note != null &&
+                            note!.isNotEmpty &&
+                            !showBudgetPlanIndicator) ...[
                           const SizedBox(width: UIConstants.spacingSmall),
                           Container(
                             width: 4,
@@ -96,7 +140,7 @@ class TransactionCard extends StatelessWidget {
                           const SizedBox(width: UIConstants.spacingSmall),
                           Expanded(
                             child: Text(
-                              note!,
+                              _formatNote(note!),
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(color: WiseSpendsColors.textHint),
                               maxLines: 1,
@@ -115,6 +159,7 @@ class TransactionCard extends StatelessWidget {
                 amount: amount,
                 type: type,
                 style: Theme.of(context).textTheme.titleMedium,
+                note: note,
               ),
 
               // Delete button (optional)
@@ -201,6 +246,18 @@ class TransactionCard extends StatelessWidget {
       return DateFormat('MMM d, y').format(date); // e.g., "Jan 15, 2024"
     }
   }
+
+  /// Format note for display - hides UIDs and shows friendly names
+  String _formatNote(String note) {
+    // For budget plan notes, show friendly name instead of UUID
+    if (note.contains('Budget Plan:')) {
+      return note.replaceAll('Budget Plan:', 'Budget Plan');
+    }
+    if (note.contains('Budget Plan Deposit:')) {
+      return note.replaceAll('Budget Plan Deposit:', 'Budget Plan Deposit');
+    }
+    return note;
+  }
 }
 
 /// Transaction card with swipe-to-delete functionality
@@ -214,6 +271,7 @@ class SwipeableTransactionCard extends StatelessWidget {
   final String? note;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
+  final bool showBudgetPlanIndicator;
 
   const SwipeableTransactionCard({
     super.key,
@@ -226,6 +284,7 @@ class SwipeableTransactionCard extends StatelessWidget {
     this.note,
     this.onTap,
     this.onDelete,
+    this.showBudgetPlanIndicator = false,
   });
 
   @override
@@ -301,6 +360,7 @@ class SwipeableTransactionCard extends StatelessWidget {
         date: date,
         note: note,
         onTap: onTap,
+        showBudgetPlanIndicator: showBudgetPlanIndicator,
       ),
     );
   }

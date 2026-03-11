@@ -322,7 +322,7 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
               ),
               const SizedBox(height: AppSpacing.lg),
 
-              // Linked Account Selector (mandatory)
+              // Linked Account Selector (optional)
               SectionHeaderCompact(
                 title: 'budget_plans.select_linked_account'.tr,
               ),
@@ -331,6 +331,13 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
                 planUuid: widget.planUuid,
                 selectedId: _selectedAccountId,
                 onChanged: (v) => setState(() => _selectedAccountId = v),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'budget_plans.linked_account_optional'.tr,
+                style: AppTextStyles.caption.copyWith(
+                  color: WiseSpendsColors.textHint,
+                ),
               ),
               const SizedBox(height: AppSpacing.lg),
 
@@ -364,16 +371,6 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedAccountId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('budget_plans.select_linked_account_error'.tr),
-          backgroundColor: WiseSpendsColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
 
     final amount = double.parse(_amountController.text);
 
@@ -388,7 +385,7 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
       ),
     );
 
-    if (_linkToMainTransaction) {
+    if (_linkToMainTransaction && _selectedAccountId != null) {
       // Guard: TransactionBloc may not be provided in all entry points
       final transactionBloc = context.read<TransactionBloc?>();
       transactionBloc?.add(

@@ -964,6 +964,11 @@ class EnglishStrings {
     "budget_plans.link_account_desc":
         "Choose a savings account and enter the amount allocated to this plan.",
 
+    // Budget Plan Linked Account
+    "budget_plans.linked_account_optional":
+        "Optional - Link to update account balance",
+    "budget_plans.linked": "Linked",
+
     // Budget Plan Item Form
     "budget_plans.item_details": "Item Details",
     "budget_plans.payment": "Payment",

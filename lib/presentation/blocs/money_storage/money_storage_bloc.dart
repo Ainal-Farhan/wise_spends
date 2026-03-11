@@ -60,11 +60,7 @@ class MoneyStorageBloc extends Bloc<MoneyStorageEvent, MoneyStorageState> {
   ) async {
     emit(MoneyStorageLoading());
     try {
-      await _repository.addMoneyStorage(
-        event.shortName,
-        event.longName,
-        event.amount,
-      );
+      await _repository.addMoneyStorage(event.shortName, event.longName);
       emit(MoneyStorageSuccess('Successfully added money storage'));
       // Reload the list after successful addition
       add(LoadMoneyStorageListEvent());
@@ -83,7 +79,6 @@ class MoneyStorageBloc extends Bloc<MoneyStorageEvent, MoneyStorageState> {
         event.id,
         event.shortName,
         event.longName,
-        event.amount,
       );
       emit(MoneyStorageSuccess('Successfully updated money storage'));
       // Reload the list after successful update

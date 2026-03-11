@@ -33,11 +33,7 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
   }
 
   @override
-  Future<void> addMoneyStorage(
-    String shortName,
-    String longName,
-    double amount,
-  ) async {
+  Future<void> addMoneyStorage(String shortName, String longName) async {
     try {
       await SingletonUtil.getSingleton<IManagerLocator>()!
           .getSavingManager()
@@ -56,7 +52,6 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
     String id,
     String shortName,
     String longName,
-    double amount,
   ) async {
     try {
       final editMoneyStorageFormVO = EditMoneyStorageFormVO(

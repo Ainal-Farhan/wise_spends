@@ -970,6 +970,11 @@ class MalayStrings {
     "budget_plans.link_account_desc":
         "Pilih akaun simpanan dan masukkan jumlah yang diperuntukkan untuk plan ini.",
 
+    // Budget Plan Linked Account
+    "budget_plans.linked_account_optional":
+        "Pilihan - Hubungkan untuk mengemas kini baki akaun",
+    "budget_plans.linked": "Dihubungkan",
+
     // Budget Plan Item Form
     "budget_plans.item_details": "Butiran Perkara",
     "budget_plans.payment": "Pembayaran",

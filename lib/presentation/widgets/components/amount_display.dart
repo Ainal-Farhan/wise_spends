@@ -11,6 +11,7 @@ class AmountDisplay extends StatelessWidget {
   final bool showPrefix;
   final bool showCurrencySymbol;
   final String currencySymbol;
+  final String? note;
 
   const AmountDisplay({
     super.key,
@@ -20,19 +21,41 @@ class AmountDisplay extends StatelessWidget {
     this.showPrefix = true,
     this.showCurrencySymbol = true,
     this.currencySymbol = 'RM',
+    this.note,
   });
 
   @override
   Widget build(BuildContext context) {
     final color = _getColorForType();
     final prefix = _getPrefixForType();
+    
+    // For budget plan transactions, determine sign from note
+    bool isBudgetPlanDeposit = false;
+    if (type == TransactionType.budgetPlan && note != null) {
+      isBudgetPlanDeposit = note!.contains('Budget Plan Deposit');
+    }
+    
+    // Format amount - show negative for budget plan spending
+    final double displayAmount;
+    final String amountPrefix;
+    
+    if (type == TransactionType.budgetPlan) {
+      // For budget plan, use +/- based on deposit vs spending
+      displayAmount = amount.abs();
+      amountPrefix = isBudgetPlanDeposit ? '+' : '−';
+    } else {
+      // For other types, use existing logic
+      displayAmount = amount.abs();
+      amountPrefix = prefix;
+    }
+    
     final formattedAmount = NumberFormat.currency(
       symbol: showCurrencySymbol ? currencySymbol : '',
       decimalDigits: 2,
-    ).format(amount.abs());
+    ).format(displayAmount);
 
     final displayText = showPrefix
-        ? '$prefix$formattedAmount'
+        ? '$amountPrefix$formattedAmount'
         : formattedAmount;
 
     return Text(
@@ -70,7 +93,7 @@ class AmountDisplay extends StatelessWidget {
       case TransactionType.commitment:
         return '↻ '; // signals recurring/scheduled
       case TransactionType.budgetPlan:
-        return '◎ '; // target/goal — distinct, non-directional
+        return ''; // No prefix - amount sign will be shown via +/- based on context
     }
   }
 }

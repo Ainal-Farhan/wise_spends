@@ -19,16 +19,7 @@ abstract class IMoneyStorageRepository
 
   Future<MoneyStorageVO?> getMoneyStorageById(String id);
 
-  Future<void> addMoneyStorage(
-    String shortName,
-    String longName,
-    double amount,
-  );
-  Future<void> updateMoneyStorage(
-    String id,
-    String shortName,
-    String longName,
-    double amount,
-  );
+  Future<void> addMoneyStorage(String shortName, String longName);
+  Future<void> updateMoneyStorage(String id, String shortName, String longName);
   Future<void> deleteMoneyStorage(String id);
 }

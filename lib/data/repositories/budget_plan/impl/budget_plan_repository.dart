@@ -302,6 +302,21 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
     await _db.into(_db.savingsPlanDepositTable).insert(companion);
 
+    // If linkedAccountId is provided, create actual transaction and update allocation
+    if (params.linkedAccountId != null) {
+      await _createTransactionForLinkedDeposit(
+        accountId: params.linkedAccountId!,
+        amount: params.amount,
+        description: params.note ?? 'Budget plan deposit',
+        date: params.depositDate,
+        planId: planId,
+        budgetPlanDepositId: id,
+      );
+
+      // Increase allocation by the deposit amount
+      await updateAllocation(planId, params.linkedAccountId!, params.amount);
+    }
+
     // Recalculate plan's current amount using centralized method
     await recalculatePlanAmount(plan.id);
 
@@ -372,6 +387,21 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final plan = await getPlanByUuid(planId);
     if (plan == null) throw Exception('Plan not found');
 
+    // Validate spending doesn't exceed allocation if linked account is provided
+    if (params.linkedAccountId != null) {
+      final hasEnoughAllocation = await canSpend(
+        planId,
+        params.linkedAccountId!,
+        params.amount,
+      );
+      if (!hasEnoughAllocation) {
+        final allocation = await getAllocation(planId, params.linkedAccountId!);
+        throw Exception(
+          'Spending amount exceeds available allocation. Available: RM ${allocation.toStringAsFixed(2)}',
+        );
+      }
+    }
+
     final id = const Uuid().v4();
     final companion = SavingsPlanSpendingTableCompanion.insert(
       id: Value(id),
@@ -389,7 +419,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
     await _db.into(_db.savingsPlanSpendingTable).insert(companion);
 
-    // If linkedAccountId is provided, create actual transaction in transaction table
+    // If linkedAccountId is provided, create actual transaction and update allocation
     if (params.linkedAccountId != null) {
       await _createTransactionForLinkedAccount(
         accountId: params.linkedAccountId!,
@@ -400,6 +430,9 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
         planId: planId,
         budgetPlanSpendingId: id,
       );
+
+      // Decrease allocation by the spending amount
+      await updateAllocation(planId, params.linkedAccountId!, -params.amount);
     }
 
     // Recalculate plan's current amount using centralized method
@@ -427,13 +460,13 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   }) async {
     final transactionId = const Uuid().v4();
 
-    // Create transaction in main transactions table as expense
+    // Create transaction in main transactions table as budget plan expense
     await _db
         .into(_db.transactionTable)
         .insert(
           TransactionTableCompanion.insert(
             id: Value(transactionId),
-            type: TransactionType.expense,
+            type: TransactionType.budgetPlan,
             description: Value(description),
             amount: amount,
             savingId: accountId,
@@ -452,6 +485,44 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
     // Update the savings account balance (deduct the amount)
     await _updateSavingAccountBalance(accountId, -amount);
+  }
+
+  /// Create a transaction in the main transaction table for linked account deposit
+  Future<void> _createTransactionForLinkedDeposit({
+    required String accountId,
+    required double amount,
+    required String description,
+    required DateTime date,
+    required String planId,
+    required String budgetPlanDepositId,
+  }) async {
+    final transactionId = const Uuid().v4();
+
+    // Create transaction in main transactions table as budget plan income
+    await _db
+        .into(_db.transactionTable)
+        .insert(
+          TransactionTableCompanion.insert(
+            id: Value(transactionId),
+            type: TransactionType.budgetPlan,
+            description: Value(description),
+            amount: amount,
+            savingId: accountId,
+            destinationSavingId: const Value(null),
+            categoryId: const Value(null),
+            commitmentTaskId: const Value(null),
+            payeeId: const Value(null),
+            transactionDateTime: Value(date),
+            note: Value('Budget Plan Deposit: $planId'),
+            createdBy: 'system',
+            dateCreated: Value(DateTime.now()),
+            dateUpdated: DateTime.now(),
+            lastModifiedBy: 'system',
+          ),
+        );
+
+    // Update the savings account balance (add the amount)
+    await _updateSavingAccountBalance(accountId, amount);
   }
 
   /// Update savings account balance by a delta amount
@@ -613,6 +684,54 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
     // Recalculate plan's current amount using centralized method
     await recalculatePlanAmount(plan.id);
+  }
+
+  @override
+  Future<void> updateAllocation(
+    String planId,
+    String accountId,
+    double deltaAmount,
+  ) async {
+    // Get current allocation
+    final currentAllocation = await getAllocation(planId, accountId);
+    final newAllocation = currentAllocation + deltaAmount;
+
+    // Update the allocation in the database
+    if (newAllocation <= 0) {
+      // If allocation becomes zero or negative, unlink the account
+      await unlinkAccount(planId, accountId);
+    } else {
+      // Update the allocation amount
+      final updating = SavingsPlanLinkedAccountTableCompanion(
+        allocatedAmount: Value(newAllocation),
+        dateUpdated: Value(DateTime.now()),
+        lastModifiedBy: Value('system'),
+      );
+
+      final query = _db.update(_db.savingsPlanLinkedAccountTable)
+        ..where(
+          (tbl) => tbl.planId.equals(planId) & tbl.accountId.equals(accountId),
+        );
+      await query.write(updating);
+    }
+  }
+
+  @override
+  Future<double> getAllocation(String planId, String accountId) async {
+    final account =
+        await (_db.select(_db.savingsPlanLinkedAccountTable)..where(
+              (tbl) =>
+                  tbl.planId.equals(planId) & tbl.accountId.equals(accountId),
+            ))
+            .getSingleOrNull();
+
+    return account?.allocatedAmount ?? 0.0;
+  }
+
+  /// Check if spending would exceed allocation
+  Future<bool> canSpend(String planId, String accountId, double amount) async {
+    final allocation = await getAllocation(planId, accountId);
+    return amount <= allocation;
   }
 
   // ============================================================================

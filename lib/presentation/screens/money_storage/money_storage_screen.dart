@@ -331,9 +331,6 @@ class MoneyStorageScreen extends StatelessWidget {
     final longNameController = TextEditingController(
       text: moneyStorage?.moneyStorage.longName ?? '',
     );
-    final amountController = TextEditingController(
-      text: moneyStorage != null ? moneyStorage.amount.toStringAsFixed(2) : '',
-    );
 
     return Scaffold(
       appBar: AppBar(
@@ -367,20 +364,49 @@ class MoneyStorageScreen extends StatelessWidget {
                     : null,
               ),
               const SizedBox(height: AppSpacing.lg),
-              AppTextField(
-                label: 'general.amount'.tr,
-                controller: amountController,
-                prefixText: 'RM ',
-                keyboardType: AppTextFieldKeyboardType.decimal,
-                validator: (v) {
-                  if (v == null || v.isEmpty) {
-                    return 'error.validation.required'.tr;
-                  }
-                  if (double.tryParse(v) == null) {
-                    return 'error.validation.amount'.tr;
-                  }
-                  return null;
-                },
+              AppCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: AppColors.tertiary.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.info_outline,
+                            color: AppColors.tertiary,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Total Amount',
+                                style: AppTextStyles.bodySemiBold,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Total will be calculated automatically.',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: AppSpacing.xxxl),
               Row(
@@ -399,14 +425,12 @@ class MoneyStorageScreen extends StatelessWidget {
                       label: isEditing ? 'general.update'.tr : 'general.add'.tr,
                       onPressed: () {
                         if (formKey.currentState!.validate()) {
-                          final amount = double.parse(amountController.text);
                           if (isEditing && moneyStorage != null) {
                             context.read<MoneyStorageBloc>().add(
                               UpdateMoneyStorageEvent(
                                 id: moneyStorage.moneyStorage.id,
                                 shortName: shortNameController.text,
                                 longName: longNameController.text,
-                                amount: amount,
                               ),
                             );
                           } else {
@@ -414,7 +438,6 @@ class MoneyStorageScreen extends StatelessWidget {
                               AddMoneyStorageEvent(
                                 shortName: shortNameController.text,
                                 longName: longNameController.text,
-                                amount: amount,
                               ),
                             );
                           }

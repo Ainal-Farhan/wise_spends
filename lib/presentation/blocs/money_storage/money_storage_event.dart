@@ -23,33 +23,26 @@ class LoadEditMoneyStorageEvent extends MoneyStorageEvent {
 class AddMoneyStorageEvent extends MoneyStorageEvent {
   final String shortName;
   final String longName;
-  final double amount;
 
-  const AddMoneyStorageEvent({
-    required this.shortName,
-    required this.longName,
-    required this.amount,
-  });
+  const AddMoneyStorageEvent({required this.shortName, required this.longName});
 
   @override
-  List<Object> get props => [shortName, longName, amount];
+  List<Object> get props => [shortName, longName];
 }
 
 class UpdateMoneyStorageEvent extends MoneyStorageEvent {
   final String id;
   final String shortName;
   final String longName;
-  final double amount;
 
   const UpdateMoneyStorageEvent({
     required this.id,
     required this.shortName,
     required this.longName,
-    required this.amount,
   });
 
   @override
-  List<Object> get props => [id, shortName, longName, amount];
+  List<Object> get props => [id, shortName, longName];
 }
 
 class DeleteMoneyStorageEvent extends MoneyStorageEvent {

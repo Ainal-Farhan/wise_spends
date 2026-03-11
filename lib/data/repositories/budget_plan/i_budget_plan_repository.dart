@@ -117,6 +117,12 @@ abstract class IBudgetPlanRepository
   /// Unlink an account from a plan
   Future<void> unlinkAccount(String planId, String accountId);
 
+  /// Update allocation amount for a linked account
+  Future<void> updateAllocation(String planId, String accountId, double deltaAmount);
+
+  /// Get current allocation for a linked account
+  Future<double> getAllocation(String planId, String accountId);
+
   // ============================================================================
   // Milestone Operations
   // ============================================================================

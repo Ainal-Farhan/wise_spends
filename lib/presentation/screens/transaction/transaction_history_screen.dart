@@ -353,6 +353,8 @@ class _TransactionHistoryScreenContentState
                     : transaction.type.icon,
                 date: transaction.date,
                 note: transaction.note,
+                showBudgetPlanIndicator:
+                    transaction.type == TransactionType.budgetPlan,
                 onTap: () {
                   Navigator.pushNamed(
                     context,
@@ -639,56 +641,80 @@ class _TransactionHistoryScreenContentState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // ── Date Range ──────────────────────────────────
-                        Text('transaction.history.date_range'.tr, style: AppTextStyles.h3),
+                        Text(
+                          'transaction.history.date_range'.tr,
+                          style: AppTextStyles.h3,
+                        ),
                         const SizedBox(height: AppSpacing.sm),
                         Wrap(
                           spacing: AppSpacing.sm,
                           runSpacing: AppSpacing.sm,
                           children: [
-                            _buildDateRangeOption(ctx, bloc, 'transaction.history.today'.tr, () {
-                              final now = DateTime.now();
-                              bloc.add(
-                                FilterTransactionsByDateRangeEvent(
-                                  from: DateTime(now.year, now.month, now.day),
-                                  to: DateTime(
-                                    now.year,
-                                    now.month,
-                                    now.day,
-                                    23,
-                                    59,
-                                    59,
+                            _buildDateRangeOption(
+                              ctx,
+                              bloc,
+                              'transaction.history.today'.tr,
+                              () {
+                                final now = DateTime.now();
+                                bloc.add(
+                                  FilterTransactionsByDateRangeEvent(
+                                    from: DateTime(
+                                      now.year,
+                                      now.month,
+                                      now.day,
+                                    ),
+                                    to: DateTime(
+                                      now.year,
+                                      now.month,
+                                      now.day,
+                                      23,
+                                      59,
+                                      59,
+                                    ),
+                                    rangeLabel: 'transaction.history.today'.tr,
                                   ),
-                                  rangeLabel: 'transaction.history.today'.tr,
-                                ),
-                              );
-                            }),
-                            _buildDateRangeOption(ctx, bloc, 'transaction.history.this_week'.tr, () {
-                              final now = DateTime.now();
-                              final start = now.subtract(
-                                Duration(days: now.weekday - 1),
-                              );
-                              bloc.add(
-                                FilterTransactionsByDateRangeEvent(
-                                  from: DateTime(
-                                    start.year,
-                                    start.month,
-                                    start.day,
+                                );
+                              },
+                            ),
+                            _buildDateRangeOption(
+                              ctx,
+                              bloc,
+                              'transaction.history.this_week'.tr,
+                              () {
+                                final now = DateTime.now();
+                                final start = now.subtract(
+                                  Duration(days: now.weekday - 1),
+                                );
+                                bloc.add(
+                                  FilterTransactionsByDateRangeEvent(
+                                    from: DateTime(
+                                      start.year,
+                                      start.month,
+                                      start.day,
+                                    ),
+                                    to: now,
+                                    rangeLabel:
+                                        'transaction.history.this_week'.tr,
                                   ),
-                                  to: now,
-                                  rangeLabel: 'transaction.history.this_week'.tr,
-                                ),
-                              );
-                            }),
-                            _buildDateRangeOption(ctx, bloc, 'transaction.history.this_month'.tr, () {
-                              final now = DateTime.now();
-                              bloc.add(
-                                FilterTransactionsByDateRangeEvent(
-                                  from: DateTime(now.year, now.month, 1),
-                                  to: now,
-                                  rangeLabel: 'transaction.history.this_month'.tr,
-                                ),
-                              );
-                            }),
+                                );
+                              },
+                            ),
+                            _buildDateRangeOption(
+                              ctx,
+                              bloc,
+                              'transaction.history.this_month'.tr,
+                              () {
+                                final now = DateTime.now();
+                                bloc.add(
+                                  FilterTransactionsByDateRangeEvent(
+                                    from: DateTime(now.year, now.month, 1),
+                                    to: now,
+                                    rangeLabel:
+                                        'transaction.history.this_month'.tr,
+                                  ),
+                                );
+                              },
+                            ),
                             _buildDateRangeOption(
                               ctx,
                               bloc,
@@ -730,7 +756,10 @@ class _TransactionHistoryScreenContentState
                         const SizedBox(height: AppSpacing.xxl),
 
                         // ── Transaction Type ────────────────────────────
-                        Text('transaction.history.transaction_type'.tr, style: AppTextStyles.h3),
+                        Text(
+                          'transaction.history.transaction_type'.tr,
+                          style: AppTextStyles.h3,
+                        ),
                         const SizedBox(height: AppSpacing.sm),
                         _buildFilterOption(
                           ctx,
