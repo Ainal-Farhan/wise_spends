@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart';
 import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
+import 'package:wise_spends/presentation/services/widget_service.dart';
 
 class TransactionRepository extends ITransactionRepository {
   TransactionRepository() : super(AppDatabase());
@@ -151,6 +152,8 @@ class TransactionRepository extends ITransactionRepository {
     );
 
     await db.into(db.transactionTable).insert(companion);
+
+    await WidgetService.updateLastTransaction(transaction);
     return transaction;
   }
 
@@ -176,6 +179,8 @@ class TransactionRepository extends ITransactionRepository {
     await (db.update(
       db.transactionTable,
     )..where((tbl) => tbl.id.equals(transaction.id))).write(companion);
+
+    await WidgetService.updateLastTransaction(transaction);
 
     return transaction;
   }

@@ -54,4 +54,8 @@ abstract class AppRoutes {
   static const String hiddenUtilityMenu = '/developer/utilities';
   static const String logViewer = '/developer/logs';
   static const String logSettings = '/developer/logs/settings';
+
+  // Widget routes
+  static const String widgetSettings = '/widget/settings';
+  static const String widgetInfo = '/widget/info';
 }

@@ -14,19 +14,32 @@ import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart'
     as data_transaction;
 import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
+import 'package:wise_spends/presentation/services/widget_background_service.dart';
+import 'package:wise_spends/presentation/services/widget_platform_channel.dart';
+import 'package:wise_spends/presentation/services/widget_service.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
-/// Single global navigator key — declared at top level so it is created once
-/// and shared between [MaterialApp] and [RunGuard].
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Register singletons
   _registerSingletons();
+
+  // Initialize widget service
+  await WidgetService.initialize();
+  WidgetService.registerInteractivityCallback();
+
+  WidgetPlatformChannel.initialize();
+
+  // Initialize background updates
+  WidgetBackgroundService.initialize();
+
+  // Initialize startup manager
   await SingletonUtil.getSingleton<IManagerLocator>()
       ?.getStartupManager()
       .onRunApp(null);
+
   runApp(const WiseSpendsApp());
 }
 
@@ -35,6 +48,12 @@ class WiseSpendsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize widget platform channel after context is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Start periodic background updates for widget
+      WidgetBackgroundService.startPeriodicUpdates();
+    });
+
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<data_transaction.ITransactionRepository>.value(
@@ -64,14 +83,14 @@ class WiseSpendsApp extends StatelessWidget {
           darkTheme: getDarkTheme(),
           initialRoute: AppRoutes.home,
           onGenerateRoute: AppRouter.generateRoute,
-          navigatorKey: navigatorKey,
+          navigatorKey: AppRouter.navigatorKey,
           builder: (context, child) {
             return RunGuard(
-              navigatorKey: navigatorKey,
+              navigatorKey: AppRouter.navigatorKey,
               child: HiddenGestureDetector(
                 onTriggered: () {
                   WiseLogger().info('Hidden menu accessed', tag: 'Main');
-                  navigatorKey.currentState?.pushNamed(
+                  AppRouter.navigatorKey.currentState?.pushNamed(
                     AppRoutes.hiddenUtilityMenu,
                   );
                 },

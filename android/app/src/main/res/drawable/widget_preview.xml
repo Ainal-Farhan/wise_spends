@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="250dp"
+    android:height="180dp"
+    android:viewportWidth="250"
+    android:viewportHeight="180">
+
+    <!-- Widget background -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M12,0h226c6.63,0 12,5.37 12,12v156c0,6.63 -5.37,12 -12,12H12C5.37,180 0,174.63 0,168V12C0,5.37 5.37,0 12,0z"/>
+
+    <!-- Header row -->
+    <path android:fillColor="#4CAF82" android:fillAlpha="0.12"
+        android:pathData="M12,0h226c6.63,0 12,5.37 12,12v28H0V12C0,5.37 5.37,0 12,0z"/>
+
+    <!-- Logo circle -->
+    <path android:fillColor="#4CAF82"
+        android:pathData="M24,20m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M19,20l3,3 6,-6"/>
+
+    <!-- App name -->
+    <path android:fillColor="#4CAF82"
+        android:pathData="M42,15h70v5a2,2 0,0 1,-2 2H44a2,2 0,0 1,-2 -2v-5z"/>
+    <path android:fillColor="#4CAF82" android:fillAlpha="0.4"
+        android:pathData="M42,24h50v4H42z"/>
+
+    <!-- Expense button -->
+    <path android:fillColor="#F44336"
+        android:pathData="M14,50h100c3.31,0 6,2.69 6,6v44c0,3.31 -2.69,6 -6,6H14c-3.31,0 -6,-2.69 -6,-6V56c0,-3.31 2.69,-6 6,-6z"/>
+    <!-- Expense icon -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M64,68v16M57,77l7,-7 7,7"/>
+    <!-- Expense label -->
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.9"
+        android:pathData="M48,96h28v5H48z"/>
+
+    <!-- Income button -->
+    <path android:fillColor="#4CAF82"
+        android:pathData="M136,50h100c3.31,0 6,2.69 6,6v44c0,3.31 -2.69,6 -6,6h-100c-3.31,0 -6,-2.69 -6,-6V56c0,-3.31 2.69,-6 6,-6z"/>
+    <!-- Income icon -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M186,68v16M179,75l7,7 7,-7"/>
+    <!-- Income label -->
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.9"
+        android:pathData="M172,96h28v5h-28z"/>
+
+    <!-- Last transaction card -->
+    <path android:fillColor="#F0FAF5"
+        android:pathData="M8,118h234c0,0 0,0 0,0v44c0,6.63 -5.37,12 -12,12H20c-6.63,0 -12,-5.37 -12,-12v-44z"/>
+    <path android:fillColor="#D1EDE1"
+        android:pathData="M8,118h234v1H8z"/>
+
+    <!-- Transaction icon circle -->
+    <path android:fillColor="#4CAF82" android:fillAlpha="0.15"
+        android:pathData="M28,140m-12,0a12,12 0,1 1,24 0a12,12 0,1 1,-24 0"/>
+    <path android:fillColor="#4CAF82"
+        android:pathData="M24,140l3,3 6,-6"/>
+
+    <!-- Transaction title lines -->
+    <path android:fillColor="#9CA3AF"
+        android:pathData="M50,132h60v4H50z"/>
+    <path android:fillColor="#1A1A2E"
+        android:pathData="M50,140h90v6H50z"/>
+
+    <!-- Amount -->
+    <path android:fillColor="#F44336"
+        android:pathData="M190,137h46v8h-46z"/>
+</vector>

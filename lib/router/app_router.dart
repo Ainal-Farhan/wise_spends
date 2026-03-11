@@ -38,6 +38,8 @@ import 'package:wise_spends/presentation/screens/payee/payee_management_screen.d
 import 'package:wise_spends/presentation/screens/logs/log_viewer_screen.dart';
 import 'package:wise_spends/presentation/screens/logs/log_settings_screen.dart';
 import 'package:wise_spends/presentation/screens/logs/hidden_utility_menu_screen.dart';
+import 'package:wise_spends/presentation/screens/widget/widget_settings_screen.dart';
+import 'package:wise_spends/presentation/screens/widget/widget_info_screen.dart';
 import 'package:wise_spends/presentation/blocs/commitment_task/commitment_task_bloc.dart';
 import 'package:wise_spends/data/repositories/expense/impl/commitment_task_repository.dart';
 import 'package:wise_spends/router/route_arguments.dart';
@@ -45,6 +47,9 @@ import 'package:wise_spends/router/route_arguments.dart';
 /// Enhanced App Router with typed arguments
 /// Uses MaterialPageRoute for now, consider migrating to go_router for production
 abstract class AppRouter {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
   /// Generate route with typed arguments
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Extract typed arguments
@@ -206,6 +211,13 @@ abstract class AppRouter {
 
       case AppRoutes.logSettings:
         return _createRoute(const LogSettingsScreen(), settings);
+
+      // Widget routes
+      case AppRoutes.widgetSettings:
+        return _createRoute(const WidgetSettingsScreen(), settings);
+
+      case AppRoutes.widgetInfo:
+        return _createRoute(const WidgetInfoScreen(), settings);
 
       // Default: Show error screen
       default:

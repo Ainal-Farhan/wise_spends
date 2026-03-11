@@ -81,8 +81,4 @@ class ReportsArgs extends RouteArguments {
 }
 
 /// Report period enum
-enum ReportPeriod {
-  week,
-  month,
-  year,
-}
+enum ReportPeriod { week, month, year }
