@@ -1,30 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// create_budget_plan_screen.dart
-// ─────────────────────────────────────────────────────────────────────────────
-//
-// Refactored highlights
-// ─────────────────────────────────────────────────────────────────────────────
-// 1. Shared step widgets
-//    • _StepBasics, _StepFinancial, _StepMilestones, _StepReview
-//      are now standalone StatelessWidgets that accept a generic
-//      BudgetPlanFormData value object and a callback interface
-//      (BudgetPlanFormCallbacks).  Both Create and Edit screens
-//      just pass in their own data/callbacks — no duplication.
-//
-// 2. Enhanced mobile wizard bar
-//    • Compact numbered dots on narrow screens (< 380 px); full
-//      label strip on wider screens.
-//    • Animated progress line between steps.
-//    • Current step circle uses the plan's accent colour.
-//
-// 3. Review step in the Create flow (step 3 is now Review;
-//    the old step 3 Milestones becomes step 2.5 / inserted before review)
-//    Flow: Basics → Financial → Milestones → Review → Save
-//
-// 4. No logic changes to blocs/events/states — only the UI layer is
-//    touched.
-// ─────────────────────────────────────────────────────────────────────────────
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -58,13 +31,7 @@ class _AccentColors {
   ];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared data container (read-only snapshot passed to shared step widgets)
-// ─────────────────────────────────────────────────────────────────────────────
-
 /// Immutable snapshot of the common form fields used by every step widget.
-/// Both [CreateBudgetPlanFormReady] and [EditBudgetPlanFormReady] are
-/// projected into this so the step widgets remain bloc-agnostic.
 class BudgetPlanFormData {
   final String name;
   final String description;
@@ -120,7 +87,7 @@ class BudgetPlanFormData {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Callback interface (thin wrapper; each screen supplies its own)
+// Callback interface
 // ─────────────────────────────────────────────────────────────────────────────
 
 class BudgetPlanFormCallbacks {
@@ -149,7 +116,6 @@ class BudgetPlanFormCallbacks {
 // CREATE SCREEN
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// 4-step wizard: Basics → Financial → Milestones → Review
 class CreateBudgetPlanScreen extends StatelessWidget {
   const CreateBudgetPlanScreen({super.key});
 
@@ -177,7 +143,6 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
   final _descCtrl = TextEditingController();
   final _targetCtrl = TextEditingController();
 
-  // Total steps including the new Review step (0-based index, 4 steps total).
   static const int _totalSteps = 4;
 
   @override
@@ -240,26 +205,31 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
                 stepLabels: _stepLabels,
               ),
               Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  transitionBuilder: (child, animation) => FadeTransition(
-                    opacity: animation,
-                    child: SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0.04, 0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      transitionBuilder: (child, animation) => FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.04, 0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                      ),
+                      child: KeyedSubtree(
+                        key: ValueKey(state.currentStep),
+                        child: _buildStep(
+                          step: state.currentStep,
+                          data: data,
+                          callbacks: callbacks,
+                        ),
+                      ),
                     ),
-                  ),
-                  child: KeyedSubtree(
-                    key: ValueKey(state.currentStep),
-                    child: _buildStep(
-                      step: state.currentStep,
-                      data: data,
-                      callbacks: callbacks,
-                    ),
-                  ),
+                  ],
                 ),
               ),
               WizardNavBar(
@@ -332,7 +302,6 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
 
   void _handleNext(BuildContext context, CreateBudgetPlanFormReady state) {
     if (state.currentStep < _totalSteps - 1) {
-      // Validate before advancing to Review
       if (state.currentStep == _totalSteps - 2) {
         final err = _validate(state);
         if (err != null) {
@@ -344,7 +313,6 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
         ChangeCurrentStep(state.currentStep + 1),
       );
     } else {
-      // Final step — save
       final err = _validate(state);
       if (err != null) {
         _showError(context, err);
@@ -380,7 +348,6 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
 // EDIT SCREEN
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// 3-step wizard: Basics → Financial → Review
 class EditBudgetPlanScreen extends StatelessWidget {
   final String planUuid;
 
@@ -485,26 +452,31 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
                   stepLabels: _stepLabels,
                 ),
                 Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    transitionBuilder: (child, animation) => FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0.04, 0),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        transitionBuilder: (child, animation) => FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0.04, 0),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          ),
+                        ),
+                        child: KeyedSubtree(
+                          key: ValueKey(state.currentStep),
+                          child: _buildStep(
+                            step: state.currentStep,
+                            data: data,
+                            callbacks: callbacks,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: KeyedSubtree(
-                      key: ValueKey(state.currentStep),
-                      child: _buildStep(
-                        step: state.currentStep,
-                        data: data,
-                        callbacks: callbacks,
-                      ),
-                    ),
+                    ],
                   ),
                 ),
                 WizardNavBar(
@@ -572,7 +544,7 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
   BudgetPlanFormCallbacks _buildCallbacks(BuildContext context) {
     final bloc = context.read<EditBudgetPlanFormBloc>();
     return BudgetPlanFormCallbacks(
-      onNameChanged: (_) {}, // edit: name updated on save via controller
+      onNameChanged: (_) {},
       onCategoryChanged: (c) => bloc.add(EditSelectCategory(c)),
       onAccentColorChanged: (_) {},
       onTargetAmountChanged: (v) => bloc.add(EditChangeTargetAmount(v)),
@@ -607,30 +579,36 @@ class StepBasics extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.xs,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(
+          _StepHeader(
             title: 'budget_plans.step_basics'.tr,
             subtitle: 'budget_plans.step_basics_subtitle'.tr,
+            icon: Icons.edit_note_outlined,
           ),
-          const SizedBox(height: AppSpacing.xxl),
+          const SizedBox(height: AppSpacing.lg),
           AppTextField(
             label: 'budget_plans.plan_name'.tr,
             hint: 'budget_plans.plan_name_hint'.tr,
             controller: nameCtrl,
             onChanged: callbacks.onNameChanged,
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.md),
           AppTextField(
             label: 'budget_plans.description'.tr,
             hint: 'budget_plans.description_hint'.tr,
             controller: descCtrl,
             maxLines: 3,
           ),
-          const SizedBox(height: AppSpacing.xxl),
-          SectionHeaderCompact(title: 'budget_plans.category'.tr),
+          const SizedBox(height: AppSpacing.lg),
+          _FormSectionLabel(label: 'budget_plans.category'.tr),
           const SizedBox(height: AppSpacing.sm),
           Wrap(
             spacing: AppSpacing.sm,
@@ -650,8 +628,8 @@ class StepBasics extends StatelessWidget {
             }).toList(),
           ),
           if (showAccentColor) ...[
-            const SizedBox(height: AppSpacing.xxl),
-            SectionHeaderCompact(title: 'budget_plans.accent_color'.tr),
+            const SizedBox(height: AppSpacing.lg),
+            _FormSectionLabel(label: 'budget_plans.accent_color'.tr),
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: _AccentColors.argbValues.map((colorValue) {
@@ -691,26 +669,29 @@ class StepFinancial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(
+          _StepHeader(
             title: 'budget_plans.step_financial'.tr,
             subtitle: 'budget_plans.step_financial_subtitle'.tr,
+            icon: Icons.account_balance_wallet_outlined,
           ),
-          const SizedBox(height: AppSpacing.xxl),
-          Text(
-            'budget_plans.target_amount'.tr,
-            style: AppTextStyles.bodySemiBold,
-          ),
+          const SizedBox(height: AppSpacing.lg),
+          _FormSectionLabel(label: 'budget_plans.target_amount'.tr),
           const SizedBox(height: AppSpacing.sm),
           _AmountField(
             controller: targetCtrl,
             onChanged: (v) =>
                 callbacks.onTargetAmountChanged(double.tryParse(v) ?? 0.0),
           ),
-          const SizedBox(height: AppSpacing.xxl),
+          const SizedBox(height: AppSpacing.lg),
           if (showStartDate) ...[
             _DateField(
               labelKey: 'budget_plans.start_date_label',
@@ -719,7 +700,7 @@ class StepFinancial extends StatelessWidget {
               lastDate: DateTime(2100),
               onChanged: callbacks.onStartDateChanged,
             ),
-            const SizedBox(height: AppSpacing.lg),
+            const SizedBox(height: AppSpacing.md),
           ],
           _DateField(
             labelKey: 'budget_plans.target_date_label',
@@ -749,37 +730,23 @@ class StepMilestones extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(
+          _StepHeader(
             title: 'budget_plans.step_milestones'.tr,
             subtitle: 'budget_plans.milestones_optional'.tr,
+            icon: Icons.flag_outlined,
           ),
           const SizedBox(height: AppSpacing.lg),
           if (data.milestones.isEmpty)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.flag_outlined,
-                      size: 48,
-                      color: AppColors.textHint,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(
-                      'budget_plans.no_milestones_yet'.tr,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
+            _EmptyMilestonesPlaceholder()
           else
             ...data.milestones.asMap().entries.map(
               (e) => _MilestoneTile(
@@ -789,7 +756,7 @@ class StepMilestones extends StatelessWidget {
                 onDelete: () => callbacks.onRemoveMilestone?.call(e.key),
               ),
             ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.md),
           AppButton.secondary(
             label: 'budget_plans.add_milestone'.tr,
             icon: Icons.add,
@@ -848,6 +815,34 @@ class StepMilestones extends StatelessWidget {
   }
 }
 
+class _EmptyMilestonesPlaceholder extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.divider, style: BorderStyle.solid),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.flag_outlined, size: 40, color: AppColors.textHint),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'budget_plans.no_milestones_yet'.tr,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _MilestoneTile extends StatelessWidget {
   final int index;
   final Map<String, dynamic> milestone;
@@ -901,14 +896,19 @@ class StepReview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SectionHeader(
+          _StepHeader(
             title: 'budget_plans.step_review'.tr,
             subtitle: 'budget_plans.review_subtitle'.tr,
-            showDivider: true,
+            icon: Icons.checklist_outlined,
           ),
           const SizedBox(height: AppSpacing.lg),
 
@@ -919,7 +919,10 @@ class StepReview extends StatelessWidget {
                 // Accent color band + name header
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
                   decoration: BoxDecoration(
                     color: Color(data.accentColorValue).withValues(alpha: 0.12),
                     borderRadius: const BorderRadius.vertical(
@@ -929,8 +932,8 @@ class StepReview extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        width: 16,
-                        height: 16,
+                        width: 14,
+                        height: 14,
                         decoration: BoxDecoration(
                           color: Color(data.accentColorValue),
                           shape: BoxShape.circle,
@@ -949,7 +952,6 @@ class StepReview extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.xs),
                 _ReviewRow(
                   icon: Icons.flag_outlined,
                   label: 'budget_plans.target_amount'.tr,
@@ -982,8 +984,8 @@ class StepReview extends StatelessWidget {
 
           // Milestones summary
           if (showMilestones && data.milestones.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.xl),
-            SectionHeaderCompact(title: 'budget_plans.step_milestones'.tr),
+            const SizedBox(height: AppSpacing.lg),
+            _FormSectionLabel(label: 'budget_plans.step_milestones'.tr),
             const SizedBox(height: AppSpacing.sm),
             ...data.milestones.asMap().entries.map(
               (e) => _MilestoneSummaryTile(
@@ -995,7 +997,7 @@ class StepReview extends StatelessWidget {
           ],
 
           if (showMilestones && data.milestones.isEmpty) ...[
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               'budget_plans.no_milestones_review'.tr,
               style: AppTextStyles.bodySmall.copyWith(
@@ -1122,7 +1124,7 @@ class _MilestoneSummaryTile extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Responsive step indicator.
-/// - Narrow screens (< 380 px logical): compact numbered-dot mode.
+/// - Narrow screens (< 400 px logical): compact pill-dot mode.
 /// - Wider screens: full label strip with connecting progress line.
 class WizardStepBar extends StatelessWidget {
   final int currentStep;
@@ -1142,15 +1144,17 @@ class WizardStepBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final compact = constraints.maxWidth < 380;
-        return compact
-            ? _CompactStepBar(
+        // Calculate if there's enough space to show full labels.
+        // Approximately 72px per step needed for labels; fall back to compact.
+        final enoughWidth = constraints.maxWidth >= totalSteps * 72;
+        return enoughWidth
+            ? _FullStepBar(
                 currentStep: currentStep,
                 totalSteps: totalSteps,
                 accentColor: accentColor,
                 stepLabels: stepLabels,
               )
-            : _FullStepBar(
+            : _CompactStepBar(
                 currentStep: currentStep,
                 totalSteps: totalSteps,
                 accentColor: accentColor,
@@ -1162,6 +1166,9 @@ class WizardStepBar extends StatelessWidget {
 }
 
 /// Full-width step bar with labels and animated progress line.
+///
+/// Each step is a Column(circle + label) interleaved with connector spacers,
+/// so the label height never pushes content down below the bar.
 class _FullStepBar extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
@@ -1177,73 +1184,64 @@ class _FullStepBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: AppColors.background,
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
         AppSpacing.md,
-        AppSpacing.lg,
-        0,
+        AppSpacing.sm,
+        AppSpacing.md,
+        AppSpacing.sm,
       ),
-      child: Column(
-        children: [
-          // ── Circle row with connectors ───────────────────────────────
-          Row(
-            children: List.generate(totalSteps, (i) {
-              final done = i < currentStep;
-              final active = i == currentStep;
-              return Expanded(
-                child: Row(
-                  children: [
-                    _StepCircle(
-                      index: i,
-                      done: done,
-                      active: active,
-                      accentColor: accentColor,
-                    ),
-                    if (i < totalSteps - 1)
-                      Expanded(
-                        child: _AnimatedConnector(
-                          filled: i < currentStep,
-                          accentColor: accentColor,
-                        ),
-                      ),
-                  ],
+      // Each step = Column(circle + label), connectors between them as Expanded.
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(totalSteps * 2 - 1, (i) {
+          if (i.isOdd) {
+            // Connector between two step nodes — nudged down to align with circles
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: _AnimatedConnector(
+                  filled: (i ~/ 2) < currentStep,
+                  accentColor: accentColor,
                 ),
-              );
-            }),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          // ── Label row ────────────────────────────────────────────────
-          Row(
-            children: List.generate(totalSteps, (i) {
-              final active = i <= currentStep;
-              // Each label sits under its circle; the connector has no label.
-              return Expanded(
-                child: Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        stepLabels[i].tr,
-                        style: AppTextStyles.caption.copyWith(
-                          color: active
-                              ? AppColors.textPrimary
-                              : AppColors.textHint,
-                          fontWeight: active
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (i < totalSteps - 1) const Spacer(),
-                  ],
+              ),
+            );
+          }
+
+          final stepIndex = i ~/ 2;
+          final done = stepIndex < currentStep;
+          final active = stepIndex == currentStep;
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _StepCircle(
+                index: stepIndex,
+                done: done,
+                active: active,
+                accentColor: accentColor,
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              SizedBox(
+                width: 70,
+                child: Text(
+                  stepLabels[stepIndex].tr,
+                  style: AppTextStyles.caption.copyWith(
+                    color: (active || done)
+                        ? AppColors.textPrimary
+                        : AppColors.textHint,
+                    fontWeight: active ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              );
-            }),
-          ),
-          const SizedBox(height: AppSpacing.md),
-        ],
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -1333,7 +1331,7 @@ class _AnimatedConnector extends StatelessWidget {
   }
 }
 
-/// Compact dot bar for very narrow screens.
+/// Compact pill-dot bar for narrow screens — shows current step label in full.
 class _CompactStepBar extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
@@ -1349,14 +1347,15 @@ class _CompactStepBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: AppColors.background,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.md,
       ),
       child: Row(
         children: [
-          // Dot strip
+          // Progress pill strip
           Row(
             mainAxisSize: MainAxisSize.min,
             children: List.generate(totalSteps, (i) {
@@ -1364,8 +1363,8 @@ class _CompactStepBar extends StatelessWidget {
               final done = i < currentStep;
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                margin: const EdgeInsets.only(right: 6),
-                width: active ? 24 : 8,
+                margin: const EdgeInsets.only(right: 5),
+                width: active ? 22 : 8,
                 height: 8,
                 decoration: BoxDecoration(
                   color: (active || done) ? accentColor : AppColors.divider,
@@ -1375,6 +1374,7 @@ class _CompactStepBar extends StatelessWidget {
             }),
           ),
           const SizedBox(width: AppSpacing.md),
+          // Current step label — expand and allow wrapping
           Expanded(
             child: Text(
               stepLabels[currentStep].tr,
@@ -1382,10 +1382,12 @@ class _CompactStepBar extends StatelessWidget {
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
               ),
-              maxLines: 1,
+              // Let it wrap to show full text on narrow screens
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
+          const SizedBox(width: AppSpacing.sm),
           Text(
             '${currentStep + 1}/$totalSteps',
             style: AppTextStyles.caption.copyWith(
@@ -1450,8 +1452,69 @@ class WizardNavBar extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Misc shared widgets
+// Internal shared widgets
 // ─────────────────────────────────────────────────────────────────────────────
+
+/// Compact step header that replaces the heavy [SectionHeader] inside each
+/// step's scroll view. Uses an icon + title + subtitle pattern with minimal
+/// vertical footprint.
+class _StepHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+
+  const _StepHeader({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
+          child: Icon(icon, size: 20, color: AppColors.primary),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: AppTextStyles.h3),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Small section label used within a step's form fields.
+class _FormSectionLabel extends StatelessWidget {
+  final String label;
+
+  const _FormSectionLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(label, style: AppTextStyles.bodySemiBold);
+  }
+}
 
 class _AmountField extends StatelessWidget {
   final TextEditingController controller;

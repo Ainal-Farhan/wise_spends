@@ -246,6 +246,7 @@ class MalayStrings {
     'budget_plans.step_basics': 'Asas Pelan',
     'budget_plans.step_financial': 'Matlamat Kewangan',
     'budget_plans.step_milestones': 'Milestone',
+    'budget_plans.step_review': 'Semakan',
     'budget_plans.skip': 'Langkau',
     'budget_plans.create_plan': 'Cipta Pelan',
     'budget_plans.plan_basics': 'Asas Pelan',

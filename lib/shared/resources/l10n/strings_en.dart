@@ -278,6 +278,7 @@ class EnglishStrings {
     'budget_plans.step_basics': 'Plan Basics',
     'budget_plans.step_financial': 'Financial Goals',
     'budget_plans.step_milestones': 'Milestones',
+    'budget_plans.step_review': 'Review',
     'budget_plans.skip': 'Skip',
     'budget_plans.create_plan': 'Create Plan',
     'budget_plans.plan_basics': 'Plan Basics',
