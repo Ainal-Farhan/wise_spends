@@ -116,6 +116,8 @@ class MalayStrings {
     'transaction.type.expense': 'Perbelanjaan',
     'transaction.type.transfer': 'Pemindahan',
     'transaction.type.commitment': 'Komitmen',
+    'transaction.type.budget_plan_deposit': 'Deposit Pelan Belanjawan',
+    'transaction.type.budget_plan_expense': 'Perbelanjaan Pelan Belanjawan',
     'transaction.add': 'Tambah Transaksi',
     'transaction.edit': 'Sunting Transaksi',
     'transaction.delete': 'Padam Transaksi',
