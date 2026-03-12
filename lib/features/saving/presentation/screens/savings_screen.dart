@@ -83,7 +83,7 @@ class _SavingsScreenContent extends StatelessWidget {
             context.read<SavingsBloc>().add(LoadAddSavingsFormEvent());
           };
         }
-        BlocProvider.of<ActionButtonBloc>(context).add(
+        context.read<ActionButtonBloc>().add(
           OnUpdateActionButtonEvent(
             context: context,
             actionButtonMap: floatingActionButtonMap,

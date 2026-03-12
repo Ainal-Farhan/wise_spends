@@ -70,7 +70,7 @@ class MoneyStorageScreen extends StatelessWidget {
                   LoadAddMoneyStorageEvent(),
                 );
           }
-          BlocProvider.of<ActionButtonBloc>(context).add(
+          context.read<ActionButtonBloc>().add(
             OnUpdateActionButtonEvent(
               context: context,
               actionButtonMap: floatingActionButtonMap,

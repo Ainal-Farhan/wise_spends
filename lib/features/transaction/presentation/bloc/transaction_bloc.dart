@@ -74,7 +74,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             categoryName = category.name;
             categoryIcon = CategoryIconMapper.getIconForCategory(category.name);
           }
-        } catch (_) {}
+        } catch (e, stackTrace) {
+          // Non-critical: category resolution failure should not block transaction load
+          debugPrint(
+            '[TransactionBloc] Failed to resolve category ${tx.categoryId}: $e',
+          );
+          debugPrint('$stackTrace');
+        }
       }
 
       // ── Resolve target account (transfers) ─────────────────────────────────
@@ -96,7 +102,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           if (payee != null) {
             payeeVO = PayeeVO.fromExpnsPayee(payee);
           }
-        } catch (_) {}
+        } catch (e, stackTrace) {
+          // Non-critical: payee resolution failure should not block transaction load
+          debugPrint(
+            '[TransactionBloc] Failed to resolve payee ${tx.payeeId}: $e',
+          );
+          debugPrint('$stackTrace');
+        }
       }
 
       // ── Resolve commitment task name ───────────────────────────────────────
@@ -107,7 +119,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               .getCommitmentTaskRepository();
           final task = await taskRepo.findById(id: tx.commitmentTaskId!);
           commitmentTaskName = task?.name;
-        } catch (_) {}
+        } catch (e, stackTrace) {
+          // Non-critical: task name resolution failure should not block transaction load
+          debugPrint(
+            '[TransactionBloc] Failed to resolve task ${tx.commitmentTaskId}: $e',
+          );
+          debugPrint('$stackTrace');
+        }
       }
 
       emit(

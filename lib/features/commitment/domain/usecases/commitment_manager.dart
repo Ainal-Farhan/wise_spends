@@ -102,20 +102,6 @@ class CommitmentManager extends ICommitmentManager {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // saveCommitmentDetailVO — FIXED
-  // ---------------------------------------------------------------------------
-  // Previously only wrote `savingId` (source account) and left taskType,
-  // targetSavingId, and payeeId out of the companion entirely, so the values
-  // entered in the form were silently discarded.
-  //
-  // Changes:
-  //   1. Write `taskType` from `vo.taskType` (defaults to internalTransfer).
-  //   2. Write `targetSavingId` for internal transfers.
-  //   3. Write `payeeId` for third-party payments.
-  //   4. `savingId` is null-safe for cash payments — no source account needed.
-  // ---------------------------------------------------------------------------
-
   @override
   Future<void> saveCommitmentDetailVO(
     String commitmentId,
@@ -379,24 +365,6 @@ class CommitmentManager extends ICommitmentManager {
 
     return result;
   }
-
-  // ---------------------------------------------------------------------------
-  // startDistributeCommitment — FIXED
-  // ---------------------------------------------------------------------------
-  // Previously hardcoded every task as:
-  //   type           = internalTransfer
-  //   sourceSavingId = commitment.referredSaving   (always the pool account)
-  //   targetSavingId = detail.savingId             (always treated as destination)
-  //
-  // Now branches on detail.taskType so each detail drives its own task shape:
-  //
-  //   internalTransfer  → sourceSaving = detail.savingId (or commitment saving as
-  //                        fallback), targetSaving = detail.targetSavingId
-  //   thirdPartyPayment → sourceSaving = detail.savingId, payeeId = detail.payeeId
-  //   cash              → no savings linked
-  //
-  // Balance check is kept but now scoped to details that actually debit a saving.
-  // ---------------------------------------------------------------------------
 
   @override
   Future<String> startDistributeCommitment(CommitmentVO vo) async {

@@ -142,9 +142,9 @@ class _CommitmentFormState extends State<CommitmentForm> {
     widget.commitmentVO.description = _descriptionController.text;
     widget.commitmentVO.referredSavingVO = referredSavingVO;
 
-    BlocProvider.of<CommitmentBloc>(
-      context,
-    ).add(SaveCommitmentEvent(widget.commitmentVO));
+    context.read<CommitmentBloc>().add(
+      SaveCommitmentEvent(widget.commitmentVO),
+    );
   }
 
   List<Widget> _setFormFields(BuildContext context) {

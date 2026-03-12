@@ -432,7 +432,7 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
           .firstOrNull;
     }
 
-    BlocProvider.of<CommitmentBloc>(context).add(
+    context.read<CommitmentBloc>().add(
       SaveCommitmentDetailEvent(
         commitmentDetailVO: vo,
         commitmentId: widget.commitmentId,

@@ -1,4 +1,6 @@
+// FIXED: Added foundation import for debugPrint
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wise_spends/features/budget/domain/entities/budget_entity.dart';
 import 'package:wise_spends/features/budget/data/repositories/i_budget_repository.dart';
@@ -73,7 +75,10 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
           final cat = await _categoryRepository.getCategoryById(id);
           if (cat != null) categoryNames[id] = cat.name;
         }
-      } catch (_) {}
+      } catch (e, stackTrace) {
+        debugPrint('[BudgetBloc] Failed to resolve category names: $e');
+        debugPrint('$stackTrace');
+      }
 
       final activeCount = budgets.where((b) => b.isActive).length;
       final onTrackCount = budgets.where((b) => !b.isExceeded).length;

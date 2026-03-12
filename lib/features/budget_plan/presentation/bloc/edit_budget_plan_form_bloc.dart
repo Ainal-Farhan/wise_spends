@@ -7,19 +7,6 @@ import 'edit_budget_plan_form_event.dart';
 import 'edit_budget_plan_form_state.dart';
 
 /// Edit Budget Plan Form BLoC
-///
-/// Three root causes of the silent save bug — all fixed:
-///
-///   1. [EditBudgetPlanFormReady] had no [planId] field (see state file).
-///      The bloc had no id to pass to [updatePlan], so nothing was written.
-///
-///   2. [_onInitialize] was an empty stub that emitted a blank Ready state,
-///      so [planId] was always ''. Now it fetches the real plan and
-///      pre-populates all fields including [planId].
-///
-///   3. [_onSave] emitted [EditBudgetPlanFormSuccess] immediately without
-///      ever calling the repository. Now it awaits [_repository.updatePlan]
-///      and only emits success after the DB write confirms.
 class EditBudgetPlanFormBloc
     extends Bloc<EditBudgetPlanFormEvent, EditBudgetPlanFormState> {
   final IBudgetPlanRepository _repository;
