@@ -5,8 +5,8 @@ import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
-import 'package:wise_spends/core/constants/constant/enum/expense/commitment_detail_type.dart';
-import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
+import 'package:wise_spends/features/commitment/data/constants/commitment_detail_type.dart';
+import 'package:wise_spends/features/commitment/data/constants/commitment_task_type.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
@@ -23,7 +23,7 @@ import 'package:wise_spends/data/db/domain/saving/index.dart';
 import 'package:wise_spends/data/db/domain/transaction/index.dart';
 import 'package:wise_spends/data/db/domain/budget/index.dart';
 import 'package:wise_spends/data/db/domain/savings_plan/index.dart';
-import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 
 part 'app_database.g.dart';
 

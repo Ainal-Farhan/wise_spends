@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/domain/entities/category/category_entity.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Icon mapping utility for categories

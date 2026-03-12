@@ -1,0 +1,13 @@
+import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/features/commitment/data/repositories/i_expense_repository.dart';
+
+class ExpenseRepository extends IExpenseRepository {
+  ExpenseRepository() : super(AppDatabase());
+
+  @override
+  String getTypeName() => 'ExpenseTable';
+
+  @override
+  ExpnsExpense fromJson(Map<String, dynamic> json) =>
+      ExpnsExpense.fromJson(json);
+}

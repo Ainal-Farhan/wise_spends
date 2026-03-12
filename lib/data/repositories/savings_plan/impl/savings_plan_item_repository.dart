@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/data/db/app_database.dart';
-import 'package:wise_spends/data/repositories/budget_plan/i_budget_plan_repository.dart';
-import 'package:wise_spends/data/repositories/budget_plan/impl/budget_plan_repository.dart';
+import 'package:wise_spends/features/budget_plan/data/repositories/i_budget_plan_repository.dart';
+import 'package:wise_spends/features/budget_plan/data/repositories/impl/budget_plan_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_item_repository.dart';
 
 /// Savings Plan Item Repository Implementation

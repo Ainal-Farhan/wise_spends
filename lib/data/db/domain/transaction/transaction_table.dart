@@ -5,7 +5,7 @@ import 'package:wise_spends/data/db/domain/expense/commitment_task_table.dart';
 import 'package:wise_spends/data/db/domain/expense/payee_table.dart';
 import 'package:wise_spends/data/db/domain/saving/saving_table.dart';
 import 'package:wise_spends/data/db/domain/transaction/category_table.dart';
-import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 
 @DataClassName("${DomainTableConstant.transactionTablePrefix}Transaction")
 class TransactionTable extends BaseEntityTable {

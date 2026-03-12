@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
+import 'package:wise_spends/features/commitment/data/constants/commitment_task_type.dart';
 import 'package:wise_spends/data/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/core/constants/constant/domain/domain_table_constant.dart';
 import 'package:wise_spends/data/db/domain/saving/saving_table.dart';

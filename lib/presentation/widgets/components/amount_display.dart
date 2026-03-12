@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 
 /// Widget to display formatted amount with color coding based on transaction type

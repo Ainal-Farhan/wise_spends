@@ -4,8 +4,8 @@ import 'package:wise_spends/core/constants/constant/domain/domain_table_constant
 import 'package:wise_spends/data/db/domain/expense/commitment_table.dart';
 import 'package:wise_spends/data/db/domain/saving/saving_table.dart';
 import 'package:wise_spends/data/db/domain/expense/payee_table.dart';
-import 'package:wise_spends/core/constants/constant/enum/expense/commitment_detail_type.dart';
-import 'package:wise_spends/core/constants/constant/enum/expense/commitment_task_type.dart';
+import 'package:wise_spends/features/commitment/data/constants/commitment_detail_type.dart';
+import 'package:wise_spends/features/commitment/data/constants/commitment_task_type.dart';
 
 // ---------------------------------------------------------------------------
 // CommitmentDetail Table

@@ -6,12 +6,12 @@ import 'package:wise_spends/data/services/local/masterdata/i_group_reference_ser
 import 'package:wise_spends/data/services/local/masterdata/i_reference_service.dart';
 import 'package:wise_spends/data/services/local/masterdata/impl/group_reference_service.dart';
 import 'package:wise_spends/data/services/local/masterdata/impl/reference_service.dart';
-import 'package:wise_spends/data/services/local/saving/i_money_storage_service.dart';
-import 'package:wise_spends/data/services/local/saving/i_saving_service.dart';
-import 'package:wise_spends/data/services/local/saving/impl/money_storage_service.dart';
-import 'package:wise_spends/data/services/local/saving/impl/saving_service.dart';
-import 'package:wise_spends/data/services/local/transaction/i_transaction_service.dart';
-import 'package:wise_spends/data/services/local/transaction/impl/transaction_service.dart';
+import 'package:wise_spends/features/saving/data/services/i_money_storage_service.dart';
+import 'package:wise_spends/features/saving/data/services/i_saving_service.dart';
+import 'package:wise_spends/features/saving/data/services/impl/money_storage_service.dart';
+import 'package:wise_spends/features/saving/data/services/impl/saving_service.dart';
+import 'package:wise_spends/features/transaction/data/services/i_transaction_service.dart';
+import 'package:wise_spends/features/transaction/data/services/impl/transaction_service.dart';
 
 class ServiceLocator extends IServiceLocator {
   @override

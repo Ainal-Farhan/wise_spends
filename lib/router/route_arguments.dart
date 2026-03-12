@@ -3,7 +3,7 @@
 
 library;
 
-import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 
 /// Base class for all route arguments
 abstract class RouteArguments {

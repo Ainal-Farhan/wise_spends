@@ -11,12 +11,12 @@ import 'package:wise_spends/core/error_handling/run_guard.dart';
 import 'package:wise_spends/core/logger/logger.dart';
 import 'package:wise_spends/core/utils/hidden_gesture_detector.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
-import 'package:wise_spends/data/repositories/transaction/i_transaction_repository.dart'
-    as data_transaction;
+import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart'
+    as feature_transaction;
 import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
-import 'package:wise_spends/presentation/services/widget_background_service.dart';
-import 'package:wise_spends/presentation/services/widget_platform_channel.dart';
-import 'package:wise_spends/presentation/services/widget_service.dart';
+import 'package:wise_spends/features/widget/presentation/services/widget_background_service.dart';
+import 'package:wise_spends/features/widget/presentation/services/widget_platform_channel.dart';
+import 'package:wise_spends/features/widget/presentation/services/widget_service.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
@@ -56,7 +56,7 @@ class WiseSpendsApp extends StatelessWidget {
 
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<data_transaction.ITransactionRepository>.value(
+        RepositoryProvider<feature_transaction.ITransactionRepository>.value(
           value: SingletonUtil.getSingleton<IRepositoryLocator>()!
               .getTransactionRepository(),
         ),

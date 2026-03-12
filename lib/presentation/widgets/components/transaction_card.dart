@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/domain/entities/transaction/transaction_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/presentation/widgets/components/amount_display.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
