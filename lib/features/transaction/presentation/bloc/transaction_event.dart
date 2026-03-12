@@ -2,16 +2,18 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 
-abstract class TransactionEvent extends Equatable {
+sealed class TransactionEvent extends Equatable {
   const TransactionEvent();
 
   @override
   List<Object?> get props => [];
 }
 
-class LoadTransactionsEvent extends TransactionEvent {}
+final class LoadTransactionsEvent extends TransactionEvent {
+  const LoadTransactionsEvent();
+}
 
-class LoadRecentTransactionsEvent extends TransactionEvent {
+final class LoadRecentTransactionsEvent extends TransactionEvent {
   final int limit;
 
   const LoadRecentTransactionsEvent({this.limit = 10});
@@ -20,7 +22,7 @@ class LoadRecentTransactionsEvent extends TransactionEvent {
   List<Object?> get props => [limit];
 }
 
-class LoadTransactionsByDateRangeEvent extends TransactionEvent {
+final class LoadTransactionsByDateRangeEvent extends TransactionEvent {
   final DateTime startDate;
   final DateTime endDate;
 
@@ -33,7 +35,7 @@ class LoadTransactionsByDateRangeEvent extends TransactionEvent {
   List<Object?> get props => [startDate, endDate];
 }
 
-class LoadTransactionsByTypeEvent extends TransactionEvent {
+final class LoadTransactionsByTypeEvent extends TransactionEvent {
   final TransactionType type;
 
   const LoadTransactionsByTypeEvent(this.type);
@@ -42,7 +44,7 @@ class LoadTransactionsByTypeEvent extends TransactionEvent {
   List<Object?> get props => [type];
 }
 
-class LoadGroupedTransactionsEvent extends TransactionEvent {
+final class LoadGroupedTransactionsEvent extends TransactionEvent {
   final DateTime? startDate;
   final DateTime? endDate;
 
@@ -52,9 +54,7 @@ class LoadGroupedTransactionsEvent extends TransactionEvent {
   List<Object?> get props => [startDate, endDate];
 }
 
-/// Loads a single transaction by ID only (no enrichment).
-/// Prefer [LoadTransactionDetailEvent] for the detail screen.
-class LoadTransactionByIdEvent extends TransactionEvent {
+final class LoadTransactionByIdEvent extends TransactionEvent {
   final String transactionId;
 
   const LoadTransactionByIdEvent(this.transactionId);
@@ -63,15 +63,7 @@ class LoadTransactionByIdEvent extends TransactionEvent {
   List<Object?> get props => [transactionId];
 }
 
-/// Loads a transaction AND resolves its display names in parallel:
-///   - saving name from [sourceAccountId]
-///   - category name + icon from [categoryId]
-///   - payee info if [payeeId] is set
-///   - target account name if [transferGroupId] is set
-///   - commitment task name if [commitmentTaskId] is set
-///
-/// Emits [TransactionDetailLoaded] — never shows raw UUIDs.
-class LoadTransactionDetailEvent extends TransactionEvent {
+final class LoadTransactionDetailEvent extends TransactionEvent {
   final String transactionId;
 
   const LoadTransactionDetailEvent(this.transactionId);
@@ -80,7 +72,7 @@ class LoadTransactionDetailEvent extends TransactionEvent {
   List<Object?> get props => [transactionId];
 }
 
-class CreateTransactionEvent extends TransactionEvent {
+final class CreateTransactionEvent extends TransactionEvent {
   final String title;
   final double amount;
   final TransactionType type;
@@ -120,7 +112,7 @@ class CreateTransactionEvent extends TransactionEvent {
   ];
 }
 
-class UpdateTransactionEvent extends TransactionEvent {
+final class UpdateTransactionEvent extends TransactionEvent {
   final TransactionEntity transaction;
 
   const UpdateTransactionEvent(this.transaction);
@@ -129,7 +121,7 @@ class UpdateTransactionEvent extends TransactionEvent {
   List<Object?> get props => [transaction];
 }
 
-class DeleteTransactionEvent extends TransactionEvent {
+final class DeleteTransactionEvent extends TransactionEvent {
   final String transactionId;
 
   const DeleteTransactionEvent(this.transactionId);
@@ -138,7 +130,7 @@ class DeleteTransactionEvent extends TransactionEvent {
   List<Object?> get props => [transactionId];
 }
 
-class DeleteMultipleTransactionsEvent extends TransactionEvent {
+final class DeleteMultipleTransactionsEvent extends TransactionEvent {
   final List<String> transactionIds;
 
   const DeleteMultipleTransactionsEvent(this.transactionIds);
@@ -147,7 +139,7 @@ class DeleteMultipleTransactionsEvent extends TransactionEvent {
   List<Object?> get props => [transactionIds];
 }
 
-class SearchTransactionsEvent extends TransactionEvent {
+final class SearchTransactionsEvent extends TransactionEvent {
   final String query;
 
   const SearchTransactionsEvent(this.query);
@@ -156,9 +148,11 @@ class SearchTransactionsEvent extends TransactionEvent {
   List<Object?> get props => [query];
 }
 
-class ClearSearchEvent extends TransactionEvent {}
+final class ClearSearchEvent extends TransactionEvent {
+  const ClearSearchEvent();
+}
 
-class FilterTransactionsByCategoryEvent extends TransactionEvent {
+final class FilterTransactionsByCategoryEvent extends TransactionEvent {
   final String? categoryId;
 
   const FilterTransactionsByCategoryEvent(this.categoryId);
@@ -167,7 +161,7 @@ class FilterTransactionsByCategoryEvent extends TransactionEvent {
   List<Object?> get props => [categoryId];
 }
 
-class FilterTransactionsByTypeEvent extends TransactionEvent {
+final class FilterTransactionsByTypeEvent extends TransactionEvent {
   final TransactionType? type;
 
   const FilterTransactionsByTypeEvent(this.type);
@@ -176,7 +170,7 @@ class FilterTransactionsByTypeEvent extends TransactionEvent {
   List<Object?> get props => [type];
 }
 
-class FilterTransactionsByDateRangeEvent extends TransactionEvent {
+final class FilterTransactionsByDateRangeEvent extends TransactionEvent {
   final DateTime? from;
   final DateTime? to;
   final String? rangeLabel;
@@ -191,8 +185,14 @@ class FilterTransactionsByDateRangeEvent extends TransactionEvent {
   List<Object?> get props => [from, to, rangeLabel];
 }
 
-class ClearFiltersEvent extends TransactionEvent {}
+final class ClearFiltersEvent extends TransactionEvent {
+  const ClearFiltersEvent();
+}
 
-class RefreshTransactionsEvent extends TransactionEvent {}
+final class RefreshTransactionsEvent extends TransactionEvent {
+  const RefreshTransactionsEvent();
+}
 
-class ReloadTransactionsEvent extends TransactionEvent {}
+final class ReloadTransactionsEvent extends TransactionEvent {
+  const ReloadTransactionsEvent();
+}

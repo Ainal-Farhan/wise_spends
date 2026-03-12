@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/features/saving/data/repositories/i_saving_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
@@ -75,11 +76,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             categoryIcon = CategoryIconMapper.getIconForCategory(category.name);
           }
         } catch (e, stackTrace) {
-          // Non-critical: category resolution failure should not block transaction load
-          debugPrint(
-            '[TransactionBloc] Failed to resolve category ${tx.categoryId}: $e',
+          WiseLogger().debug(
+            'Failed to resolve category ${tx.categoryId}',
+            tag: 'TransactionBloc',
+            error: e,
+            stackTrace: stackTrace,
           );
-          debugPrint('$stackTrace');
         }
       }
 
@@ -103,11 +105,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             payeeVO = PayeeVO.fromExpnsPayee(payee);
           }
         } catch (e, stackTrace) {
-          // Non-critical: payee resolution failure should not block transaction load
-          debugPrint(
-            '[TransactionBloc] Failed to resolve payee ${tx.payeeId}: $e',
+          WiseLogger().debug(
+            'Failed to resolve payee ${tx.payeeId}',
+            tag: 'TransactionBloc',
+            error: e,
+            stackTrace: stackTrace,
           );
-          debugPrint('$stackTrace');
         }
       }
 
@@ -120,11 +123,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           final task = await taskRepo.findById(id: tx.commitmentTaskId!);
           commitmentTaskName = task?.name;
         } catch (e, stackTrace) {
-          // Non-critical: task name resolution failure should not block transaction load
-          debugPrint(
-            '[TransactionBloc] Failed to resolve task ${tx.commitmentTaskId}: $e',
+          WiseLogger().debug(
+            'Failed to resolve task ${tx.commitmentTaskId}',
+            tag: 'TransactionBloc',
+            error: e,
+            stackTrace: stackTrace,
           );
-          debugPrint('$stackTrace');
         }
       }
 

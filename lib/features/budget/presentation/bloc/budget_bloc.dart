@@ -1,7 +1,6 @@
-// FIXED: Added foundation import for debugPrint
 import 'package:bloc/bloc.dart';
-import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/features/budget/domain/entities/budget_entity.dart';
 import 'package:wise_spends/features/budget/data/repositories/i_budget_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
@@ -12,17 +11,8 @@ import 'budget_event.dart';
 import 'budget_state.dart';
 
 /// Budget BLoC — manages budget state and business logic.
-///
-/// Key design decisions:
-/// - Client-side filtering: [BudgetsLoaded] carries both [allBudgets] and the
-///   filtered [budgets] list so that [FilterBudgetsByPeriodEvent] and
-///   [ClearBudgetFiltersEvent] never need a database round-trip.
-/// - Optimistic delete: the delete handler emits [BudgetDeleted] before
-///   reloading so the UI can immediately show a confirmation snack-bar.
 class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   final IBudgetRepository _repository;
-  // Transaction repository is used only for budget sync — it self-instantiates
-  // its own AppDatabase (same pattern as CategoryRepository).
   final ITransactionRepository _transactionRepository;
   final CategoryRepository _categoryRepository;
 
@@ -76,8 +66,12 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
           if (cat != null) categoryNames[id] = cat.name;
         }
       } catch (e, stackTrace) {
-        debugPrint('[BudgetBloc] Failed to resolve category names: $e');
-        debugPrint('$stackTrace');
+        WiseLogger().debug(
+          'Failed to resolve category names',
+          tag: 'BudgetBloc',
+          error: e,
+          stackTrace: stackTrace,
+        );
       }
 
       final activeCount = budgets.where((b) => b.isActive).length;

@@ -5,66 +5,6 @@ import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
-/// WiseSpends SectionHeader Component
-///
-/// Two variants available via named constructors:
-///
-/// ─────────────────────────────────────────────────────────────────────────────
-/// 1. Default constructor — plain section title (existing behaviour, unchanged)
-/// ─────────────────────────────────────────────────────────────────────────────
-///
-/// ```dart
-/// // Basic
-/// SectionHeader(title: 'Recent Transactions')
-///
-/// // With "See All" action
-/// SectionHeader(title: 'Recent Transactions', onSeeAll: () {})
-///
-/// // With custom action text
-/// SectionHeader(title: 'Budgets', seeAllText: 'View All', onSeeAll: () {})
-///
-/// // With subtitle
-/// SectionHeader(
-///   title: 'Budget Plans',
-///   subtitle: 'Track your savings goals',
-///   onSeeAll: () {},
-/// )
-///
-/// // With leading icon
-/// SectionHeader(title: 'Categories', leading: Icon(Icons.category))
-/// ```
-///
-/// ─────────────────────────────────────────────────────────────────────────────
-/// 2. SectionHeader.card — gradient screen-header card with optional collapsible
-/// ─────────────────────────────────────────────────────────────────────────────
-///
-/// ```dart
-/// // Static (no collapse)
-/// SectionHeader.card(
-///   gradient: LinearGradient(colors: [AppColors.primary, AppColors.primaryDark]),
-///   icon: Icons.account_balance_wallet,
-///   label: 'Budget Overview',
-///   title: 'Manage Your Budgets',
-///   subtitle: 'Track spending limits and stay on target',
-/// )
-///
-/// // With collapsible "Learn more" body
-/// SectionHeader.card(
-///   gradient: LinearGradient(colors: [AppColors.tertiary, AppColors.tertiaryDark]),
-///   icon: Icons.calendar_month,
-///   label: 'general.commitment_overview'.tr,
-///   title: 'general.manage_recurring'.tr,
-///   subtitle: 'commitments.subtitle'.tr,
-///   learnMoreLabel: 'general.learn_more'.tr,
-///   learnLessLabel: 'general.less'.tr,
-///   collapsibleBody: Column(
-///     children: [
-///       SectionHeaderBullet('Rent or mortgage'),
-///       SectionHeaderBullet('Car insurance'),
-///     ],
-///   ),
-/// )
-/// ```
 class SectionHeader extends StatelessWidget {
   // ── Default constructor (plain section title) ─────────────────────────────
 
