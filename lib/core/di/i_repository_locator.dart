@@ -1,4 +1,5 @@
 import 'package:wise_spends/core/di/i_locator.dart';
+import 'package:wise_spends/data/repositories/common/i_file_storage_repository.dart';
 import 'package:wise_spends/data/repositories/common/i_user.repository.dart';
 import 'package:wise_spends/features/commitment/data/repositories/i_commitment_detail_repository.dart';
 import 'package:wise_spends/features/commitment/data/repositories/i_commitment_repository.dart';
@@ -68,4 +69,6 @@ abstract class IRepositoryLocator extends ILocator {
 
   // Expense Reference Repository
   IExpenseReferenceRepository getExpenseReferenceRepository();
+
+  IFileStorageRepository getFileStorageRepository();
 }

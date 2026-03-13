@@ -9,10 +9,6 @@ abstract class BaseEntityTable extends Table {
   DateTimeColumn get dateUpdated => dateTime()();
   TextColumn get lastModifiedBy => text()();
 
-  set dateUpdated(DateTimeColumn dateUpdated) => this.dateUpdated = dateUpdated;
-  set lastModifiedBy(TextColumn lastModifiedBy) =>
-      this.lastModifiedBy = lastModifiedBy;
-
   @override
   Set<Column> get primaryKey => {id};
 

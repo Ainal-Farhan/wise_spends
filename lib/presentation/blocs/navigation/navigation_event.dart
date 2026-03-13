@@ -7,22 +7,6 @@ abstract class NavigationEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Dispatched when a bottom nav item is tapped
-class NavigationTabTapped extends NavigationEvent {
-  final int index;
-  final BuildContext context;
-
-  const NavigationTabTapped({required this.index, required this.context});
-
-  @override
-  List<Object?> get props => [index];
-}
-
-/// Dispatched when returning from a pushed route — resets index to Home (0)
-class NavigationReturned extends NavigationEvent {
-  const NavigationReturned();
-}
-
 class OpenNavigationEvent extends NavigationEvent {}
 
 class CloseNavigationEvent extends NavigationEvent {}
@@ -31,7 +15,7 @@ class ToggleNavigationEvent extends NavigationEvent {}
 
 class NavigateToScreenEvent extends NavigationEvent {
   final String route;
-  final Map<String, dynamic>? extraData;
+  final Object? extraData;
 
   const NavigateToScreenEvent(this.route, {this.extraData});
 
@@ -40,3 +24,7 @@ class NavigateToScreenEvent extends NavigationEvent {
 }
 
 class RefreshDashboardEvent extends NavigationEvent {}
+
+/// Fired when the profile is reloaded (e.g. after editing)
+/// so the sidebar avatar/name updates without a full rebuild.
+class RefreshSidebarProfileEvent extends NavigationEvent {}

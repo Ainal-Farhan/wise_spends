@@ -3,6 +3,2458 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class $FileStorageTableTable extends FileStorageTable
+    with TableInfo<$FileStorageTableTable, CmmnFileStorageTable> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FileStorageTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originalNameMeta = const VerificationMeta(
+    'originalName',
+  );
+  @override
+  late final GeneratedColumn<String> originalName = GeneratedColumn<String>(
+    'original_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storedNameMeta = const VerificationMeta(
+    'storedName',
+  );
+  @override
+  late final GeneratedColumn<String> storedName = GeneratedColumn<String>(
+    'stored_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localPathMeta = const VerificationMeta(
+    'localPath',
+  );
+  @override
+  late final GeneratedColumn<String> localPath = GeneratedColumn<String>(
+    'local_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fileExtensionMeta = const VerificationMeta(
+    'fileExtension',
+  );
+  @override
+  late final GeneratedColumn<String> fileExtension = GeneratedColumn<String>(
+    'file_extension',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _mimeTypeMeta = const VerificationMeta(
+    'mimeType',
+  );
+  @override
+  late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
+    'mime_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sizeBytesMeta = const VerificationMeta(
+    'sizeBytes',
+  );
+  @override
+  late final GeneratedColumn<int> sizeBytes = GeneratedColumn<int>(
+    'size_bytes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<FileCategory, String> category =
+      GeneratedColumn<String>(
+        'category',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: Constant(FileCategory.other.name),
+      ).withConverter<FileCategory>($FileStorageTableTable.$convertercategory);
+  static const VerificationMeta _entityIdMeta = const VerificationMeta(
+    'entityId',
+  );
+  @override
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+    'entity_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _entityTypeMeta = const VerificationMeta(
+    'entityType',
+  );
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+    'entity_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _checksumMeta = const VerificationMeta(
+    'checksum',
+  );
+  @override
+  late final GeneratedColumn<String> checksum = GeneratedColumn<String>(
+    'checksum',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<FileStorageStatus, String>
+  status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: Constant(FileStorageStatus.active.name),
+  ).withConverter<FileStorageStatus>($FileStorageTableTable.$converterstatus);
+  static const VerificationMeta _isBackedUpMeta = const VerificationMeta(
+    'isBackedUp',
+  );
+  @override
+  late final GeneratedColumn<bool> isBackedUp = GeneratedColumn<bool>(
+    'is_backed_up',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_backed_up" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _lastBackupAtMeta = const VerificationMeta(
+    'lastBackupAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastBackupAt = GeneratedColumn<DateTime>(
+    'last_backup_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _backupPathMeta = const VerificationMeta(
+    'backupPath',
+  );
+  @override
+  late final GeneratedColumn<String> backupPath = GeneratedColumn<String>(
+    'backup_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    originalName,
+    storedName,
+    localPath,
+    fileExtension,
+    mimeType,
+    sizeBytes,
+    category,
+    entityId,
+    entityType,
+    description,
+    checksum,
+    status,
+    isBackedUp,
+    lastBackupAt,
+    backupPath,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'file_storage_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CmmnFileStorageTable> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('original_name')) {
+      context.handle(
+        _originalNameMeta,
+        originalName.isAcceptableOrUnknown(
+          data['original_name']!,
+          _originalNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originalNameMeta);
+    }
+    if (data.containsKey('stored_name')) {
+      context.handle(
+        _storedNameMeta,
+        storedName.isAcceptableOrUnknown(data['stored_name']!, _storedNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storedNameMeta);
+    }
+    if (data.containsKey('local_path')) {
+      context.handle(
+        _localPathMeta,
+        localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localPathMeta);
+    }
+    if (data.containsKey('file_extension')) {
+      context.handle(
+        _fileExtensionMeta,
+        fileExtension.isAcceptableOrUnknown(
+          data['file_extension']!,
+          _fileExtensionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_fileExtensionMeta);
+    }
+    if (data.containsKey('mime_type')) {
+      context.handle(
+        _mimeTypeMeta,
+        mimeType.isAcceptableOrUnknown(data['mime_type']!, _mimeTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_mimeTypeMeta);
+    }
+    if (data.containsKey('size_bytes')) {
+      context.handle(
+        _sizeBytesMeta,
+        sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sizeBytesMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(
+        _entityIdMeta,
+        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
+      );
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+        _entityTypeMeta,
+        entityType.isAcceptableOrUnknown(data['entity_type']!, _entityTypeMeta),
+      );
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('checksum')) {
+      context.handle(
+        _checksumMeta,
+        checksum.isAcceptableOrUnknown(data['checksum']!, _checksumMeta),
+      );
+    }
+    if (data.containsKey('is_backed_up')) {
+      context.handle(
+        _isBackedUpMeta,
+        isBackedUp.isAcceptableOrUnknown(
+          data['is_backed_up']!,
+          _isBackedUpMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_backup_at')) {
+      context.handle(
+        _lastBackupAtMeta,
+        lastBackupAt.isAcceptableOrUnknown(
+          data['last_backup_at']!,
+          _lastBackupAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('backup_path')) {
+      context.handle(
+        _backupPathMeta,
+        backupPath.isAcceptableOrUnknown(data['backup_path']!, _backupPathMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {storedName},
+  ];
+  @override
+  CmmnFileStorageTable map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CmmnFileStorageTable(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      originalName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}original_name'],
+      )!,
+      storedName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}stored_name'],
+      )!,
+      localPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_path'],
+      )!,
+      fileExtension: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_extension'],
+      )!,
+      mimeType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mime_type'],
+      )!,
+      sizeBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}size_bytes'],
+      )!,
+      category: $FileStorageTableTable.$convertercategory.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}category'],
+        )!,
+      ),
+      entityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_id'],
+      ),
+      entityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_type'],
+      ),
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      checksum: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}checksum'],
+      ),
+      status: $FileStorageTableTable.$converterstatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}status'],
+        )!,
+      ),
+      isBackedUp: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_backed_up'],
+      )!,
+      lastBackupAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_backup_at'],
+      ),
+      backupPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}backup_path'],
+      ),
+    );
+  }
+
+  @override
+  $FileStorageTableTable createAlias(String alias) {
+    return $FileStorageTableTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<FileCategory, String, String> $convertercategory =
+      const EnumNameConverter<FileCategory>(FileCategory.values);
+  static JsonTypeConverter2<FileStorageStatus, String, String>
+  $converterstatus = const EnumNameConverter<FileStorageStatus>(
+    FileStorageStatus.values,
+  );
+}
+
+class CmmnFileStorageTable extends DataClass
+    implements Insertable<CmmnFileStorageTable> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+
+  /// Original filename from user
+  final String originalName;
+
+  /// Stored filename (UUID-based, unique)
+  final String storedName;
+
+  /// Absolute local path on device
+  final String localPath;
+
+  /// File extension without leading dot (e.g. jpg, png, pdf).
+  /// Named [fileExtension] to avoid conflict with Dart's built-in
+  /// `extension` keyword which breaks Drift's code generator.
+  final String fileExtension;
+
+  /// MIME type (e.g. image/jpeg)
+  final String mimeType;
+
+  /// File size in bytes
+  final int sizeBytes;
+
+  /// Category of the file — stored as [FileCategory].name string
+  final FileCategory category;
+
+  /// Associated entity id (e.g. userId, transactionId)
+  final String? entityId;
+
+  /// Associated entity type (e.g. 'user', 'transaction')
+  final String? entityType;
+
+  /// Optional description / caption
+  final String? description;
+
+  /// MD5 checksum of the file contents for integrity verification
+  final String? checksum;
+
+  /// Storage status — stored as [FileStorageStatus].name string
+  final FileStorageStatus status;
+
+  /// Whether this file has been backed up
+  final bool isBackedUp;
+
+  /// Last backup datetime
+  final DateTime? lastBackupAt;
+
+  /// Relative path within backup archive
+  final String? backupPath;
+  const CmmnFileStorageTable({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.originalName,
+    required this.storedName,
+    required this.localPath,
+    required this.fileExtension,
+    required this.mimeType,
+    required this.sizeBytes,
+    required this.category,
+    this.entityId,
+    this.entityType,
+    this.description,
+    this.checksum,
+    required this.status,
+    required this.isBackedUp,
+    this.lastBackupAt,
+    this.backupPath,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['original_name'] = Variable<String>(originalName);
+    map['stored_name'] = Variable<String>(storedName);
+    map['local_path'] = Variable<String>(localPath);
+    map['file_extension'] = Variable<String>(fileExtension);
+    map['mime_type'] = Variable<String>(mimeType);
+    map['size_bytes'] = Variable<int>(sizeBytes);
+    {
+      map['category'] = Variable<String>(
+        $FileStorageTableTable.$convertercategory.toSql(category),
+      );
+    }
+    if (!nullToAbsent || entityId != null) {
+      map['entity_id'] = Variable<String>(entityId);
+    }
+    if (!nullToAbsent || entityType != null) {
+      map['entity_type'] = Variable<String>(entityType);
+    }
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || checksum != null) {
+      map['checksum'] = Variable<String>(checksum);
+    }
+    {
+      map['status'] = Variable<String>(
+        $FileStorageTableTable.$converterstatus.toSql(status),
+      );
+    }
+    map['is_backed_up'] = Variable<bool>(isBackedUp);
+    if (!nullToAbsent || lastBackupAt != null) {
+      map['last_backup_at'] = Variable<DateTime>(lastBackupAt);
+    }
+    if (!nullToAbsent || backupPath != null) {
+      map['backup_path'] = Variable<String>(backupPath);
+    }
+    return map;
+  }
+
+  FileStorageTableCompanion toCompanion(bool nullToAbsent) {
+    return FileStorageTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      originalName: Value(originalName),
+      storedName: Value(storedName),
+      localPath: Value(localPath),
+      fileExtension: Value(fileExtension),
+      mimeType: Value(mimeType),
+      sizeBytes: Value(sizeBytes),
+      category: Value(category),
+      entityId: entityId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(entityId),
+      entityType: entityType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(entityType),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      checksum: checksum == null && nullToAbsent
+          ? const Value.absent()
+          : Value(checksum),
+      status: Value(status),
+      isBackedUp: Value(isBackedUp),
+      lastBackupAt: lastBackupAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastBackupAt),
+      backupPath: backupPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(backupPath),
+    );
+  }
+
+  factory CmmnFileStorageTable.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CmmnFileStorageTable(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      originalName: serializer.fromJson<String>(json['originalName']),
+      storedName: serializer.fromJson<String>(json['storedName']),
+      localPath: serializer.fromJson<String>(json['localPath']),
+      fileExtension: serializer.fromJson<String>(json['fileExtension']),
+      mimeType: serializer.fromJson<String>(json['mimeType']),
+      sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
+      category: $FileStorageTableTable.$convertercategory.fromJson(
+        serializer.fromJson<String>(json['category']),
+      ),
+      entityId: serializer.fromJson<String?>(json['entityId']),
+      entityType: serializer.fromJson<String?>(json['entityType']),
+      description: serializer.fromJson<String?>(json['description']),
+      checksum: serializer.fromJson<String?>(json['checksum']),
+      status: $FileStorageTableTable.$converterstatus.fromJson(
+        serializer.fromJson<String>(json['status']),
+      ),
+      isBackedUp: serializer.fromJson<bool>(json['isBackedUp']),
+      lastBackupAt: serializer.fromJson<DateTime?>(json['lastBackupAt']),
+      backupPath: serializer.fromJson<String?>(json['backupPath']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'originalName': serializer.toJson<String>(originalName),
+      'storedName': serializer.toJson<String>(storedName),
+      'localPath': serializer.toJson<String>(localPath),
+      'fileExtension': serializer.toJson<String>(fileExtension),
+      'mimeType': serializer.toJson<String>(mimeType),
+      'sizeBytes': serializer.toJson<int>(sizeBytes),
+      'category': serializer.toJson<String>(
+        $FileStorageTableTable.$convertercategory.toJson(category),
+      ),
+      'entityId': serializer.toJson<String?>(entityId),
+      'entityType': serializer.toJson<String?>(entityType),
+      'description': serializer.toJson<String?>(description),
+      'checksum': serializer.toJson<String?>(checksum),
+      'status': serializer.toJson<String>(
+        $FileStorageTableTable.$converterstatus.toJson(status),
+      ),
+      'isBackedUp': serializer.toJson<bool>(isBackedUp),
+      'lastBackupAt': serializer.toJson<DateTime?>(lastBackupAt),
+      'backupPath': serializer.toJson<String?>(backupPath),
+    };
+  }
+
+  CmmnFileStorageTable copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    String? originalName,
+    String? storedName,
+    String? localPath,
+    String? fileExtension,
+    String? mimeType,
+    int? sizeBytes,
+    FileCategory? category,
+    Value<String?> entityId = const Value.absent(),
+    Value<String?> entityType = const Value.absent(),
+    Value<String?> description = const Value.absent(),
+    Value<String?> checksum = const Value.absent(),
+    FileStorageStatus? status,
+    bool? isBackedUp,
+    Value<DateTime?> lastBackupAt = const Value.absent(),
+    Value<String?> backupPath = const Value.absent(),
+  }) => CmmnFileStorageTable(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    originalName: originalName ?? this.originalName,
+    storedName: storedName ?? this.storedName,
+    localPath: localPath ?? this.localPath,
+    fileExtension: fileExtension ?? this.fileExtension,
+    mimeType: mimeType ?? this.mimeType,
+    sizeBytes: sizeBytes ?? this.sizeBytes,
+    category: category ?? this.category,
+    entityId: entityId.present ? entityId.value : this.entityId,
+    entityType: entityType.present ? entityType.value : this.entityType,
+    description: description.present ? description.value : this.description,
+    checksum: checksum.present ? checksum.value : this.checksum,
+    status: status ?? this.status,
+    isBackedUp: isBackedUp ?? this.isBackedUp,
+    lastBackupAt: lastBackupAt.present ? lastBackupAt.value : this.lastBackupAt,
+    backupPath: backupPath.present ? backupPath.value : this.backupPath,
+  );
+  CmmnFileStorageTable copyWithCompanion(FileStorageTableCompanion data) {
+    return CmmnFileStorageTable(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      originalName: data.originalName.present
+          ? data.originalName.value
+          : this.originalName,
+      storedName: data.storedName.present
+          ? data.storedName.value
+          : this.storedName,
+      localPath: data.localPath.present ? data.localPath.value : this.localPath,
+      fileExtension: data.fileExtension.present
+          ? data.fileExtension.value
+          : this.fileExtension,
+      mimeType: data.mimeType.present ? data.mimeType.value : this.mimeType,
+      sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
+      category: data.category.present ? data.category.value : this.category,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      entityType: data.entityType.present
+          ? data.entityType.value
+          : this.entityType,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      checksum: data.checksum.present ? data.checksum.value : this.checksum,
+      status: data.status.present ? data.status.value : this.status,
+      isBackedUp: data.isBackedUp.present
+          ? data.isBackedUp.value
+          : this.isBackedUp,
+      lastBackupAt: data.lastBackupAt.present
+          ? data.lastBackupAt.value
+          : this.lastBackupAt,
+      backupPath: data.backupPath.present
+          ? data.backupPath.value
+          : this.backupPath,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CmmnFileStorageTable(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('originalName: $originalName, ')
+          ..write('storedName: $storedName, ')
+          ..write('localPath: $localPath, ')
+          ..write('fileExtension: $fileExtension, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('sizeBytes: $sizeBytes, ')
+          ..write('category: $category, ')
+          ..write('entityId: $entityId, ')
+          ..write('entityType: $entityType, ')
+          ..write('description: $description, ')
+          ..write('checksum: $checksum, ')
+          ..write('status: $status, ')
+          ..write('isBackedUp: $isBackedUp, ')
+          ..write('lastBackupAt: $lastBackupAt, ')
+          ..write('backupPath: $backupPath')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    originalName,
+    storedName,
+    localPath,
+    fileExtension,
+    mimeType,
+    sizeBytes,
+    category,
+    entityId,
+    entityType,
+    description,
+    checksum,
+    status,
+    isBackedUp,
+    lastBackupAt,
+    backupPath,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CmmnFileStorageTable &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.originalName == this.originalName &&
+          other.storedName == this.storedName &&
+          other.localPath == this.localPath &&
+          other.fileExtension == this.fileExtension &&
+          other.mimeType == this.mimeType &&
+          other.sizeBytes == this.sizeBytes &&
+          other.category == this.category &&
+          other.entityId == this.entityId &&
+          other.entityType == this.entityType &&
+          other.description == this.description &&
+          other.checksum == this.checksum &&
+          other.status == this.status &&
+          other.isBackedUp == this.isBackedUp &&
+          other.lastBackupAt == this.lastBackupAt &&
+          other.backupPath == this.backupPath);
+}
+
+class FileStorageTableCompanion extends UpdateCompanion<CmmnFileStorageTable> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> originalName;
+  final Value<String> storedName;
+  final Value<String> localPath;
+  final Value<String> fileExtension;
+  final Value<String> mimeType;
+  final Value<int> sizeBytes;
+  final Value<FileCategory> category;
+  final Value<String?> entityId;
+  final Value<String?> entityType;
+  final Value<String?> description;
+  final Value<String?> checksum;
+  final Value<FileStorageStatus> status;
+  final Value<bool> isBackedUp;
+  final Value<DateTime?> lastBackupAt;
+  final Value<String?> backupPath;
+  final Value<int> rowid;
+  const FileStorageTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.originalName = const Value.absent(),
+    this.storedName = const Value.absent(),
+    this.localPath = const Value.absent(),
+    this.fileExtension = const Value.absent(),
+    this.mimeType = const Value.absent(),
+    this.sizeBytes = const Value.absent(),
+    this.category = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.description = const Value.absent(),
+    this.checksum = const Value.absent(),
+    this.status = const Value.absent(),
+    this.isBackedUp = const Value.absent(),
+    this.lastBackupAt = const Value.absent(),
+    this.backupPath = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FileStorageTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String originalName,
+    required String storedName,
+    required String localPath,
+    required String fileExtension,
+    required String mimeType,
+    required int sizeBytes,
+    this.category = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.description = const Value.absent(),
+    this.checksum = const Value.absent(),
+    this.status = const Value.absent(),
+    this.isBackedUp = const Value.absent(),
+    this.lastBackupAt = const Value.absent(),
+    this.backupPath = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       originalName = Value(originalName),
+       storedName = Value(storedName),
+       localPath = Value(localPath),
+       fileExtension = Value(fileExtension),
+       mimeType = Value(mimeType),
+       sizeBytes = Value(sizeBytes);
+  static Insertable<CmmnFileStorageTable> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? originalName,
+    Expression<String>? storedName,
+    Expression<String>? localPath,
+    Expression<String>? fileExtension,
+    Expression<String>? mimeType,
+    Expression<int>? sizeBytes,
+    Expression<String>? category,
+    Expression<String>? entityId,
+    Expression<String>? entityType,
+    Expression<String>? description,
+    Expression<String>? checksum,
+    Expression<String>? status,
+    Expression<bool>? isBackedUp,
+    Expression<DateTime>? lastBackupAt,
+    Expression<String>? backupPath,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (originalName != null) 'original_name': originalName,
+      if (storedName != null) 'stored_name': storedName,
+      if (localPath != null) 'local_path': localPath,
+      if (fileExtension != null) 'file_extension': fileExtension,
+      if (mimeType != null) 'mime_type': mimeType,
+      if (sizeBytes != null) 'size_bytes': sizeBytes,
+      if (category != null) 'category': category,
+      if (entityId != null) 'entity_id': entityId,
+      if (entityType != null) 'entity_type': entityType,
+      if (description != null) 'description': description,
+      if (checksum != null) 'checksum': checksum,
+      if (status != null) 'status': status,
+      if (isBackedUp != null) 'is_backed_up': isBackedUp,
+      if (lastBackupAt != null) 'last_backup_at': lastBackupAt,
+      if (backupPath != null) 'backup_path': backupPath,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FileStorageTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<String>? originalName,
+    Value<String>? storedName,
+    Value<String>? localPath,
+    Value<String>? fileExtension,
+    Value<String>? mimeType,
+    Value<int>? sizeBytes,
+    Value<FileCategory>? category,
+    Value<String?>? entityId,
+    Value<String?>? entityType,
+    Value<String?>? description,
+    Value<String?>? checksum,
+    Value<FileStorageStatus>? status,
+    Value<bool>? isBackedUp,
+    Value<DateTime?>? lastBackupAt,
+    Value<String?>? backupPath,
+    Value<int>? rowid,
+  }) {
+    return FileStorageTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      originalName: originalName ?? this.originalName,
+      storedName: storedName ?? this.storedName,
+      localPath: localPath ?? this.localPath,
+      fileExtension: fileExtension ?? this.fileExtension,
+      mimeType: mimeType ?? this.mimeType,
+      sizeBytes: sizeBytes ?? this.sizeBytes,
+      category: category ?? this.category,
+      entityId: entityId ?? this.entityId,
+      entityType: entityType ?? this.entityType,
+      description: description ?? this.description,
+      checksum: checksum ?? this.checksum,
+      status: status ?? this.status,
+      isBackedUp: isBackedUp ?? this.isBackedUp,
+      lastBackupAt: lastBackupAt ?? this.lastBackupAt,
+      backupPath: backupPath ?? this.backupPath,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (originalName.present) {
+      map['original_name'] = Variable<String>(originalName.value);
+    }
+    if (storedName.present) {
+      map['stored_name'] = Variable<String>(storedName.value);
+    }
+    if (localPath.present) {
+      map['local_path'] = Variable<String>(localPath.value);
+    }
+    if (fileExtension.present) {
+      map['file_extension'] = Variable<String>(fileExtension.value);
+    }
+    if (mimeType.present) {
+      map['mime_type'] = Variable<String>(mimeType.value);
+    }
+    if (sizeBytes.present) {
+      map['size_bytes'] = Variable<int>(sizeBytes.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(
+        $FileStorageTableTable.$convertercategory.toSql(category.value),
+      );
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<String>(entityId.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (checksum.present) {
+      map['checksum'] = Variable<String>(checksum.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(
+        $FileStorageTableTable.$converterstatus.toSql(status.value),
+      );
+    }
+    if (isBackedUp.present) {
+      map['is_backed_up'] = Variable<bool>(isBackedUp.value);
+    }
+    if (lastBackupAt.present) {
+      map['last_backup_at'] = Variable<DateTime>(lastBackupAt.value);
+    }
+    if (backupPath.present) {
+      map['backup_path'] = Variable<String>(backupPath.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FileStorageTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('originalName: $originalName, ')
+          ..write('storedName: $storedName, ')
+          ..write('localPath: $localPath, ')
+          ..write('fileExtension: $fileExtension, ')
+          ..write('mimeType: $mimeType, ')
+          ..write('sizeBytes: $sizeBytes, ')
+          ..write('category: $category, ')
+          ..write('entityId: $entityId, ')
+          ..write('entityType: $entityType, ')
+          ..write('description: $description, ')
+          ..write('checksum: $checksum, ')
+          ..write('status: $status, ')
+          ..write('isBackedUp: $isBackedUp, ')
+          ..write('lastBackupAt: $lastBackupAt, ')
+          ..write('backupPath: $backupPath, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $UserTableTable extends UserTable
+    with TableInfo<$UserTableTable, CmmnUser> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+    'email',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _phoneNumberMeta = const VerificationMeta(
+    'phoneNumber',
+  );
+  @override
+  late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>(
+    'phone_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occupationMeta = const VerificationMeta(
+    'occupation',
+  );
+  @override
+  late final GeneratedColumn<String> occupation = GeneratedColumn<String>(
+    'occupation',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _addressMeta = const VerificationMeta(
+    'address',
+  );
+  @override
+  late final GeneratedColumn<String> address = GeneratedColumn<String>(
+    'address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _profileImageUrlMeta = const VerificationMeta(
+    'profileImageUrl',
+  );
+  @override
+  late final GeneratedColumn<String> profileImageUrl = GeneratedColumn<String>(
+    'profile_image_url',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    name,
+    email,
+    phoneNumber,
+    occupation,
+    address,
+    profileImageUrl,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CmmnUser> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+        _emailMeta,
+        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
+      );
+    }
+    if (data.containsKey('phone_number')) {
+      context.handle(
+        _phoneNumberMeta,
+        phoneNumber.isAcceptableOrUnknown(
+          data['phone_number']!,
+          _phoneNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('occupation')) {
+      context.handle(
+        _occupationMeta,
+        occupation.isAcceptableOrUnknown(data['occupation']!, _occupationMeta),
+      );
+    }
+    if (data.containsKey('address')) {
+      context.handle(
+        _addressMeta,
+        address.isAcceptableOrUnknown(data['address']!, _addressMeta),
+      );
+    }
+    if (data.containsKey('profile_image_url')) {
+      context.handle(
+        _profileImageUrlMeta,
+        profileImageUrl.isAcceptableOrUnknown(
+          data['profile_image_url']!,
+          _profileImageUrlMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {name},
+  ];
+  @override
+  CmmnUser map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CmmnUser(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      email: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}email'],
+      ),
+      phoneNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}phone_number'],
+      ),
+      occupation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occupation'],
+      ),
+      address: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}address'],
+      ),
+      profileImageUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}profile_image_url'],
+      ),
+    );
+  }
+
+  @override
+  $UserTableTable createAlias(String alias) {
+    return $UserTableTable(attachedDatabase, alias);
+  }
+}
+
+class CmmnUser extends DataClass implements Insertable<CmmnUser> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+  final String name;
+  final String? email;
+  final String? phoneNumber;
+  final String? occupation;
+  final String? address;
+  final String? profileImageUrl;
+  const CmmnUser({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.name,
+    this.email,
+    this.phoneNumber,
+    this.occupation,
+    this.address,
+    this.profileImageUrl,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || email != null) {
+      map['email'] = Variable<String>(email);
+    }
+    if (!nullToAbsent || phoneNumber != null) {
+      map['phone_number'] = Variable<String>(phoneNumber);
+    }
+    if (!nullToAbsent || occupation != null) {
+      map['occupation'] = Variable<String>(occupation);
+    }
+    if (!nullToAbsent || address != null) {
+      map['address'] = Variable<String>(address);
+    }
+    if (!nullToAbsent || profileImageUrl != null) {
+      map['profile_image_url'] = Variable<String>(profileImageUrl);
+    }
+    return map;
+  }
+
+  UserTableCompanion toCompanion(bool nullToAbsent) {
+    return UserTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      name: Value(name),
+      email: email == null && nullToAbsent
+          ? const Value.absent()
+          : Value(email),
+      phoneNumber: phoneNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phoneNumber),
+      occupation: occupation == null && nullToAbsent
+          ? const Value.absent()
+          : Value(occupation),
+      address: address == null && nullToAbsent
+          ? const Value.absent()
+          : Value(address),
+      profileImageUrl: profileImageUrl == null && nullToAbsent
+          ? const Value.absent()
+          : Value(profileImageUrl),
+    );
+  }
+
+  factory CmmnUser.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CmmnUser(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      name: serializer.fromJson<String>(json['name']),
+      email: serializer.fromJson<String?>(json['email']),
+      phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
+      occupation: serializer.fromJson<String?>(json['occupation']),
+      address: serializer.fromJson<String?>(json['address']),
+      profileImageUrl: serializer.fromJson<String?>(json['profileImageUrl']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'name': serializer.toJson<String>(name),
+      'email': serializer.toJson<String?>(email),
+      'phoneNumber': serializer.toJson<String?>(phoneNumber),
+      'occupation': serializer.toJson<String?>(occupation),
+      'address': serializer.toJson<String?>(address),
+      'profileImageUrl': serializer.toJson<String?>(profileImageUrl),
+    };
+  }
+
+  CmmnUser copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    String? name,
+    Value<String?> email = const Value.absent(),
+    Value<String?> phoneNumber = const Value.absent(),
+    Value<String?> occupation = const Value.absent(),
+    Value<String?> address = const Value.absent(),
+    Value<String?> profileImageUrl = const Value.absent(),
+  }) => CmmnUser(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    name: name ?? this.name,
+    email: email.present ? email.value : this.email,
+    phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
+    occupation: occupation.present ? occupation.value : this.occupation,
+    address: address.present ? address.value : this.address,
+    profileImageUrl: profileImageUrl.present
+        ? profileImageUrl.value
+        : this.profileImageUrl,
+  );
+  CmmnUser copyWithCompanion(UserTableCompanion data) {
+    return CmmnUser(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      name: data.name.present ? data.name.value : this.name,
+      email: data.email.present ? data.email.value : this.email,
+      phoneNumber: data.phoneNumber.present
+          ? data.phoneNumber.value
+          : this.phoneNumber,
+      occupation: data.occupation.present
+          ? data.occupation.value
+          : this.occupation,
+      address: data.address.present ? data.address.value : this.address,
+      profileImageUrl: data.profileImageUrl.present
+          ? data.profileImageUrl.value
+          : this.profileImageUrl,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CmmnUser(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('name: $name, ')
+          ..write('email: $email, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('occupation: $occupation, ')
+          ..write('address: $address, ')
+          ..write('profileImageUrl: $profileImageUrl')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    name,
+    email,
+    phoneNumber,
+    occupation,
+    address,
+    profileImageUrl,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CmmnUser &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.name == this.name &&
+          other.email == this.email &&
+          other.phoneNumber == this.phoneNumber &&
+          other.occupation == this.occupation &&
+          other.address == this.address &&
+          other.profileImageUrl == this.profileImageUrl);
+}
+
+class UserTableCompanion extends UpdateCompanion<CmmnUser> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> name;
+  final Value<String?> email;
+  final Value<String?> phoneNumber;
+  final Value<String?> occupation;
+  final Value<String?> address;
+  final Value<String?> profileImageUrl;
+  final Value<int> rowid;
+  const UserTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.name = const Value.absent(),
+    this.email = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.address = const Value.absent(),
+    this.profileImageUrl = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String name,
+    this.email = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
+    this.occupation = const Value.absent(),
+    this.address = const Value.absent(),
+    this.profileImageUrl = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       name = Value(name);
+  static Insertable<CmmnUser> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? name,
+    Expression<String>? email,
+    Expression<String>? phoneNumber,
+    Expression<String>? occupation,
+    Expression<String>? address,
+    Expression<String>? profileImageUrl,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (name != null) 'name': name,
+      if (email != null) 'email': email,
+      if (phoneNumber != null) 'phone_number': phoneNumber,
+      if (occupation != null) 'occupation': occupation,
+      if (address != null) 'address': address,
+      if (profileImageUrl != null) 'profile_image_url': profileImageUrl,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<String>? name,
+    Value<String?>? email,
+    Value<String?>? phoneNumber,
+    Value<String?>? occupation,
+    Value<String?>? address,
+    Value<String?>? profileImageUrl,
+    Value<int>? rowid,
+  }) {
+    return UserTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      occupation: occupation ?? this.occupation,
+      address: address ?? this.address,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (phoneNumber.present) {
+      map['phone_number'] = Variable<String>(phoneNumber.value);
+    }
+    if (occupation.present) {
+      map['occupation'] = Variable<String>(occupation.value);
+    }
+    if (address.present) {
+      map['address'] = Variable<String>(address.value);
+    }
+    if (profileImageUrl.present) {
+      map['profile_image_url'] = Variable<String>(profileImageUrl.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('name: $name, ')
+          ..write('email: $email, ')
+          ..write('phoneNumber: $phoneNumber, ')
+          ..write('occupation: $occupation, ')
+          ..write('address: $address, ')
+          ..write('profileImageUrl: $profileImageUrl, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ExchangeRateTableTable extends ExchangeRateTable
+    with TableInfo<$ExchangeRateTableTable, ExchangeRate> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ExchangeRateTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    clientDefault: () => UuidGenerator().v4(),
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  @override
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
+    'dateCreated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
+    'date_created',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
+    'dateUpdated',
+  );
+  @override
+  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
+    'date_updated',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
+    'lastModifiedBy',
+  );
+  @override
+  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
+    'last_modified_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fromCurrencyMeta = const VerificationMeta(
+    'fromCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> fromCurrency = GeneratedColumn<String>(
+    'from_currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _toCurrencyMeta = const VerificationMeta(
+    'toCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> toCurrency = GeneratedColumn<String>(
+    'to_currency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rateMeta = const VerificationMeta('rate');
+  @override
+  late final GeneratedColumn<double> rate = GeneratedColumn<double>(
+    'rate',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (rate > 0)',
+  );
+  static const VerificationMeta _rateDateMeta = const VerificationMeta(
+    'rateDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> rateDate = GeneratedColumn<DateTime>(
+    'rate_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    fromCurrency,
+    toCurrency,
+    rate,
+    rateDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'exchange_rate_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ExchangeRate> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('date_created')) {
+      context.handle(
+        _dateCreatedMeta,
+        dateCreated.isAcceptableOrUnknown(
+          data['date_created']!,
+          _dateCreatedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('date_updated')) {
+      context.handle(
+        _dateUpdatedMeta,
+        dateUpdated.isAcceptableOrUnknown(
+          data['date_updated']!,
+          _dateUpdatedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_dateUpdatedMeta);
+    }
+    if (data.containsKey('last_modified_by')) {
+      context.handle(
+        _lastModifiedByMeta,
+        lastModifiedBy.isAcceptableOrUnknown(
+          data['last_modified_by']!,
+          _lastModifiedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastModifiedByMeta);
+    }
+    if (data.containsKey('from_currency')) {
+      context.handle(
+        _fromCurrencyMeta,
+        fromCurrency.isAcceptableOrUnknown(
+          data['from_currency']!,
+          _fromCurrencyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_fromCurrencyMeta);
+    }
+    if (data.containsKey('to_currency')) {
+      context.handle(
+        _toCurrencyMeta,
+        toCurrency.isAcceptableOrUnknown(data['to_currency']!, _toCurrencyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_toCurrencyMeta);
+    }
+    if (data.containsKey('rate')) {
+      context.handle(
+        _rateMeta,
+        rate.isAcceptableOrUnknown(data['rate']!, _rateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rateMeta);
+    }
+    if (data.containsKey('rate_date')) {
+      context.handle(
+        _rateDateMeta,
+        rateDate.isAcceptableOrUnknown(data['rate_date']!, _rateDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rateDateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {fromCurrency, toCurrency, rateDate},
+  ];
+  @override
+  ExchangeRate map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ExchangeRate(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      dateCreated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_created'],
+      )!,
+      dateUpdated: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date_updated'],
+      )!,
+      lastModifiedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified_by'],
+      )!,
+      fromCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}from_currency'],
+      )!,
+      toCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}to_currency'],
+      )!,
+      rate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}rate'],
+      )!,
+      rateDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}rate_date'],
+      )!,
+    );
+  }
+
+  @override
+  $ExchangeRateTableTable createAlias(String alias) {
+    return $ExchangeRateTableTable(attachedDatabase, alias);
+  }
+}
+
+class ExchangeRate extends DataClass implements Insertable<ExchangeRate> {
+  final String id;
+  final String createdBy;
+  final DateTime dateCreated;
+  final DateTime dateUpdated;
+  final String lastModifiedBy;
+  final String fromCurrency;
+  final String toCurrency;
+  final double rate;
+  final DateTime rateDate;
+  const ExchangeRate({
+    required this.id,
+    required this.createdBy,
+    required this.dateCreated,
+    required this.dateUpdated,
+    required this.lastModifiedBy,
+    required this.fromCurrency,
+    required this.toCurrency,
+    required this.rate,
+    required this.rateDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['created_by'] = Variable<String>(createdBy);
+    map['date_created'] = Variable<DateTime>(dateCreated);
+    map['date_updated'] = Variable<DateTime>(dateUpdated);
+    map['last_modified_by'] = Variable<String>(lastModifiedBy);
+    map['from_currency'] = Variable<String>(fromCurrency);
+    map['to_currency'] = Variable<String>(toCurrency);
+    map['rate'] = Variable<double>(rate);
+    map['rate_date'] = Variable<DateTime>(rateDate);
+    return map;
+  }
+
+  ExchangeRateTableCompanion toCompanion(bool nullToAbsent) {
+    return ExchangeRateTableCompanion(
+      id: Value(id),
+      createdBy: Value(createdBy),
+      dateCreated: Value(dateCreated),
+      dateUpdated: Value(dateUpdated),
+      lastModifiedBy: Value(lastModifiedBy),
+      fromCurrency: Value(fromCurrency),
+      toCurrency: Value(toCurrency),
+      rate: Value(rate),
+      rateDate: Value(rateDate),
+    );
+  }
+
+  factory ExchangeRate.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ExchangeRate(
+      id: serializer.fromJson<String>(json['id']),
+      createdBy: serializer.fromJson<String>(json['createdBy']),
+      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
+      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
+      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
+      fromCurrency: serializer.fromJson<String>(json['fromCurrency']),
+      toCurrency: serializer.fromJson<String>(json['toCurrency']),
+      rate: serializer.fromJson<double>(json['rate']),
+      rateDate: serializer.fromJson<DateTime>(json['rateDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'createdBy': serializer.toJson<String>(createdBy),
+      'dateCreated': serializer.toJson<DateTime>(dateCreated),
+      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
+      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
+      'fromCurrency': serializer.toJson<String>(fromCurrency),
+      'toCurrency': serializer.toJson<String>(toCurrency),
+      'rate': serializer.toJson<double>(rate),
+      'rateDate': serializer.toJson<DateTime>(rateDate),
+    };
+  }
+
+  ExchangeRate copyWith({
+    String? id,
+    String? createdBy,
+    DateTime? dateCreated,
+    DateTime? dateUpdated,
+    String? lastModifiedBy,
+    String? fromCurrency,
+    String? toCurrency,
+    double? rate,
+    DateTime? rateDate,
+  }) => ExchangeRate(
+    id: id ?? this.id,
+    createdBy: createdBy ?? this.createdBy,
+    dateCreated: dateCreated ?? this.dateCreated,
+    dateUpdated: dateUpdated ?? this.dateUpdated,
+    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+    fromCurrency: fromCurrency ?? this.fromCurrency,
+    toCurrency: toCurrency ?? this.toCurrency,
+    rate: rate ?? this.rate,
+    rateDate: rateDate ?? this.rateDate,
+  );
+  ExchangeRate copyWithCompanion(ExchangeRateTableCompanion data) {
+    return ExchangeRate(
+      id: data.id.present ? data.id.value : this.id,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      dateCreated: data.dateCreated.present
+          ? data.dateCreated.value
+          : this.dateCreated,
+      dateUpdated: data.dateUpdated.present
+          ? data.dateUpdated.value
+          : this.dateUpdated,
+      lastModifiedBy: data.lastModifiedBy.present
+          ? data.lastModifiedBy.value
+          : this.lastModifiedBy,
+      fromCurrency: data.fromCurrency.present
+          ? data.fromCurrency.value
+          : this.fromCurrency,
+      toCurrency: data.toCurrency.present
+          ? data.toCurrency.value
+          : this.toCurrency,
+      rate: data.rate.present ? data.rate.value : this.rate,
+      rateDate: data.rateDate.present ? data.rateDate.value : this.rateDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExchangeRate(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('fromCurrency: $fromCurrency, ')
+          ..write('toCurrency: $toCurrency, ')
+          ..write('rate: $rate, ')
+          ..write('rateDate: $rateDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    createdBy,
+    dateCreated,
+    dateUpdated,
+    lastModifiedBy,
+    fromCurrency,
+    toCurrency,
+    rate,
+    rateDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ExchangeRate &&
+          other.id == this.id &&
+          other.createdBy == this.createdBy &&
+          other.dateCreated == this.dateCreated &&
+          other.dateUpdated == this.dateUpdated &&
+          other.lastModifiedBy == this.lastModifiedBy &&
+          other.fromCurrency == this.fromCurrency &&
+          other.toCurrency == this.toCurrency &&
+          other.rate == this.rate &&
+          other.rateDate == this.rateDate);
+}
+
+class ExchangeRateTableCompanion extends UpdateCompanion<ExchangeRate> {
+  final Value<String> id;
+  final Value<String> createdBy;
+  final Value<DateTime> dateCreated;
+  final Value<DateTime> dateUpdated;
+  final Value<String> lastModifiedBy;
+  final Value<String> fromCurrency;
+  final Value<String> toCurrency;
+  final Value<double> rate;
+  final Value<DateTime> rateDate;
+  final Value<int> rowid;
+  const ExchangeRateTableCompanion({
+    this.id = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.dateCreated = const Value.absent(),
+    this.dateUpdated = const Value.absent(),
+    this.lastModifiedBy = const Value.absent(),
+    this.fromCurrency = const Value.absent(),
+    this.toCurrency = const Value.absent(),
+    this.rate = const Value.absent(),
+    this.rateDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ExchangeRateTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String createdBy,
+    this.dateCreated = const Value.absent(),
+    required DateTime dateUpdated,
+    required String lastModifiedBy,
+    required String fromCurrency,
+    required String toCurrency,
+    required double rate,
+    required DateTime rateDate,
+    this.rowid = const Value.absent(),
+  }) : createdBy = Value(createdBy),
+       dateUpdated = Value(dateUpdated),
+       lastModifiedBy = Value(lastModifiedBy),
+       fromCurrency = Value(fromCurrency),
+       toCurrency = Value(toCurrency),
+       rate = Value(rate),
+       rateDate = Value(rateDate);
+  static Insertable<ExchangeRate> custom({
+    Expression<String>? id,
+    Expression<String>? createdBy,
+    Expression<DateTime>? dateCreated,
+    Expression<DateTime>? dateUpdated,
+    Expression<String>? lastModifiedBy,
+    Expression<String>? fromCurrency,
+    Expression<String>? toCurrency,
+    Expression<double>? rate,
+    Expression<DateTime>? rateDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (createdBy != null) 'created_by': createdBy,
+      if (dateCreated != null) 'date_created': dateCreated,
+      if (dateUpdated != null) 'date_updated': dateUpdated,
+      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
+      if (fromCurrency != null) 'from_currency': fromCurrency,
+      if (toCurrency != null) 'to_currency': toCurrency,
+      if (rate != null) 'rate': rate,
+      if (rateDate != null) 'rate_date': rateDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ExchangeRateTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? createdBy,
+    Value<DateTime>? dateCreated,
+    Value<DateTime>? dateUpdated,
+    Value<String>? lastModifiedBy,
+    Value<String>? fromCurrency,
+    Value<String>? toCurrency,
+    Value<double>? rate,
+    Value<DateTime>? rateDate,
+    Value<int>? rowid,
+  }) {
+    return ExchangeRateTableCompanion(
+      id: id ?? this.id,
+      createdBy: createdBy ?? this.createdBy,
+      dateCreated: dateCreated ?? this.dateCreated,
+      dateUpdated: dateUpdated ?? this.dateUpdated,
+      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
+      fromCurrency: fromCurrency ?? this.fromCurrency,
+      toCurrency: toCurrency ?? this.toCurrency,
+      rate: rate ?? this.rate,
+      rateDate: rateDate ?? this.rateDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (dateCreated.present) {
+      map['date_created'] = Variable<DateTime>(dateCreated.value);
+    }
+    if (dateUpdated.present) {
+      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
+    }
+    if (lastModifiedBy.present) {
+      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
+    }
+    if (fromCurrency.present) {
+      map['from_currency'] = Variable<String>(fromCurrency.value);
+    }
+    if (toCurrency.present) {
+      map['to_currency'] = Variable<String>(toCurrency.value);
+    }
+    if (rate.present) {
+      map['rate'] = Variable<double>(rate.value);
+    }
+    if (rateDate.present) {
+      map['rate_date'] = Variable<DateTime>(rateDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ExchangeRateTableCompanion(')
+          ..write('id: $id, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('dateCreated: $dateCreated, ')
+          ..write('dateUpdated: $dateUpdated, ')
+          ..write('lastModifiedBy: $lastModifiedBy, ')
+          ..write('fromCurrency: $fromCurrency, ')
+          ..write('toCurrency: $toCurrency, ')
+          ..write('rate: $rate, ')
+          ..write('rateDate: $rateDate, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $CategoryTableTable extends CategoryTable
     with TableInfo<$CategoryTableTable, TrnsctnCategory> {
   @override
@@ -4263,692 +6715,6 @@ class SavingsPlanDepositTableCompanion extends UpdateCompanion<SvngPlnDeposit> {
           ..write('source: $source, ')
           ..write('depositDate: $depositDate, ')
           ..write('linkedAccountId: $linkedAccountId, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $UserTableTable extends UserTable
-    with TableInfo<$UserTableTable, CmmnUser> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $UserTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    clientDefault: () => UuidGenerator().v4(),
-  );
-  static const VerificationMeta _createdByMeta = const VerificationMeta(
-    'createdBy',
-  );
-  @override
-  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
-    'created_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
-    'dateCreated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-    'date_created',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
-    'dateUpdated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-    'date_updated',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
-    'lastModifiedBy',
-  );
-  @override
-  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
-    'last_modified_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _emailMeta = const VerificationMeta('email');
-  @override
-  late final GeneratedColumn<String> email = GeneratedColumn<String>(
-    'email',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _phoneNumberMeta = const VerificationMeta(
-    'phoneNumber',
-  );
-  @override
-  late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>(
-    'phone_number',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _occupationMeta = const VerificationMeta(
-    'occupation',
-  );
-  @override
-  late final GeneratedColumn<String> occupation = GeneratedColumn<String>(
-    'occupation',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _addressMeta = const VerificationMeta(
-    'address',
-  );
-  @override
-  late final GeneratedColumn<String> address = GeneratedColumn<String>(
-    'address',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _profileImageUrlMeta = const VerificationMeta(
-    'profileImageUrl',
-  );
-  @override
-  late final GeneratedColumn<String> profileImageUrl = GeneratedColumn<String>(
-    'profile_image_url',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    name,
-    email,
-    phoneNumber,
-    occupation,
-    address,
-    profileImageUrl,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'user_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<CmmnUser> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdByMeta);
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-        _dateCreatedMeta,
-        dateCreated.isAcceptableOrUnknown(
-          data['date_created']!,
-          _dateCreatedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-        _dateUpdatedMeta,
-        dateUpdated.isAcceptableOrUnknown(
-          data['date_updated']!,
-          _dateUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('last_modified_by')) {
-      context.handle(
-        _lastModifiedByMeta,
-        lastModifiedBy.isAcceptableOrUnknown(
-          data['last_modified_by']!,
-          _lastModifiedByMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastModifiedByMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('email')) {
-      context.handle(
-        _emailMeta,
-        email.isAcceptableOrUnknown(data['email']!, _emailMeta),
-      );
-    }
-    if (data.containsKey('phone_number')) {
-      context.handle(
-        _phoneNumberMeta,
-        phoneNumber.isAcceptableOrUnknown(
-          data['phone_number']!,
-          _phoneNumberMeta,
-        ),
-      );
-    }
-    if (data.containsKey('occupation')) {
-      context.handle(
-        _occupationMeta,
-        occupation.isAcceptableOrUnknown(data['occupation']!, _occupationMeta),
-      );
-    }
-    if (data.containsKey('address')) {
-      context.handle(
-        _addressMeta,
-        address.isAcceptableOrUnknown(data['address']!, _addressMeta),
-      );
-    }
-    if (data.containsKey('profile_image_url')) {
-      context.handle(
-        _profileImageUrlMeta,
-        profileImageUrl.isAcceptableOrUnknown(
-          data['profile_image_url']!,
-          _profileImageUrlMeta,
-        ),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-    {name},
-  ];
-  @override
-  CmmnUser map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CmmnUser(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      createdBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_by'],
-      )!,
-      dateCreated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_created'],
-      )!,
-      dateUpdated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_updated'],
-      )!,
-      lastModifiedBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_modified_by'],
-      )!,
-      name: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name'],
-      )!,
-      email: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}email'],
-      ),
-      phoneNumber: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}phone_number'],
-      ),
-      occupation: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}occupation'],
-      ),
-      address: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}address'],
-      ),
-      profileImageUrl: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}profile_image_url'],
-      ),
-    );
-  }
-
-  @override
-  $UserTableTable createAlias(String alias) {
-    return $UserTableTable(attachedDatabase, alias);
-  }
-}
-
-class CmmnUser extends DataClass implements Insertable<CmmnUser> {
-  final String id;
-  final String createdBy;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final String lastModifiedBy;
-  final String name;
-  final String? email;
-  final String? phoneNumber;
-  final String? occupation;
-  final String? address;
-  final String? profileImageUrl;
-  const CmmnUser({
-    required this.id,
-    required this.createdBy,
-    required this.dateCreated,
-    required this.dateUpdated,
-    required this.lastModifiedBy,
-    required this.name,
-    this.email,
-    this.phoneNumber,
-    this.occupation,
-    this.address,
-    this.profileImageUrl,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['created_by'] = Variable<String>(createdBy);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['name'] = Variable<String>(name);
-    if (!nullToAbsent || email != null) {
-      map['email'] = Variable<String>(email);
-    }
-    if (!nullToAbsent || phoneNumber != null) {
-      map['phone_number'] = Variable<String>(phoneNumber);
-    }
-    if (!nullToAbsent || occupation != null) {
-      map['occupation'] = Variable<String>(occupation);
-    }
-    if (!nullToAbsent || address != null) {
-      map['address'] = Variable<String>(address);
-    }
-    if (!nullToAbsent || profileImageUrl != null) {
-      map['profile_image_url'] = Variable<String>(profileImageUrl);
-    }
-    return map;
-  }
-
-  UserTableCompanion toCompanion(bool nullToAbsent) {
-    return UserTableCompanion(
-      id: Value(id),
-      createdBy: Value(createdBy),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      lastModifiedBy: Value(lastModifiedBy),
-      name: Value(name),
-      email: email == null && nullToAbsent
-          ? const Value.absent()
-          : Value(email),
-      phoneNumber: phoneNumber == null && nullToAbsent
-          ? const Value.absent()
-          : Value(phoneNumber),
-      occupation: occupation == null && nullToAbsent
-          ? const Value.absent()
-          : Value(occupation),
-      address: address == null && nullToAbsent
-          ? const Value.absent()
-          : Value(address),
-      profileImageUrl: profileImageUrl == null && nullToAbsent
-          ? const Value.absent()
-          : Value(profileImageUrl),
-    );
-  }
-
-  factory CmmnUser.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CmmnUser(
-      id: serializer.fromJson<String>(json['id']),
-      createdBy: serializer.fromJson<String>(json['createdBy']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      name: serializer.fromJson<String>(json['name']),
-      email: serializer.fromJson<String?>(json['email']),
-      phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
-      occupation: serializer.fromJson<String?>(json['occupation']),
-      address: serializer.fromJson<String?>(json['address']),
-      profileImageUrl: serializer.fromJson<String?>(json['profileImageUrl']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'createdBy': serializer.toJson<String>(createdBy),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'name': serializer.toJson<String>(name),
-      'email': serializer.toJson<String?>(email),
-      'phoneNumber': serializer.toJson<String?>(phoneNumber),
-      'occupation': serializer.toJson<String?>(occupation),
-      'address': serializer.toJson<String?>(address),
-      'profileImageUrl': serializer.toJson<String?>(profileImageUrl),
-    };
-  }
-
-  CmmnUser copyWith({
-    String? id,
-    String? createdBy,
-    DateTime? dateCreated,
-    DateTime? dateUpdated,
-    String? lastModifiedBy,
-    String? name,
-    Value<String?> email = const Value.absent(),
-    Value<String?> phoneNumber = const Value.absent(),
-    Value<String?> occupation = const Value.absent(),
-    Value<String?> address = const Value.absent(),
-    Value<String?> profileImageUrl = const Value.absent(),
-  }) => CmmnUser(
-    id: id ?? this.id,
-    createdBy: createdBy ?? this.createdBy,
-    dateCreated: dateCreated ?? this.dateCreated,
-    dateUpdated: dateUpdated ?? this.dateUpdated,
-    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-    name: name ?? this.name,
-    email: email.present ? email.value : this.email,
-    phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
-    occupation: occupation.present ? occupation.value : this.occupation,
-    address: address.present ? address.value : this.address,
-    profileImageUrl: profileImageUrl.present
-        ? profileImageUrl.value
-        : this.profileImageUrl,
-  );
-  CmmnUser copyWithCompanion(UserTableCompanion data) {
-    return CmmnUser(
-      id: data.id.present ? data.id.value : this.id,
-      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
-      dateCreated: data.dateCreated.present
-          ? data.dateCreated.value
-          : this.dateCreated,
-      dateUpdated: data.dateUpdated.present
-          ? data.dateUpdated.value
-          : this.dateUpdated,
-      lastModifiedBy: data.lastModifiedBy.present
-          ? data.lastModifiedBy.value
-          : this.lastModifiedBy,
-      name: data.name.present ? data.name.value : this.name,
-      email: data.email.present ? data.email.value : this.email,
-      phoneNumber: data.phoneNumber.present
-          ? data.phoneNumber.value
-          : this.phoneNumber,
-      occupation: data.occupation.present
-          ? data.occupation.value
-          : this.occupation,
-      address: data.address.present ? data.address.value : this.address,
-      profileImageUrl: data.profileImageUrl.present
-          ? data.profileImageUrl.value
-          : this.profileImageUrl,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CmmnUser(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('name: $name, ')
-          ..write('email: $email, ')
-          ..write('phoneNumber: $phoneNumber, ')
-          ..write('occupation: $occupation, ')
-          ..write('address: $address, ')
-          ..write('profileImageUrl: $profileImageUrl')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    name,
-    email,
-    phoneNumber,
-    occupation,
-    address,
-    profileImageUrl,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CmmnUser &&
-          other.id == this.id &&
-          other.createdBy == this.createdBy &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.lastModifiedBy == this.lastModifiedBy &&
-          other.name == this.name &&
-          other.email == this.email &&
-          other.phoneNumber == this.phoneNumber &&
-          other.occupation == this.occupation &&
-          other.address == this.address &&
-          other.profileImageUrl == this.profileImageUrl);
-}
-
-class UserTableCompanion extends UpdateCompanion<CmmnUser> {
-  final Value<String> id;
-  final Value<String> createdBy;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<String> lastModifiedBy;
-  final Value<String> name;
-  final Value<String?> email;
-  final Value<String?> phoneNumber;
-  final Value<String?> occupation;
-  final Value<String?> address;
-  final Value<String?> profileImageUrl;
-  final Value<int> rowid;
-  const UserTableCompanion({
-    this.id = const Value.absent(),
-    this.createdBy = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.lastModifiedBy = const Value.absent(),
-    this.name = const Value.absent(),
-    this.email = const Value.absent(),
-    this.phoneNumber = const Value.absent(),
-    this.occupation = const Value.absent(),
-    this.address = const Value.absent(),
-    this.profileImageUrl = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  UserTableCompanion.insert({
-    this.id = const Value.absent(),
-    required String createdBy,
-    this.dateCreated = const Value.absent(),
-    required DateTime dateUpdated,
-    required String lastModifiedBy,
-    required String name,
-    this.email = const Value.absent(),
-    this.phoneNumber = const Value.absent(),
-    this.occupation = const Value.absent(),
-    this.address = const Value.absent(),
-    this.profileImageUrl = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : createdBy = Value(createdBy),
-       dateUpdated = Value(dateUpdated),
-       lastModifiedBy = Value(lastModifiedBy),
-       name = Value(name);
-  static Insertable<CmmnUser> custom({
-    Expression<String>? id,
-    Expression<String>? createdBy,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<String>? lastModifiedBy,
-    Expression<String>? name,
-    Expression<String>? email,
-    Expression<String>? phoneNumber,
-    Expression<String>? occupation,
-    Expression<String>? address,
-    Expression<String>? profileImageUrl,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (createdBy != null) 'created_by': createdBy,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
-      if (name != null) 'name': name,
-      if (email != null) 'email': email,
-      if (phoneNumber != null) 'phone_number': phoneNumber,
-      if (occupation != null) 'occupation': occupation,
-      if (address != null) 'address': address,
-      if (profileImageUrl != null) 'profile_image_url': profileImageUrl,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  UserTableCompanion copyWith({
-    Value<String>? id,
-    Value<String>? createdBy,
-    Value<DateTime>? dateCreated,
-    Value<DateTime>? dateUpdated,
-    Value<String>? lastModifiedBy,
-    Value<String>? name,
-    Value<String?>? email,
-    Value<String?>? phoneNumber,
-    Value<String?>? occupation,
-    Value<String?>? address,
-    Value<String?>? profileImageUrl,
-    Value<int>? rowid,
-  }) {
-    return UserTableCompanion(
-      id: id ?? this.id,
-      createdBy: createdBy ?? this.createdBy,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-      name: name ?? this.name,
-      email: email ?? this.email,
-      phoneNumber: phoneNumber ?? this.phoneNumber,
-      occupation: occupation ?? this.occupation,
-      address: address ?? this.address,
-      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (createdBy.present) {
-      map['created_by'] = Variable<String>(createdBy.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (lastModifiedBy.present) {
-      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (email.present) {
-      map['email'] = Variable<String>(email.value);
-    }
-    if (phoneNumber.present) {
-      map['phone_number'] = Variable<String>(phoneNumber.value);
-    }
-    if (occupation.present) {
-      map['occupation'] = Variable<String>(occupation.value);
-    }
-    if (address.present) {
-      map['address'] = Variable<String>(address.value);
-    }
-    if (profileImageUrl.present) {
-      map['profile_image_url'] = Variable<String>(profileImageUrl.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('UserTableCompanion(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('name: $name, ')
-          ..write('email: $email, ')
-          ..write('phoneNumber: $phoneNumber, ')
-          ..write('occupation: $occupation, ')
-          ..write('address: $address, ')
-          ..write('profileImageUrl: $profileImageUrl, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -13333,587 +15099,6 @@ class SavingsPlanItemTagTableCompanion extends UpdateCompanion<SvngPlnItemTag> {
   }
 }
 
-class $ExchangeRateTableTable extends ExchangeRateTable
-    with TableInfo<$ExchangeRateTableTable, ExchangeRate> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $ExchangeRateTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    clientDefault: () => UuidGenerator().v4(),
-  );
-  static const VerificationMeta _createdByMeta = const VerificationMeta(
-    'createdBy',
-  );
-  @override
-  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
-    'created_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _dateCreatedMeta = const VerificationMeta(
-    'dateCreated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateCreated = GeneratedColumn<DateTime>(
-    'date_created',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  static const VerificationMeta _dateUpdatedMeta = const VerificationMeta(
-    'dateUpdated',
-  );
-  @override
-  late final GeneratedColumn<DateTime> dateUpdated = GeneratedColumn<DateTime>(
-    'date_updated',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _lastModifiedByMeta = const VerificationMeta(
-    'lastModifiedBy',
-  );
-  @override
-  late final GeneratedColumn<String> lastModifiedBy = GeneratedColumn<String>(
-    'last_modified_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _fromCurrencyMeta = const VerificationMeta(
-    'fromCurrency',
-  );
-  @override
-  late final GeneratedColumn<String> fromCurrency = GeneratedColumn<String>(
-    'from_currency',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _toCurrencyMeta = const VerificationMeta(
-    'toCurrency',
-  );
-  @override
-  late final GeneratedColumn<String> toCurrency = GeneratedColumn<String>(
-    'to_currency',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _rateMeta = const VerificationMeta('rate');
-  @override
-  late final GeneratedColumn<double> rate = GeneratedColumn<double>(
-    'rate',
-    aliasedName,
-    false,
-    type: DriftSqlType.double,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (rate > 0)',
-  );
-  static const VerificationMeta _rateDateMeta = const VerificationMeta(
-    'rateDate',
-  );
-  @override
-  late final GeneratedColumn<DateTime> rateDate = GeneratedColumn<DateTime>(
-    'rate_date',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    fromCurrency,
-    toCurrency,
-    rate,
-    rateDate,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'exchange_rate_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<ExchangeRate> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdByMeta);
-    }
-    if (data.containsKey('date_created')) {
-      context.handle(
-        _dateCreatedMeta,
-        dateCreated.isAcceptableOrUnknown(
-          data['date_created']!,
-          _dateCreatedMeta,
-        ),
-      );
-    }
-    if (data.containsKey('date_updated')) {
-      context.handle(
-        _dateUpdatedMeta,
-        dateUpdated.isAcceptableOrUnknown(
-          data['date_updated']!,
-          _dateUpdatedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_dateUpdatedMeta);
-    }
-    if (data.containsKey('last_modified_by')) {
-      context.handle(
-        _lastModifiedByMeta,
-        lastModifiedBy.isAcceptableOrUnknown(
-          data['last_modified_by']!,
-          _lastModifiedByMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_lastModifiedByMeta);
-    }
-    if (data.containsKey('from_currency')) {
-      context.handle(
-        _fromCurrencyMeta,
-        fromCurrency.isAcceptableOrUnknown(
-          data['from_currency']!,
-          _fromCurrencyMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_fromCurrencyMeta);
-    }
-    if (data.containsKey('to_currency')) {
-      context.handle(
-        _toCurrencyMeta,
-        toCurrency.isAcceptableOrUnknown(data['to_currency']!, _toCurrencyMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_toCurrencyMeta);
-    }
-    if (data.containsKey('rate')) {
-      context.handle(
-        _rateMeta,
-        rate.isAcceptableOrUnknown(data['rate']!, _rateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_rateMeta);
-    }
-    if (data.containsKey('rate_date')) {
-      context.handle(
-        _rateDateMeta,
-        rateDate.isAcceptableOrUnknown(data['rate_date']!, _rateDateMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_rateDateMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-    {fromCurrency, toCurrency, rateDate},
-  ];
-  @override
-  ExchangeRate map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ExchangeRate(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      createdBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_by'],
-      )!,
-      dateCreated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_created'],
-      )!,
-      dateUpdated: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date_updated'],
-      )!,
-      lastModifiedBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}last_modified_by'],
-      )!,
-      fromCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}from_currency'],
-      )!,
-      toCurrency: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}to_currency'],
-      )!,
-      rate: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}rate'],
-      )!,
-      rateDate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}rate_date'],
-      )!,
-    );
-  }
-
-  @override
-  $ExchangeRateTableTable createAlias(String alias) {
-    return $ExchangeRateTableTable(attachedDatabase, alias);
-  }
-}
-
-class ExchangeRate extends DataClass implements Insertable<ExchangeRate> {
-  final String id;
-  final String createdBy;
-  final DateTime dateCreated;
-  final DateTime dateUpdated;
-  final String lastModifiedBy;
-  final String fromCurrency;
-  final String toCurrency;
-  final double rate;
-  final DateTime rateDate;
-  const ExchangeRate({
-    required this.id,
-    required this.createdBy,
-    required this.dateCreated,
-    required this.dateUpdated,
-    required this.lastModifiedBy,
-    required this.fromCurrency,
-    required this.toCurrency,
-    required this.rate,
-    required this.rateDate,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['created_by'] = Variable<String>(createdBy);
-    map['date_created'] = Variable<DateTime>(dateCreated);
-    map['date_updated'] = Variable<DateTime>(dateUpdated);
-    map['last_modified_by'] = Variable<String>(lastModifiedBy);
-    map['from_currency'] = Variable<String>(fromCurrency);
-    map['to_currency'] = Variable<String>(toCurrency);
-    map['rate'] = Variable<double>(rate);
-    map['rate_date'] = Variable<DateTime>(rateDate);
-    return map;
-  }
-
-  ExchangeRateTableCompanion toCompanion(bool nullToAbsent) {
-    return ExchangeRateTableCompanion(
-      id: Value(id),
-      createdBy: Value(createdBy),
-      dateCreated: Value(dateCreated),
-      dateUpdated: Value(dateUpdated),
-      lastModifiedBy: Value(lastModifiedBy),
-      fromCurrency: Value(fromCurrency),
-      toCurrency: Value(toCurrency),
-      rate: Value(rate),
-      rateDate: Value(rateDate),
-    );
-  }
-
-  factory ExchangeRate.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ExchangeRate(
-      id: serializer.fromJson<String>(json['id']),
-      createdBy: serializer.fromJson<String>(json['createdBy']),
-      dateCreated: serializer.fromJson<DateTime>(json['dateCreated']),
-      dateUpdated: serializer.fromJson<DateTime>(json['dateUpdated']),
-      lastModifiedBy: serializer.fromJson<String>(json['lastModifiedBy']),
-      fromCurrency: serializer.fromJson<String>(json['fromCurrency']),
-      toCurrency: serializer.fromJson<String>(json['toCurrency']),
-      rate: serializer.fromJson<double>(json['rate']),
-      rateDate: serializer.fromJson<DateTime>(json['rateDate']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'createdBy': serializer.toJson<String>(createdBy),
-      'dateCreated': serializer.toJson<DateTime>(dateCreated),
-      'dateUpdated': serializer.toJson<DateTime>(dateUpdated),
-      'lastModifiedBy': serializer.toJson<String>(lastModifiedBy),
-      'fromCurrency': serializer.toJson<String>(fromCurrency),
-      'toCurrency': serializer.toJson<String>(toCurrency),
-      'rate': serializer.toJson<double>(rate),
-      'rateDate': serializer.toJson<DateTime>(rateDate),
-    };
-  }
-
-  ExchangeRate copyWith({
-    String? id,
-    String? createdBy,
-    DateTime? dateCreated,
-    DateTime? dateUpdated,
-    String? lastModifiedBy,
-    String? fromCurrency,
-    String? toCurrency,
-    double? rate,
-    DateTime? rateDate,
-  }) => ExchangeRate(
-    id: id ?? this.id,
-    createdBy: createdBy ?? this.createdBy,
-    dateCreated: dateCreated ?? this.dateCreated,
-    dateUpdated: dateUpdated ?? this.dateUpdated,
-    lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-    fromCurrency: fromCurrency ?? this.fromCurrency,
-    toCurrency: toCurrency ?? this.toCurrency,
-    rate: rate ?? this.rate,
-    rateDate: rateDate ?? this.rateDate,
-  );
-  ExchangeRate copyWithCompanion(ExchangeRateTableCompanion data) {
-    return ExchangeRate(
-      id: data.id.present ? data.id.value : this.id,
-      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
-      dateCreated: data.dateCreated.present
-          ? data.dateCreated.value
-          : this.dateCreated,
-      dateUpdated: data.dateUpdated.present
-          ? data.dateUpdated.value
-          : this.dateUpdated,
-      lastModifiedBy: data.lastModifiedBy.present
-          ? data.lastModifiedBy.value
-          : this.lastModifiedBy,
-      fromCurrency: data.fromCurrency.present
-          ? data.fromCurrency.value
-          : this.fromCurrency,
-      toCurrency: data.toCurrency.present
-          ? data.toCurrency.value
-          : this.toCurrency,
-      rate: data.rate.present ? data.rate.value : this.rate,
-      rateDate: data.rateDate.present ? data.rateDate.value : this.rateDate,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ExchangeRate(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('fromCurrency: $fromCurrency, ')
-          ..write('toCurrency: $toCurrency, ')
-          ..write('rate: $rate, ')
-          ..write('rateDate: $rateDate')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    createdBy,
-    dateCreated,
-    dateUpdated,
-    lastModifiedBy,
-    fromCurrency,
-    toCurrency,
-    rate,
-    rateDate,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is ExchangeRate &&
-          other.id == this.id &&
-          other.createdBy == this.createdBy &&
-          other.dateCreated == this.dateCreated &&
-          other.dateUpdated == this.dateUpdated &&
-          other.lastModifiedBy == this.lastModifiedBy &&
-          other.fromCurrency == this.fromCurrency &&
-          other.toCurrency == this.toCurrency &&
-          other.rate == this.rate &&
-          other.rateDate == this.rateDate);
-}
-
-class ExchangeRateTableCompanion extends UpdateCompanion<ExchangeRate> {
-  final Value<String> id;
-  final Value<String> createdBy;
-  final Value<DateTime> dateCreated;
-  final Value<DateTime> dateUpdated;
-  final Value<String> lastModifiedBy;
-  final Value<String> fromCurrency;
-  final Value<String> toCurrency;
-  final Value<double> rate;
-  final Value<DateTime> rateDate;
-  final Value<int> rowid;
-  const ExchangeRateTableCompanion({
-    this.id = const Value.absent(),
-    this.createdBy = const Value.absent(),
-    this.dateCreated = const Value.absent(),
-    this.dateUpdated = const Value.absent(),
-    this.lastModifiedBy = const Value.absent(),
-    this.fromCurrency = const Value.absent(),
-    this.toCurrency = const Value.absent(),
-    this.rate = const Value.absent(),
-    this.rateDate = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  ExchangeRateTableCompanion.insert({
-    this.id = const Value.absent(),
-    required String createdBy,
-    this.dateCreated = const Value.absent(),
-    required DateTime dateUpdated,
-    required String lastModifiedBy,
-    required String fromCurrency,
-    required String toCurrency,
-    required double rate,
-    required DateTime rateDate,
-    this.rowid = const Value.absent(),
-  }) : createdBy = Value(createdBy),
-       dateUpdated = Value(dateUpdated),
-       lastModifiedBy = Value(lastModifiedBy),
-       fromCurrency = Value(fromCurrency),
-       toCurrency = Value(toCurrency),
-       rate = Value(rate),
-       rateDate = Value(rateDate);
-  static Insertable<ExchangeRate> custom({
-    Expression<String>? id,
-    Expression<String>? createdBy,
-    Expression<DateTime>? dateCreated,
-    Expression<DateTime>? dateUpdated,
-    Expression<String>? lastModifiedBy,
-    Expression<String>? fromCurrency,
-    Expression<String>? toCurrency,
-    Expression<double>? rate,
-    Expression<DateTime>? rateDate,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (createdBy != null) 'created_by': createdBy,
-      if (dateCreated != null) 'date_created': dateCreated,
-      if (dateUpdated != null) 'date_updated': dateUpdated,
-      if (lastModifiedBy != null) 'last_modified_by': lastModifiedBy,
-      if (fromCurrency != null) 'from_currency': fromCurrency,
-      if (toCurrency != null) 'to_currency': toCurrency,
-      if (rate != null) 'rate': rate,
-      if (rateDate != null) 'rate_date': rateDate,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  ExchangeRateTableCompanion copyWith({
-    Value<String>? id,
-    Value<String>? createdBy,
-    Value<DateTime>? dateCreated,
-    Value<DateTime>? dateUpdated,
-    Value<String>? lastModifiedBy,
-    Value<String>? fromCurrency,
-    Value<String>? toCurrency,
-    Value<double>? rate,
-    Value<DateTime>? rateDate,
-    Value<int>? rowid,
-  }) {
-    return ExchangeRateTableCompanion(
-      id: id ?? this.id,
-      createdBy: createdBy ?? this.createdBy,
-      dateCreated: dateCreated ?? this.dateCreated,
-      dateUpdated: dateUpdated ?? this.dateUpdated,
-      lastModifiedBy: lastModifiedBy ?? this.lastModifiedBy,
-      fromCurrency: fromCurrency ?? this.fromCurrency,
-      toCurrency: toCurrency ?? this.toCurrency,
-      rate: rate ?? this.rate,
-      rateDate: rateDate ?? this.rateDate,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (createdBy.present) {
-      map['created_by'] = Variable<String>(createdBy.value);
-    }
-    if (dateCreated.present) {
-      map['date_created'] = Variable<DateTime>(dateCreated.value);
-    }
-    if (dateUpdated.present) {
-      map['date_updated'] = Variable<DateTime>(dateUpdated.value);
-    }
-    if (lastModifiedBy.present) {
-      map['last_modified_by'] = Variable<String>(lastModifiedBy.value);
-    }
-    if (fromCurrency.present) {
-      map['from_currency'] = Variable<String>(fromCurrency.value);
-    }
-    if (toCurrency.present) {
-      map['to_currency'] = Variable<String>(toCurrency.value);
-    }
-    if (rate.present) {
-      map['rate'] = Variable<double>(rate.value);
-    }
-    if (rateDate.present) {
-      map['rate_date'] = Variable<DateTime>(rateDate.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('ExchangeRateTableCompanion(')
-          ..write('id: $id, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('dateCreated: $dateCreated, ')
-          ..write('dateUpdated: $dateUpdated, ')
-          ..write('lastModifiedBy: $lastModifiedBy, ')
-          ..write('fromCurrency: $fromCurrency, ')
-          ..write('toCurrency: $toCurrency, ')
-          ..write('rate: $rate, ')
-          ..write('rateDate: $rateDate, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $GroupReferenceTableTable extends GroupReferenceTable
     with TableInfo<$GroupReferenceTableTable, MstrdtGroupReference> {
   @override
@@ -18771,6 +19956,12 @@ class TransactionTagMapTableCompanion
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final $FileStorageTableTable fileStorageTable = $FileStorageTableTable(
+    this,
+  );
+  late final $UserTableTable userTable = $UserTableTable(this);
+  late final $ExchangeRateTableTable exchangeRateTable =
+      $ExchangeRateTableTable(this);
   late final $CategoryTableTable categoryTable = $CategoryTableTable(this);
   late final $SpendingBudgetTableTable spendingBudgetTable =
       $SpendingBudgetTableTable(this);
@@ -18781,7 +19972,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $SavingsPlanItemTableTable(this);
   late final $SavingsPlanDepositTableTable savingsPlanDepositTable =
       $SavingsPlanDepositTableTable(this);
-  late final $UserTableTable userTable = $UserTableTable(this);
   late final $MoneyStorageTableTable moneyStorageTable =
       $MoneyStorageTableTable(this);
   late final $SavingTableTable savingTable = $SavingTableTable(this);
@@ -18804,8 +19994,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $SavingsPlanMilestoneTableTable(this);
   late final $SavingsPlanItemTagTableTable savingsPlanItemTagTable =
       $SavingsPlanItemTagTableTable(this);
-  late final $ExchangeRateTableTable exchangeRateTable =
-      $ExchangeRateTableTable(this);
   late final $GroupReferenceTableTable groupReferenceTable =
       $GroupReferenceTableTable(this);
   late final $ReferenceTableTable referenceTable = $ReferenceTableTable(this);
@@ -18825,12 +20013,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    fileStorageTable,
+    userTable,
+    exchangeRateTable,
     categoryTable,
     spendingBudgetTable,
     savingsPlanTable,
     savingsPlanItemTable,
     savingsPlanDepositTable,
-    userTable,
     moneyStorageTable,
     savingTable,
     commitmentTable,
@@ -18842,7 +20032,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     savingsPlanLinkedAccountTable,
     savingsPlanMilestoneTable,
     savingsPlanItemTagTable,
-    exchangeRateTable,
     groupReferenceTable,
     referenceTable,
     referenceDataTable,
@@ -18854,6 +20043,1453 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   ];
 }
 
+typedef $$FileStorageTableTableCreateCompanionBuilder =
+    FileStorageTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required String originalName,
+      required String storedName,
+      required String localPath,
+      required String fileExtension,
+      required String mimeType,
+      required int sizeBytes,
+      Value<FileCategory> category,
+      Value<String?> entityId,
+      Value<String?> entityType,
+      Value<String?> description,
+      Value<String?> checksum,
+      Value<FileStorageStatus> status,
+      Value<bool> isBackedUp,
+      Value<DateTime?> lastBackupAt,
+      Value<String?> backupPath,
+      Value<int> rowid,
+    });
+typedef $$FileStorageTableTableUpdateCompanionBuilder =
+    FileStorageTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<String> originalName,
+      Value<String> storedName,
+      Value<String> localPath,
+      Value<String> fileExtension,
+      Value<String> mimeType,
+      Value<int> sizeBytes,
+      Value<FileCategory> category,
+      Value<String?> entityId,
+      Value<String?> entityType,
+      Value<String?> description,
+      Value<String?> checksum,
+      Value<FileStorageStatus> status,
+      Value<bool> isBackedUp,
+      Value<DateTime?> lastBackupAt,
+      Value<String?> backupPath,
+      Value<int> rowid,
+    });
+
+class $$FileStorageTableTableFilterComposer
+    extends Composer<_$AppDatabase, $FileStorageTableTable> {
+  $$FileStorageTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originalName => $composableBuilder(
+    column: $table.originalName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get storedName => $composableBuilder(
+    column: $table.storedName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fileExtension => $composableBuilder(
+    column: $table.fileExtension,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mimeType => $composableBuilder(
+    column: $table.mimeType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<FileCategory, FileCategory, String>
+  get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get checksum => $composableBuilder(
+    column: $table.checksum,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<FileStorageStatus, FileStorageStatus, String>
+  get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnFilters<bool> get isBackedUp => $composableBuilder(
+    column: $table.isBackedUp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastBackupAt => $composableBuilder(
+    column: $table.lastBackupAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get backupPath => $composableBuilder(
+    column: $table.backupPath,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FileStorageTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $FileStorageTableTable> {
+  $$FileStorageTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get originalName => $composableBuilder(
+    column: $table.originalName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get storedName => $composableBuilder(
+    column: $table.storedName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fileExtension => $composableBuilder(
+    column: $table.fileExtension,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mimeType => $composableBuilder(
+    column: $table.mimeType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get checksum => $composableBuilder(
+    column: $table.checksum,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isBackedUp => $composableBuilder(
+    column: $table.isBackedUp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastBackupAt => $composableBuilder(
+    column: $table.lastBackupAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get backupPath => $composableBuilder(
+    column: $table.backupPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FileStorageTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FileStorageTableTable> {
+  $$FileStorageTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get originalName => $composableBuilder(
+    column: $table.originalName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get storedName => $composableBuilder(
+    column: $table.storedName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get localPath =>
+      $composableBuilder(column: $table.localPath, builder: (column) => column);
+
+  GeneratedColumn<String> get fileExtension => $composableBuilder(
+    column: $table.fileExtension,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get mimeType =>
+      $composableBuilder(column: $table.mimeType, builder: (column) => column);
+
+  GeneratedColumn<int> get sizeBytes =>
+      $composableBuilder(column: $table.sizeBytes, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<FileCategory, String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  GeneratedColumn<String> get entityType => $composableBuilder(
+    column: $table.entityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get checksum =>
+      $composableBuilder(column: $table.checksum, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<FileStorageStatus, String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<bool> get isBackedUp => $composableBuilder(
+    column: $table.isBackedUp,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastBackupAt => $composableBuilder(
+    column: $table.lastBackupAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get backupPath => $composableBuilder(
+    column: $table.backupPath,
+    builder: (column) => column,
+  );
+}
+
+class $$FileStorageTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FileStorageTableTable,
+          CmmnFileStorageTable,
+          $$FileStorageTableTableFilterComposer,
+          $$FileStorageTableTableOrderingComposer,
+          $$FileStorageTableTableAnnotationComposer,
+          $$FileStorageTableTableCreateCompanionBuilder,
+          $$FileStorageTableTableUpdateCompanionBuilder,
+          (
+            CmmnFileStorageTable,
+            BaseReferences<
+              _$AppDatabase,
+              $FileStorageTableTable,
+              CmmnFileStorageTable
+            >,
+          ),
+          CmmnFileStorageTable,
+          PrefetchHooks Function()
+        > {
+  $$FileStorageTableTableTableManager(
+    _$AppDatabase db,
+    $FileStorageTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FileStorageTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FileStorageTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FileStorageTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<String> originalName = const Value.absent(),
+                Value<String> storedName = const Value.absent(),
+                Value<String> localPath = const Value.absent(),
+                Value<String> fileExtension = const Value.absent(),
+                Value<String> mimeType = const Value.absent(),
+                Value<int> sizeBytes = const Value.absent(),
+                Value<FileCategory> category = const Value.absent(),
+                Value<String?> entityId = const Value.absent(),
+                Value<String?> entityType = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String?> checksum = const Value.absent(),
+                Value<FileStorageStatus> status = const Value.absent(),
+                Value<bool> isBackedUp = const Value.absent(),
+                Value<DateTime?> lastBackupAt = const Value.absent(),
+                Value<String?> backupPath = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FileStorageTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                originalName: originalName,
+                storedName: storedName,
+                localPath: localPath,
+                fileExtension: fileExtension,
+                mimeType: mimeType,
+                sizeBytes: sizeBytes,
+                category: category,
+                entityId: entityId,
+                entityType: entityType,
+                description: description,
+                checksum: checksum,
+                status: status,
+                isBackedUp: isBackedUp,
+                lastBackupAt: lastBackupAt,
+                backupPath: backupPath,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required String originalName,
+                required String storedName,
+                required String localPath,
+                required String fileExtension,
+                required String mimeType,
+                required int sizeBytes,
+                Value<FileCategory> category = const Value.absent(),
+                Value<String?> entityId = const Value.absent(),
+                Value<String?> entityType = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String?> checksum = const Value.absent(),
+                Value<FileStorageStatus> status = const Value.absent(),
+                Value<bool> isBackedUp = const Value.absent(),
+                Value<DateTime?> lastBackupAt = const Value.absent(),
+                Value<String?> backupPath = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => FileStorageTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                originalName: originalName,
+                storedName: storedName,
+                localPath: localPath,
+                fileExtension: fileExtension,
+                mimeType: mimeType,
+                sizeBytes: sizeBytes,
+                category: category,
+                entityId: entityId,
+                entityType: entityType,
+                description: description,
+                checksum: checksum,
+                status: status,
+                isBackedUp: isBackedUp,
+                lastBackupAt: lastBackupAt,
+                backupPath: backupPath,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FileStorageTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FileStorageTableTable,
+      CmmnFileStorageTable,
+      $$FileStorageTableTableFilterComposer,
+      $$FileStorageTableTableOrderingComposer,
+      $$FileStorageTableTableAnnotationComposer,
+      $$FileStorageTableTableCreateCompanionBuilder,
+      $$FileStorageTableTableUpdateCompanionBuilder,
+      (
+        CmmnFileStorageTable,
+        BaseReferences<
+          _$AppDatabase,
+          $FileStorageTableTable,
+          CmmnFileStorageTable
+        >,
+      ),
+      CmmnFileStorageTable,
+      PrefetchHooks Function()
+    >;
+typedef $$UserTableTableCreateCompanionBuilder =
+    UserTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required String name,
+      Value<String?> email,
+      Value<String?> phoneNumber,
+      Value<String?> occupation,
+      Value<String?> address,
+      Value<String?> profileImageUrl,
+      Value<int> rowid,
+    });
+typedef $$UserTableTableUpdateCompanionBuilder =
+    UserTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<String> name,
+      Value<String?> email,
+      Value<String?> phoneNumber,
+      Value<String?> occupation,
+      Value<String?> address,
+      Value<String?> profileImageUrl,
+      Value<int> rowid,
+    });
+
+final class $$UserTableTableReferences
+    extends BaseReferences<_$AppDatabase, $UserTableTable, CmmnUser> {
+  $$UserTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$MoneyStorageTableTable, List<SvngMoneyStorage>>
+  _moneyStorageTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.moneyStorageTable,
+        aliasName: $_aliasNameGenerator(
+          db.userTable.id,
+          db.moneyStorageTable.userId,
+        ),
+      );
+
+  $$MoneyStorageTableTableProcessedTableManager get moneyStorageTableRefs {
+    final manager = $$MoneyStorageTableTableTableManager(
+      $_db,
+      $_db.moneyStorageTable,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _moneyStorageTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$SavingTableTable, List<SvngSaving>>
+  _savingTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.savingTable,
+    aliasName: $_aliasNameGenerator(db.userTable.id, db.savingTable.userId),
+  );
+
+  $$SavingTableTableProcessedTableManager get savingTableRefs {
+    final manager = $$SavingTableTableTableManager(
+      $_db,
+      $_db.savingTable,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_savingTableRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$CommitmentTableTable, List<ExpnsCommitment>>
+  _commitmentTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.commitmentTable,
+    aliasName: $_aliasNameGenerator(db.userTable.id, db.commitmentTable.userId),
+  );
+
+  $$CommitmentTableTableProcessedTableManager get commitmentTableRefs {
+    final manager = $$CommitmentTableTableTableManager(
+      $_db,
+      $_db.commitmentTable,
+    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _commitmentTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$UserTableTableFilterComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> moneyStorageTableRefs(
+    Expression<bool> Function($$MoneyStorageTableTableFilterComposer f) f,
+  ) {
+    final $$MoneyStorageTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.moneyStorageTable,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MoneyStorageTableTableFilterComposer(
+            $db: $db,
+            $table: $db.moneyStorageTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> savingTableRefs(
+    Expression<bool> Function($$SavingTableTableFilterComposer f) f,
+  ) {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> commitmentTableRefs(
+    Expression<bool> Function($$CommitmentTableTableFilterComposer f) f,
+  ) {
+    final $$CommitmentTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.commitmentTable,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CommitmentTableTableFilterComposer(
+            $db: $db,
+            $table: $db.commitmentTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$UserTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get email => $composableBuilder(
+    column: $table.email,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get address => $composableBuilder(
+    column: $table.address,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserTableTable> {
+  $$UserTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get phoneNumber => $composableBuilder(
+    column: $table.phoneNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get occupation => $composableBuilder(
+    column: $table.occupation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get address =>
+      $composableBuilder(column: $table.address, builder: (column) => column);
+
+  GeneratedColumn<String> get profileImageUrl => $composableBuilder(
+    column: $table.profileImageUrl,
+    builder: (column) => column,
+  );
+
+  Expression<T> moneyStorageTableRefs<T extends Object>(
+    Expression<T> Function($$MoneyStorageTableTableAnnotationComposer a) f,
+  ) {
+    final $$MoneyStorageTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.moneyStorageTable,
+          getReferencedColumn: (t) => t.userId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$MoneyStorageTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.moneyStorageTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> savingTableRefs<T extends Object>(
+    Expression<T> Function($$SavingTableTableAnnotationComposer a) f,
+  ) {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> commitmentTableRefs<T extends Object>(
+    Expression<T> Function($$CommitmentTableTableAnnotationComposer a) f,
+  ) {
+    final $$CommitmentTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.commitmentTable,
+      getReferencedColumn: (t) => t.userId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CommitmentTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.commitmentTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$UserTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserTableTable,
+          CmmnUser,
+          $$UserTableTableFilterComposer,
+          $$UserTableTableOrderingComposer,
+          $$UserTableTableAnnotationComposer,
+          $$UserTableTableCreateCompanionBuilder,
+          $$UserTableTableUpdateCompanionBuilder,
+          (CmmnUser, $$UserTableTableReferences),
+          CmmnUser,
+          PrefetchHooks Function({
+            bool moneyStorageTableRefs,
+            bool savingTableRefs,
+            bool commitmentTableRefs,
+          })
+        > {
+  $$UserTableTableTableManager(_$AppDatabase db, $UserTableTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String?> email = const Value.absent(),
+                Value<String?> phoneNumber = const Value.absent(),
+                Value<String?> occupation = const Value.absent(),
+                Value<String?> address = const Value.absent(),
+                Value<String?> profileImageUrl = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                name: name,
+                email: email,
+                phoneNumber: phoneNumber,
+                occupation: occupation,
+                address: address,
+                profileImageUrl: profileImageUrl,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required String name,
+                Value<String?> email = const Value.absent(),
+                Value<String?> phoneNumber = const Value.absent(),
+                Value<String?> occupation = const Value.absent(),
+                Value<String?> address = const Value.absent(),
+                Value<String?> profileImageUrl = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                name: name,
+                email: email,
+                phoneNumber: phoneNumber,
+                occupation: occupation,
+                address: address,
+                profileImageUrl: profileImageUrl,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$UserTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                moneyStorageTableRefs = false,
+                savingTableRefs = false,
+                commitmentTableRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (moneyStorageTableRefs) db.moneyStorageTable,
+                    if (savingTableRefs) db.savingTable,
+                    if (commitmentTableRefs) db.commitmentTable,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (moneyStorageTableRefs)
+                        await $_getPrefetchedData<
+                          CmmnUser,
+                          $UserTableTable,
+                          SvngMoneyStorage
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UserTableTableReferences
+                              ._moneyStorageTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UserTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).moneyStorageTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (savingTableRefs)
+                        await $_getPrefetchedData<
+                          CmmnUser,
+                          $UserTableTable,
+                          SvngSaving
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UserTableTableReferences
+                              ._savingTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UserTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savingTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (commitmentTableRefs)
+                        await $_getPrefetchedData<
+                          CmmnUser,
+                          $UserTableTable,
+                          ExpnsCommitment
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UserTableTableReferences
+                              ._commitmentTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UserTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).commitmentTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$UserTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserTableTable,
+      CmmnUser,
+      $$UserTableTableFilterComposer,
+      $$UserTableTableOrderingComposer,
+      $$UserTableTableAnnotationComposer,
+      $$UserTableTableCreateCompanionBuilder,
+      $$UserTableTableUpdateCompanionBuilder,
+      (CmmnUser, $$UserTableTableReferences),
+      CmmnUser,
+      PrefetchHooks Function({
+        bool moneyStorageTableRefs,
+        bool savingTableRefs,
+        bool commitmentTableRefs,
+      })
+    >;
+typedef $$ExchangeRateTableTableCreateCompanionBuilder =
+    ExchangeRateTableCompanion Function({
+      Value<String> id,
+      required String createdBy,
+      Value<DateTime> dateCreated,
+      required DateTime dateUpdated,
+      required String lastModifiedBy,
+      required String fromCurrency,
+      required String toCurrency,
+      required double rate,
+      required DateTime rateDate,
+      Value<int> rowid,
+    });
+typedef $$ExchangeRateTableTableUpdateCompanionBuilder =
+    ExchangeRateTableCompanion Function({
+      Value<String> id,
+      Value<String> createdBy,
+      Value<DateTime> dateCreated,
+      Value<DateTime> dateUpdated,
+      Value<String> lastModifiedBy,
+      Value<String> fromCurrency,
+      Value<String> toCurrency,
+      Value<double> rate,
+      Value<DateTime> rateDate,
+      Value<int> rowid,
+    });
+
+class $$ExchangeRateTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ExchangeRateTableTable> {
+  $$ExchangeRateTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fromCurrency => $composableBuilder(
+    column: $table.fromCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get toCurrency => $composableBuilder(
+    column: $table.toCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get rate => $composableBuilder(
+    column: $table.rate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get rateDate => $composableBuilder(
+    column: $table.rateDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ExchangeRateTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ExchangeRateTableTable> {
+  $$ExchangeRateTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdBy => $composableBuilder(
+    column: $table.createdBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fromCurrency => $composableBuilder(
+    column: $table.fromCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get toCurrency => $composableBuilder(
+    column: $table.toCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get rate => $composableBuilder(
+    column: $table.rate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get rateDate => $composableBuilder(
+    column: $table.rateDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ExchangeRateTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ExchangeRateTableTable> {
+  $$ExchangeRateTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get createdBy =>
+      $composableBuilder(column: $table.createdBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
+    column: $table.dateCreated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
+    column: $table.dateUpdated,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
+    column: $table.lastModifiedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fromCurrency => $composableBuilder(
+    column: $table.fromCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get toCurrency => $composableBuilder(
+    column: $table.toCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get rate =>
+      $composableBuilder(column: $table.rate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get rateDate =>
+      $composableBuilder(column: $table.rateDate, builder: (column) => column);
+}
+
+class $$ExchangeRateTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ExchangeRateTableTable,
+          ExchangeRate,
+          $$ExchangeRateTableTableFilterComposer,
+          $$ExchangeRateTableTableOrderingComposer,
+          $$ExchangeRateTableTableAnnotationComposer,
+          $$ExchangeRateTableTableCreateCompanionBuilder,
+          $$ExchangeRateTableTableUpdateCompanionBuilder,
+          (
+            ExchangeRate,
+            BaseReferences<
+              _$AppDatabase,
+              $ExchangeRateTableTable,
+              ExchangeRate
+            >,
+          ),
+          ExchangeRate,
+          PrefetchHooks Function()
+        > {
+  $$ExchangeRateTableTableTableManager(
+    _$AppDatabase db,
+    $ExchangeRateTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ExchangeRateTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ExchangeRateTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ExchangeRateTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<DateTime> dateCreated = const Value.absent(),
+                Value<DateTime> dateUpdated = const Value.absent(),
+                Value<String> lastModifiedBy = const Value.absent(),
+                Value<String> fromCurrency = const Value.absent(),
+                Value<String> toCurrency = const Value.absent(),
+                Value<double> rate = const Value.absent(),
+                Value<DateTime> rateDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ExchangeRateTableCompanion(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+                rate: rate,
+                rateDate: rateDate,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                required String createdBy,
+                Value<DateTime> dateCreated = const Value.absent(),
+                required DateTime dateUpdated,
+                required String lastModifiedBy,
+                required String fromCurrency,
+                required String toCurrency,
+                required double rate,
+                required DateTime rateDate,
+                Value<int> rowid = const Value.absent(),
+              }) => ExchangeRateTableCompanion.insert(
+                id: id,
+                createdBy: createdBy,
+                dateCreated: dateCreated,
+                dateUpdated: dateUpdated,
+                lastModifiedBy: lastModifiedBy,
+                fromCurrency: fromCurrency,
+                toCurrency: toCurrency,
+                rate: rate,
+                rateDate: rateDate,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ExchangeRateTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ExchangeRateTableTable,
+      ExchangeRate,
+      $$ExchangeRateTableTableFilterComposer,
+      $$ExchangeRateTableTableOrderingComposer,
+      $$ExchangeRateTableTableAnnotationComposer,
+      $$ExchangeRateTableTableCreateCompanionBuilder,
+      $$ExchangeRateTableTableUpdateCompanionBuilder,
+      (
+        ExchangeRate,
+        BaseReferences<_$AppDatabase, $ExchangeRateTableTable, ExchangeRate>,
+      ),
+      ExchangeRate,
+      PrefetchHooks Function()
+    >;
 typedef $$CategoryTableTableCreateCompanionBuilder =
     CategoryTableCompanion Function({
       Value<String> id,
@@ -22529,639 +25165,6 @@ typedef $$SavingsPlanDepositTableTableProcessedTableManager =
       (SvngPlnDeposit, $$SavingsPlanDepositTableTableReferences),
       SvngPlnDeposit,
       PrefetchHooks Function({bool planId, bool itemId})
-    >;
-typedef $$UserTableTableCreateCompanionBuilder =
-    UserTableCompanion Function({
-      Value<String> id,
-      required String createdBy,
-      Value<DateTime> dateCreated,
-      required DateTime dateUpdated,
-      required String lastModifiedBy,
-      required String name,
-      Value<String?> email,
-      Value<String?> phoneNumber,
-      Value<String?> occupation,
-      Value<String?> address,
-      Value<String?> profileImageUrl,
-      Value<int> rowid,
-    });
-typedef $$UserTableTableUpdateCompanionBuilder =
-    UserTableCompanion Function({
-      Value<String> id,
-      Value<String> createdBy,
-      Value<DateTime> dateCreated,
-      Value<DateTime> dateUpdated,
-      Value<String> lastModifiedBy,
-      Value<String> name,
-      Value<String?> email,
-      Value<String?> phoneNumber,
-      Value<String?> occupation,
-      Value<String?> address,
-      Value<String?> profileImageUrl,
-      Value<int> rowid,
-    });
-
-final class $$UserTableTableReferences
-    extends BaseReferences<_$AppDatabase, $UserTableTable, CmmnUser> {
-  $$UserTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static MultiTypedResultKey<$MoneyStorageTableTable, List<SvngMoneyStorage>>
-  _moneyStorageTableRefsTable(_$AppDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.moneyStorageTable,
-        aliasName: $_aliasNameGenerator(
-          db.userTable.id,
-          db.moneyStorageTable.userId,
-        ),
-      );
-
-  $$MoneyStorageTableTableProcessedTableManager get moneyStorageTableRefs {
-    final manager = $$MoneyStorageTableTableTableManager(
-      $_db,
-      $_db.moneyStorageTable,
-    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _moneyStorageTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$SavingTableTable, List<SvngSaving>>
-  _savingTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.savingTable,
-    aliasName: $_aliasNameGenerator(db.userTable.id, db.savingTable.userId),
-  );
-
-  $$SavingTableTableProcessedTableManager get savingTableRefs {
-    final manager = $$SavingTableTableTableManager(
-      $_db,
-      $_db.savingTable,
-    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_savingTableRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$CommitmentTableTable, List<ExpnsCommitment>>
-  _commitmentTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.commitmentTable,
-    aliasName: $_aliasNameGenerator(db.userTable.id, db.commitmentTable.userId),
-  );
-
-  $$CommitmentTableTableProcessedTableManager get commitmentTableRefs {
-    final manager = $$CommitmentTableTableTableManager(
-      $_db,
-      $_db.commitmentTable,
-    ).filter((f) => f.userId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _commitmentTableRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
-class $$UserTableTableFilterComposer
-    extends Composer<_$AppDatabase, $UserTableTable> {
-  $$UserTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get phoneNumber => $composableBuilder(
-    column: $table.phoneNumber,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get occupation => $composableBuilder(
-    column: $table.occupation,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get address => $composableBuilder(
-    column: $table.address,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get profileImageUrl => $composableBuilder(
-    column: $table.profileImageUrl,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  Expression<bool> moneyStorageTableRefs(
-    Expression<bool> Function($$MoneyStorageTableTableFilterComposer f) f,
-  ) {
-    final $$MoneyStorageTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.moneyStorageTable,
-      getReferencedColumn: (t) => t.userId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$MoneyStorageTableTableFilterComposer(
-            $db: $db,
-            $table: $db.moneyStorageTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> savingTableRefs(
-    Expression<bool> Function($$SavingTableTableFilterComposer f) f,
-  ) {
-    final $$SavingTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.savingTable,
-      getReferencedColumn: (t) => t.userId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SavingTableTableFilterComposer(
-            $db: $db,
-            $table: $db.savingTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> commitmentTableRefs(
-    Expression<bool> Function($$CommitmentTableTableFilterComposer f) f,
-  ) {
-    final $$CommitmentTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.commitmentTable,
-      getReferencedColumn: (t) => t.userId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CommitmentTableTableFilterComposer(
-            $db: $db,
-            $table: $db.commitmentTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$UserTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $UserTableTable> {
-  $$UserTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get email => $composableBuilder(
-    column: $table.email,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get phoneNumber => $composableBuilder(
-    column: $table.phoneNumber,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get occupation => $composableBuilder(
-    column: $table.occupation,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get address => $composableBuilder(
-    column: $table.address,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get profileImageUrl => $composableBuilder(
-    column: $table.profileImageUrl,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$UserTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $UserTableTable> {
-  $$UserTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get createdBy =>
-      $composableBuilder(column: $table.createdBy, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get email =>
-      $composableBuilder(column: $table.email, builder: (column) => column);
-
-  GeneratedColumn<String> get phoneNumber => $composableBuilder(
-    column: $table.phoneNumber,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get occupation => $composableBuilder(
-    column: $table.occupation,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get address =>
-      $composableBuilder(column: $table.address, builder: (column) => column);
-
-  GeneratedColumn<String> get profileImageUrl => $composableBuilder(
-    column: $table.profileImageUrl,
-    builder: (column) => column,
-  );
-
-  Expression<T> moneyStorageTableRefs<T extends Object>(
-    Expression<T> Function($$MoneyStorageTableTableAnnotationComposer a) f,
-  ) {
-    final $$MoneyStorageTableTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.moneyStorageTable,
-          getReferencedColumn: (t) => t.userId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$MoneyStorageTableTableAnnotationComposer(
-                $db: $db,
-                $table: $db.moneyStorageTable,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
-
-  Expression<T> savingTableRefs<T extends Object>(
-    Expression<T> Function($$SavingTableTableAnnotationComposer a) f,
-  ) {
-    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.savingTable,
-      getReferencedColumn: (t) => t.userId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SavingTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.savingTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> commitmentTableRefs<T extends Object>(
-    Expression<T> Function($$CommitmentTableTableAnnotationComposer a) f,
-  ) {
-    final $$CommitmentTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.commitmentTable,
-      getReferencedColumn: (t) => t.userId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$CommitmentTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.commitmentTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-}
-
-class $$UserTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $UserTableTable,
-          CmmnUser,
-          $$UserTableTableFilterComposer,
-          $$UserTableTableOrderingComposer,
-          $$UserTableTableAnnotationComposer,
-          $$UserTableTableCreateCompanionBuilder,
-          $$UserTableTableUpdateCompanionBuilder,
-          (CmmnUser, $$UserTableTableReferences),
-          CmmnUser,
-          PrefetchHooks Function({
-            bool moneyStorageTableRefs,
-            bool savingTableRefs,
-            bool commitmentTableRefs,
-          })
-        > {
-  $$UserTableTableTableManager(_$AppDatabase db, $UserTableTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$UserTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$UserTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$UserTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> createdBy = const Value.absent(),
-                Value<DateTime> dateCreated = const Value.absent(),
-                Value<DateTime> dateUpdated = const Value.absent(),
-                Value<String> lastModifiedBy = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String?> email = const Value.absent(),
-                Value<String?> phoneNumber = const Value.absent(),
-                Value<String?> occupation = const Value.absent(),
-                Value<String?> address = const Value.absent(),
-                Value<String?> profileImageUrl = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => UserTableCompanion(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                name: name,
-                email: email,
-                phoneNumber: phoneNumber,
-                occupation: occupation,
-                address: address,
-                profileImageUrl: profileImageUrl,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                required String createdBy,
-                Value<DateTime> dateCreated = const Value.absent(),
-                required DateTime dateUpdated,
-                required String lastModifiedBy,
-                required String name,
-                Value<String?> email = const Value.absent(),
-                Value<String?> phoneNumber = const Value.absent(),
-                Value<String?> occupation = const Value.absent(),
-                Value<String?> address = const Value.absent(),
-                Value<String?> profileImageUrl = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => UserTableCompanion.insert(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                name: name,
-                email: email,
-                phoneNumber: phoneNumber,
-                occupation: occupation,
-                address: address,
-                profileImageUrl: profileImageUrl,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$UserTableTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({
-                moneyStorageTableRefs = false,
-                savingTableRefs = false,
-                commitmentTableRefs = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (moneyStorageTableRefs) db.moneyStorageTable,
-                    if (savingTableRefs) db.savingTable,
-                    if (commitmentTableRefs) db.commitmentTable,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (moneyStorageTableRefs)
-                        await $_getPrefetchedData<
-                          CmmnUser,
-                          $UserTableTable,
-                          SvngMoneyStorage
-                        >(
-                          currentTable: table,
-                          referencedTable: $$UserTableTableReferences
-                              ._moneyStorageTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$UserTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).moneyStorageTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.userId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (savingTableRefs)
-                        await $_getPrefetchedData<
-                          CmmnUser,
-                          $UserTableTable,
-                          SvngSaving
-                        >(
-                          currentTable: table,
-                          referencedTable: $$UserTableTableReferences
-                              ._savingTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$UserTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).savingTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.userId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (commitmentTableRefs)
-                        await $_getPrefetchedData<
-                          CmmnUser,
-                          $UserTableTable,
-                          ExpnsCommitment
-                        >(
-                          currentTable: table,
-                          referencedTable: $$UserTableTableReferences
-                              ._commitmentTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$UserTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).commitmentTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.userId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $$UserTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $UserTableTable,
-      CmmnUser,
-      $$UserTableTableFilterComposer,
-      $$UserTableTableOrderingComposer,
-      $$UserTableTableAnnotationComposer,
-      $$UserTableTableCreateCompanionBuilder,
-      $$UserTableTableUpdateCompanionBuilder,
-      (CmmnUser, $$UserTableTableReferences),
-      CmmnUser,
-      PrefetchHooks Function({
-        bool moneyStorageTableRefs,
-        bool savingTableRefs,
-        bool commitmentTableRefs,
-      })
     >;
 typedef $$MoneyStorageTableTableCreateCompanionBuilder =
     MoneyStorageTableCompanion Function({
@@ -31298,301 +33301,6 @@ typedef $$SavingsPlanItemTagTableTableProcessedTableManager =
       SvngPlnItemTag,
       PrefetchHooks Function({bool itemId})
     >;
-typedef $$ExchangeRateTableTableCreateCompanionBuilder =
-    ExchangeRateTableCompanion Function({
-      Value<String> id,
-      required String createdBy,
-      Value<DateTime> dateCreated,
-      required DateTime dateUpdated,
-      required String lastModifiedBy,
-      required String fromCurrency,
-      required String toCurrency,
-      required double rate,
-      required DateTime rateDate,
-      Value<int> rowid,
-    });
-typedef $$ExchangeRateTableTableUpdateCompanionBuilder =
-    ExchangeRateTableCompanion Function({
-      Value<String> id,
-      Value<String> createdBy,
-      Value<DateTime> dateCreated,
-      Value<DateTime> dateUpdated,
-      Value<String> lastModifiedBy,
-      Value<String> fromCurrency,
-      Value<String> toCurrency,
-      Value<double> rate,
-      Value<DateTime> rateDate,
-      Value<int> rowid,
-    });
-
-class $$ExchangeRateTableTableFilterComposer
-    extends Composer<_$AppDatabase, $ExchangeRateTableTable> {
-  $$ExchangeRateTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get fromCurrency => $composableBuilder(
-    column: $table.fromCurrency,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get toCurrency => $composableBuilder(
-    column: $table.toCurrency,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get rate => $composableBuilder(
-    column: $table.rate,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get rateDate => $composableBuilder(
-    column: $table.rateDate,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$ExchangeRateTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $ExchangeRateTableTable> {
-  $$ExchangeRateTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get fromCurrency => $composableBuilder(
-    column: $table.fromCurrency,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get toCurrency => $composableBuilder(
-    column: $table.toCurrency,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get rate => $composableBuilder(
-    column: $table.rate,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get rateDate => $composableBuilder(
-    column: $table.rateDate,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$ExchangeRateTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ExchangeRateTableTable> {
-  $$ExchangeRateTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get createdBy =>
-      $composableBuilder(column: $table.createdBy, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get dateCreated => $composableBuilder(
-    column: $table.dateCreated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get dateUpdated => $composableBuilder(
-    column: $table.dateUpdated,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastModifiedBy => $composableBuilder(
-    column: $table.lastModifiedBy,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get fromCurrency => $composableBuilder(
-    column: $table.fromCurrency,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get toCurrency => $composableBuilder(
-    column: $table.toCurrency,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get rate =>
-      $composableBuilder(column: $table.rate, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get rateDate =>
-      $composableBuilder(column: $table.rateDate, builder: (column) => column);
-}
-
-class $$ExchangeRateTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $ExchangeRateTableTable,
-          ExchangeRate,
-          $$ExchangeRateTableTableFilterComposer,
-          $$ExchangeRateTableTableOrderingComposer,
-          $$ExchangeRateTableTableAnnotationComposer,
-          $$ExchangeRateTableTableCreateCompanionBuilder,
-          $$ExchangeRateTableTableUpdateCompanionBuilder,
-          (
-            ExchangeRate,
-            BaseReferences<
-              _$AppDatabase,
-              $ExchangeRateTableTable,
-              ExchangeRate
-            >,
-          ),
-          ExchangeRate,
-          PrefetchHooks Function()
-        > {
-  $$ExchangeRateTableTableTableManager(
-    _$AppDatabase db,
-    $ExchangeRateTableTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$ExchangeRateTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ExchangeRateTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$ExchangeRateTableTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> createdBy = const Value.absent(),
-                Value<DateTime> dateCreated = const Value.absent(),
-                Value<DateTime> dateUpdated = const Value.absent(),
-                Value<String> lastModifiedBy = const Value.absent(),
-                Value<String> fromCurrency = const Value.absent(),
-                Value<String> toCurrency = const Value.absent(),
-                Value<double> rate = const Value.absent(),
-                Value<DateTime> rateDate = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => ExchangeRateTableCompanion(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                fromCurrency: fromCurrency,
-                toCurrency: toCurrency,
-                rate: rate,
-                rateDate: rateDate,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                required String createdBy,
-                Value<DateTime> dateCreated = const Value.absent(),
-                required DateTime dateUpdated,
-                required String lastModifiedBy,
-                required String fromCurrency,
-                required String toCurrency,
-                required double rate,
-                required DateTime rateDate,
-                Value<int> rowid = const Value.absent(),
-              }) => ExchangeRateTableCompanion.insert(
-                id: id,
-                createdBy: createdBy,
-                dateCreated: dateCreated,
-                dateUpdated: dateUpdated,
-                lastModifiedBy: lastModifiedBy,
-                fromCurrency: fromCurrency,
-                toCurrency: toCurrency,
-                rate: rate,
-                rateDate: rateDate,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$ExchangeRateTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $ExchangeRateTableTable,
-      ExchangeRate,
-      $$ExchangeRateTableTableFilterComposer,
-      $$ExchangeRateTableTableOrderingComposer,
-      $$ExchangeRateTableTableAnnotationComposer,
-      $$ExchangeRateTableTableCreateCompanionBuilder,
-      $$ExchangeRateTableTableUpdateCompanionBuilder,
-      (
-        ExchangeRate,
-        BaseReferences<_$AppDatabase, $ExchangeRateTableTable, ExchangeRate>,
-      ),
-      ExchangeRate,
-      PrefetchHooks Function()
-    >;
 typedef $$GroupReferenceTableTableCreateCompanionBuilder =
     GroupReferenceTableCompanion Function({
       Value<String> id,
@@ -35724,6 +37432,12 @@ typedef $$TransactionTagMapTableTableProcessedTableManager =
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $$FileStorageTableTableTableManager get fileStorageTable =>
+      $$FileStorageTableTableTableManager(_db, _db.fileStorageTable);
+  $$UserTableTableTableManager get userTable =>
+      $$UserTableTableTableManager(_db, _db.userTable);
+  $$ExchangeRateTableTableTableManager get exchangeRateTable =>
+      $$ExchangeRateTableTableTableManager(_db, _db.exchangeRateTable);
   $$CategoryTableTableTableManager get categoryTable =>
       $$CategoryTableTableTableManager(_db, _db.categoryTable);
   $$SpendingBudgetTableTableTableManager get spendingBudgetTable =>
@@ -35737,8 +37451,6 @@ class $AppDatabaseManager {
         _db,
         _db.savingsPlanDepositTable,
       );
-  $$UserTableTableTableManager get userTable =>
-      $$UserTableTableTableManager(_db, _db.userTable);
   $$MoneyStorageTableTableTableManager get moneyStorageTable =>
       $$MoneyStorageTableTableTableManager(_db, _db.moneyStorageTable);
   $$SavingTableTableTableManager get savingTable =>
@@ -35774,8 +37486,6 @@ class $AppDatabaseManager {
         _db,
         _db.savingsPlanItemTagTable,
       );
-  $$ExchangeRateTableTableTableManager get exchangeRateTable =>
-      $$ExchangeRateTableTableTableManager(_db, _db.exchangeRateTable);
   $$GroupReferenceTableTableTableManager get groupReferenceTable =>
       $$GroupReferenceTableTableTableManager(_db, _db.groupReferenceTable);
   $$ReferenceTableTableTableManager get referenceTable =>

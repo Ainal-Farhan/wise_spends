@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:wise_spends/data/db/domain/common/file_storage_enum.dart';
 import 'package:wise_spends/features/commitment/data/constants/commitment_detail_type.dart';
 import 'package:wise_spends/features/commitment/data/constants/commitment_task_type.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
@@ -16,6 +17,7 @@ import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/core/utils/uuid_generator.dart';
 import 'package:wise_spends/data/db/db_connection.dart';
 import 'package:wise_spends/data/db/domain/common/index.dart';
+import 'package:wise_spends/data/db/domain/common/file_storage_table.dart';
 import 'package:wise_spends/data/db/domain/expense/index.dart';
 import 'package:wise_spends/data/db/domain/expense/payee_table.dart';
 import 'package:wise_spends/data/db/domain/masterdata/index.dart';
@@ -29,9 +31,9 @@ part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
+    ...Common.tableList,
     ...Budget.tableList,
     ...SavingsPlan.tableList,
-    ...Common.tableList,
     ...MasterData.tableList,
     ...Saving.tableList,
     ...Expense.tableList,

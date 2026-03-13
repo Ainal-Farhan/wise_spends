@@ -1,6 +1,8 @@
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/data/repositories/common/i_file_storage_repository.dart';
 import 'package:wise_spends/data/repositories/common/i_user.repository.dart';
+import 'package:wise_spends/data/repositories/common/impl/file_storage_repository.dart';
 import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
 import 'package:wise_spends/features/commitment/data/repositories/i_commitment_detail_repository.dart';
 import 'package:wise_spends/features/commitment/data/repositories/i_commitment_repository.dart';
@@ -81,6 +83,7 @@ class RepositoryLocator extends IRepositoryLocator {
       getSavingsPlanLinkedAccountRepository(),
       getSavingsPlanItemRepository(),
       getSavingsPlanItemTagRepository(),
+      getFileStorageRepository(),
     ];
 
     return allRepository;
@@ -423,5 +426,19 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<IExpenseReferenceRepository>()!;
+  }
+
+  @override
+  IFileStorageRepository getFileStorageRepository() {
+    IFileStorageRepository? repository =
+        SingletonUtil.getSingleton<IFileStorageRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<IFileStorageRepository>(
+        FileStorageRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<IFileStorageRepository>()!;
   }
 }

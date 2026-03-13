@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/core/services/document_service.dart';
 import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
 import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
@@ -10,13 +13,6 @@ import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
-/// Navigation Sidebar with Material 3 design
-///
-/// Provides quick access to:
-/// - User Profile
-/// - Finance Management features
-/// - Settings
-/// - Sign Out
 class NavigationSidebar extends StatefulWidget {
   final VoidCallback? onNavigate;
 
@@ -28,6 +24,8 @@ class NavigationSidebar extends StatefulWidget {
 
 class _NavigationSidebarState extends State<NavigationSidebar> {
   UserProfile? _userProfile;
+  File? _profileImageFile;
+  bool _isLoadingProfile = true;
 
   @override
   void initState() {
@@ -37,313 +35,173 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
 
   Future<void> _loadUserProfile() async {
     try {
-      final repository = UserRepository();
-      final profile = await repository.getCurrentUser();
-      if (mounted && profile != null) {
+      final user = await UserRepository().getCurrentUser();
+      if (!mounted || user == null) return;
+
+      final profile = UserProfile.fromCmmnUser(user);
+      final imageFile = await DocumentService.instance.getProfileImageFile(
+        profile.id,
+      );
+
+      if (mounted) {
         setState(() {
-          _userProfile = UserProfile.fromCmmnUser(profile);
+          _userProfile = profile;
+          _profileImageFile = imageFile;
+          _isLoadingProfile = false;
         });
       }
-    } catch (e) {
-      // Ignore errors, will show default values
+    } catch (_) {
+      if (mounted) setState(() => _isLoadingProfile = false);
+    }
+  }
+
+  // Called by BlocListener when SidebarProfileLoaded is emitted
+  void _applyProfileUpdate(UserProfile profile) async {
+    final imageFile = await DocumentService.instance.getProfileImageFile(
+      profile.id,
+    );
+    if (mounted) {
+      setState(() {
+        _userProfile = profile;
+        _profileImageFile = imageFile;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final name = _userProfile?.name ?? 'Guest User';
-    final email = _userProfile?.email ?? 'guest@example.com';
-
-    return Container(
-      width: 300,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 16,
-            offset: const Offset(0, 0),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Header with user profile
-          _buildHeader(context, name, email),
-
-          // Navigation items
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: AppSpacing.md),
-                  _buildSectionTitle('Profile'),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.person_outline,
-                    label: 'User Profile',
-                    route: AppRoutes.profile,
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _buildSectionTitle('Finance'),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.savings,
-                    label: 'Savings',
-                    route: AppRoutes.savings,
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.pie_chart_outline,
-                    label: 'Budgets',
-                    route: AppRoutes.budgetList,
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.savings_outlined,
-                    label: 'Budget Plans',
-                    route: AppRoutes.budgetPlansList,
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.account_balance,
-                    label: 'Money Storage',
-                    route: AppRoutes.moneyStorage,
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.calendar_month_outlined,
-                    label: 'Commitments',
-                    route: AppRoutes.commitment,
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.people_outline,
-                    label: 'Payees',
-                    route: AppRoutes.payeeManagement,
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.category_outlined,
-                    label: 'Categories',
-                    route: AppRoutes.categoryManage,
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _buildSectionTitle('App'),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.settings_outlined,
-                    label: 'Settings',
-                    route: AppRoutes.settings,
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.help_outline,
-                    label: 'Help & FAQ',
-                    onTap: () => _showComingSoon(context, 'Help & FAQ'),
-                  ),
-                  _buildNavItem(
-                    context,
-                    icon: Icons.feedback_outlined,
-                    label: 'Send Feedback',
-                    onTap: () => _showComingSoon(context, 'Send Feedback'),
-                  ),
-                ],
-              ),
+    return BlocListener<NavigationBloc, NavigationState>(
+      listener: (context, state) {
+        if (state is SidebarProfileLoaded) {
+          _applyProfileUpdate(state.profile);
+        }
+      },
+      child: Container(
+        width: 300,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.15),
+              blurRadius: 16,
             ),
-          ),
-
-          // Sign out button
-          _buildSignOutButton(context),
-          const SizedBox(height: AppSpacing.lg),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, String name, String email) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+          ],
         ),
-      ),
-      child: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                  ),
-                  child: CircleAvatar(
-                    backgroundColor: Colors.white.withValues(alpha: 0.3),
-                    child: Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : 'U',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        email,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            _SidebarHeader(
+              userProfile: _userProfile,
+              profileImageFile: _profileImageFile,
+              isLoading: _isLoadingProfile,
+              onEditTap: () => _navigateTo(context, AppRoutes.profile),
             ),
-            const SizedBox(height: AppSpacing.md),
-            InkWell(
-              onTap: () {
-                _navigateTo(context, AppRoutes.profile);
-              },
-              borderRadius: BorderRadius.circular(AppRadius.sm),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
                   children: [
-                    Icon(Icons.edit, color: Colors.white, size: 16),
-                    SizedBox(width: AppSpacing.xs),
-                    Text(
-                      'Edit Profile',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    const SizedBox(height: AppSpacing.md),
+                    _NavSection(
+                      title: 'Profile',
+                      items: [
+                        _NavItemData(
+                          icon: Icons.person_outline,
+                          label: 'User Profile',
+                          route: AppRoutes.profile,
+                        ),
+                      ],
+                      activeRoute: context.read<NavigationBloc>().activeRoute,
+                      onNavigate: _navigateTo,
                     ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _NavSection(
+                      title: 'Finance',
+                      items: [
+                        _NavItemData(
+                          icon: Icons.savings,
+                          label: 'Savings',
+                          route: AppRoutes.savings,
+                        ),
+                        _NavItemData(
+                          icon: Icons.pie_chart_outline,
+                          label: 'Budgets',
+                          route: AppRoutes.budgetList,
+                        ),
+                        _NavItemData(
+                          icon: Icons.savings_outlined,
+                          label: 'Budget Plans',
+                          route: AppRoutes.budgetPlansList,
+                        ),
+                        _NavItemData(
+                          icon: Icons.account_balance,
+                          label: 'Money Storage',
+                          route: AppRoutes.moneyStorage,
+                        ),
+                        _NavItemData(
+                          icon: Icons.calendar_month_outlined,
+                          label: 'Commitments',
+                          route: AppRoutes.commitment,
+                        ),
+                        _NavItemData(
+                          icon: Icons.people_outline,
+                          label: 'Payees',
+                          route: AppRoutes.payeeManagement,
+                        ),
+                        _NavItemData(
+                          icon: Icons.category_outlined,
+                          label: 'Categories',
+                          route: AppRoutes.categoryManage,
+                        ),
+                      ],
+                      activeRoute: context.read<NavigationBloc>().activeRoute,
+                      onNavigate: _navigateTo,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    _NavSection(
+                      title: 'App',
+                      items: [
+                        _NavItemData(
+                          icon: Icons.settings_outlined,
+                          label: 'Settings',
+                          route: AppRoutes.settings,
+                        ),
+                        _NavItemData(
+                          icon: Icons.help_outline,
+                          label: 'Help & FAQ',
+                          onTap: () => _showComingSoon(context, 'Help & FAQ'),
+                        ),
+                        _NavItemData(
+                          icon: Icons.feedback_outlined,
+                          label: 'Send Feedback',
+                          onTap: () =>
+                              _showComingSoon(context, 'Send Feedback'),
+                        ),
+                      ],
+                      activeRoute: context.read<NavigationBloc>().activeRoute,
+                      onNavigate: _navigateTo,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
                   ],
                 ),
               ),
             ),
+            _SignOutButton(onTap: () => _showSignOutConfirmation(context)),
+            const SizedBox(height: AppSpacing.lg),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.sm,
-      ),
-      child: Text(
-        title,
-        style: AppTextStyles.labelMedium.copyWith(
-          color: AppColors.textSecondary,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    String? route,
-    VoidCallback? onTap,
-  }) {
-    return ListTile(
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: AppColors.primaryContainer,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
-        child: Icon(icon, color: AppColors.primary, size: AppIconSize.sm),
-      ),
-      title: Text(
-        label,
-        style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textPrimary),
-      ),
-      trailing: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
-      onTap: () {
-        if (route != null) {
-          _navigateTo(context, route);
-        } else if (onTap != null) {
-          onTap();
-        }
-      },
-    );
-  }
-
-  Widget _buildSignOutButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-      child: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: () => _showSignOutConfirmation(context),
-            icon: const Icon(Icons.logout, size: 18),
-            label: const Text('Sign Out'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.error,
-              side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   void _navigateTo(BuildContext context, String route) {
-    // Close sidebar first
     context.read<NavigationBloc>().add(NavigateToScreenEvent(route));
-
-    // Navigate after a short delay to allow animation
     Future.delayed(const Duration(milliseconds: 150), () {
       if (context.mounted) {
-        Navigator.pushNamed(context, route);
+        Navigator.pushNamed(context, route).then((_) {
+          // Refresh sidebar profile when returning from profile screen
+          if (route == AppRoutes.profile && context.mounted) {
+            context.read<NavigationBloc>().add(RefreshSidebarProfileEvent());
+          }
+        });
         widget.onNavigate?.call();
       }
     });
@@ -359,15 +217,12 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
       icon: Icons.logout,
       iconColor: AppColors.tertiary,
       onConfirm: () {
-        // Handle sign out logic here
         if (context.mounted) {
           showSnackBarMessage(
             context,
             'Signed out successfully',
             type: SnackBarMessageType.success,
           );
-          // Navigate to login or handle auth state change
-          // Navigator.pushNamedAndRemoveUntil(context, AppRoutes.login, ...);
         }
       },
     );
@@ -379,19 +234,375 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
         content: Row(
           children: [
             const Icon(Icons.construction_outlined, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                '$feature is coming soon!',
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(child: Text('$feature is coming soon!')),
           ],
         ),
         backgroundColor: AppColors.tertiary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+
+class _SidebarHeader extends StatelessWidget {
+  const _SidebarHeader({
+    required this.userProfile,
+    required this.profileImageFile,
+    required this.isLoading,
+    required this.onEditTap,
+  });
+
+  final UserProfile? userProfile;
+  final File? profileImageFile;
+  final bool isLoading;
+  final VoidCallback onEditTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final name = userProfile?.name ?? 'Guest User';
+    final email = userProfile?.email ?? '';
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [AppColors.primary, AppColors.primaryDark],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _AvatarWidget(
+                  name: name,
+                  imageFile: profileImageFile,
+                  isLoading: isLoading,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isLoading ? '...' : name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (email.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          email,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _EditProfileChip(onTap: onEditTap),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AvatarWidget extends StatelessWidget {
+  const _AvatarWidget({
+    required this.name,
+    required this.imageFile,
+    required this.isLoading,
+  });
+
+  final String name;
+  final File? imageFile;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 56,
+      height: 56,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.6),
+          width: 2,
+        ),
+      ),
+      child: ClipOval(
+        child: isLoading
+            ? Container(
+                color: Colors.white.withValues(alpha: 0.2),
+                child: const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                ),
+              )
+            : imageFile != null
+            ? Image.file(
+                imageFile!,
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _InitialAvatar(name: name),
+              )
+            : _InitialAvatar(name: name),
+      ),
+    );
+  }
+}
+
+class _InitialAvatar extends StatelessWidget {
+  const _InitialAvatar({required this.name});
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white.withValues(alpha: 0.2),
+      child: Center(
+        child: Text(
+          name.isNotEmpty ? name[0].toUpperCase() : 'U',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EditProfileChip extends StatelessWidget {
+  const _EditProfileChip({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.edit, color: Colors.white, size: 14),
+            SizedBox(width: AppSpacing.xs),
+            Text(
+              'Edit Profile',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Nav section + items ──────────────────────────────────────────────────────
+
+class _NavItemData {
+  final IconData icon;
+  final String label;
+  final String? route;
+  final VoidCallback? onTap;
+
+  const _NavItemData({
+    required this.icon,
+    required this.label,
+    this.route,
+    this.onTap,
+  });
+}
+
+class _NavSection extends StatelessWidget {
+  const _NavSection({
+    required this.title,
+    required this.items,
+    required this.activeRoute,
+    required this.onNavigate,
+  });
+
+  final String title;
+  final List<_NavItemData> items;
+  final String activeRoute;
+  final void Function(BuildContext, String) onNavigate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.xs,
+          ),
+          child: Text(
+            title.toUpperCase(),
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.textSecondary,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ),
+        ...items.map(
+          (item) => _NavItem(
+            data: item,
+            isActive: item.route != null && item.route == activeRoute,
+            onNavigate: onNavigate,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.data,
+    required this.isActive,
+    required this.onNavigate,
+  });
+
+  final _NavItemData data;
+  final bool isActive;
+  final void Function(BuildContext, String) onNavigate;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 1,
+      ),
+      decoration: BoxDecoration(
+        color: isActive ? AppColors.primaryContainer : Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: ListTile(
+        dense: true,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: 0,
+        ),
+        leading: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: isActive
+                ? AppColors.primary.withValues(alpha: 0.15)
+                : AppColors.primaryContainer,
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
+          child: Icon(
+            data.icon,
+            color: isActive ? AppColors.primary : AppColors.textSecondary,
+            size: AppIconSize.sm,
+          ),
+        ),
+        title: Text(
+          data.label,
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: isActive ? AppColors.primary : AppColors.textPrimary,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
+        trailing: isActive
+            ? Container(
+                width: 6,
+                height: 6,
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+              )
+            : const Icon(
+                Icons.chevron_right,
+                color: AppColors.textSecondary,
+                size: 18,
+              ),
+        onTap: () {
+          if (data.route != null) {
+            onNavigate(context, data.route!);
+          } else {
+            data.onTap?.call();
+          }
+        },
+      ),
+    );
+  }
+}
+
+// ─── Sign out ─────────────────────────────────────────────────────────────────
+
+class _SignOutButton extends StatelessWidget {
+  const _SignOutButton({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: onTap,
+            icon: const Icon(Icons.logout, size: 18),
+            label: const Text('Sign Out'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.error,
+              side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+            ),
+          ),
         ),
       ),
     );
