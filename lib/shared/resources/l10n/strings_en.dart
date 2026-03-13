@@ -149,6 +149,7 @@ class EnglishStrings {
     'general.add_new_saving': 'Add New Saving',
     'general.learn_more': 'Learn more',
     'general.less': 'Less',
+    'general.unlink': 'Unlink',
 
     // Transaction Types
     'transaction.type.income': 'Income',
@@ -337,6 +338,64 @@ class EnglishStrings {
     'budget_plans.recalculate_plan': 'Recalculate Plan',
     'budget_plans.recalculate_plan_confirm':
         'Recalculate this plan\'s amounts? This will sync the data with actual transactions and deposits.',
+    'budget_plans.available': 'Available',
+    'budget_plans.spent': 'spent',
+    'budget_plans.deposited': 'Deposited',
+    'budget_plans.item_payments': 'Item Payments',
+    'budget_plans.link_account': 'Link Account',
+    'budget_plans.linked_accounts_desc':
+        'Link savings accounts to allocate funds for this plan',
+    'budget_plans.total_paid_summary': 'Total Paid Summary',
+    'budget_plans.deposit_paid_label': 'Deposit Paid',
+    'budget_plans.payment_paid_label': 'Payment Paid',
+    'budget_plans.total_paid_label': 'Total Paid',
+    'budget_plans.remaining': 'Remaining',
+    'budget_plans.status_fully_paid': 'Fully Paid',
+    'budget_plans.status_partially_paid': 'Partially Paid',
+    'budget_plans.status_deposit_only': 'Deposit Only',
+    'budget_plans.status_not_paid': 'Not Paid',
+    'budget_plans.status_no_deposit': 'No Deposit',
+    'budget_plans.status_deposit_full': 'Deposit Covers Full',
+    'budget_plans.status_deposit_partial': 'Partial Deposit',
+    'budget_plans.cat_wedding': 'Wedding',
+    'budget_plans.cat_house': 'House',
+    'budget_plans.cat_travel': 'Travel',
+    'budget_plans.cat_education': 'Education',
+    'budget_plans.cat_emergency': 'Emergency',
+    'budget_plans.cat_vehicle': 'Vehicle',
+    'budget_plans.cat_medical': 'Medical',
+    'budget_plans.cat_custom': 'Custom',
+    'budget_plans.health_on_track': 'On Track',
+    'budget_plans.health_slightly_behind': 'Slightly Behind',
+    'budget_plans.health_at_risk': 'At Risk',
+    'budget_plans.health_over_budget': 'Over Budget',
+    'budget_plans.health_completed': 'Completed',
+    'budget_plans.period_week': 'Week',
+    'budget_plans.period_month': 'Month',
+    'budget_plans.period_quarter': 'Quarter',
+    'budget_plans.period_year': 'Year',
+    'budget_plans.period_all': 'All Time',
+    'budget_plans.no_milestones': 'No milestones yet',
+    'budget_plans.no_deposits': 'No deposits yet',
+    'budget_plans.no_deposits_hint': 'Add your first deposit to start saving',
+    'budget_plans.no_spending': 'No spending yet',
+    'budget_plans.no_spending_hint': 'Track your expenses by adding spending',
+    'budget_plans.of_goal': 'of goal',
+    'budget_plans.edit_plan': 'Edit Plan',
+    'budget_plans.plan_exported': 'Plan exported successfully',
+    'budget_plans.export_failed': 'Export failed: {error}',
+    'budget_plans.delete_plan': 'Delete Plan',
+    'budget_plans.delete_plan_msg':
+        'Are you sure you want to delete this plan? This action cannot be undone.',
+    'budget_plans.unlink_account_msg':
+        'Are you sure you want to unlink this account?',
+    'budget_plans.complete_milestone': 'Complete Milestone',
+    'budget_plans.complete_milestone_msg': 'Mark this milestone as completed?',
+    'budget_plans.milestone_deleted': 'Milestone deleted',
+    'budget_plans.status_active': 'Active',
+    'budget_plans.status_completed': 'Completed',
+    'budget_plans.status_paused': 'Paused',
+    'budget_plans.status_cancelled': 'Cancelled',
 
     // Reports/Analytics
     'reports.title': 'Reports',
@@ -808,17 +867,10 @@ class EnglishStrings {
     'budget_plans.category_label': 'Category',
     'budget_plans.target_amount_label': 'Target Amount',
     'budget_plans.target_date_label': 'Target Date',
-    'budget_plans.no_deposits': 'No deposits yet',
-    'budget_plans.no_spending': 'No spending yet',
-    'budget_plans.unlink_account_msg':
-        'This will remove the link between this account and the budget plan.',
     'budget_plans.unlink': 'Unlink',
-    'budget_plans.complete_milestone': 'Complete Milestone?',
-    'budget_plans.complete_milestone_msg': 'Mark this milestone as completed?',
     'budget_plans.delete_milestone': 'Delete Milestone?',
     'budget_plans.delete_milestone_msg':
         'Are you sure you want to delete this milestone?',
-    'budget_plans.milestone_deleted': 'Milestone deleted',
     'budget_plans.select_linked_account': 'Select Account',
     'budget_plans.select_linked_account_error':
         'Please select a linked account',
@@ -865,22 +917,11 @@ class EnglishStrings {
     'budget_plans.linked_note': 'Linked to budget plan: {uuid}',
 
     // ── Budget plan detail ───────────────────────────────────────────────────
-    'budget_plans.no_milestones': 'No milestones yet',
     'budget_plans.allocated': 'Allocated',
     'budget_plans.analytics_title': 'Plan Analytics',
     'budget_plans.savings_progress': 'Savings Progress',
-    'budget_plans.deposited': 'Deposited',
-    'budget_plans.spent': 'Spent',
     'budget_plans.milestone_title_hint': 'e.g., Venue Deposit',
     'budget_plans.due_date_optional': 'Due Date (optional)',
-
-    // ── Budget plans list ────────────────────────────────────────────────────
-    'budget_plans.of_goal': 'of goal',
-    'budget_plans.edit_plan': 'Edit Plan',
-    'budget_plans.plan_exported': 'Plan exported successfully',
-    'budget_plans.export_failed': 'Export failed: {error}',
-    'budget_plans.delete_plan': 'Delete Plan?',
-    'budget_plans.delete_plan_msg': 'This action cannot be undone.',
 
     // ── Create / edit wizard ──────────────────────────────────────────────────
     'budget_plans.step_basics_subtitle': 'Name, description and category',
@@ -936,41 +977,9 @@ class EnglishStrings {
     'budgets.status_inactive': 'Inactive',
     'budgets.date_from': 'From',
 
-    // Budget Plan Categories
-    'budget_plans.cat_wedding': 'Wedding',
-    'budget_plans.cat_house': 'House',
-    'budget_plans.cat_travel': 'Travel',
-    'budget_plans.cat_education': 'Education',
-    'budget_plans.cat_emergency': 'Emergency',
-    'budget_plans.cat_vehicle': 'Vehicle',
-    'budget_plans.cat_medical': 'Medical',
-    'budget_plans.cat_custom': 'Custom',
-
-    // Budget Plan Statuses
-    'budget_plans.status_active': 'Active',
-    'budget_plans.status_completed': 'Completed',
-    'budget_plans.status_paused': 'Paused',
-    'budget_plans.status_cancelled': 'Cancelled',
-
-    // Budget Health Statuses
-    'budget_plans.health_on_track': 'On Track',
-    'budget_plans.health_slightly_behind': 'Slightly Behind',
-    'budget_plans.health_at_risk': 'At Risk',
-    'budget_plans.health_over_budget': 'Over Budget',
-    'budget_plans.health_completed': 'Completed',
-
-    // Analytics Periods
-    'budget_plans.period_week': 'Week',
-    'budget_plans.period_month': 'Month',
-    'budget_plans.period_quarter': 'Quarter',
-    'budget_plans.period_year': 'Year',
-    'budget_plans.period_all': 'All',
     "budget_plans.required": "This field is required",
 
-    "budget_plans.status_fully_paid": "Fully Paid",
     "budget_plans.status_deposit_paid": "Deposit Paid",
-    "budget_plans.status_not_paid": "Not Paid",
-    "budget_plans.status_partially_paid": "Partially Paid",
 
     // Payment status helpers
     "budget_plans.has_deposit": "Has Deposit",
@@ -987,9 +996,6 @@ class EnglishStrings {
     "budget_plans.receipt_unavailable": "Receipt file not found",
     "budget_plans.add_deposit_desc": "Record money going into the plan",
     "budget_plans.add_spending_desc": "Record a plan expense",
-    "budget_plans.linked_accounts_desc":
-        "Savings accounts allocated toward this plan",
-    "budget_plans.link_account": "Link Account",
     "budget_plans.total_allocated": "Total Allocated",
     "budget_plans.accounts": "accounts",
     "budget_plans.no_linked_accounts_desc":
@@ -1015,8 +1021,6 @@ class EnglishStrings {
     "budget_plans.payment_status_excl_deposit":
         "Payment Status (Excl. Deposit)",
     "budget_plans.amount_paid_excl_deposit": "Amount Paid (Excl. Deposit)",
-    "budget_plans.total_paid_summary": "Total Paid Summary",
-    'budget_plans.total_paid_label': 'Total Paid',
     "budget_plans.paid": "Paid",
     "budget_plans.edit_item_sub": "Update item information",
     "budget_plans.add_item_sub": "Add new item to plan",
@@ -1025,8 +1029,6 @@ class EnglishStrings {
 
     // Budget Plan Item Payment Labels
     "budget_plans.deposit_status": "Deposit Status",
-    "budget_plans.deposit_paid_label": "Deposit Paid",
-    "budget_plans.payment_paid_label": "Payment Paid",
     "budget_plans.remaining_after_deposit": "Remaining after deposit",
     "budget_plans.deposit_covers_full": "Deposit covers full amount",
 
@@ -1040,7 +1042,6 @@ class EnglishStrings {
     // Budget Plans - Missing keys
     'budget_plans.item_subtitle': 'Budget plan item',
     'budget_plans.payment_sub': 'Record payments toward this item',
-    'budget_plans.remaining': 'Remaining',
     'budget_plans.progress_chart': 'Progress',
     'budget_plans.progress_over_time': 'Progress Over Time',
     'budget_plans.allocation_chart': 'Allocation by Category',

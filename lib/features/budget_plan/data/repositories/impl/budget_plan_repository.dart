@@ -78,7 +78,18 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     return _enrichPlanWithCalculatedValues(plan);
   }
 
-  /// Enrich plan with calculated totalDeposited and totalSpent values
+  /// Enrich plan with calculated totalDeposited and totalSpent values.
+  ///
+  /// ## Calculation semantics:
+  /// - **totalDeposited** = manual deposits + item deposits (depositPaid)
+  ///   Represents all money contributed/saved toward the plan.
+  ///
+  /// - **totalSpent** = manual spending + (item amountPaid only)
+  ///   The [amountPaid] field represents payments beyond the initial deposit,
+  ///   which are treated as "spending" from the plan's accumulated funds.
+  ///
+  /// Note: Item deposits (depositPaid) are NOT counted as spending because
+  /// they represent the initial commitment, not ongoing withdrawals from savings.
   Future<BudgetPlanEntity> _enrichPlanWithCalculatedValues(
     BudgetPlanEntity plan,
   ) async {
@@ -102,27 +113,52 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
         ..where((tbl) => tbl.planId.equals(plan.id));
       final items = await itemsQuery.get();
 
-      final totalItemDeposits = items.fold<double>(
+      // totalItemDepositsPaid: Sum of depositPaid across all items
+      // Represents upfront deposits/commitments to vendors
+      final totalItemDepositsPaid = items.fold<double>(
         0.0,
         (sum, i) => sum + i.depositPaid,
       );
 
-      final totalItemPayments = items.fold<double>(
+      // totalItemAmountPaid: Sum of amountPaid across all items
+      // Represents payments made toward the remaining balance AFTER the deposit
+      // This is treated as "spending" from the plan's accumulated funds
+      final totalItemAmountPaid = items.fold<double>(
         0.0,
         (sum, i) => sum + i.amountPaid,
       );
 
-      // totalDeposited = manual deposits + item deposits
-      final totalDeposited = totalManualDeposits + totalItemDeposits;
+      // totalItemCommitment: Sum of totalCost across all items
+      final totalItemCommitment = items.fold<double>(
+        0.0,
+        (sum, i) => sum + i.totalCost,
+      );
 
-      // totalSpent = manual spending + (item payments - item deposits)
-      // The (item payments - item deposits) represents the remaining payments beyond deposits
-      final totalSpent =
-          totalManualSpending + (totalItemPayments - totalItemDeposits);
+      // totalItemOutstanding: Sum of outstanding amounts across all items
+      final totalItemOutstanding = items.fold<double>(
+        0.0,
+        (sum, i) {
+          final outstanding = (i.totalCost - i.depositPaid - i.amountPaid).clamp(0.0, double.infinity);
+          return outstanding;
+        },
+      );
+
+      // totalDeposited = manual deposits + item deposits (depositPaid)
+      // All money contributed/saved toward the plan
+      final totalDeposited = totalManualDeposits + totalItemDepositsPaid;
+
+      // totalSpent = manual spending + item amountPaid (payments beyond deposit)
+      // The totalItemAmountPaid represents payments made BEYOND the deposit amount,
+      // which are treated as withdrawals/spending from the plan's savings.
+      final totalSpent = totalManualSpending + totalItemAmountPaid;
 
       return plan.copyWith(
         totalDeposited: totalDeposited,
         totalSpent: totalSpent,
+        totalItemCommitment: totalItemCommitment,
+        totalItemDepositPaid: totalItemDepositsPaid,
+        totalItemAmountPaid: totalItemAmountPaid,
+        totalItemOutstanding: totalItemOutstanding,
       );
     } catch (e) {
       // If calculation fails, return plan with default values
@@ -334,12 +370,21 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   @override
   Future<void> deleteDeposit(String id) async {
-    // Get the deposit first to find the planId
+    // Get the deposit first to find the planId and linkedAccountId
     final deposit = await (db.select(
       db.savingsPlanDepositTable,
     )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
     if (deposit != null) {
+      // Reverse linked account effects before deleting
+      if (deposit.linkedAccountId != null) {
+        await _reverseLinkedDepositEffect(
+          planId: deposit.planId,
+          accountId: deposit.linkedAccountId!,
+          amount: deposit.amount,
+        );
+      }
+
       final query = db.delete(db.savingsPlanDepositTable)
         ..where((tbl) => tbl.id.equals(id));
       await query.go();
@@ -546,6 +591,46 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     }
   }
 
+  /// Reverse the effects of a linked deposit when it's deleted.
+  ///
+  /// This method:
+  /// 1. Credits the savings account balance back (reverse of the original debit)
+  /// 2. Decreases the allocation by the deposit amount
+  ///
+  /// Called by [deleteDeposit] when a linked deposit is removed.
+  Future<void> _reverseLinkedDepositEffect({
+    required String planId,
+    required String accountId,
+    required double amount,
+  }) async {
+    // Credit the savings account balance back (reverse of original debit)
+    // Original deposit deducted from account, so we add it back
+    await _updateSavingAccountBalance(accountId, amount);
+
+    // Decrease allocation by the deposit amount (reverse of the increase)
+    await updateAllocation(planId, accountId, -amount);
+  }
+
+  /// Reverse the effects of a linked spending when it's deleted.
+  ///
+  /// This method:
+  /// 1. Credits the savings account balance back (reverse of the original debit)
+  /// 2. Increases the allocation by the spending amount
+  ///
+  /// Called by [deletePlanTransaction] when a linked spending is removed.
+  Future<void> _reverseLinkedSpendingEffect({
+    required String planId,
+    required String accountId,
+    required double amount,
+  }) async {
+    // Credit the savings account balance back (reverse of original debit)
+    // Original spending deducted from account, so we add it back
+    await _updateSavingAccountBalance(accountId, amount);
+
+    // Increase allocation by the spending amount (reverse of the decrease)
+    await updateAllocation(planId, accountId, amount);
+  }
+
   @override
   Future<void> linkExistingTransaction(
     String planId,
@@ -591,6 +676,24 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     )..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
 
     if (transaction != null) {
+      // Reverse linked account effects before deleting
+      final transactionId = transaction.transactionId;
+      if (transactionId != null) {
+        // Find the linked account for this spending by looking up the main transaction
+        final mainTransaction =
+            await (db.select(db.transactionTable)
+                  ..where((tbl) => tbl.id.equals(transactionId)))
+                .getSingleOrNull();
+
+        if (mainTransaction != null) {
+          await _reverseLinkedSpendingEffect(
+            planId: transaction.planId,
+            accountId: mainTransaction.savingId,
+            amount: transaction.amount,
+          );
+        }
+      }
+
       final query = db.delete(db.savingsPlanSpendingTable)
         ..where((tbl) => tbl.id.equals(id));
       await query.go();
@@ -696,8 +799,23 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final currentAllocation = await getAllocation(planId, accountId);
     final newAllocation = currentAllocation + deltaAmount;
 
-    // Update the allocation in the database
+    // Prevent negative allocations - this indicates a logic error
+    // Allocation should be allowed to reach zero (nothing reserved),
+    // but never go negative. If this throws, check that deposits/spending
+    // are properly reversed on delete.
+    if (newAllocation < 0) {
+      throw StateError(
+        'Allocation cannot be negative. Attempted to update allocation for '
+        'plan $planId and account $accountId from ${currentAllocation.toStringAsFixed(2)} '
+        'by ${deltaAmount.toStringAsFixed(2)} to ${newAllocation.toStringAsFixed(2)}. '
+        'This may indicate a missing reversal operation on delete.',
+      );
+    }
+
     // Update the allocation amount
+    // Note: allocatedAmount can be zero (nothing currently reserved for this plan)
+    // but the account remains linked. Only explicit unlinkAccount() calls should
+    // remove the link.
     final updating = SavingsPlanLinkedAccountTableCompanion(
       allocatedAmount: Value(newAllocation),
       dateUpdated: Value(DateTime.now()),
@@ -1078,7 +1196,30 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   // ============================================================================
 
   /// Update plan's current amount based on deposits, transactions, item payments,
-  /// and allocated amounts from linked accounts
+  /// and allocated amounts from linked accounts.
+  ///
+  /// ## Formula:
+  /// ```
+  /// currentAmount = totalDeposits + totalItemPayments - totalSpending + totalAllocated
+  /// ```
+  ///
+  /// ## Why item payments INCREASE currentAmount:
+  /// This is intentional. Budget plans track progress toward a financial goal.
+  /// When you pay for wedding items (e.g., pelamin, makeup), that money represents
+  /// progress toward completing the wedding goal - it's money "invested" in the goal.
+  ///
+  /// Item payments include BOTH:
+  /// - [depositPaid]: Upfront deposit/commitment to vendor
+  /// - [amountPaid]: Subsequent payments toward the remaining balance
+  ///
+  /// Together these represent the total money committed/paid toward goal-related expenses,
+  /// which counts as progress toward the goal.
+  ///
+  /// ## Components:
+  /// - **totalDeposits**: Manual deposits added directly to the plan
+  /// - **totalItemPayments**: Sum of (depositPaid + amountPaid) from all budget items
+  /// - **totalSpending**: Manual spending (money withdrawn from the plan)
+  /// - **totalAllocated**: Amounts reserved in linked external savings accounts
   Future<void> _updatePlanCurrentAmount(String planId) async {
     // Get total deposits from manual deposits
     final depositsQuery = _db.select(_db.savingsPlanDepositTable)
@@ -1098,7 +1239,13 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       (sum, t) => sum + t.amount,
     );
 
-    // Get total payments from budget plan items
+    // Get total payments from budget plan items.
+    // IMPORTANT: This includes BOTH depositPaid AND amountPaid.
+    // See class-level documentation for why this is intentional:
+    // - depositPaid: Upfront commitment/deposit to vendor
+    // - amountPaid: Payments toward remaining balance (excluding deposit)
+    // Together they represent total money paid toward goal-related items,
+    // which counts as progress toward the financial goal.
     final itemsQuery = _db.select(_db.savingsPlanItemTable)
       ..where((tbl) => tbl.planId.equals(planId));
     final items = await itemsQuery.get();

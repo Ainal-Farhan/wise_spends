@@ -7,20 +7,34 @@ import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Summary strip shown above the deposit/spending tab bar.
 ///
-/// Displays three metric cells (deposited, spent, net) and a
+/// Displays four metric cells (deposited, spent, net, available) and a
 /// proportional progress bar showing how much of the deposited
 /// amount has been spent.
+///
+/// ## Available Amount Calculation
+/// The available amount represents the total money currently accessible
+/// for this budget plan, including:
+/// - Manual deposits not yet spent
+/// - Money allocated in linked accounts
+/// - Payments made to items (depositPaid + amountPaid)
+///
+/// This is different from [net] which is simply deposited - spent.
 class TransactionSummaryStrip extends StatelessWidget {
   const TransactionSummaryStrip({
     super.key,
     required this.totalDeposited,
     required this.totalSpent,
     required this.net,
+    this.totalAvailable,
   });
 
   final double totalDeposited;
   final double totalSpent;
   final double net;
+
+  /// Total available amount from all sources (currentAmount from plan)
+  /// Includes: deposits, allocated funds, and item payments
+  final double? totalAvailable;
 
   @override
   Widget build(BuildContext context) {
@@ -50,32 +64,55 @@ class TransactionSummaryStrip extends StatelessWidget {
               horizontal: AppSpacing.lg,
               vertical: AppSpacing.md,
             ),
-            child: Row(
+            child: Column(
               children: [
-                _SummaryCell(
-                  label: 'budget_plans.deposits'.tr,
-                  amount: totalDeposited,
-                  color: WiseSpendsColors.success,
-                  icon: Icons.south_outlined,
+                // First row: Deposits, Spending, Net
+                Row(
+                  children: [
+                    _SummaryCell(
+                      label: 'budget_plans.deposits'.tr,
+                      amount: totalDeposited,
+                      color: WiseSpendsColors.success,
+                      icon: Icons.south_outlined,
+                    ),
+                    _SummaryDivider(),
+                    _SummaryCell(
+                      label: 'budget_plans.spending'.tr,
+                      amount: totalSpent,
+                      color: WiseSpendsColors.secondary,
+                      icon: Icons.north_outlined,
+                    ),
+                    _SummaryDivider(),
+                    _SummaryCell(
+                      label: 'budget_plans.net'.tr,
+                      amount: net,
+                      color: net >= 0
+                          ? WiseSpendsColors.success
+                          : WiseSpendsColors.error,
+                      icon: net >= 0
+                          ? Icons.trending_up_rounded
+                          : Icons.trending_down_rounded,
+                    ),
+                  ],
                 ),
-                _SummaryDivider(),
-                _SummaryCell(
-                  label: 'budget_plans.spending'.tr,
-                  amount: totalSpent,
-                  color: WiseSpendsColors.secondary,
-                  icon: Icons.north_outlined,
-                ),
-                _SummaryDivider(),
-                _SummaryCell(
-                  label: 'budget_plans.net'.tr,
-                  amount: net,
-                  color: net >= 0
-                      ? WiseSpendsColors.success
-                      : WiseSpendsColors.error,
-                  icon: net >= 0
-                      ? Icons.trending_up_rounded
-                      : Icons.trending_down_rounded,
-                ),
+                // Second row: Available (if provided)
+                if (totalAvailable != null) ...[
+                  const SizedBox(height: AppSpacing.md),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _SummaryCell(
+                        label: 'budget_plans.available'.tr,
+                        amount: totalAvailable!,
+                        color: totalAvailable! >= 0
+                            ? WiseSpendsColors.primary
+                            : WiseSpendsColors.error,
+                        icon: Icons.account_balance_wallet_outlined,
+                        isLarge: true,
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -136,12 +173,14 @@ class _SummaryCell extends StatelessWidget {
     required this.amount,
     required this.color,
     required this.icon,
+    this.isLarge = false,
   });
 
   final String label;
   final double amount;
   final Color color;
   final IconData icon;
+  final bool isLarge;
 
   @override
   Widget build(BuildContext context) {
@@ -152,12 +191,13 @@ class _SummaryCell extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 11, color: color),
+              Icon(icon, size: isLarge ? 14 : 11, color: color),
               const SizedBox(width: 3),
               Text(
                 label,
-                style: AppTextStyles.captionSmall.copyWith(
+                style: (isLarge ? AppTextStyles.caption : AppTextStyles.captionSmall).copyWith(
                   color: WiseSpendsColors.textSecondary,
+                  fontWeight: isLarge ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
             ],
@@ -167,7 +207,10 @@ class _SummaryCell extends StatelessWidget {
             amount: amount,
             type: AmountType.neutral,
             showPrefix: false,
-            style: AppTextStyles.bodySemiBold.copyWith(color: color),
+            style: (isLarge ? AppTextStyles.bodyLarge : AppTextStyles.bodySemiBold).copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),

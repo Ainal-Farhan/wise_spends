@@ -26,6 +26,18 @@ class BudgetPlanEntity extends Equatable {
   final DateTime createdAt;
   final DateTime updatedAt;
 
+  /// Total amount committed to items (sum of all item.totalCost)
+  final double totalItemCommitment;
+
+  /// Total deposit paid for items (sum of all item.depositPaid)
+  final double totalItemDepositPaid;
+
+  /// Total amount paid toward items excluding deposit (sum of all item.amountPaid)
+  final double totalItemAmountPaid;
+
+  /// Total outstanding amount for items (sum of all item.outstanding)
+  final double totalItemOutstanding;
+
   const BudgetPlanEntity({
     required this.id,
     required this.name,
@@ -46,6 +58,10 @@ class BudgetPlanEntity extends Equatable {
     this.recentTransactions = const [],
     required this.createdAt,
     required this.updatedAt,
+    this.totalItemCommitment = 0.0,
+    this.totalItemDepositPaid = 0.0,
+    this.totalItemAmountPaid = 0.0,
+    this.totalItemOutstanding = 0.0,
   });
 
   /// Computed: Progress percentage (0.0 to 1.0)
@@ -199,6 +215,10 @@ class BudgetPlanEntity extends Equatable {
     recentTransactions,
     createdAt,
     updatedAt,
+    totalItemCommitment,
+    totalItemDepositPaid,
+    totalItemAmountPaid,
+    totalItemOutstanding,
   ];
 
   BudgetPlanEntity copyWith({
@@ -221,6 +241,10 @@ class BudgetPlanEntity extends Equatable {
     List<BudgetPlanTransactionEntity>? recentTransactions,
     DateTime? createdAt,
     DateTime? updatedAt,
+    double? totalItemCommitment,
+    double? totalItemDepositPaid,
+    double? totalItemAmountPaid,
+    double? totalItemOutstanding,
   }) {
     return BudgetPlanEntity(
       id: id ?? this.id,
@@ -242,6 +266,10 @@ class BudgetPlanEntity extends Equatable {
       recentTransactions: recentTransactions ?? this.recentTransactions,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      totalItemCommitment: totalItemCommitment ?? this.totalItemCommitment,
+      totalItemDepositPaid: totalItemDepositPaid ?? this.totalItemDepositPaid,
+      totalItemAmountPaid: totalItemAmountPaid ?? this.totalItemAmountPaid,
+      totalItemOutstanding: totalItemOutstanding ?? this.totalItemOutstanding,
     );
   }
 }

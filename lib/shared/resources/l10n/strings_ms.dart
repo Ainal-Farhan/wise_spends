@@ -311,6 +311,66 @@ class MalayStrings {
     'budget_plans.recalculate_plan': 'Kira Semula Pelan',
     'budget_plans.recalculate_plan_confirm':
         'Kira semula jumlah pelan ini? Ini akan menyelaraskan data dengan transaksi dan deposit sebenar.',
+    'budget_plans.available': 'Tersedia',
+    'budget_plans.spent': 'dibelanjakan',
+    'budget_plans.deposited': 'Deposit',
+    'budget_plans.item_payments': 'Bayaran Item',
+    'budget_plans.link_account': 'Paut Akaun',
+    'budget_plans.linked_accounts_desc':
+        'Pautkan akaun simpanan untuk memperuntukkan dana bagi pelan ini',
+    'budget_plans.total_paid_summary': 'Jumlah Dibayar',
+    'budget_plans.deposit_paid_label': 'Deposit Dibayar',
+    'budget_plans.payment_paid_label': 'Bayaran Dibayar',
+    'budget_plans.remaining': 'Baki',
+    'budget_plans.status_fully_paid': 'Dibayar Penuh',
+    'budget_plans.status_partially_paid': 'Dibayar Separa',
+    'budget_plans.status_deposit_only': 'Deposit Sahaja',
+    'budget_plans.status_not_paid': 'Belum Dibayar',
+    'budget_plans.status_no_deposit': 'Tiada Deposit',
+    'budget_plans.status_deposit_full': 'Deposit Penuh',
+    'budget_plans.status_deposit_partial': 'Deposit Separa',
+    'budget_plans.cat_wedding': 'Perkahwinan',
+    'budget_plans.cat_house': 'Rumah',
+    'budget_plans.cat_travel': 'Perjalanan',
+    'budget_plans.cat_education': 'Pendidikan',
+    'budget_plans.cat_emergency': 'Kecemasan',
+    'budget_plans.cat_vehicle': 'Kenderaan',
+    'budget_plans.cat_medical': 'Perubatan',
+    'budget_plans.cat_custom': 'Tersuai',
+    'budget_plans.health_on_track': 'Mengikut Jadual',
+    'budget_plans.health_slightly_behind': 'Sedikit Lewat',
+    'budget_plans.health_at_risk': 'Berisiko',
+    'budget_plans.health_over_budget': 'Melebihi Bajet',
+    'budget_plans.health_completed': 'Selesai',
+    'budget_plans.period_week': 'Minggu',
+    'budget_plans.period_month': 'Bulan',
+    'budget_plans.period_quarter': 'Suku Tahun',
+    'budget_plans.period_year': 'Tahun',
+    'budget_plans.period_all': 'Sepanjang Masa',
+    'budget_plans.no_milestones': 'Tiada tanda aras lagi',
+    'budget_plans.no_deposits': 'Tiada deposit lagi',
+    'budget_plans.no_deposits_hint':
+        'Tambah deposit pertama anda untuk mula menyimpan',
+    'budget_plans.no_spending': 'Tiada perbelanjaan lagi',
+    'budget_plans.no_spending_hint':
+        'Jejak perbelanjaan anda dengan menambah perbelanjaan',
+    'budget_plans.of_goal': 'daripada sasaran',
+    'budget_plans.edit_plan': 'Sunting Pelan',
+    'budget_plans.plan_exported': 'Pelan dieksport berjaya',
+    'budget_plans.export_failed': 'Eksport gagal: {error}',
+    'budget_plans.delete_plan': 'Padam Pelan',
+    'budget_plans.delete_plan_msg':
+        'Adakah anda pasti mahu memadam pelan ini? Tindakan ini tidak boleh diubah.',
+    'budget_plans.unlink_account_msg':
+        'Adakah anda pasti mahu nyahpaut akaun ini?',
+    'budget_plans.complete_milestone': 'Selesaikan Tanda Aras',
+    'budget_plans.complete_milestone_msg':
+        'Tandakan tanda aras ini sebagai selesai?',
+    'budget_plans.milestone_deleted': 'Tanda aras dipadam',
+    'budget_plans.status_active': 'Aktif',
+    'budget_plans.status_completed': 'Selesai',
+    'budget_plans.status_paused': 'Dijeda',
+    'budget_plans.status_cancelled': 'Dibatalkan',
 
     // Reports/Analytics
     'reports.title': 'Laporan',
@@ -785,14 +845,7 @@ class MalayStrings {
     'budget_plans.category_label': 'Kategori',
     'budget_plans.target_amount_label': 'Jumlah Sasaran',
     'budget_plans.target_date_label': 'Tarikh Sasaran',
-    'budget_plans.no_deposits': 'Tiada deposit lagi',
-    'budget_plans.no_spending': 'Tiada perbelanjaan lagi',
-    'budget_plans.unlink_account_msg':
-        'Ini akan membuang pautan antara akaun ini dengan pelan belanjawan.',
     'budget_plans.unlink': 'Nyahpaut',
-    'budget_plans.complete_milestone': 'Selesaikan Milestone?',
-    'budget_plans.complete_milestone_msg':
-        'Tanda milestone ini sebagai selesai?',
     'budget_plans.complete': 'Selesai',
     'budget_plans.start_date_label': 'Tarikh Mula',
 
@@ -855,22 +908,11 @@ class MalayStrings {
     'budget_plans.linked_note': 'Terpaut ke pelan belanjawan: {uuid}',
 
     // ── Butiran pelan belanjawan ─────────────────────────────────────────────
-    'budget_plans.no_milestones': 'Tiada pencapaian lagi',
     'budget_plans.allocated': 'Diperuntukkan',
     'budget_plans.analytics_title': 'Analitik Pelan',
     'budget_plans.savings_progress': 'Perkembangan Simpanan',
-    'budget_plans.deposited': 'Didepositkan',
-    'budget_plans.spent': 'Dibelanjakan',
     'budget_plans.milestone_title_hint': 'cth., Bayaran Pendahuluan Tempat',
     'budget_plans.due_date_optional': 'Tarikh Akhir (pilihan)',
-
-    // ── Senarai pelan belanjawan ─────────────────────────────────────────────
-    'budget_plans.of_goal': 'daripada sasaran',
-    'budget_plans.edit_plan': 'Edit Pelan',
-    'budget_plans.plan_exported': 'Pelan berjaya dieksport',
-    'budget_plans.export_failed': 'Eksport gagal: {error}',
-    'budget_plans.delete_plan': 'Padam Pelan?',
-    'budget_plans.delete_plan_msg': 'Tindakan ini tidak boleh dibatalkan.',
 
     // ── Wizard cipta / edit ───────────────────────────────────────────────────
     'budget_plans.step_financial_subtitle': 'Tetapkan sasaran dan jangka masa',
@@ -913,36 +955,6 @@ class MalayStrings {
     'budgets.status_inactive': 'Tidak Aktif',
     'budgets.date_from': 'Dari',
 
-    // Budget Plan Categories
-    'budget_plans.cat_wedding': 'Perkahwinan',
-    'budget_plans.cat_house': 'Rumah',
-    'budget_plans.cat_travel': 'Perjalanan',
-    'budget_plans.cat_education': 'Pendidikan',
-    'budget_plans.cat_emergency': 'Kecemasan',
-    'budget_plans.cat_vehicle': 'Kenderaan',
-    'budget_plans.cat_medical': 'Perubatan',
-    'budget_plans.cat_custom': 'Tersuai',
-
-    // Budget Plan Statuses
-    'budget_plans.status_active': 'Aktif',
-    'budget_plans.status_completed': 'Selesai',
-    'budget_plans.status_paused': 'Dijeda',
-    'budget_plans.status_cancelled': 'Dibatalkan',
-
-    // Budget Health Statuses
-    'budget_plans.health_on_track': 'Mengikut Jadual',
-    'budget_plans.health_slightly_behind': 'Sedikit Lewat',
-    'budget_plans.health_at_risk': 'Berisiko',
-    'budget_plans.health_over_budget': 'Melebihi Belanjawan',
-    'budget_plans.health_completed': 'Selesai',
-
-    // Analytics Periods
-    'budget_plans.period_week': 'Minggu',
-    'budget_plans.period_month': 'Bulan',
-    'budget_plans.period_quarter': 'Suku Tahun',
-    'budget_plans.period_year': 'Tahun',
-    'budget_plans.period_all': 'Semua',
-
     "budget_plans.items_summary": "Ringkasan Item",
     "budget_plans.items_count": "item",
 
@@ -975,10 +987,7 @@ class MalayStrings {
     "budget_plans.total_paid": "Jumlah Bayar",
     "budget_plans.total_outstanding": "Jumlah Belum Bayar",
 
-    "budget_plans.status_fully_paid": "Bayar Penuh",
     "budget_plans.status_deposit_paid": "Deposit Dibayar",
-    "budget_plans.status_not_paid": "Belum Bayar",
-    "budget_plans.status_partially_paid": "Sebahagian Dibayar",
 
     // Payment status helpers
     "budget_plans.has_deposit": "Ada Deposit",
@@ -998,9 +1007,6 @@ class MalayStrings {
 
     "budget_plans.add_deposit_desc": "Rekod wang masuk ke plan",
     "budget_plans.add_spending_desc": "Rekod perbelanjaan plan",
-    "budget_plans.linked_accounts_desc":
-        "Akaun simpanan yang diperuntukkan untuk plan ini",
-    "budget_plans.link_account": "Hubung Akaun",
     "budget_plans.total_allocated": "Jumlah Diperuntukkan",
     "budget_plans.accounts": "akaun",
     "budget_plans.no_linked_accounts_desc":
@@ -1027,15 +1033,12 @@ class MalayStrings {
         "Status Pembayaran (Termasuk Deposit)",
     "budget_plans.amount_paid_excl_deposit":
         "Jumlah Dibayar (Termasuk Deposit)",
-    "budget_plans.total_paid_summary": "Ringkasan Jumlah Dibayar",
     "budget_plans.paid": "Dibayar",
     "budget_plans.edit_item_sub": "Kemas kini maklumat perkara",
     "budget_plans.add_item_sub": "Tambah perkara baru ke pelan",
 
     // Budget Plan Item Payment Labels
     "budget_plans.deposit_status": "Status Deposit",
-    "budget_plans.deposit_paid_label": "Deposit Dibayar",
-    "budget_plans.payment_paid_label": "Pembayaran Dibayar",
     "budget_plans.remaining_after_deposit": "Baki selepas deposit",
     "budget_plans.deposit_covers_full": "Deposit mencakup jumlah penuh",
 

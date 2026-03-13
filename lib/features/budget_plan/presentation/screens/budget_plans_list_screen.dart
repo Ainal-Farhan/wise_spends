@@ -400,6 +400,18 @@ class _PlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final double progress = plan.progressPercentage.clamp(0.0, 1.0);
     final Color healthColor = _healthColor(plan.healthStatus);
+    final NumberFormat fmt = NumberFormat.currency(
+      symbol: 'RM',
+      decimalDigits: 0,
+    );
+
+    // Calculate item payment status
+    final hasItems = plan.totalItemCommitment > 0;
+    final itemPaidTotal = plan.totalItemDepositPaid + plan.totalItemAmountPaid;
+    final itemOutstanding = plan.totalItemOutstanding;
+    final itemProgress = plan.totalItemCommitment > 0
+        ? (itemPaidTotal / plan.totalItemCommitment).clamp(0.0, 1.0)
+        : 0.0;
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -420,6 +432,7 @@ class _PlanCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header with icon, name, category
               Row(
                 children: [
                   Container(
@@ -466,6 +479,8 @@ class _PlanCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: AppSpacing.lg),
+
+              // Main progress bar (goal progress)
               ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.xs),
                 child: LinearProgressIndicator(
@@ -476,11 +491,11 @@ class _PlanCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: AppSpacing.sm),
+
+              // Goal progress amounts
               SectionHeaderCompact(
                 title:
-                    '${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(plan.currentAmount)}'
-                    ' / '
-                    '${NumberFormat.currency(symbol: 'RM', decimalDigits: 0).format(plan.targetAmount)}',
+                    '${fmt.format(plan.currentAmount)} / ${fmt.format(plan.targetAmount)}',
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -500,6 +515,19 @@ class _PlanCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+
+              // Detailed amounts grid
+              _AmountsGrid(
+                currentAmount: plan.currentAmount,
+                totalSpent: plan.totalSpent,
+                totalDeposited: plan.totalDeposited,
+                hasItems: hasItems,
+                itemPaidTotal: itemPaidTotal,
+                itemOutstanding: itemOutstanding,
+                itemProgress: itemProgress,
+                fmt: fmt,
               ),
             ],
           ),
@@ -530,6 +558,227 @@ class _PlanCard extends StatelessWidget {
         value: context.read<BudgetPlanListBloc>(),
         child: _PlanOptionsSheet(plan: plan),
       ),
+    );
+  }
+}
+
+// =============================================================================
+// Amounts Grid - Shows detailed financial breakdown
+// =============================================================================
+
+class _AmountsGrid extends StatelessWidget {
+  final double currentAmount;
+  final double totalSpent;
+  final double totalDeposited;
+  final bool hasItems;
+  final double itemPaidTotal;
+  final double itemOutstanding;
+  final double itemProgress;
+  final NumberFormat fmt;
+
+  const _AmountsGrid({
+    required this.currentAmount,
+    required this.totalSpent,
+    required this.totalDeposited,
+    required this.hasItems,
+    required this.itemPaidTotal,
+    required this.itemOutstanding,
+    required this.itemProgress,
+    required this.fmt,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: WiseSpendsColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: WiseSpendsColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Row 1: Current Available, Total Spent, Total Deposited
+          Row(
+            children: [
+              _AmountCell(
+                label: 'budget_plans.available'.tr,
+                value: fmt.format(currentAmount),
+                icon: Icons.account_balance_wallet_outlined,
+                color: WiseSpendsColors.primary,
+                isLarge: true,
+                flex: 5,
+              ),
+              _GridDivider(),
+              _AmountCell(
+                label: 'budget_plans.spent'.tr,
+                value: fmt.format(totalSpent),
+                icon: Icons.north_outlined,
+                color: WiseSpendsColors.secondary,
+                flex: 1,
+              ),
+              _GridDivider(),
+              _AmountCell(
+                label: 'budget_plans.deposited'.tr,
+                value: fmt.format(totalDeposited),
+                icon: Icons.south_outlined,
+                color: WiseSpendsColors.success,
+                flex: 1,
+              ),
+            ],
+          ),
+          // Row 2: Item payments (if has items)
+          if (hasItems) ...[
+            const SizedBox(height: AppSpacing.md),
+            const Divider(height: 1),
+            const SizedBox(height: AppSpacing.md),
+            // Item payment summary
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    'budget_plans.item_payments'.tr,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: WiseSpendsColors.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    fmt.format(itemPaidTotal),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: WiseSpendsColors.primary,
+                    ),
+                    textAlign: TextAlign.right,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            // Item payment progress bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.full),
+              child: LinearProgressIndicator(
+                value: itemProgress,
+                backgroundColor: WiseSpendsColors.primary.withValues(alpha: 0.1),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  WiseSpendsColors.primary,
+                ),
+                minHeight: 4,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            // Outstanding amount
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'budget_plans.outstanding'.tr,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: WiseSpendsColors.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Text(
+                  fmt.format(itemOutstanding),
+                  style: AppTextStyles.bodySmall.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: itemOutstanding > 0
+                        ? WiseSpendsColors.error
+                        : WiseSpendsColors.success,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// Amount Cell - Individual amount display in grid
+// =============================================================================
+
+class _AmountCell extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+  final bool isLarge;
+  final int flex;
+
+  const _AmountCell({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+    this.isLarge = false,
+    this.flex = 1,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: flex,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: isLarge ? 14 : 11, color: color),
+              const SizedBox(width: 3),
+              Expanded(
+                child: Text(
+                  label,
+                  style: (isLarge ? AppTextStyles.caption : AppTextStyles.captionSmall).copyWith(
+                    color: WiseSpendsColors.textSecondary,
+                    fontWeight: isLarge ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: (isLarge ? AppTextStyles.bodyLarge : AppTextStyles.bodyMedium).copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GridDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 1,
+      height: 32,
+      color: WiseSpendsColors.divider,
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
     );
   }
 }

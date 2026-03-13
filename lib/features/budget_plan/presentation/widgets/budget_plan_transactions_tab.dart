@@ -33,6 +33,7 @@ class BudgetPlanTransactionsTab extends StatelessWidget {
             totalDeposited: totalDeposited,
             totalSpent: totalSpent,
             net: totalDeposited - totalSpent,
+            totalAvailable: state.plan.currentAmount,
           ),
 
           // Sub-tab bar
