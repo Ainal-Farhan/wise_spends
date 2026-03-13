@@ -27,6 +27,15 @@ class ExportDataToInternalStorage extends BackupRestoreEvent {
   List<Object?> get props => [format];
 }
 
+/// Create a full backup including all files and data as ZIP
+class ExportFullBackupWithFiles extends BackupRestoreEvent {
+  final bool share;
+  const ExportFullBackupWithFiles({this.share = false});
+
+  @override
+  List<Object?> get props => [share];
+}
+
 // ─── Import Events ────────────────────────────────────────────────────────────
 
 /// Let the user pick a backup file and restore from it.
@@ -78,6 +87,29 @@ class ToggleAutoBackup extends BackupRestoreEvent {
 
   @override
   List<Object?> get props => [enabled];
+}
+
+// ─── Reset Data Events ────────────────────────────────────────────────────────
+
+/// Reset all application data (database + files)
+class ResetAllData extends BackupRestoreEvent {
+  const ResetAllData();
+}
+
+// ─── File Management Events ───────────────────────────────────────────────────
+
+/// Load all files managed by the app
+class LoadAllFiles extends BackupRestoreEvent {
+  const LoadAllFiles();
+}
+
+/// Delete a specific file by its ID
+class DeleteFile extends BackupRestoreEvent {
+  final String fileId;
+  const DeleteFile(this.fileId);
+
+  @override
+  List<Object?> get props => [fileId];
 }
 
 // ─── Legacy aliases (keep backward compat) ───────────────────────────────────

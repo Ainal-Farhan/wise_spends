@@ -1,10 +1,15 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/services/backup/backup_restore_bloc.dart';
 import 'package:wise_spends/core/services/backup/workmanager/backup_task_config.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/data/repositories/common/impl/file_storage_repository.dart';
+import 'package:wise_spends/domain/models/stored_file.dart';
 import 'package:workmanager/workmanager.dart';
 
 /// SharedPreferences key for the auto-backup toggle.
@@ -16,6 +21,7 @@ class BackupService {
   BackupService._internal();
 
   final AppDatabase _database = AppDatabase();
+  final FileStorageRepository _fileStorage = FileStorageRepository();
 
   // ─── Export & Share ──────────────────────────────────────────────────────
 
@@ -38,6 +44,33 @@ class BackupService {
     }
   }
 
+  /// Create a full backup including all files and data as a ZIP archive.
+  /// Returns the path to the created ZIP file.
+  Future<String> backupFullWithFiles({bool share = false}) async {
+    try {
+      // Create ZIP backup with all files and DB manifest
+      final zipPath = await _fileStorage.createBackup();
+      if (zipPath == null) {
+        throw Exception('Failed to create full backup');
+      }
+
+      if (share) {
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(zipPath)],
+            text: 'Wise Spends Full Backup (with files) – ${_timestamp()}',
+          ),
+        );
+        // Don't delete the file if sharing - let the system handle it
+        return zipPath;
+      }
+
+      return zipPath;
+    } catch (e) {
+      throw Exception('Full backup failed: $e');
+    }
+  }
+
   /// Export data silently to the app's internal backup folder.
   /// Returns the saved file path.
   Future<String> backupToInternalStorage({String type = '.json'}) async {
@@ -51,25 +84,48 @@ class BackupService {
   // ─── Restore ─────────────────────────────────────────────────────────────
 
   /// Opens the system file picker and restores from whatever the user selects.
+  /// Supports JSON, SQLite, and ZIP (full backup with files) formats.
   /// Returns `true` on success, `false` when the user cancels.
   Future<bool> restore() async {
     try {
-      return await _database.restore('.json');
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.custom,
+        allowedExtensions: ['zip', 'json', 'sqlite'],
+      );
+
+      if (result == null || result.files.isEmpty) {
+        return false;
+      }
+
+      final filePath = result.files.single.path;
+      if (filePath == null) {
+        return false;
+      }
+
+      return await restoreFromPath(filePath);
     } catch (e) {
       throw Exception('Restore failed: $e');
     }
   }
 
   /// Restores directly from [filePath] without showing a file picker.
-  /// File type is inferred from the extension (.json / .sqlite).
+  /// File type is inferred from the extension (.json / .sqlite / .zip).
+  /// ZIP files contain full backups including uploaded files.
   Future<bool> restoreFromPath(String filePath) async {
     final file = File(filePath);
     if (!await file.exists()) {
       throw Exception('Backup file not found: $filePath');
     }
     try {
-      final type = filePath.endsWith('.sqlite') ? '.sqlite' : '.json';
-      return await _database.restoreFromPath(filePath, type);
+      if (filePath.endsWith('.zip')) {
+        // Restore from ZIP archive (includes files)
+        return await _fileStorage.restoreFromBackup(filePath);
+      } else {
+        // Restore from JSON or SQLite
+        final type = filePath.endsWith('.sqlite') ? '.sqlite' : '.json';
+        return await _database.restoreFromPath(filePath, type);
+      }
     } catch (e) {
       throw Exception('Restore from path failed: $e');
     }
@@ -162,7 +218,76 @@ class BackupService {
     }
   }
 
-  // ─── Helpers ─────────────────────────────────────────────────────────────
+  // ─── Reset Data ────────────────────────────────────────────────────────────
+
+  /// Resets all application data by clearing all tables and deleting all files.
+  /// This is irreversible! Returns true on success.
+  Future<bool> resetAllData() async {
+    try {
+      // First, get all active files and delete them physically
+      final activeFiles = await _fileStorage.getAllActiveFiles();
+
+      // Delete all physical files
+      for (final file in activeFiles) {
+        final fileEntity = File(file.localPath);
+        if (await fileEntity.exists()) {
+          await fileEntity.delete();
+        }
+      }
+
+      // Clear all database tables
+      await _clearAllDatabaseTables();
+
+      return true;
+    } catch (e) {
+      throw Exception('Reset data failed: $e');
+    }
+  }
+
+  /// Clears all data from all database tables
+  Future<void> _clearAllDatabaseTables() async {
+    // Clear all tables through repositories
+    for (final repo
+        in SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .retrieveAllRepository()) {
+      try {
+        await repo.deleteAll();
+      } catch (e) {
+        // Continue with other tables even if one fails
+      }
+    }
+  }
+
+  // ─── File Management ───────────────────────────────────────────────────────
+
+  /// Lists all files managed by the app
+  Future<List<StoredFile>> listAllFiles() async {
+    try {
+      return await _fileStorage.getAllActiveFiles();
+    } catch (e) {
+      throw Exception('List files failed: $e');
+    }
+  }
+
+  /// Deletes a file by its ID
+  Future<bool> deleteFile(String fileId) async {
+    try {
+      return await _fileStorage.deleteFile(fileId);
+    } catch (e) {
+      throw Exception('Delete file failed: $e');
+    }
+  }
+
+  /// Gets total storage used by all files
+  Future<int> getTotalStorageUsed() async {
+    try {
+      return await _fileStorage.getTotalStorageUsed();
+    } catch (e) {
+      throw Exception('Get storage size failed: $e');
+    }
+  }
+
+  // ─── Helpers ───────────────────────────────────────────────────────────────
 
   Future<BackupFileInfo> _toInfo(File file) async {
     final stat = await file.stat();

@@ -13,45 +13,56 @@ import 'backup_history_tile.dart';
 /// The "History" tab: pull-to-refresh list of local backups.
 ///
 /// Each tile allows the user to restore, share, or delete a backup file.
-class HistoryTab extends StatelessWidget {
-  final BackupRestoreState state;
+class HistoryTab extends StatefulWidget {
+  const HistoryTab({super.key});
 
-  const HistoryTab({super.key, required this.state});
+  @override
+  State<HistoryTab> createState() => _HistoryTabState();
+}
+
+class _HistoryTabState extends State<HistoryTab> with AutomaticKeepAliveClientMixin<HistoryTab> {
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    if (state is BackupHistoryLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    super.build(context);
+    return BlocBuilder<BackupRestoreBloc, BackupRestoreState>(
+      builder: (context, state) {
+        if (state is BackupHistoryLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    final backups = _resolveBackups(state);
+        final backups = _resolveBackups(state);
 
-    if (backups.isEmpty) {
-      return BackupEmptyHistory(
-        onRefresh: () =>
-            context.read<BackupRestoreBloc>().add(const LoadBackupHistory()),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: () async =>
-          context.read<BackupRestoreBloc>().add(const LoadBackupHistory()),
-      child: ListView.separated(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        itemCount: backups.length,
-        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-        itemBuilder: (context, index) {
-          final backup = backups[index];
-          return BackupHistoryTile(
-            backup: backup,
-            onShare: () => context.read<BackupRestoreBloc>().add(
-              ShareExistingBackup(backup.filePath),
-            ),
-            onDelete: () => _confirmDelete(context, backup),
-            onRestore: () => _confirmRestoreFromHistory(context, backup),
+        if (backups.isEmpty) {
+          return BackupEmptyHistory(
+            onRefresh: () =>
+                context.read<BackupRestoreBloc>().add(const LoadBackupHistory()),
           );
-        },
-      ),
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async =>
+              context.read<BackupRestoreBloc>().add(const LoadBackupHistory()),
+          child: ListView.separated(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            itemCount: backups.length,
+            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+            itemBuilder: (context, index) {
+              final backup = backups[index];
+              return BackupHistoryTile(
+                backup: backup,
+                onShare: () => context.read<BackupRestoreBloc>().add(
+                  ShareExistingBackup(backup.filePath),
+                ),
+                onDelete: () => _confirmDelete(context, backup),
+                onRestore: () => _confirmRestoreFromHistory(context, backup),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 

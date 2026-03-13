@@ -95,7 +95,7 @@ class WiseSpendsApp extends StatelessWidget {
                     AppRoutes.hiddenUtilityMenu,
                   );
                 },
-                child: child!,
+                child: SafeArea(top: false, bottom: true, child: child!),
               ),
             );
           },

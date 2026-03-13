@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/core/services/backup/backup_service.dart';
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/domain/models/stored_file.dart';
 
 part 'backup_restore_event.dart';
 part 'backup_restore_state.dart';
@@ -12,6 +13,7 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     // ── Export ──────────────────────────────────────────────────────────────
     on<ExportDataToShare>(_onExportToShare);
     on<ExportDataToInternalStorage>(_onExportToInternalStorage);
+    on<ExportFullBackupWithFiles>(_onExportFullBackupWithFiles);
 
     // ── Legacy events ────────────────────────────────────────────────────────
     on<ExportDataToJson>(
@@ -38,6 +40,13 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
 
     // ── Auto-backup ──────────────────────────────────────────────────────────
     on<ToggleAutoBackup>(_onToggleAutoBackup);
+
+    // ── Reset Data ───────────────────────────────────────────────────────────
+    on<ResetAllData>(_onResetAllData);
+
+    // ── File Management ──────────────────────────────────────────────────────
+    on<LoadAllFiles>(_onLoadAllFiles);
+    on<DeleteFile>(_onDeleteFile);
   }
 
   // ─── Export handlers ──────────────────────────────────────────────────────
@@ -67,6 +76,21 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
       emit(BackupRestoreExportSuccess(filePath, event.format));
     } catch (e) {
       emit(BackupRestoreExportError(_friendlyError(e, 'export')));
+    }
+  }
+
+  Future<void> _onExportFullBackupWithFiles(
+    ExportFullBackupWithFiles event,
+    Emitter<BackupRestoreState> emit,
+  ) async {
+    try {
+      emit(BackupRestoreExportingFull());
+      final filePath = await _backupService.backupFullWithFiles(
+        share: event.share,
+      );
+      emit(BackupRestoreExportFullSuccess(filePath, shared: event.share));
+    } catch (e) {
+      emit(BackupRestoreExportFullError(_friendlyError(e, 'full backup')));
     }
   }
 
@@ -179,6 +203,60 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
           autoBackupEnabled: event.enabled,
         ),
       );
+    }
+  }
+
+  // ─── Reset Data handler ───────────────────────────────────────────────────
+
+  Future<void> _onResetAllData(
+    ResetAllData event,
+    Emitter<BackupRestoreState> emit,
+  ) async {
+    try {
+      emit(ResettingData());
+      final success = await _backupService.resetAllData();
+      if (success) {
+        emit(const ResetDataSuccess());
+      } else {
+        emit(const ResetDataError('Failed to reset data'));
+      }
+    } catch (e) {
+      emit(ResetDataError(_friendlyError(e, 'reset data')));
+    }
+  }
+
+  // ─── File Management handlers ─────────────────────────────────────────────
+
+  Future<void> _onLoadAllFiles(
+    LoadAllFiles event,
+    Emitter<BackupRestoreState> emit,
+  ) async {
+    try {
+      emit(LoadingFiles());
+      final files = await _backupService.listAllFiles();
+      final totalStorage = await _backupService.getTotalStorageUsed();
+      emit(FilesLoaded(files: files, totalStorageBytes: totalStorage));
+    } catch (e) {
+      emit(FilesError(_friendlyError(e, 'load files')));
+    }
+  }
+
+  Future<void> _onDeleteFile(
+    DeleteFile event,
+    Emitter<BackupRestoreState> emit,
+  ) async {
+    try {
+      emit(FileDeleting(event.fileId));
+      final success = await _backupService.deleteFile(event.fileId);
+      if (success) {
+        emit(FileDeleted(event.fileId));
+        // Reload files after deletion
+        add(const LoadAllFiles());
+      } else {
+        emit(const FileDeleteError('Failed to delete file'));
+      }
+    } catch (e) {
+      emit(FileDeleteError(_friendlyError(e, 'delete file')));
     }
   }
 

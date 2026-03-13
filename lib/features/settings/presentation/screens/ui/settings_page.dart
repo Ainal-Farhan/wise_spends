@@ -240,26 +240,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Navigator.pushNamed(context, AppRoutes.backupRestore);
                   },
                 ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.file_download_outlined,
-                  title: 'settings.export_data'.tr,
-                  subtitle: 'settings.export_data_desc'.tr,
-                  showComingSoon: true,
-                  hideTrailing: true,
-                  onTap: () {
-                    _showComingSoonMessage(context, 'settings.export_data'.tr);
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.delete_outline,
-                  title: 'settings.clear_data'.tr,
-                  subtitle: 'settings.clear_data_desc'.tr,
-                  isDestructive: true,
-                  hideTrailing: true,
-                  onTap: () => _showClearDataConfirmation(),
-                ),
               ],
             ),
 
@@ -483,8 +463,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 backgroundColor: AppColors.primary,
                                 behavior: SnackBarBehavior.floating,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(AppRadius.md),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.md,
+                                  ),
                                 ),
                                 duration: const Duration(seconds: 3),
                               ),
@@ -494,7 +475,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(
                               color: AppColors.primaryContainer,
-                              borderRadius: BorderRadius.circular(AppRadius.full),
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.full,
+                              ),
                             ),
                             child: const Icon(
                               Icons.info_outline,
@@ -667,40 +650,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         setState(() {});
       }
     }
-  }
-
-  void _showClearDataConfirmation() {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => CustomDialog(
-        config: CustomDialogConfig(
-          title: 'settings.clear_all_data'.tr,
-          message: 'settings.clear_all_data_msg'.tr,
-          icon: Icons.warning_amber_rounded,
-          iconColor: AppColors.warning,
-          buttons: [
-            CustomDialogButton(
-              text: 'general.cancel'.tr,
-              onPressed: () => Navigator.pop(dialogContext),
-            ),
-            CustomDialogButton(
-              text: 'general.delete'.tr,
-              isDestructive: true,
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('settings.all_data_cleared'.tr),
-                    backgroundColor: AppColors.success,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void _showSignOutConfirmation() {

@@ -66,4 +66,7 @@ abstract class IFileStorageRepository
 
   /// Compute total storage used (bytes) by active files.
   Future<int> getTotalStorageUsed();
+
+  /// Get all active files regardless of entity.
+  Future<List<StoredFile>> getAllActiveFiles();
 }

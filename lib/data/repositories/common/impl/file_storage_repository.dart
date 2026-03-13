@@ -367,4 +367,12 @@ class FileStorageRepository extends IFileStorageRepository {
     )..where((t) => t.status.equals('active'))).get();
     return rows.fold<int>(0, (sum, r) => sum + r.sizeBytes);
   }
+
+  @override
+  Future<List<StoredFile>> getAllActiveFiles() async {
+    final rows = await (db.select(
+      db.fileStorageTable,
+    )..where((t) => t.status.equals('active'))).get();
+    return rows.map(StoredFile.fromCmmnFileStorage).toList();
+  }
 }

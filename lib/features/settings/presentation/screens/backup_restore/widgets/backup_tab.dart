@@ -16,74 +16,87 @@ import 'backup_warning_card.dart';
 
 /// The "Backup" tab: hero card, share/save format selectors,
 /// restore trigger, auto-backup toggle, and warning notice.
-class BackupTab extends StatelessWidget {
-  final BackupRestoreState state;
+class BackupTab extends StatefulWidget {
+  const BackupTab({super.key});
 
-  const BackupTab({super.key, required this.state});
+  @override
+  State<BackupTab> createState() => _BackupTabState();
+}
+
+class _BackupTabState extends State<BackupTab>
+    with AutomaticKeepAliveClientMixin<BackupTab> {
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    final autoBackupEnabled = state is BackupHistoryLoaded
-        ? (state as BackupHistoryLoaded).autoBackupEnabled
-        : false;
+    super.build(context);
+    return BlocBuilder<BackupRestoreBloc, BackupRestoreState>(
+      builder: (context, state) {
+        final autoBackupEnabled = state is BackupHistoryLoaded
+            ? state.autoBackupEnabled
+            : false;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const BackupHeroCard(),
-          const SizedBox(height: AppSpacing.xl),
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const BackupHeroCard(),
+              const SizedBox(height: AppSpacing.xl),
 
-          // ── Share Backup ──────────────────────────────────────────────────
-          BackupSectionLabel(
-            icon: Icons.ios_share_rounded,
-            title: BackupRestoreKeys.sectionShareTitle.tr,
-            subtitle: BackupRestoreKeys.sectionShareSubtitle.tr,
+              // ── Share Backup ──────────────────────────────────────────────────
+              BackupSectionLabel(
+                icon: Icons.ios_share_rounded,
+                title: BackupRestoreKeys.sectionShareTitle.tr,
+                subtitle: BackupRestoreKeys.sectionShareSubtitle.tr,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              _ShareFormatRow(onTap: (fmt) => _confirmShare(context, fmt)),
+
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── Save to Device ────────────────────────────────────────────────
+              BackupSectionLabel(
+                icon: Icons.save_alt_rounded,
+                title: BackupRestoreKeys.sectionSaveTitle.tr,
+                subtitle: BackupRestoreKeys.sectionSaveSubtitle.tr,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              _SaveFormatRow(
+                onTap: (fmt) => context.read<BackupRestoreBloc>().add(
+                  ExportDataToInternalStorage(fmt),
+                ),
+              ),
+
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── Restore ───────────────────────────────────────────────────────
+              BackupSectionLabel(
+                icon: Icons.restore_rounded,
+                title: BackupRestoreKeys.sectionRestoreTitle.tr,
+                subtitle: BackupRestoreKeys.sectionRestoreSubtitle.tr,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              BackupRestoreCard(onTap: () => _confirmRestore(context)),
+
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── Auto-Backup ───────────────────────────────────────────────────
+              BackupAutoBackupCard(
+                enabled: autoBackupEnabled,
+                onToggle: (value) => context.read<BackupRestoreBloc>().add(
+                  ToggleAutoBackup(value),
+                ),
+              ),
+
+              const SizedBox(height: AppSpacing.xl),
+              const BackupWarningCard(),
+              const SizedBox(height: AppSpacing.lg),
+            ],
           ),
-          const SizedBox(height: AppSpacing.md),
-          _ShareFormatRow(onTap: (fmt) => _confirmShare(context, fmt)),
-
-          const SizedBox(height: AppSpacing.xl),
-
-          // ── Save to Device ────────────────────────────────────────────────
-          BackupSectionLabel(
-            icon: Icons.save_alt_rounded,
-            title: BackupRestoreKeys.sectionSaveTitle.tr,
-            subtitle: BackupRestoreKeys.sectionSaveSubtitle.tr,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _SaveFormatRow(
-            onTap: (fmt) => context.read<BackupRestoreBloc>().add(
-              ExportDataToInternalStorage(fmt),
-            ),
-          ),
-
-          const SizedBox(height: AppSpacing.xl),
-
-          // ── Restore ───────────────────────────────────────────────────────
-          BackupSectionLabel(
-            icon: Icons.restore_rounded,
-            title: BackupRestoreKeys.sectionRestoreTitle.tr,
-            subtitle: BackupRestoreKeys.sectionRestoreSubtitle.tr,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          BackupRestoreCard(onTap: () => _confirmRestore(context)),
-
-          const SizedBox(height: AppSpacing.xl),
-
-          // ── Auto-Backup ───────────────────────────────────────────────────
-          BackupAutoBackupCard(
-            enabled: autoBackupEnabled,
-            onToggle: (value) =>
-                context.read<BackupRestoreBloc>().add(ToggleAutoBackup(value)),
-          ),
-
-          const SizedBox(height: AppSpacing.xl),
-          const BackupWarningCard(),
-          const SizedBox(height: AppSpacing.lg),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -140,6 +153,7 @@ class BackupTab extends StatelessWidget {
               isDestructive: true,
               onPressed: () {
                 Navigator.pop(ctx);
+                // This will open the file picker to select a backup file
                 context.read<BackupRestoreBloc>().add(
                   const ImportDataFromFile(),
                 );

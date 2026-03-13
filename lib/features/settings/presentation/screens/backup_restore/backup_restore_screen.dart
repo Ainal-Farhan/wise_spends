@@ -4,6 +4,7 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/services/backup/backup_service.dart';
 import 'package:wise_spends/core/services/backup/backup_restore_bloc.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
+import 'package:wise_spends/features/settings/presentation/screens/backup_restore/widgets/data_management_tab.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -48,7 +49,7 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -74,6 +75,10 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
               icon: const Icon(Icons.history_rounded),
               text: BackupRestoreKeys.tabHistory.tr,
             ),
+            Tab(
+              icon: const Icon(Icons.folder_outlined),
+              text: 'Data Management',
+            ),
           ],
         ),
       ),
@@ -85,9 +90,10 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
           }
           return TabBarView(
             controller: _tabController,
-            children: [
-              BackupTab(state: state),
-              HistoryTab(state: state),
+            children: const [
+              BackupTab(),
+              HistoryTab(),
+              DataManagementTab(),
             ],
           );
         },
@@ -118,6 +124,22 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         context.read<BackupRestoreBloc>().add(const LoadBackupHistory());
         _tabController.animateTo(1);
       }
+    } else if (state is BackupRestoreExportFullSuccess) {
+      final msg = state.shared
+          ? 'Full backup shared successfully (with files)'
+          : 'Full backup saved (with files)';
+      _snack(
+        context,
+        message: msg,
+        icon: Icons.check_circle_rounded,
+        color: AppColors.success,
+      );
+
+      // Navigate to History tab after a silent save
+      if (!state.shared) {
+        context.read<BackupRestoreBloc>().add(const LoadBackupHistory());
+        _tabController.animateTo(1);
+      }
     } else if (state is BackupRestoreImportSuccess) {
       _snack(
         context,
@@ -139,6 +161,20 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         icon: Icons.delete_outline_rounded,
         color: AppColors.textSecondary,
       );
+    } else if (state is ResetDataSuccess) {
+      _snack(
+        context,
+        message: 'All data has been reset successfully',
+        icon: Icons.check_circle_rounded,
+        color: AppColors.success,
+      );
+    } else if (state is FileDeleted) {
+      _snack(
+        context,
+        message: 'File deleted successfully',
+        icon: Icons.delete_outline_rounded,
+        color: AppColors.textSecondary,
+      );
     } else if (_isError(state)) {
       _snack(
         context,
@@ -153,23 +189,35 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
 
   bool _isLoading(BackupRestoreState state) =>
       state is BackupRestoreExporting ||
+      state is BackupRestoreExportingFull ||
       state is BackupRestoreImporting ||
       state is BackupSharingFile ||
-      state is BackupDeletingFile;
+      state is BackupDeletingFile ||
+      state is ResettingData ||
+      state is LoadingFiles ||
+      state is FileDeleting;
 
   bool _isError(BackupRestoreState state) =>
       state is BackupRestoreExportError ||
+      state is BackupRestoreExportFullError ||
       state is BackupRestoreImportError ||
       state is BackupShareError ||
       state is BackupDeleteError ||
-      state is BackupHistoryError;
+      state is BackupHistoryError ||
+      state is ResetDataError ||
+      state is FilesError ||
+      state is FileDeleteError;
 
   String _errorMessage(BackupRestoreState state) => switch (state) {
     BackupRestoreExportError s => s.message,
+    BackupRestoreExportFullError s => s.message,
     BackupRestoreImportError s => s.message,
     BackupShareError s => s.message,
     BackupDeleteError s => s.message,
     BackupHistoryError s => s.message,
+    ResetDataError s => s.message,
+    FilesError s => s.message,
+    FileDeleteError s => s.message,
     _ => '',
   };
 

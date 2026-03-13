@@ -78,6 +78,33 @@ class BackupRestoreExportError extends BackupRestoreState {
   List<Object?> get props => [message];
 }
 
+// ── Full Backup with Files ──
+
+class BackupRestoreExportingFull extends BackupRestoreState {}
+
+class BackupRestoreExportFullSuccess extends BackupRestoreState {
+  final String filePath;
+
+  /// true when the system share sheet was opened
+  final bool shared;
+
+  const BackupRestoreExportFullSuccess(
+    this.filePath, {
+    this.shared = false,
+  });
+
+  @override
+  List<Object?> get props => [filePath, shared];
+}
+
+class BackupRestoreExportFullError extends BackupRestoreState {
+  final String message;
+  const BackupRestoreExportFullError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
 // ── Import ──
 
 class BackupRestoreImporting extends BackupRestoreState {}
@@ -168,6 +195,76 @@ class BackupDeleteSuccess extends BackupRestoreState {
 class BackupDeleteError extends BackupRestoreState {
   final String message;
   const BackupDeleteError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// ── Reset Data ──
+
+class ResettingData extends BackupRestoreState {}
+
+class ResetDataSuccess extends BackupRestoreState {
+  const ResetDataSuccess();
+}
+
+class ResetDataError extends BackupRestoreState {
+  final String message;
+  const ResetDataError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// ── File Management ──
+
+class LoadingFiles extends BackupRestoreState {}
+
+class FilesLoaded extends BackupRestoreState {
+  final List<StoredFile> files;
+  final int totalStorageBytes;
+
+  const FilesLoaded({required this.files, required this.totalStorageBytes});
+
+  String get formattedStorageSize {
+    if (totalStorageBytes < 1024) return '$totalStorageBytes B';
+    if (totalStorageBytes < 1024 * 1024) {
+      return '${(totalStorageBytes / 1024).toStringAsFixed(1)} KB';
+    }
+    return '${(totalStorageBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  }
+
+  @override
+  List<Object?> get props => [files, totalStorageBytes];
+}
+
+class FileDeleting extends BackupRestoreState {
+  final String fileId;
+  const FileDeleting(this.fileId);
+
+  @override
+  List<Object?> get props => [fileId];
+}
+
+class FileDeleted extends BackupRestoreState {
+  final String fileId;
+  const FileDeleted(this.fileId);
+
+  @override
+  List<Object?> get props => [fileId];
+}
+
+class FileDeleteError extends BackupRestoreState {
+  final String message;
+  const FileDeleteError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class FilesError extends BackupRestoreState {
+  final String message;
+  const FilesError(this.message);
 
   @override
   List<Object?> get props => [message];

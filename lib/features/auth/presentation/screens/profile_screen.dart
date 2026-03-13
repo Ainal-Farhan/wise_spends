@@ -11,7 +11,6 @@ import 'package:wise_spends/features/auth/presentation/bloc/profile_event.dart';
 import 'package:wise_spends/features/auth/presentation/bloc/profile_state.dart';
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_account_info_card.dart';
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_avatar.dart';
-import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_backup_section.dart';
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_danger_zone.dart';
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_form_fields.dart';
 import 'package:wise_spends/shared/components/components.dart';
@@ -100,21 +99,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context,
         message: 'Photo updated successfully',
         icon: Icons.check_circle,
-        color: AppColors.success,
-      );
-    } else if (state is ProfileBackupSuccess) {
-      _showSnackBar(
-        context,
-        message: 'Backup created at: ${state.archivePath}',
-        icon: Icons.backup,
-        color: AppColors.info,
-        duration: const Duration(seconds: 4),
-      );
-    } else if (state is ProfileRestoreSuccess) {
-      _showSnackBar(
-        context,
-        message: 'Restore completed successfully',
-        icon: Icons.restore,
         color: AppColors.success,
       );
     } else if (state is ProfileError) {
@@ -226,10 +210,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // ── Account info ──
               ProfileAccountInfoCard(profile: profile),
-              const SizedBox(height: AppSpacing.xxl),
-
-              // ── Backup ──
-              const ProfileBackupSection(),
               const SizedBox(height: AppSpacing.xxl),
 
               // ── Danger zone ──
