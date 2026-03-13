@@ -697,23 +697,18 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final newAllocation = currentAllocation + deltaAmount;
 
     // Update the allocation in the database
-    if (newAllocation <= 0) {
-      // If allocation becomes zero or negative, unlink the account
-      await unlinkAccount(planId, accountId);
-    } else {
-      // Update the allocation amount
-      final updating = SavingsPlanLinkedAccountTableCompanion(
-        allocatedAmount: Value(newAllocation),
-        dateUpdated: Value(DateTime.now()),
-        lastModifiedBy: Value('system'),
-      );
+    // Update the allocation amount
+    final updating = SavingsPlanLinkedAccountTableCompanion(
+      allocatedAmount: Value(newAllocation),
+      dateUpdated: Value(DateTime.now()),
+      lastModifiedBy: Value('system'),
+    );
 
-      final query = _db.update(_db.savingsPlanLinkedAccountTable)
-        ..where(
-          (tbl) => tbl.planId.equals(planId) & tbl.accountId.equals(accountId),
-        );
-      await query.write(updating);
-    }
+    final query = _db.update(_db.savingsPlanLinkedAccountTable)
+      ..where(
+        (tbl) => tbl.planId.equals(planId) & tbl.accountId.equals(accountId),
+      );
+    await query.write(updating);
   }
 
   @override

@@ -5,13 +5,6 @@ import 'package:wise_spends/data/db/domain/savings_plan/savings_plan_table.dart'
 import 'package:wise_spends/data/db/domain/saving/saving_table.dart';
 
 /// Savings Plan Linked Account table for tracking which savings accounts
-/// contribute to a savings plan.
-///
-/// Extends [BaseEntityTable] which provides:
-///   - id          (TextColumn, primary key)
-///   - createdBy
-///   - lastModifiedBy
-///   - dateUpdated
 @DataClassName("${DomainTableConstant.savingsPlanTablePrefix}LinkedAccount")
 class SavingsPlanLinkedAccountTable extends BaseEntityTable {
   /// FK to [SavingsPlanTable] — the plan this account is linked to.
