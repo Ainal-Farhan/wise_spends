@@ -215,4 +215,42 @@ class AppDatabase extends _$AppDatabase {
       }
     }
   }
+
+  /// Restores data directly from [filePath] without opening a file picker.
+  ///
+  /// [type] must be either `'.json'` or `'.sqlite'`.
+  /// Returns `true` on success, throws on error.
+  Future<bool> restoreFromPath(final String filePath, final String type) async {
+    final isJson = type != '.sqlite';
+    final ext = isJson ? 'json' : 'sqlite';
+
+    final File file = File(filePath);
+
+    if (!file.existsSync()) {
+      throw Exception('Backup file not found: $filePath');
+    }
+
+    final List<String> allowedExtensions = [ext];
+    if (!FileUtil.isMatchCustomExtensions(
+      file: file,
+      allowedExtensions: allowedExtensions,
+    )) {
+      throw 'The file extension is ${FileUtil.getFileExtension(file)}, '
+          'it must be ${allowedExtensions.join(" or ")}';
+    }
+
+    if (isJson) {
+      await replaceDataFromTable(
+        await FileUtil.decodeFromJsonFile(jsonFile: file),
+      );
+    } else {
+      await DbConnection.dbFile.writeAsBytes(await file.readAsBytes());
+    }
+
+    await SingletonUtil.getSingleton<IManagerLocator>()
+        ?.getStartupManager()
+        .onRunApp(true);
+
+    return true;
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/features/commitment/domain/entities/commitment_detail_vo.dart';
 import 'package:wise_spends/features/payee/domain/entities/payee_vo.dart';
 import 'package:wise_spends/features/commitment/domain/usecases/i_commitment_manager.dart';
@@ -122,7 +122,7 @@ class CommitmentBloc extends Bloc<CommitmentEvent, CommitmentState> {
         ),
       );
     } catch (e, stackTrace) {
-      debugPrintStack(stackTrace: stackTrace);
+      WiseLogger().error(e.toString(), error: e, stackTrace: stackTrace);
       emit(CommitmentStateX.error(e.toString()));
     }
   }

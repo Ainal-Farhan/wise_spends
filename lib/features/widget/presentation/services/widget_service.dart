@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 
 class WidgetService {
@@ -78,7 +79,7 @@ class WidgetService {
     try {
       await HomeWidget.requestPinWidget(androidName: _androidWidgetName);
     } catch (e) {
-      debugPrint('requestPinWidget failed: $e');
+      WiseLogger().debug('requestPinWidget failed: $e');
     }
   }
 

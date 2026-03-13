@@ -1049,5 +1049,99 @@ class MalayStrings {
     // Review Step
     "budget_plans.no_milestones_review":
         "Tiada milestone ditambah. Teruskan tanpa milestone?",
+
+    // ── Tabs ─────────────────────────────────────────────────────────────────────
+    'backup_restore.tab.backup': 'Sandaran',
+    'backup_restore.tab.history': 'Sejarah',
+
+    // ── Hero card ────────────────────────────────────────────────────────────────
+    'backup_restore.hero.title': 'Data Anda Milik Anda',
+    'backup_restore.hero.subtitle':
+        'Eksport secara berkala untuk menjaga kewangan anda selamat merentas peranti.',
+
+    // ── Section labels ────────────────────────────────────────────────────────────
+    'backup_restore.section.share.title': 'Kongsi Sandaran',
+    'backup_restore.section.share.subtitle':
+        'Eksport & kongsi serta-merta melalui mana-mana apl',
+
+    'backup_restore.section.save.title': 'Simpan ke Peranti',
+    'backup_restore.section.save.subtitle':
+        'Simpan salinan tempatan dalam storan apl',
+
+    'backup_restore.section.restore.title': 'Pulihkan Data',
+    'backup_restore.section.restore.subtitle':
+        'Gantikan semua data daripada fail sandaran',
+
+    // ── Format cards ──────────────────────────────────────────────────────────────
+    'backup_restore.format.json.label': 'JSON',
+    'backup_restore.format.json.desc': 'Mudah dibaca',
+    'backup_restore.format.sqlite.label': 'SQLite',
+    'backup_restore.format.sqlite.desc': 'Pemulihan lebih pantas',
+
+    // ── Restore card ──────────────────────────────────────────────────────────────
+    'backup_restore.restore_card.title': 'Pulihkan daripada Fail',
+    'backup_restore.restore_card.subtitle':
+        'Ketik untuk pilih fail sandaran .json atau .sqlite',
+
+    // ── Auto-backup ───────────────────────────────────────────────────────────────
+    'backup_restore.auto_backup.title': 'Sandaran Automatik',
+    'backup_restore.auto_backup.subtitle':
+        'Simpan sandaran secara automatik sekali seminggu',
+
+    // ── Warning ───────────────────────────────────────────────────────────────────
+    'backup_restore.warning.text':
+        'Memulihkan data akan menggantikan semua yang disimpan sekarang. '
+        'Sentiasa buat sandaran baharu sebelum memulihkan.',
+
+    // ── History empty state ───────────────────────────────────────────────────────
+    'backup_restore.history.empty.title': 'Tiada sandaran tempatan lagi',
+    'backup_restore.history.empty.subtitle':
+        'Gunakan "Simpan ke Peranti" pada tab Sandaran untuk membuat salinan tempatan.',
+    'backup_restore.history.refresh': 'Muat Semula',
+
+    // ── History tile actions ──────────────────────────────────────────────────────
+    'backup_restore.history.action.restore': 'Pulihkan',
+    'backup_restore.history.action.share': 'Kongsi',
+    'backup_restore.history.action.delete': 'Padam',
+
+    // ── Dialogs ───────────────────────────────────────────────────────────────────
+    'backup_restore.dialog.share.title': 'Kongsi Sandaran {format}',
+    'backup_restore.dialog.share.message':
+        'Eksport data anda sebagai {format} dan kongsi melalui mana-mana apl '
+        '(Fail, Drive, WhatsApp, dll.).',
+    'backup_restore.dialog.share.confirm': 'Kongsi',
+
+    'backup_restore.dialog.restore.title': 'Pulihkan Data',
+    'backup_restore.dialog.restore.message':
+        'Ini akan menggantikan SEMUA data sedia ada secara kekal dengan sandaran yang dipilih. '
+        'Pastikan anda mempunyai sandaran terkini sebelum meneruskan.',
+    'backup_restore.dialog.restore.confirm': 'Pulihkan',
+
+    'backup_restore.dialog.delete.title': 'Padam Sandaran',
+    'backup_restore.dialog.delete.message':
+        'Padam "{name}"? Tindakan ini tidak boleh dibatalkan.',
+    'backup_restore.dialog.delete.confirm': 'Padam',
+
+    'backup_restore.dialog.restore_history.title': 'Pulihkan daripada Sandaran',
+    'backup_restore.dialog.restore_history.message':
+        'Pulihkan daripada "{name}"?\n\nIni akan menggantikan SEMUA data semasa.',
+
+    'backup_restore.dialog.cancel': 'Batal',
+
+    // ── Snackbars ─────────────────────────────────────────────────────────────────
+    'backup_restore.snack.export_shared_success':
+        'Sandaran dikongsi berjaya ({format})',
+    'backup_restore.snack.export_saved_success':
+        'Sandaran disimpan ke storan ({format})',
+    'backup_restore.snack.import_success': 'Data berjaya dipulihkan!',
+    'backup_restore.snack.share_success': 'Sandaran dikongsi!',
+    'backup_restore.snack.delete_success': 'Sandaran dipadam.',
+
+    // ── Operation loading ─────────────────────────────────────────────────────────
+    'backup_restore.loading.exporting': 'Mengeksport sebagai {format}\u2026',
+    'backup_restore.loading.restoring': 'Memulihkan data anda\u2026',
+    'backup_restore.loading.sharing': 'Menyediakan perkongsian\u2026',
+    'backup_restore.loading.deleting': 'Memadam\u2026',
+    'backup_restore.loading.processing': 'Memproses\u2026',
   };
 }

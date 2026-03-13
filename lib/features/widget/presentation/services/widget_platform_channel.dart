@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
@@ -24,7 +24,9 @@ class WidgetPlatformChannel {
         _navigateToAddTransaction(type);
         break;
       default:
-        debugPrint('WidgetPlatformChannel: unknown method ${call.method}');
+        WiseLogger().debug(
+          'WidgetPlatformChannel: unknown method ${call.method}',
+        );
     }
   }
 
@@ -35,11 +37,11 @@ class WidgetPlatformChannel {
         'getQuickTransactionType',
       );
       if (type != null && type.isNotEmpty) {
-        debugPrint('Cold widget launch: $type');
+        WiseLogger().debug('Cold widget launch: $type');
         _navigateToAddTransaction(type);
       }
     } catch (e) {
-      debugPrint('Widget launch check failed: $e');
+      WiseLogger().debug('Widget launch check failed: $e');
     }
   }
 

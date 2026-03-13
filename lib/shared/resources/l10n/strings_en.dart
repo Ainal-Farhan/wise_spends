@@ -1049,5 +1049,98 @@ class EnglishStrings {
     'budget_plans.milestone_added': 'Milestone added successfully',
     'budget_plans.no_transactions': 'No transactions yet',
     'budget_plans.balance': 'Balance',
+
+    // ── Tabs ─────────────────────────────────────────────────────────────────────
+    'backup_restore.tab.backup': 'Backup',
+    'backup_restore.tab.history': 'History',
+
+    // ── Hero card ────────────────────────────────────────────────────────────────
+    'backup_restore.hero.title': 'Your Data is Yours',
+    'backup_restore.hero.subtitle':
+        'Export regularly to keep your finances safe across devices.',
+
+    // ── Section labels ────────────────────────────────────────────────────────────
+    'backup_restore.section.share.title': 'Share Backup',
+    'backup_restore.section.share.subtitle':
+        'Export & share instantly via any app',
+
+    'backup_restore.section.save.title': 'Save to Device',
+    'backup_restore.section.save.subtitle': 'Keep a local copy in app storage',
+
+    'backup_restore.section.restore.title': 'Restore Data',
+    'backup_restore.section.restore.subtitle':
+        'Replace all data from a backup file',
+
+    // ── Format cards ──────────────────────────────────────────────────────────────
+    'backup_restore.format.json.label': 'JSON',
+    'backup_restore.format.json.desc': 'Human-readable',
+    'backup_restore.format.sqlite.label': 'SQLite',
+    'backup_restore.format.sqlite.desc': 'Faster restore',
+
+    // ── Restore card ──────────────────────────────────────────────────────────────
+    'backup_restore.restore_card.title': 'Restore from File',
+    'backup_restore.restore_card.subtitle':
+        'Tap to pick a .json or .sqlite backup file',
+
+    // ── Auto-backup ───────────────────────────────────────────────────────────────
+    'backup_restore.auto_backup.title': 'Auto-Backup',
+    'backup_restore.auto_backup.subtitle':
+        'Automatically save a backup once a week',
+
+    // ── Warning ───────────────────────────────────────────────────────────────────
+    'backup_restore.warning.text':
+        'Restoring data replaces everything currently saved. '
+        'Always create a fresh backup before restoring.',
+
+    // ── History empty state ───────────────────────────────────────────────────────
+    'backup_restore.history.empty.title': 'No local backups yet',
+    'backup_restore.history.empty.subtitle':
+        'Use "Save to Device" on the Backup tab to create a local copy.',
+    'backup_restore.history.refresh': 'Refresh',
+
+    // ── History tile actions ──────────────────────────────────────────────────────
+    'backup_restore.history.action.restore': 'Restore',
+    'backup_restore.history.action.share': 'Share',
+    'backup_restore.history.action.delete': 'Delete',
+
+    // ── Dialogs ───────────────────────────────────────────────────────────────────
+    'backup_restore.dialog.share.title': 'Share {format} Backup',
+    'backup_restore.dialog.share.message':
+        'Export your data as {format} and share it via any installed app '
+        '(Files, Drive, WhatsApp, etc.).',
+    'backup_restore.dialog.share.confirm': 'Share',
+
+    'backup_restore.dialog.restore.title': 'Restore Data',
+    'backup_restore.dialog.restore.message':
+        'This will permanently replace ALL existing data with the selected backup. '
+        'Make sure you have an up-to-date backup before continuing.',
+    'backup_restore.dialog.restore.confirm': 'Restore',
+
+    'backup_restore.dialog.delete.title': 'Delete Backup',
+    'backup_restore.dialog.delete.message':
+        'Delete "{name}"? This cannot be undone.',
+    'backup_restore.dialog.delete.confirm': 'Delete',
+
+    'backup_restore.dialog.restore_history.title': 'Restore from Backup',
+    'backup_restore.dialog.restore_history.message':
+        'Restore from "{name}"?\n\nThis will replace ALL current data.',
+
+    'backup_restore.dialog.cancel': 'Cancel',
+
+    // ── Snackbars ─────────────────────────────────────────────────────────────────
+    'backup_restore.snack.export_shared_success':
+        'Backup shared successfully ({format})',
+    'backup_restore.snack.export_saved_success':
+        'Backup saved to storage ({format})',
+    'backup_restore.snack.import_success': 'Data restored successfully!',
+    'backup_restore.snack.share_success': 'Backup shared!',
+    'backup_restore.snack.delete_success': 'Backup deleted.',
+
+    // ── Operation loading ─────────────────────────────────────────────────────────
+    'backup_restore.loading.exporting': 'Exporting as {format}\u2026',
+    'backup_restore.loading.restoring': 'Restoring your data\u2026',
+    'backup_restore.loading.sharing': 'Preparing share\u2026',
+    'backup_restore.loading.deleting': 'Deleting\u2026',
+    'backup_restore.loading.processing': 'Processing\u2026',
   };
 }
