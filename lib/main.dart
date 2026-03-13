@@ -80,6 +80,7 @@ class WiseSpendsApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           themeMode: ThemeMode.light,
           theme: getLightTheme(),
+          navigatorObservers: [AppRouter.budgetPlanRouteObserver],
           darkTheme: getDarkTheme(),
           initialRoute: AppRoutes.home,
           onGenerateRoute: AppRouter.generateRoute,

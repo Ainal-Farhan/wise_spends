@@ -29,6 +29,16 @@ class EditChangePlanName extends EditBudgetPlanFormEvent {
   List<Object> get props => [name];
 }
 
+/// Change description
+class EditChangeDescription extends EditBudgetPlanFormEvent {
+  final String description;
+
+  const EditChangeDescription(this.description);
+
+  @override
+  List<Object> get props => [description];
+}
+
 /// Change target amount
 class EditChangeTargetAmount extends EditBudgetPlanFormEvent {
   final double amount;

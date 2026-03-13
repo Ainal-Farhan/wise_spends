@@ -55,4 +55,7 @@ abstract class IBudgetRepository
 
   /// Get number of total active budgets
   Future<int> getTotalActiveBudgetsCount();
+
+  /// Toggle budget active status
+  Future<void> toggleBudgetActive(String id, bool isActive);
 }

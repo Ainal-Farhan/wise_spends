@@ -32,6 +32,7 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
     on<UpdateBudgetSpentAmountEvent>(_onUpdateBudgetSpentAmount);
     on<DeleteBudgetEvent>(_onDeleteBudget);
     on<DeleteMultipleBudgetsEvent>(_onDeleteMultipleBudgets);
+    on<ToggleBudgetActiveEvent>(_onToggleBudgetActive);
     on<RefreshBudgetsEvent>(_onRefreshBudgets);
     on<ReloadBudgetsEvent>(_onReloadBudgets);
     on<FilterBudgetsByPeriodEvent>(_onFilterByPeriod);
@@ -257,6 +258,19 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
       add(LoadBudgetsEvent());
     } catch (e) {
       emit(BudgetError('Failed to delete budgets: ${e.toString()}'));
+    }
+  }
+
+  Future<void> _onToggleBudgetActive(
+    ToggleBudgetActiveEvent event,
+    Emitter<BudgetState> emit,
+  ) async {
+    try {
+      await _repository.toggleBudgetActive(event.budgetId, event.isActive);
+      // Reload budgets to reflect the change
+      add(LoadBudgetsEvent());
+    } catch (e) {
+      emit(BudgetError('Failed to toggle budget status: ${e.toString()}'));
     }
   }
 

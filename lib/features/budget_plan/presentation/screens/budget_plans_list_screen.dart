@@ -13,14 +13,12 @@ import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_l
 import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_list_event.dart';
 import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_list_state.dart';
 import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
+import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
-
-final RouteObserver<ModalRoute<void>> budgetPlanRouteObserver =
-    RouteObserver<ModalRoute<void>>();
 
 // =============================================================================
 // Root screen
@@ -62,14 +60,17 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
     super.didChangeDependencies();
     if (!_subscribed) {
       // Only subscribe once
-      budgetPlanRouteObserver.subscribe(this, ModalRoute.of(context)!);
+      AppRouter.budgetPlanRouteObserver.subscribe(
+        this,
+        ModalRoute.of(context)!,
+      );
       _subscribed = true;
     }
   }
 
   @override
   void dispose() {
-    budgetPlanRouteObserver.unsubscribe(this);
+    AppRouter.budgetPlanRouteObserver.unsubscribe(this);
     super.dispose();
   }
 

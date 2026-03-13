@@ -98,6 +98,43 @@ class EnglishStrings {
     'general.payment_method': 'Payment Method',
     'general.pay_out': 'Pay Out',
     'general.from_source': 'From (Source Account)',
+    // Budget plan charts
+    'budget_plans.chart_deposits': 'Deposits',
+    'budget_plans.chart_spendings': 'Spendings',
+    'budget_plans.chart_milestones': 'Milestones',
+    'budget_plans.week_1': 'Week 1',
+    'budget_plans.week_2': 'Week 2',
+    'budget_plans.week_3': 'Week 3',
+    'budget_plans.week_4': 'Week 4',
+    'budget_plans.of_target': 'of target',
+    // Transaction/Deposit cards
+    'budget_plans.transaction': 'Transaction',
+    'budget_plans.due_today': 'Due today',
+    'budget_plans.due_tomorrow': 'Due tomorrow',
+    'budget_plans.due_in_days': 'Due in %d days',
+    'budget_plans.days_overdue': '%d days overdue',
+    'budget_plans.status_unpaid': 'Unpaid',
+    'budget_plans.status_paid': 'Paid',
+    'budget_plans.status_partial': 'Partial',
+    // Budget options
+    'budgets.deactivate': 'Deactivate',
+    'budgets.activate': 'Activate',
+    'budgets.delete': 'Delete Budget',
+    'budgets.delete_msg': 'Delete "%name"? This cannot be undone.',
+    'budgets.error_loading': 'Failed to load budgets',
+    'budgets.filter': 'Filter Budgets',
+    'budgets.edit_budget': 'Edit Budget',
+    'budgets.update_success': 'Budget updated successfully',
+    // Create budget
+    'budgets.name': 'Budget Name',
+    'budgets.name_hint': 'e.g., Groceries',
+    'budgets.limit_amount': 'Budget Limit',
+    'budgets.period': 'Period',
+    'budgets.category': 'Category',
+    'budgets.select_category': 'Select a category',
+    'budgets.created': 'Budget created successfully',
+    'budgets.error.valid_amount': 'Please enter a valid amount',
+    'budgets.error.select_category': 'Please select a category',
     'general.transfer_destination': 'Transfer Destination',
     'general.to_target': 'To (Target Account)',
     'general.select_target': 'Select target account',
@@ -544,7 +581,6 @@ class EnglishStrings {
     // Budget Screen
     'budgets.title': 'Budgets',
     'budgets.manage': 'Track spending limits and budgets',
-    'budgets.edit_budget': 'Edit Budget',
     'budgets.delete_success': 'Budget deleted successfully',
     'budgets.edit_coming_soon': 'Edit budget feature coming soon',
     'budgets.create_coming_soon': 'Create budget feature coming soon',
@@ -956,7 +992,6 @@ class EnglishStrings {
     "budget_plans.link_account": "Link Account",
     "budget_plans.total_allocated": "Total Allocated",
     "budget_plans.accounts": "accounts",
-    "budget_plans.of_target": "of target",
     "budget_plans.no_linked_accounts_desc":
         "Link a savings account to track allocation.",
     "budget_plans.select_savings_account": "Select Savings Account",
@@ -974,17 +1009,19 @@ class EnglishStrings {
     "budget_plans.item_details": "Item Details",
     "budget_plans.payment": "Payment",
     "budget_plans.schedule": "Schedule",
-    "budget_plans.has_deposit_sub":
-        "Record money going into the plan",
+    "budget_plans.has_deposit_sub": "Record money going into the plan",
     "budget_plans.deposit_amount": "Deposit Amount",
     "budget_plans.deposit_payment_status": "Deposit Payment Status",
     "budget_plans.payment_status_excl_deposit":
         "Payment Status (Excl. Deposit)",
     "budget_plans.amount_paid_excl_deposit": "Amount Paid (Excl. Deposit)",
     "budget_plans.total_paid_summary": "Total Paid Summary",
+    'budget_plans.total_paid_label': 'Total Paid',
     "budget_plans.paid": "Paid",
     "budget_plans.edit_item_sub": "Update item information",
     "budget_plans.add_item_sub": "Add new item to plan",
+    'budget_plans.allocation_by_category': 'Allocation by Category',
+    'budget_plans.spending_trend': 'Spending Trend',
 
     // Budget Plan Item Payment Labels
     "budget_plans.deposit_status": "Deposit Status",
@@ -994,11 +1031,22 @@ class EnglishStrings {
     "budget_plans.deposit_covers_full": "Deposit covers full amount",
 
     // Form Validation
-    "budget_plans.end_date_after_start":
-        "End date must be after start date",
+    "budget_plans.end_date_after_start": "End date must be after start date",
 
     // Review Step
     "budget_plans.no_milestones_review":
         "No milestones added. Continue without milestones?",
+
+    // Budget Plans - Missing keys
+    'budget_plans.item_subtitle': 'Budget plan item',
+    'budget_plans.payment_sub': 'Record payments toward this item',
+    'budget_plans.remaining': 'Remaining',
+    'budget_plans.progress_chart': 'Progress',
+    'budget_plans.progress_over_time': 'Progress Over Time',
+    'budget_plans.allocation_chart': 'Allocation by Category',
+    'budget_plans.trend_chart': 'Spending Trend',
+    'budget_plans.milestone_added': 'Milestone added successfully',
+    'budget_plans.no_transactions': 'No transactions yet',
+    'budget_plans.balance': 'Balance',
   };
 }

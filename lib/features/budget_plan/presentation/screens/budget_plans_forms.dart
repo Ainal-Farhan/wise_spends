@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/budget_plan_enums.dart';
-import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_list_bloc.dart';
-import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_list_event.dart';
 import 'package:wise_spends/features/budget_plan/presentation/bloc/create_budget_plan_form_bloc.dart';
 import 'package:wise_spends/features/budget_plan/presentation/bloc/create_budget_plan_form_event.dart';
 import 'package:wise_spends/features/budget_plan/presentation/bloc/create_budget_plan_form_state.dart';
@@ -92,9 +90,11 @@ class BudgetPlanFormData {
 
 class BudgetPlanFormCallbacks {
   final ValueChanged<String> onNameChanged;
+  final ValueChanged<String> onDescriptionChanged;
   final ValueChanged<BudgetPlanCategory> onCategoryChanged;
   final ValueChanged<int> onAccentColorChanged;
   final ValueChanged<double> onTargetAmountChanged;
+  final ValueChanged<double> onCurrentAmountChanged;
   final ValueChanged<DateTime> onStartDateChanged;
   final ValueChanged<DateTime> onEndDateChanged;
   final void Function(String title, double amount)? onAddMilestone;
@@ -102,9 +102,11 @@ class BudgetPlanFormCallbacks {
 
   const BudgetPlanFormCallbacks({
     required this.onNameChanged,
+    required this.onDescriptionChanged,
     required this.onCategoryChanged,
     required this.onAccentColorChanged,
     required this.onTargetAmountChanged,
+    required this.onCurrentAmountChanged,
     required this.onStartDateChanged,
     required this.onEndDateChanged,
     this.onAddMilestone,
@@ -290,9 +292,11 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
     final bloc = context.read<CreateBudgetPlanFormBloc>();
     return BudgetPlanFormCallbacks(
       onNameChanged: (v) => bloc.add(ChangePlanName(v)),
+      onDescriptionChanged: (v) {},  // Description not tracked in create
       onCategoryChanged: (c) => bloc.add(SelectBudgetPlanCategory(c)),
       onAccentColorChanged: (v) => bloc.add(ChangeAccentColor(v)),
       onTargetAmountChanged: (v) => bloc.add(ChangeTargetAmount(v)),
+      onCurrentAmountChanged: (v) => bloc.add(ChangeCurrentAmount(v)),
       onStartDateChanged: (d) => bloc.add(ChangeStartDate(d)),
       onEndDateChanged: (d) => bloc.add(ChangeEndDate(d)),
       onAddMilestone: (t, a) => bloc.add(AddMilestone(t, a)),
@@ -418,19 +422,26 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
             if (_targetCtrl.text != t) _targetCtrl.text = t;
           }
           if (state is EditBudgetPlanFormSuccess) {
+            // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: AppColors.success,
+                behavior: SnackBarBehavior.floating,
               ),
             );
-            context.read<BudgetPlanListBloc>().add(LoadBudgetPlans());
-            Navigator.pop(context);
+            // Close the edit screen after a short delay
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (context.mounted) {
+                Navigator.pop(context);
+              }
+            });
           } else if (state is EditBudgetPlanFormError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
               ),
             );
           }
@@ -544,12 +555,16 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
   BudgetPlanFormCallbacks _buildCallbacks(BuildContext context) {
     final bloc = context.read<EditBudgetPlanFormBloc>();
     return BudgetPlanFormCallbacks(
-      onNameChanged: (_) {},
+      onNameChanged: (v) => bloc.add(EditChangePlanName(v)),
+      onDescriptionChanged: (v) => bloc.add(EditChangeDescription(v)),
       onCategoryChanged: (c) => bloc.add(EditSelectCategory(c)),
-      onAccentColorChanged: (_) {},
+      onAccentColorChanged: (v) => bloc.add(EditChangeAccentColor(v)),
       onTargetAmountChanged: (v) => bloc.add(EditChangeTargetAmount(v)),
-      onStartDateChanged: (_) {},
+      onCurrentAmountChanged: (v) => bloc.add(EditChangeCurrentAmount(v)),
+      onStartDateChanged: (d) => bloc.add(EditChangeStartDate(d)),
       onEndDateChanged: (d) => bloc.add(EditChangeEndDate(d)),
+      onAddMilestone: null,
+      onRemoveMilestone: null,
     );
   }
 }
@@ -606,6 +621,7 @@ class StepBasics extends StatelessWidget {
             hint: 'budget_plans.description_hint'.tr,
             controller: descCtrl,
             maxLines: 3,
+            onChanged: callbacks.onDescriptionChanged,
           ),
           const SizedBox(height: AppSpacing.lg),
           _FormSectionLabel(label: 'budget_plans.category'.tr),

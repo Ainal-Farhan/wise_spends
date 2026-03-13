@@ -243,12 +243,31 @@ class _BudgetPlanItemsListContentState
 
   /// Opens the add sheet with the existing BLoC passed via BlocProvider.value
   void _showAddItemSheet(BuildContext context) {
+    // Calculate next Bil number from current state
+    final bloc = context.read<BudgetPlanItemsListBloc>();
+    final state = bloc.state;
+    int? nextBilNumber;
+    
+    if (state is BudgetPlanItemsListLoaded) {
+      final maxBil = state.items.fold<int>(
+        0,
+        (max, item) {
+          final itemBil = int.tryParse(item.bil) ?? 0;
+          return itemBil > max ? itemBil : max;
+        },
+      );
+      nextBilNumber = maxBil + 1;
+    }
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(
-        value: context.read<BudgetPlanItemsListBloc>(),
-        child: AddEditBudgetPlanItemBottomSheet(planId: widget.planId),
+        value: bloc,
+        child: AddEditBudgetPlanItemBottomSheet(
+          planId: widget.planId,
+          nextBilNumber: nextBilNumber,
+        ),
       ),
     );
   }

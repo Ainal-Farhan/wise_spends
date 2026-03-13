@@ -50,6 +50,9 @@ abstract class AppRouter {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
+  static final RouteObserver<ModalRoute<void>> budgetPlanRouteObserver =
+      RouteObserver<ModalRoute<void>>();
+
   /// Generate route with typed arguments
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Extract typed arguments

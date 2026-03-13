@@ -7,23 +7,6 @@ import 'create_budget_plan_form_event.dart';
 import 'create_budget_plan_form_state.dart';
 
 /// Create Budget Plan Form BLoC
-///
-/// Root cause of the silent create bug:
-///   • The bloc had no repository — it was a pure form-state manager.
-///   • No [SaveCreateBudgetPlan] event / handler existed.
-///   • The screen's [_submit] just popped and reloaded the list without ever
-///     calling [createPlan], so the DB was never written to.
-///
-/// Fixes:
-///   • Repository injected via service locator (zero-arg constructor kept
-///     so no call sites need changing).
-///   • [SaveCreateBudgetPlan] event added and handled in [_onSave].
-///   • [_onSave] awaits [_repository.createPlan], emits
-///     [CreateBudgetPlanFormSuccess] on success or restores [isLoading: false]
-///     and emits [CreateBudgetPlanFormError] on failure.
-///   • The screen's [_submit] is reduced to dispatching
-///     [SaveCreateBudgetPlan()]; all result handling moves to the
-///     [BlocListener].
 class CreateBudgetPlanFormBloc
     extends Bloc<CreateBudgetPlanFormEvent, CreateBudgetPlanFormState> {
   final IBudgetPlanRepository _repository;

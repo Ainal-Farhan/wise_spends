@@ -123,6 +123,20 @@ class DeleteMultipleBudgetsEvent extends BudgetEvent {
   List<Object> get props => [budgetIds];
 }
 
+/// Toggle budget active status
+class ToggleBudgetActiveEvent extends BudgetEvent {
+  final String budgetId;
+  final bool isActive;
+
+  const ToggleBudgetActiveEvent({
+    required this.budgetId,
+    required this.isActive,
+  });
+
+  @override
+  List<Object> get props => [budgetId, isActive];
+}
+
 // ============================================================================
 // SPENT AMOUNT EVENTS
 // ============================================================================

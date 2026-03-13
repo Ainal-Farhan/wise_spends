@@ -61,11 +61,6 @@ Future<bool?> showDeleteDialog({
   VoidCallback? onCancel,
   bool autoClose = true,
 }) {
-  // Capture the root navigator context BEFORE entering the dialog builder.
-  // The outer `context` may be a dialog or overlay context itself, so we
-  // walk up to the root to get a stable context for snackbars shown AFTER
-  // the dialog has been popped (at which point `dialogContext` is gone and
-  // the original `context` could also be unmounted).
   final snackBarContext = Navigator.of(context, rootNavigator: true).context;
 
   return showDialog<bool>(
@@ -83,8 +78,6 @@ Future<bool?> showDeleteDialog({
             onPressed: () {
               if (autoClose) Navigator.pop(dialogContext, false);
               onCancel?.call();
-              // Use the stable root context, not dialogContext (already popped)
-              // or the outer context (may be unmounted).
               if (autoDisplayMessage && snackBarContext.mounted) {
                 showSnackBarMessage(
                   snackBarContext,

@@ -163,6 +163,18 @@ class BudgetRepository extends IBudgetRepository {
     return budgets.length;
   }
 
+  @override
+  Future<void> toggleBudgetActive(String id, bool isActive) async {
+    final updating = SpendingBudgetTableCompanion(
+      isActive: Value(isActive),
+      dateUpdated: Value(DateTime.now()),
+    );
+
+    final query = _db.update(_db.spendingBudgetTable)
+      ..where((tbl) => tbl.id.equals(id));
+    await query.write(updating);
+  }
+
   /// Map database row to entity
   BudgetEntity _mapToEntity(BdgtSpendingBudget row) {
     return BudgetEntity(

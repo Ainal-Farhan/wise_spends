@@ -17,6 +17,7 @@ class EditBudgetPlanFormBloc
       super(EditBudgetPlanFormLoading()) {
     on<InitializeEditBudgetPlan>(_onInitialize);
     on<EditChangePlanName>(_onChangeName);
+    on<EditChangeDescription>(_onChangeDescription);
     on<EditChangeTargetAmount>(_onChangeTargetAmount);
     on<EditChangeCurrentAmount>(_onChangeCurrentAmount);
     on<EditChangeStartDate>(_onChangeStartDate);
@@ -79,6 +80,17 @@ class EditBudgetPlanFormBloc
   ) {
     if (state is EditBudgetPlanFormReady) {
       emit((state as EditBudgetPlanFormReady).copyWith(name: event.name));
+    }
+  }
+
+  void _onChangeDescription(
+    EditChangeDescription event,
+    Emitter<EditBudgetPlanFormState> emit,
+  ) {
+    if (state is EditBudgetPlanFormReady) {
+      emit(
+        (state as EditBudgetPlanFormReady).copyWith(description: event.description),
+      );
     }
   }
 
