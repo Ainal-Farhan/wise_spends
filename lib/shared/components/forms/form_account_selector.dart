@@ -222,7 +222,7 @@ class FormTransferAccountSelector extends StatelessWidget {
             ),
             child: Icon(
               Icons.arrow_downward_rounded,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context).canvasColor,
               size: 18,
             ),
           ),

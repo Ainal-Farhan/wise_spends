@@ -425,7 +425,9 @@ class _TransactionHistoryScreenContentState
                     Icon(
                       TransactionType.transfer.icon,
                       size: 10,
-                      color: TransactionType.transfer.getColor(context),
+                      color: TransactionType.transfer.getBackgroundColor(
+                        context,
+                      ),
                     ),
                     const SizedBox(width: 3),
                     Text(
@@ -434,7 +436,9 @@ class _TransactionHistoryScreenContentState
                         decimalDigits: 2,
                       ).format(totalTransfer),
                       style: AppTextStyles.captionSmall.copyWith(
-                        color: TransactionType.transfer.getColor(context),
+                        color: TransactionType.transfer.getBackgroundColor(
+                          context,
+                        ),
                       ),
                     ),
                   ],
@@ -448,7 +452,9 @@ class _TransactionHistoryScreenContentState
                     Icon(
                       TransactionType.commitment.icon,
                       size: 10,
-                      color: TransactionType.commitment.getColor(context),
+                      color: TransactionType.commitment.getBackgroundColor(
+                        context,
+                      ),
                     ),
                     const SizedBox(width: 3),
                     Text(
@@ -457,7 +463,9 @@ class _TransactionHistoryScreenContentState
                         decimalDigits: 2,
                       ).format(totalCommitment),
                       style: AppTextStyles.captionSmall.copyWith(
-                        color: TransactionType.commitment.getColor(context),
+                        color: TransactionType.commitment.getBackgroundColor(
+                          context,
+                        ),
                       ),
                     ),
                   ],
@@ -527,7 +535,7 @@ class _TransactionHistoryScreenContentState
                     if (state.filterType != null)
                       ActiveFilterChip(
                         label: state.filterType!.label,
-                        color: state.filterType!.getColor(context),
+                        color: state.filterType!.getBackgroundColor(context),
                         onRemove: () => context.read<TransactionBloc>().add(
                           FilterTransactionsByTypeEvent(null),
                         ),
@@ -764,7 +772,7 @@ class _TransactionHistoryScreenContentState
                               label: t.label,
                               type: t,
                               icon: t.icon,
-                              color: t.getColor(context),
+                              color: t.getBackgroundColor(context),
                             ),
                             const SizedBox(height: AppSpacing.xs),
                           ],

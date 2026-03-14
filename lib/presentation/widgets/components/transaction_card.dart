@@ -186,29 +186,9 @@ class TransactionCard extends StatelessWidget {
     // Get background color based on transaction type
     Color backgroundColor;
     IconData defaultIcon;
-    Color iconColor;
 
     defaultIcon = type.icon;
-    iconColor = type.getColor(context);
-
-    switch (type) {
-      case TransactionType.income:
-        backgroundColor = colorScheme.primaryContainer;
-        break;
-      case TransactionType.expense:
-        backgroundColor = colorScheme.secondaryContainer;
-        break;
-      case TransactionType.transfer:
-        backgroundColor = colorScheme.tertiaryContainer;
-        break;
-      case TransactionType.commitment:
-        backgroundColor = colorScheme.tertiaryContainer;
-        break;
-      case TransactionType.budgetPlanDeposit:
-      case TransactionType.budgetPlanExpense:
-        backgroundColor = colorScheme.primaryContainer;
-        break;
-    }
+    backgroundColor = type.getBackgroundColor(context);
 
     return Container(
       width: UIConstants.touchTargetMin,
@@ -219,7 +199,7 @@ class TransactionCard extends StatelessWidget {
       ),
       child: Icon(
         icon ?? defaultIcon,
-        color: iconColor,
+        color: Theme.of(context).canvasColor,
         size: UIConstants.iconLarge,
       ),
     );

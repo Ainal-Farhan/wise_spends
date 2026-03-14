@@ -31,7 +31,7 @@ class HomeBalanceSection extends StatelessWidget {
                 icon: TransactionType.income.icon,
                 label: TransactionType.income.label,
                 value: _formatCurrency(totalIncome),
-                color: TransactionType.income.getColor(context),
+                color: TransactionType.income.getBackgroundColor(context),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -40,7 +40,7 @@ class HomeBalanceSection extends StatelessWidget {
                 icon: TransactionType.expense.icon,
                 label: TransactionType.expense.label,
                 value: _formatCurrency(totalExpenses),
-                color: TransactionType.expense.getColor(context),
+                color: TransactionType.expense.getBackgroundColor(context),
               ),
             ),
           ],
@@ -77,14 +77,14 @@ class _TotalBalanceCard extends StatelessWidget {
             children: [
               const Icon(
                 Icons.account_balance_rounded,
-                color: Colors.white70,
+                color: Colors.black87,
                 size: AppIconSize.lg,
               ),
               const SizedBox(width: AppSpacing.sm),
               Text(
                 'general.balance'.tr,
                 style: const TextStyle(
-                  color: Colors.white70,
+                  color: Colors.black87,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -105,7 +105,7 @@ class _TotalBalanceCard extends StatelessWidget {
           Text(
             'transaction.history.this_month'.tr,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.6),
+              color: Colors.black87.withValues(alpha: 0.6),
               fontSize: 12,
             ),
           ),
@@ -123,34 +123,33 @@ class _BalanceTrendChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPositive = totalBalance >= 0;
+    final cs = Theme.of(context).colorScheme;
+
+    final chipColor = isPositive ? cs.tertiary : cs.error;
+
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.sm,
         vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: (isPositive ? Colors.greenAccent : Colors.redAccent).withValues(
-          alpha: 0.2,
-        ),
+        color: chipColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(
-          color: (isPositive ? Colors.greenAccent : Colors.redAccent)
-              .withValues(alpha: 0.5),
-        ),
+        border: Border.all(color: chipColor.withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             isPositive ? Icons.trending_up : Icons.trending_down,
-            color: isPositive ? Colors.greenAccent : Colors.redAccent,
+            color: chipColor,
             size: 12,
           ),
           const SizedBox(width: 2),
           Text(
             isPositive ? 'transaction.surplus'.tr : 'transaction.deficit'.tr,
             style: TextStyle(
-              color: isPositive ? Colors.greenAccent : Colors.redAccent,
+              color: chipColor,
               fontSize: 10,
               fontWeight: FontWeight.w600,
             ),

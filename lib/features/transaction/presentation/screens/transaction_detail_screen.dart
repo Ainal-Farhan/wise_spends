@@ -165,8 +165,8 @@ class _TransactionDetailScreenContent extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            tx.type.getColor(context),
-            tx.type.getColor(context).withValues(alpha: 0.7),
+            tx.type.getBackgroundColor(context),
+            tx.type.getBackgroundColor(context).withValues(alpha: 0.7),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -174,7 +174,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: tx.type.getColor(context).withValues(alpha: 0.3),
+            color: tx.type.getBackgroundColor(context).withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -237,12 +237,12 @@ class _TransactionDetailScreenContent extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: tx.type.getColor(context).withValues(alpha: 0.1),
+              color: tx.type.getBackgroundColor(context).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Icon(
               state.categoryIcon,
-              color: tx.type.getColor(context),
+              color: tx.type.getBackgroundColor(context),
               size: 28,
             ),
           ),

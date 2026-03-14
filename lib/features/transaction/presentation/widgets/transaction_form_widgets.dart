@@ -132,7 +132,7 @@ class TransactionLockedAccountSection extends StatelessWidget {
                 AccountChip(
                   name: nameFor(formState.selectedSourceAccount),
                   icon: TransactionType.expense.icon,
-                  color: TransactionType.expense.getColor(context),
+                  color: TransactionType.expense.getBackgroundColor(context),
                 ),
                 Icon(
                   Icons.arrow_forward_rounded,
@@ -142,7 +142,7 @@ class TransactionLockedAccountSection extends StatelessWidget {
                 AccountChip(
                   name: nameFor(formState.selectedDestinationAccount),
                   icon: TransactionType.income.icon,
-                  color: TransactionType.income.getColor(context),
+                  color: TransactionType.income.getBackgroundColor(context),
                 ),
               ],
             ),
@@ -205,7 +205,7 @@ class TransactionCategoryPicker extends StatelessWidget {
         return FormCategoryPicker(
           selectedCategory: formState.selectedCategory?.toFormCategoryItem(),
           categories: categories,
-          typeColor: formState.transactionType.getColor(context),
+          typeColor: formState.transactionType.getBackgroundColor(context),
           label: 'transaction.add.category'.tr,
           onCategorySelected: (category) {
             final domainCategory = state.categories.firstWhere(
@@ -284,7 +284,10 @@ class _TransactionNoteSectionState extends State<TransactionNoteSection> {
   Widget build(BuildContext context) {
     if (!widget.formState.showNoteField) {
       return TextButton.icon(
-        onPressed: () => widget.controller.clear(),
+        onPressed: () {
+          widget.controller.clear();
+          context.read<TransactionFormBloc>().add(ToggleNoteField(true));
+        },
         icon: const Icon(Icons.add_rounded, size: 18),
         label: Text('transaction.add.add_note'.tr),
         style: TextButton.styleFrom(

@@ -122,6 +122,8 @@ class _QuickActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -162,7 +164,7 @@ class _QuickActionTile extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: Icon(data.icon, color: Colors.white, size: 22),
+                  child: Icon(data.icon, color: colorScheme.onPrimary, size: 22),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(

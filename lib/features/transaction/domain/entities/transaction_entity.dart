@@ -47,7 +47,7 @@ enum TransactionType {
   }
 
   /// Get color for transaction type
-  Color getColor(BuildContext context) {
+  Color getBackgroundColor(BuildContext context) {
     switch (this) {
       case income:
         return Theme.of(context).colorScheme.primary;

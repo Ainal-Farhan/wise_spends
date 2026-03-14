@@ -144,8 +144,8 @@ class _AppRootState extends State<_AppRoot> {
                 title: 'WiseSpends',
                 debugShowCheckedModeBanner: false,
                 themeMode: themeSnap.data ?? ThemeMode.system,
-                theme: AppTheme.getLightTheme(context),
-                darkTheme: AppTheme.getDarkTheme(context),
+                theme: AppTheme.getLightTheme(),
+                darkTheme: AppTheme.getDarkTheme(),
                 locale: localeSnap.data,
                 navigatorObservers: [
                   AppRouter.budgetPlanRouteObserver,

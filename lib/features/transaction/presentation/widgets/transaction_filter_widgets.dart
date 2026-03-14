@@ -21,12 +21,12 @@ class TransactionFilterDropdown extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: selectedType != null
-            ? selectedType!.getColor(context).withValues(alpha: 0.07)
+            ? selectedType!.getBackgroundColor(context).withValues(alpha: 0.07)
             : Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: selectedType != null
-              ? selectedType!.getColor(context).withValues(alpha: 0.3)
+              ? selectedType!.getBackgroundColor(context).withValues(alpha: 0.3)
               : Theme.of(context).colorScheme.outline,
         ),
       ),
@@ -39,7 +39,7 @@ class TransactionFilterDropdown extends StatelessWidget {
           Icons.tune_rounded,
           size: 18,
           color: selectedType != null
-              ? selectedType!.getColor(context)
+              ? selectedType!.getBackgroundColor(context)
               : Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         hint: Row(
@@ -95,13 +95,15 @@ class TransactionFilterDropdown extends StatelessWidget {
                     width: 26,
                     height: 26,
                     decoration: BoxDecoration(
-                      color: type.getColor(context).withValues(alpha: 0.1),
+                      color: type
+                          .getBackgroundColor(context)
+                          .withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       type.icon,
                       size: 14,
-                      color: type.getColor(context),
+                      color: type.getBackgroundColor(context),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -132,12 +134,16 @@ class TransactionFilterDropdown extends StatelessWidget {
           ...TransactionType.values.map(
             (type) => Row(
               children: [
-                Icon(type.icon, size: 17, color: type.getColor(context)),
+                Icon(
+                  type.icon,
+                  size: 17,
+                  color: type.getBackgroundColor(context),
+                ),
                 const SizedBox(width: 8),
                 Text(
                   type.label,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: type.getColor(context),
+                    color: type.getBackgroundColor(context),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
