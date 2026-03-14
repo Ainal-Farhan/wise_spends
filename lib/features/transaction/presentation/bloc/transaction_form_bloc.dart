@@ -17,6 +17,7 @@ class TransactionFormBloc
     on<SelectSourceAccount>(_onSelectSourceAccount);
     on<SelectDestinationAccount>(_onSelectDestinationAccount);
     on<ClearTransactionForm>(_onClear);
+    on<ClearTransactionTime>(_onClearTime);
   }
 
   void _onInitialize(
@@ -143,5 +144,14 @@ class TransactionFormBloc
     Emitter<TransactionFormState> emit,
   ) {
     emit(TransactionFormReady());
+  }
+
+  void _onClearTime(
+    ClearTransactionTime event,
+    Emitter<TransactionFormState> emit,
+  ) {
+    if (state is! TransactionFormReady) return;
+    final current = state as TransactionFormReady;
+    emit(current.copyWith(clearTime: true));
   }
 }

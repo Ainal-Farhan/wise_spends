@@ -2,12 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
+import 'package:wise_spends/shared/components/app_text_field.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'transaction_form_widgets.dart';
 
-/// Single account selector dropdown
-class TransactionAccountDropdown extends StatelessWidget {
+// ─────────────────────────────────────────────────────────────────────────────
+// Single account selector
+// ─────────────────────────────────────────────────────────────────────────────
+
+class TransactionAccountDropdown extends StatefulWidget {
   final String label;
   final String hint;
   final String? selectedId;
@@ -26,131 +30,98 @@ class TransactionAccountDropdown extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final available = savingsList
-        .where((s) => s.saving.id != excludeId)
-        .toList();
+  State<TransactionAccountDropdown> createState() =>
+      _TransactionAccountDropdownState();
+}
 
-    if (available.isEmpty) {
-      return _NoAccountsHint();
+class _TransactionAccountDropdownState
+    extends State<TransactionAccountDropdown> {
+  late final TextEditingController _controller;
+
+  List<ListSavingVO> get _available =>
+      widget.savingsList.where((s) => s.saving.id != widget.excludeId).toList();
+
+  ListSavingVO? get _selected => _available.cast<ListSavingVO?>().firstWhere(
+    (s) => s?.saving.id == widget.selectedId,
+    orElse: () => null,
+  );
+
+  String _displayText(ListSavingVO? s) => s == null
+      ? ''
+      : '${s.saving.name ?? 'transaction.account.unnamed'.tr}  ·  RM ${s.saving.currentAmount.toStringAsFixed(2)}';
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: _displayText(_selected));
+  }
+
+  @override
+  void didUpdateWidget(TransactionAccountDropdown old) {
+    super.didUpdateWidget(old);
+    // Update text whenever selection or list changes
+    if (old.selectedId != widget.selectedId ||
+        old.savingsList != widget.savingsList) {
+      _controller.text = _displayText(_selected);
     }
+  }
 
-    final validSelectedId = available.any((s) => s.saving.id == selectedId)
-        ? selectedId
-        : null;
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final available = _available;
+
+    if (available.isEmpty) return const _NoAccountsHint();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionLabel(text: label),
+        SectionLabel(text: widget.label),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider),
-          ),
-          child: DropdownButtonFormField<String>(
-            initialValue: validSelectedId,
-            isExpanded: true,
-            decoration: InputDecoration(
-              hintText: hint,
-              prefixIcon: Padding(
-                padding: const EdgeInsets.only(left: 12, right: 8),
-                child: Icon(
-                  Icons.account_balance_rounded,
-                  color: AppColors.primary,
-                  size: 20,
-                ),
-              ),
-              prefixIconConstraints: const BoxConstraints(
-                minWidth: 0,
-                minHeight: 0,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: AppColors.primary, width: 1.5),
-              ),
-              filled: true,
-              fillColor: Colors.transparent,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 14,
-              ),
-            ),
-            items: available.map((s) {
-              return DropdownMenuItem<String>(
-                value: s.saving.id,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _savingTypeIcon(s.saving.type),
-                    const SizedBox(width: 10),
-                    Flexible(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            s.saving.name ?? 'transaction.account.unnamed'.tr,
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            'RM ${s.saving.currentAmount.toStringAsFixed(2)}',
-                            style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-            onChanged: onChanged,
-          ),
+        AppTextField(
+          hint: widget.hint,
+          readOnly: true,
+          prefixWidget: _selected != null
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 12),
+                  child: _SavingTypeIcon(type: _selected!.saving.type),
+                )
+              : null,
+          prefixIcon: _selected == null ? Icons.account_balance_rounded : null,
+          suffixIcon: Icons.keyboard_arrow_down_rounded,
+          controller: _controller,
+          onTap: () => _showPicker(context, available),
         ),
       ],
     );
   }
 
-  Widget _savingTypeIcon(String type) {
-    final (icon, color) = switch (type.toLowerCase()) {
-      'cash' => (Icons.payments_rounded, AppColors.success),
-      'bank' ||
-      'bank_account' => (Icons.account_balance_rounded, AppColors.primary),
-      'credit' ||
-      'credit_card' => (Icons.credit_card_rounded, AppColors.secondary),
-      'ewallet' ||
-      'e_wallet' => (Icons.phone_android_rounded, AppColors.tertiary),
-      'savings' => (Icons.savings_rounded, AppColors.income),
-      _ => (Icons.account_balance_wallet_rounded, AppColors.textSecondary),
-    };
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        shape: BoxShape.circle,
+  void _showPicker(BuildContext context, List<ListSavingVO> available) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _AccountPickerSheet(
+        accounts: available,
+        selectedId: widget.selectedId,
+        onSelected: (id) {
+          widget.onChanged(id);
+          Navigator.pop(context);
+        },
       ),
-      child: Icon(icon, color: color, size: 16),
     );
   }
 }
 
-/// Transfer between two accounts
+// ─────────────────────────────────────────────────────────────────────────────
+// Transfer selector (two dropdowns with arrow)
+// ─────────────────────────────────────────────────────────────────────────────
+
 class TransferAccountSelector extends StatelessWidget {
   final String? sourceAccountId;
   final String? destinationAccountId;
@@ -213,7 +184,10 @@ class TransferAccountSelector extends StatelessWidget {
   }
 }
 
-/// Chip showing account name — used in locked fields
+// ─────────────────────────────────────────────────────────────────────────────
+// AccountChip (locked fields)
+// ─────────────────────────────────────────────────────────────────────────────
+
 class AccountChip extends StatelessWidget {
   final String name;
   final IconData icon;
@@ -257,7 +231,194 @@ class AccountChip extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Bottom sheet picker
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _AccountPickerSheet extends StatelessWidget {
+  final List<ListSavingVO> accounts;
+  final String? selectedId;
+  final ValueChanged<String> onSelected;
+
+  const _AccountPickerSheet({
+    required this.accounts,
+    required this.selectedId,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle
+          Container(
+            width: 36,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(
+              color: AppColors.divider,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+
+          // Title
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'transaction.account.select'.tr,
+              style: AppTextStyles.h3,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Account tiles
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+            ),
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: accounts.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final account = accounts[index];
+                final isSelected = account.saving.id == selectedId;
+                return _AccountTile(
+                  account: account,
+                  isSelected: isSelected,
+                  onTap: () => onSelected(account.saving.id),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AccountTile extends StatelessWidget {
+  final ListSavingVO account;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _AccountTile({
+    required this.account,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.06)
+              : AppColors.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.primary.withValues(alpha: 0.4)
+                : AppColors.divider,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            _SavingTypeIcon(type: account.saving.type),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                account.saving.name ?? 'transaction.account.unnamed'.tr,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'RM ${account.saving.currentAmount.toStringAsFixed(2)}',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: isSelected
+                    ? AppColors.primary.withValues(alpha: 0.7)
+                    : AppColors.textSecondary,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+            const SizedBox(width: 10),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              child: isSelected
+                  ? const Icon(
+                      Icons.check_circle_rounded,
+                      color: AppColors.primary,
+                      size: 18,
+                      key: ValueKey('check'),
+                    )
+                  : const Icon(
+                      Icons.circle_outlined,
+                      color: AppColors.divider,
+                      size: 18,
+                      key: ValueKey('empty'),
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared private widgets
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SavingTypeIcon extends StatelessWidget {
+  final String type;
+
+  const _SavingTypeIcon({required this.type});
+
+  @override
+  Widget build(BuildContext context) {
+    final (icon, color) = switch (type.toLowerCase()) {
+      'cash' => (Icons.payments_rounded, AppColors.success),
+      'bank' ||
+      'bank_account' => (Icons.account_balance_rounded, AppColors.primary),
+      'credit' ||
+      'credit_card' => (Icons.credit_card_rounded, AppColors.secondary),
+      'ewallet' ||
+      'e_wallet' => (Icons.phone_android_rounded, AppColors.tertiary),
+      'savings' => (Icons.savings_rounded, AppColors.income),
+      _ => (Icons.account_balance_wallet_rounded, AppColors.textSecondary),
+    };
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: color, size: 16),
+    );
+  }
+}
+
 class _NoAccountsHint extends StatelessWidget {
+  const _NoAccountsHint();
+
   @override
   Widget build(BuildContext context) {
     return Container(

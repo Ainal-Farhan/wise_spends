@@ -1,7 +1,6 @@
 // add_transaction_screen.dart — enhanced version
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
@@ -28,9 +27,9 @@ import 'package:wise_spends/features/transaction/presentation/bloc/transaction_f
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_form_event.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_form_state.dart';
 import 'package:wise_spends/features/transaction/presentation/widgets/transaction_account_selector.dart';
+import 'package:wise_spends/features/transaction/presentation/widgets/transaction_amount_field.dart';
 import 'package:wise_spends/features/transaction/presentation/widgets/transaction_category_grid.dart';
-import 'package:wise_spends/features/transaction/presentation/widgets/transaction_form_fields.dart';
-import 'package:wise_spends/features/transaction/presentation/widgets/transaction_form_widgets.dart';
+import 'package:wise_spends/features/transaction/presentation/widgets/transaction_datetime_tile.dart';
 import 'package:wise_spends/features/transaction/presentation/widgets/transaction_locked_display.dart';
 import 'package:wise_spends/features/transaction/presentation/widgets/transaction_payee_picker.dart';
 import 'package:wise_spends/features/transaction/presentation/widgets/transaction_type_toggle.dart';
@@ -253,7 +252,11 @@ class _AddTransactionScreenContentState
                     // ── Amount ────────────────────────────────────────────
                     _isEditMode
                         ? LockedAmountDisplay(formState: formState)
-                        : TransactionAmountField(controller: _amountController),
+                        : TransactionAmountField(
+                            controller: _amountController,
+                            transactionType: formState.transactionType,
+                            typeColor: formState.transactionType.color,
+                          ),
                     const SizedBox(height: 20),
 
                     // ── Account ───────────────────────────────────────────
@@ -289,48 +292,7 @@ class _AddTransactionScreenContentState
                       const SizedBox(height: 16),
                     ],
 
-                    // ── Date ──────────────────────────────────────────────
-                    DateTimeTile(
-                      icon: Icons.calendar_today_rounded,
-                      label: 'transaction.add.date'.tr,
-                      value: _formatDateDisplay(formState.selectedDate),
-                      onTap: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: formState.selectedDate,
-                          firstDate: DateTime(2020),
-                          lastDate: DateTime.now(),
-                        );
-                        if (picked != null && context.mounted) {
-                          context.read<TransactionFormBloc>().add(
-                            ChangeTransactionDate(picked),
-                          );
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 12),
-
-                    // ── Time ──────────────────────────────────────────────
-                    DateTimeTile(
-                      icon: Icons.access_time_rounded,
-                      label: 'transaction.add.time'.tr,
-                      value: formState.selectedTime != null
-                          ? formState.selectedTime!.format(context)
-                          : 'transaction.add.time_not_set'.tr,
-                      isValueSet: formState.selectedTime != null,
-                      onTap: () async {
-                        final picked = await showTimePicker(
-                          context: context,
-                          initialTime:
-                              formState.selectedTime ?? TimeOfDay.now(),
-                        );
-                        if (picked != null && context.mounted) {
-                          context.read<TransactionFormBloc>().add(
-                            ChangeTransactionTime(picked),
-                          );
-                        }
-                      },
-                    ),
+                    TransactionDateTimePicker(formState: formState),
                     const SizedBox(height: 16),
 
                     // ── Note ──────────────────────────────────────────────
@@ -452,16 +414,6 @@ class _AddTransactionScreenContentState
   // ──────────────────────────────────────────────────────────────────────────
   // Helpers
   // ──────────────────────────────────────────────────────────────────────────
-
-  String _formatDateDisplay(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final yesterday = today.subtract(const Duration(days: 1));
-    final d = DateTime(date.year, date.month, date.day);
-    if (d == today) return 'transaction.history.today'.tr;
-    if (d == yesterday) return 'general.yesterday'.tr;
-    return DateFormat('EEEE, MMMM d, y').format(date);
-  }
 
   void _submit(BuildContext context, TransactionFormReady formState) {
     final titleText = _titleController.text.trim();

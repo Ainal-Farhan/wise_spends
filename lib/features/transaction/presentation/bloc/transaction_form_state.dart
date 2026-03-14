@@ -80,6 +80,7 @@ class TransactionFormReady extends TransactionFormState {
     String? note,
     bool? isEditMode,
     String? editingTransactionId,
+    final bool clearTime = false,
   }) {
     return TransactionFormReady(
       transactionType: transactionType ?? this.transactionType,
@@ -89,7 +90,7 @@ class TransactionFormReady extends TransactionFormState {
       commitmentTaskType: commitmentTaskType,
       selectedPayee: clearPayee ? null : (selectedPayee ?? this.selectedPayee),
       selectedDate: selectedDate ?? this.selectedDate,
-      selectedTime: selectedTime ?? this.selectedTime,
+      selectedTime: clearTime ? null : (selectedTime ?? this.selectedTime),
       showNoteField: showNoteField ?? this.showNoteField,
       selectedSourceAccount:
           selectedSourceAccount ?? this.selectedSourceAccount,

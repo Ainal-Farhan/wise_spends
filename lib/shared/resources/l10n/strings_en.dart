@@ -1184,6 +1184,13 @@ class EnglishStrings {
     'transaction.account.paid_from': 'Paid From Account',
     'transaction.account.received_hint': 'Select account to receive money',
     'transaction.account.paid_hint': 'Select account used for payment',
+    'transaction.account.select': 'Select Account',
+    'transaction.category.select_hint': 'Select a category',
+    'transaction.category.search_hint': 'Search categories',
+    'transaction.category.no_results': 'No results for "{query}"',
+    'transaction.add.date_time': 'Date & Time',
+    'transaction.add.change_date': 'Change date',
+    'transaction.add.change_time': 'Change time',
 
     // ── Transfer ──────────────────────────────────────────────────────────────
     'transaction.transfer.between_accounts': 'Transfer Between Accounts',

@@ -56,6 +56,8 @@ class AppTextField extends StatefulWidget {
   final bool enableIMEPersonalizedLearning;
   final AutovalidateMode? autovalidateMode;
   final FormFieldValidator<String>? validator;
+  final bool suppressContainer;
+  final TextStyle? textStyle;
 
   const AppTextField({
     super.key,
@@ -97,6 +99,8 @@ class AppTextField extends StatefulWidget {
     this.enableIMEPersonalizedLearning = true,
     this.autovalidateMode,
     this.validator,
+    this.suppressContainer = false,
+    this.textStyle,
   });
 
   @override
@@ -106,53 +110,319 @@ class AppTextField extends StatefulWidget {
 class _AppTextFieldState extends State<AppTextField> {
   late bool _obscureText;
   late TextEditingController _controller;
+  late FocusNode _focusNode;
   bool _showClearButton = false;
+  bool _isFocused = false;
+
+  bool get _hasError =>
+      widget.errorText != null && widget.errorText!.isNotEmpty;
 
   @override
   void initState() {
     super.initState();
     _obscureText = widget.obscureText;
 
-    if (widget.controller != null) {
-      _controller = widget.controller!;
-    } else {
-      _controller = TextEditingController(text: widget.initialValue);
-    }
+    _controller =
+        widget.controller ?? TextEditingController(text: widget.initialValue);
+    _focusNode = widget.focusNode ?? FocusNode();
 
     _showClearButton = widget.showClearButton && _controller.text.isNotEmpty;
     _controller.addListener(_onTextChanged);
+    _focusNode.addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
     _controller.removeListener(_onTextChanged);
-    // Only dispose if we created the controller internally
-    if (widget.controller == null) {
-      _controller.dispose();
-    }
+    _focusNode.removeListener(_onFocusChanged);
+    if (widget.controller == null) _controller.dispose();
+    if (widget.focusNode == null) _focusNode.dispose();
     super.dispose();
   }
 
   void _onTextChanged() {
     if (widget.showClearButton) {
-      setState(() {
-        _showClearButton = _controller.text.isNotEmpty;
-      });
+      setState(() => _showClearButton = _controller.text.isNotEmpty);
     }
   }
 
-  void _toggleObscureText() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
+  void _onFocusChanged() {
+    setState(() => _isFocused = _focusNode.hasFocus);
   }
+
+  void _toggleObscureText() => setState(() => _obscureText = !_obscureText);
 
   void _clearText() {
     _controller.clear();
     widget.onChanged?.call('');
   }
 
-  // Add to _AppTextFieldState
+  // ─────────────────────────────────────────────────────────────────────────
+  // Border colour logic — single source of truth
+  // ─────────────────────────────────────────────────────────────────────────
+
+  Color get _activeBorderColor {
+    if (_hasError) return AppColors.error;
+    if (_isFocused) return AppColors.primary;
+    return AppColors.border;
+  }
+
+  Color? get _focusRingColor {
+    if (!_isFocused) return null;
+    if (_hasError) return AppColors.error.withValues(alpha: 0.12);
+    return AppColors.primary.withValues(alpha: 0.12);
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Build
+  // ─────────────────────────────────────────────────────────────────────────
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.label != null) ...[
+          _LabelRow(
+            label: widget.label!,
+            hasError: _hasError,
+            enabled: widget.enabled,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+        ],
+
+        // ── Input container ─────────────────────────────────────────────
+        if (widget.suppressContainer)
+          _buildInputContent()
+        else
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            decoration: BoxDecoration(
+              color: widget.enabled
+                  ? AppColors.surface
+                  : AppColors.surfaceVariant,
+              borderRadius: BorderRadius.circular(AppRadius.input),
+              border: Border.all(
+                color: _activeBorderColor,
+                width: _isFocused ? 1.5 : 1.0,
+              ),
+              boxShadow: _focusRingColor != null
+                  ? [
+                      BoxShadow(
+                        color: _focusRingColor!,
+                        blurRadius: 0,
+                        spreadRadius: 3,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: _buildInputContent(),
+          ),
+
+        if (_hasError) ...[
+          const SizedBox(height: 5),
+          _HelperRow(text: widget.errorText!, isError: true),
+        ] else if (widget.helperText != null) ...[
+          const SizedBox(height: 5),
+          _HelperRow(text: widget.helperText!),
+        ],
+
+        if (widget.showCharacterCounter && widget.maxLength != null)
+          _CharacterCounter(
+            controller: _controller,
+            maxLength: widget.maxLength!,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildInputContent() {
+    // Multiline gets a slightly different layout with optional footer
+    if ((widget.maxLines ?? 1) > 1 || widget.minLines != null) {
+      return Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.prefixWidget != null || widget.prefixIcon != null)
+                _PrefixIconContainer(
+                  child:
+                      widget.prefixWidget ??
+                      Icon(
+                        widget.prefixIcon,
+                        color: _hasError
+                            ? AppColors.error
+                            : AppColors.textSecondary,
+                        size: AppIconSize.md,
+                      ),
+                ),
+              Expanded(child: _buildTextField()),
+            ],
+          ),
+          // Counter footer for multiline
+          if (widget.showCharacterCounter && widget.maxLength != null)
+            _MultilineCounterFooter(
+              controller: _controller,
+              maxLength: widget.maxLength!,
+            ),
+        ],
+      );
+    }
+
+    // Single-line layout
+    return Row(
+      children: [
+        // Prefix
+        if (widget.prefixWidget != null)
+          _PrefixIconContainer(child: widget.prefixWidget!)
+        else if (widget.prefixIcon != null)
+          _PrefixIconContainer(
+            child: Icon(
+              widget.prefixIcon,
+              color: _hasError
+                  ? AppColors.error
+                  : _isFocused
+                  ? AppColors.primary
+                  : AppColors.textSecondary,
+              size: AppIconSize.md,
+            ),
+          )
+        else if (widget.prefixText != null)
+          Padding(
+            padding: const EdgeInsets.only(left: AppSpacing.lg),
+            child: Text(
+              widget.prefixText!,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+
+        // Input
+        Expanded(child: _buildTextField()),
+
+        // Suffix
+        _buildSuffixArea(),
+      ],
+    );
+  }
+
+  Widget _buildTextField() {
+    return TextFormField(
+      controller: _controller,
+      focusNode: _focusNode,
+      decoration: _buildDecoration(),
+      keyboardType: _getKeyboardType(),
+      textInputAction: widget.textInputAction ?? TextInputAction.next,
+      obscureText: _obscureText,
+      maxLines: widget.maxLines,
+      minLines: widget.minLines,
+      maxLength: null, // We handle counter manually
+      enabled: widget.enabled,
+      readOnly: widget.readOnly,
+      autofocus: widget.autofocus,
+      textAlign: widget.textAlign,
+      textCapitalization: widget.textCapitalization,
+      enableSuggestions: widget.enableSuggestions,
+      autocorrect: widget.autocorrect,
+      restorationId: widget.restorationId,
+      enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
+      autovalidateMode: widget.autovalidateMode,
+      validator: _buildAutoValidator(),
+      onChanged: widget.onChanged,
+      onFieldSubmitted: widget.onSubmitted,
+      onTap: widget.onTap,
+      inputFormatters: _buildInputFormatters(),
+      style:
+          widget.textStyle ??
+          AppTextStyles.bodyMedium.copyWith(
+            color: widget.enabled
+                ? AppColors.textPrimary
+                : AppColors.textSecondary,
+          ),
+    );
+  }
+
+  InputDecoration _buildDecoration() {
+    return InputDecoration(
+      hintText: widget.hint,
+      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textHint),
+      // All border styling is on the AnimatedContainer — keep these invisible
+      border: InputBorder.none,
+      enabledBorder: InputBorder.none,
+      focusedBorder: InputBorder.none,
+      errorBorder: InputBorder.none,
+      focusedErrorBorder: InputBorder.none,
+      disabledBorder: InputBorder.none,
+      // Suppress built-in error/counter rendering — we do it manually
+      errorText: null,
+      errorStyle: const TextStyle(fontSize: 0, height: 0),
+      counterText: '',
+      filled: false,
+      isDense: true,
+      contentPadding:
+          widget.contentPadding ??
+          EdgeInsets.symmetric(
+            horizontal:
+                (widget.prefixIcon != null ||
+                    widget.prefixWidget != null ||
+                    widget.prefixText != null)
+                ? AppSpacing.md
+                : AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+    );
+  }
+
+  Widget _buildSuffixArea() {
+    // Clear button
+    if (widget.showClearButton && _showClearButton) {
+      return _SuffixButton(
+        onTap: _clearText,
+        child: const Icon(Icons.close_rounded, size: 16),
+      );
+    }
+
+    // Password visibility toggle
+    if (widget.obscureText) {
+      return _SuffixButton(
+        onTap: _toggleObscureText,
+        hasDivider: true,
+        child: Icon(
+          _obscureText
+              ? Icons.visibility_off_outlined
+              : Icons.visibility_outlined,
+          size: AppIconSize.sm,
+        ),
+      );
+    }
+
+    // Custom suffix widget
+    if (widget.suffixWidget != null) {
+      return Padding(
+        padding: const EdgeInsets.only(right: AppSpacing.sm),
+        child: widget.suffixWidget,
+      );
+    }
+
+    // Suffix icon
+    if (widget.suffixIcon != null) {
+      return _PrefixIconContainer(
+        child: Icon(
+          widget.suffixIcon,
+          color: AppColors.textSecondary,
+          size: AppIconSize.md,
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Auto-validator (unchanged logic, same as before)
+  // ─────────────────────────────────────────────────────────────────────────
+
   FormFieldValidator<String>? _buildAutoValidator() {
     FormFieldValidator<String>? autoValidator;
 
@@ -197,7 +467,6 @@ class _AppTextFieldState extends State<AppTextField> {
         break;
     }
 
-    // If a custom validator is provided, chain it after auto-validation
     if (widget.validator != null) {
       final customValidator = widget.validator!;
       if (autoValidator != null) {
@@ -208,186 +477,6 @@ class _AppTextFieldState extends State<AppTextField> {
     }
 
     return autoValidator;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (widget.label != null) ...[
-          Text(
-            widget.label!,
-            style: AppTextStyles.bodySmall.copyWith(
-              color: widget.errorText != null
-                  ? AppColors.error
-                  : AppColors.textSecondary,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-        ],
-        TextFormField(
-          controller: _controller,
-          focusNode: widget.focusNode,
-          decoration: _buildDecoration(),
-          keyboardType: _getKeyboardType(),
-          textInputAction: widget.textInputAction ?? TextInputAction.next,
-          obscureText: _obscureText,
-          maxLines: widget.maxLines,
-          minLines: widget.minLines,
-          maxLength: widget.showCharacterCounter ? widget.maxLength : null,
-          enabled: widget.enabled,
-          readOnly: widget.readOnly,
-          autofocus: widget.autofocus,
-          textAlign: widget.textAlign,
-          textCapitalization: widget.textCapitalization,
-          enableSuggestions: widget.enableSuggestions,
-          autocorrect: widget.autocorrect,
-          restorationId: widget.restorationId,
-          enableIMEPersonalizedLearning: widget.enableIMEPersonalizedLearning,
-          autovalidateMode: widget.autovalidateMode,
-          validator: _buildAutoValidator(),
-          onChanged: widget.onChanged,
-          onFieldSubmitted: widget.onSubmitted,
-          onTap: widget.onTap,
-          inputFormatters: _buildInputFormatters(),
-        ),
-        if (widget.errorText != null) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            widget.errorText!,
-            style: AppTextStyles.captionSmall.copyWith(color: AppColors.error),
-          ),
-        ] else if (widget.helperText != null) ...[
-          const SizedBox(height: AppSpacing.xs),
-          Text(widget.helperText!, style: AppTextStyles.captionSmall),
-        ],
-      ],
-    );
-  }
-
-  InputDecoration _buildDecoration() {
-    return InputDecoration(
-      hintText: widget.hint,
-      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textHint),
-      prefixText: widget.prefixText,
-      prefixStyle: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.textSecondary,
-      ),
-      prefixIcon: _buildPrefixIcon(),
-      prefixIconConstraints: const BoxConstraints(
-        minWidth: AppTouchTarget.min,
-        minHeight: AppTouchTarget.min,
-      ),
-      suffixText: widget.suffixText,
-      suffixStyle: AppTextStyles.bodyMedium.copyWith(
-        color: AppColors.textSecondary,
-      ),
-      suffixIcon: _buildSuffixIcon(),
-      suffixIconConstraints: const BoxConstraints(
-        minWidth: AppTouchTarget.min,
-        minHeight: AppTouchTarget.min,
-      ),
-      errorText: null, // Handled manually below the field
-      errorStyle: AppTextStyles.captionSmall.copyWith(color: AppColors.error),
-      errorMaxLines: 2,
-      counterText: '', // Hide default counter
-      counterStyle: AppTextStyles.captionSmall,
-      filled: true,
-      fillColor: widget.enabled ? AppColors.surface : AppColors.surfaceVariant,
-      contentPadding:
-          widget.contentPadding ??
-          const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
-          ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: const BorderSide(color: AppColors.border),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: const BorderSide(color: AppColors.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: const BorderSide(color: AppColors.error),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: const BorderSide(color: AppColors.error, width: 2),
-      ),
-      disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(AppRadius.input),
-        borderSide: const BorderSide(color: AppColors.border),
-      ),
-    );
-  }
-
-  Widget? _buildPrefixIcon() {
-    if (widget.prefixWidget != null) {
-      return widget.prefixWidget;
-    }
-
-    if (widget.prefixIcon != null) {
-      return Icon(
-        widget.prefixIcon,
-        color: AppColors.textSecondary,
-        size: AppIconSize.md,
-      );
-    }
-
-    return null;
-  }
-
-  Widget? _buildSuffixIcon() {
-    if (widget.showClearButton && _showClearButton) {
-      return IconButton(
-        icon: const Icon(Icons.clear, size: AppIconSize.sm),
-        onPressed: _clearText,
-        color: AppColors.textSecondary,
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(
-          minWidth: AppTouchTarget.min,
-          minHeight: AppTouchTarget.min,
-        ),
-      );
-    }
-
-    if (widget.obscureText) {
-      return IconButton(
-        icon: Icon(
-          _obscureText ? Icons.visibility_off : Icons.visibility,
-          size: AppIconSize.sm,
-        ),
-        onPressed: _toggleObscureText,
-        color: AppColors.textSecondary,
-        padding: EdgeInsets.zero,
-        constraints: const BoxConstraints(
-          minWidth: AppTouchTarget.min,
-          minHeight: AppTouchTarget.min,
-        ),
-      );
-    }
-
-    if (widget.suffixWidget != null) {
-      return widget.suffixWidget;
-    }
-
-    if (widget.suffixIcon != null) {
-      return Icon(
-        widget.suffixIcon,
-        color: AppColors.textSecondary,
-        size: AppIconSize.md,
-      );
-    }
-
-    return null;
   }
 
   TextInputType _getKeyboardType() {
@@ -415,36 +504,240 @@ class _AppTextFieldState extends State<AppTextField> {
 
   List<TextInputFormatter>? _buildInputFormatters() {
     final formatters = <TextInputFormatter>[];
-
     if (widget.inputFormatters != null) {
       formatters.addAll(widget.inputFormatters!);
     }
-
     if (widget.keyboardType == AppTextFieldKeyboardType.currency) {
       formatters.add(
         FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
       );
     }
-
     return formatters.isNotEmpty ? formatters : null;
   }
 }
 
-/// Currency input field with formatting
+// =============================================================================
+// Sub-widgets
+// =============================================================================
+
+class _LabelRow extends StatelessWidget {
+  final String label;
+  final bool hasError;
+  final bool enabled;
+
+  const _LabelRow({
+    required this.label,
+    required this.hasError,
+    required this.enabled,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: AppTextStyles.bodyMedium.copyWith(
+        color: hasError
+            ? AppColors.error
+            : enabled
+            ? AppColors.textPrimary
+            : AppColors.textSecondary,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+}
+
+class _HelperRow extends StatelessWidget {
+  final String text;
+  final bool isError;
+
+  const _HelperRow({required this.text, this.isError = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (isError) ...[
+          Icon(Icons.error_outline_rounded, size: 13, color: AppColors.error),
+          const SizedBox(width: 4),
+        ],
+        Expanded(
+          child: Text(
+            text,
+            style: AppTextStyles.captionSmall.copyWith(
+              color: isError ? AppColors.error : AppColors.textSecondary,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _CharacterCounter extends StatefulWidget {
+  final TextEditingController controller;
+  final int maxLength;
+
+  const _CharacterCounter({required this.controller, required this.maxLength});
+
+  @override
+  State<_CharacterCounter> createState() => _CharacterCounterState();
+}
+
+class _CharacterCounterState extends State<_CharacterCounter> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_rebuild);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_rebuild);
+    super.dispose();
+  }
+
+  void _rebuild() => setState(() {});
+
+  @override
+  Widget build(BuildContext context) {
+    final count = widget.controller.text.length;
+    final isNearLimit = count >= widget.maxLength * 0.85;
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          '$count / ${widget.maxLength}',
+          style: AppTextStyles.captionSmall.copyWith(
+            color: isNearLimit ? AppColors.error : AppColors.textHint,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Character counter inside the multiline field's footer bar
+class _MultilineCounterFooter extends StatefulWidget {
+  final TextEditingController controller;
+  final int maxLength;
+
+  const _MultilineCounterFooter({
+    required this.controller,
+    required this.maxLength,
+  });
+
+  @override
+  State<_MultilineCounterFooter> createState() =>
+      _MultilineCounterFooterState();
+}
+
+class _MultilineCounterFooterState extends State<_MultilineCounterFooter> {
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_rebuild);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_rebuild);
+    super.dispose();
+  }
+
+  void _rebuild() => setState(() {});
+
+  @override
+  Widget build(BuildContext context) {
+    final count = widget.controller.text.length;
+    final isNearLimit = count >= widget.maxLength * 0.85;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: AppColors.divider, width: 0.5)),
+      ),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          '$count / ${widget.maxLength}',
+          style: AppTextStyles.captionSmall.copyWith(
+            color: isNearLimit ? AppColors.error : AppColors.textHint,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PrefixIconContainer extends StatelessWidget {
+  final Widget child;
+
+  const _PrefixIconContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: AppTouchTarget.min,
+      height: AppTouchTarget.min,
+      child: Center(child: child),
+    );
+  }
+}
+
+/// Suffix button — used for clear + password toggle
+class _SuffixButton extends StatelessWidget {
+  final VoidCallback onTap;
+  final Widget child;
+  final bool hasDivider;
+
+  const _SuffixButton({
+    required this.onTap,
+    required this.child,
+    this.hasDivider = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: AppTouchTarget.min,
+        height: AppTouchTarget.min,
+        decoration: hasDivider
+            ? BoxDecoration(
+                border: Border(
+                  left: BorderSide(color: AppColors.divider, width: 0.5),
+                ),
+              )
+            : null,
+        child: Center(
+          child: IconTheme(
+            data: const IconThemeData(color: AppColors.textSecondary),
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// CurrencyTextField — unchanged API, inherits new AppTextField styling
+// =============================================================================
+
 class CurrencyTextField extends StatefulWidget {
   final String? label;
   final String? hint;
   final TextEditingController? controller;
   final String? errorText;
   final String currencySymbol;
-
-  /// Disables the field entirely (greyed out, not focusable).
   final bool enabled;
-
-  /// Makes the field non-editable but still looks normal (not greyed out).
-  /// Takes precedence over [enabled] for the read-only behaviour.
   final bool readOnly;
-
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
 
@@ -476,9 +769,7 @@ class _CurrencyTextFieldState extends State<CurrencyTextField> {
 
   @override
   void dispose() {
-    if (widget.controller == null) {
-      _controller.dispose();
-    }
+    if (widget.controller == null) _controller.dispose();
     super.dispose();
   }
 
@@ -486,13 +777,14 @@ class _CurrencyTextFieldState extends State<CurrencyTextField> {
   Widget build(BuildContext context) {
     return AppTextField(
       label: widget.label,
-      hint: widget.hint,
+      hint: widget.hint ?? '0.00',
       controller: _controller,
       errorText: widget.errorText,
       prefixText: widget.currencySymbol,
       keyboardType: AppTextFieldKeyboardType.decimal,
       enabled: widget.enabled,
       readOnly: widget.readOnly,
+      textAlign: TextAlign.right,
       onChanged: widget.readOnly ? null : widget.onChanged,
       validator: widget.validator,
       inputFormatters: widget.readOnly

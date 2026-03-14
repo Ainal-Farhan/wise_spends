@@ -120,3 +120,7 @@ class SelectDestinationAccount extends TransactionFormEvent {
 
 /// Clear form
 class ClearTransactionForm extends TransactionFormEvent {}
+
+class ClearTransactionTime extends TransactionFormEvent {
+  const ClearTransactionTime();
+}
