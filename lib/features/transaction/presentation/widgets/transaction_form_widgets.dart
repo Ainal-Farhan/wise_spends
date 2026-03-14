@@ -1,10 +1,15 @@
-// FIXED: Extracted from add_transaction_screen.dart
+// transaction_form_widgets.dart
+// Enhanced shared widgets for transaction screens
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/payee/domain/entities/payee_vo.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
-/// Selected payee chip widget
+// ─────────────────────────────────────────────────────────────────────────────
+// SELECTED PAYEE CHIP
+// ─────────────────────────────────────────────────────────────────────────────
+
 class SelectedPayeeChip extends StatelessWidget {
   final PayeeVO payee;
   final VoidCallback onClear;
@@ -17,23 +22,36 @@ class SelectedPayeeChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+        color: AppColors.primary.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.person, size: 18, color: AppColors.primary),
-          const SizedBox(width: 8),
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.person_rounded,
+              size: 18,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  payee.name ?? 'Unknown',
+                  payee.name ?? 'transaction.unknown'.tr,
                   style: AppTextStyles.bodyMedium.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w600,
@@ -46,17 +64,27 @@ class SelectedPayeeChip extends StatelessWidget {
                       if (payee.accountNumber != null) payee.accountNumber!,
                     ].join(' · '),
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.primary.withValues(alpha: 0.7),
+                      color: AppColors.primary.withValues(alpha: 0.65),
                     ),
                   ),
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.close, size: 16, color: AppColors.primary),
-            onPressed: onClear,
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
+          GestureDetector(
+            onTap: onClear,
+            child: Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 14,
+                color: AppColors.primary,
+              ),
+            ),
           ),
         ],
       ),
@@ -64,24 +92,23 @@ class SelectedPayeeChip extends StatelessWidget {
   }
 }
 
-/// Locked field wrapper widget
+// ─────────────────────────────────────────────────────────────────────────────
+// LOCKED FIELD WRAPPER
+// ─────────────────────────────────────────────────────────────────────────────
+
 class LockedField extends StatelessWidget {
   final String label;
   final Widget child;
 
-  const LockedField({
-    super.key,
-    required this.label,
-    required this.child,
-  });
+  const LockedField({super.key, required this.label, required this.child});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.divider),
       ),
       child: Row(
@@ -95,65 +122,210 @@ class LockedField extends StatelessWidget {
                   label,
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.textHint,
+                    letterSpacing: 0.3,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 5),
                 child,
               ],
             ),
           ),
-          const SizedBox(width: 8),
-          const Icon(Icons.lock_outline, size: 16, color: AppColors.textHint),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: AppColors.divider.withValues(alpha: 0.6),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.lock_outline_rounded,
+              size: 13,
+              color: AppColors.textHint,
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
-/// Type toggle item widget
-class TypeToggleItem extends StatelessWidget {
+// ─────────────────────────────────────────────────────────────────────────────
+// SECTION LABEL
+// ─────────────────────────────────────────────────────────────────────────────
+
+class SectionLabel extends StatelessWidget {
+  final String text;
+  final String? optionalSuffix;
+  final Widget? trailing;
+
+  const SectionLabel({
+    super.key,
+    required this.text,
+    this.optionalSuffix,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.baseline,
+      textBaseline: TextBaseline.alphabetic,
+      children: [
+        Text(text, style: AppTextStyles.bodySemiBold),
+        if (optionalSuffix != null) ...[
+          const SizedBox(width: 5),
+          Text(
+            optionalSuffix!,
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+          ),
+        ],
+        if (trailing != null) ...[const Spacer(), trailing!],
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATE/TIME PICKER TILE
+// ─────────────────────────────────────────────────────────────────────────────
+
+class DateTimeTile extends StatelessWidget {
   final IconData icon;
   final String label;
-  final bool isSelected;
+  final String value;
+  final bool isValueSet;
   final VoidCallback onTap;
 
-  const TypeToggleItem({
+  const DateTimeTile({
     super.key,
     required this.icon,
     required this.label,
-    required this.isSelected,
+    required this.value,
+    this.isValueSet = true,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : AppColors.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.divider,
-            width: isSelected ? 2 : 1,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.divider),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 19),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textHint,
+                        fontSize: 11,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      value,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: isValueSet
+                            ? AppColors.textPrimary
+                            : AppColors.textHint,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textSecondary,
+                size: 20,
+              ),
+            ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EMPTY STATE WIDGETS
+// ─────────────────────────────────────────────────────────────────────────────
+
+class TransactionEmptyState extends StatelessWidget {
+  final VoidCallback onAddTransaction;
+
+  const TransactionEmptyState({super.key, required this.onAddTransaction});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
-              size: 24,
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppColors.primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.receipt_long_outlined,
+                size: 38,
+                color: AppColors.primary,
+              ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 20),
             Text(
-              label,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              'transaction.history.empty_title'.tr,
+              style: AppTextStyles.h3,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'transaction.history.empty_subtitle'.tr,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 28),
+            FilledButton.icon(
+              onPressed: onAddTransaction,
+              icon: const Icon(Icons.add_rounded),
+              label: Text('transaction.add'.tr),
+              style: FilledButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ],
@@ -163,51 +335,45 @@ class TypeToggleItem extends StatelessWidget {
   }
 }
 
-/// Account dropdown widget
-class AccountDropdown extends StatelessWidget {
-  final String label;
-  final String? selectedAccountName;
-  final VoidCallback onTap;
-
-  const AccountDropdown({
-    super.key,
-    required this.label,
-    required this.selectedAccountName,
-    required this.onTap,
-  });
+class NoSearchResultsWidget extends StatelessWidget {
+  const NoSearchResultsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.divider),
-        ),
-        child: Row(
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 48),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textHint,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    selectedAccountName ?? 'Select account',
-                    style: AppTextStyles.bodyMedium,
-                  ),
-                ],
+            Container(
+              width: 68,
+              height: 68,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.divider),
+              ),
+              child: const Icon(
+                Icons.search_off_rounded,
+                size: 32,
+                color: AppColors.textSecondary,
               ),
             ),
-            const Icon(Icons.keyboard_arrow_down, color: AppColors.textSecondary),
+            const SizedBox(height: 16),
+            Text(
+              'transaction.history.no_results'.tr,
+              style: AppTextStyles.bodySemiBold,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'transaction.history.no_results_hint'.tr,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),

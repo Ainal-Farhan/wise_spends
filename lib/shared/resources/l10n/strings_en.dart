@@ -1142,5 +1142,86 @@ class EnglishStrings {
     'backup_restore.loading.sharing': 'Preparing share\u2026',
     'backup_restore.loading.deleting': 'Deleting\u2026',
     'backup_restore.loading.processing': 'Processing\u2026',
+
+    // ── Transaction form ──────────────────────────────────────────────────────
+    'transaction.save': 'Save Transaction',
+    'transaction.saving': 'Saving...',
+    'transaction.update': 'Update Transaction',
+    'transaction.updating': 'Updating...',
+    'transaction.created_success': 'Transaction added successfully',
+    'transaction.updated_success': 'Transaction updated successfully',
+    'transaction.unknown': 'Unknown',
+
+    // ── Field labels ──────────────────────────────────────────────────────────
+    'transaction.add.description': 'Description',
+    'transaction.add.description_hint': 'What was this for?',
+    'transaction.add.date': 'Date',
+    'transaction.add.time': 'Time',
+    'transaction.add.time_not_set': 'Not set (uses midnight)',
+    'transaction.add.note': 'Note',
+    'transaction.add.note_hint': 'Add any additional details',
+    'transaction.add.add_note': 'Add a note (optional)',
+
+    // ── Field names (locked display) ──────────────────────────────────────────
+    'transaction.field.type': 'Transaction Type',
+    'transaction.field.amount': 'Amount',
+    'transaction.field.transfer_accounts': 'Transfer Accounts',
+    'transaction.field.received_into': 'Received Into Account',
+    'transaction.field.paid_from': 'Paid From Account',
+    'transaction.field.category': 'Category',
+    'transaction.field.payee': 'Payee',
+
+    // ── Edit mode ─────────────────────────────────────────────────────────────
+    'transaction.edit.locked_fields_info':
+        'Type, amount, and account cannot be changed after a transaction is saved.',
+
+    // ── Account ───────────────────────────────────────────────────────────────
+    'transaction.account.unnamed': 'Unnamed',
+    'transaction.account.unknown': 'Unknown Account',
+    'transaction.account.no_accounts':
+        'No savings accounts available. Please add one first.',
+    'transaction.account.received_into': 'Received Into Account',
+    'transaction.account.paid_from': 'Paid From Account',
+    'transaction.account.received_hint': 'Select account to receive money',
+    'transaction.account.paid_hint': 'Select account used for payment',
+
+    // ── Transfer ──────────────────────────────────────────────────────────────
+    'transaction.transfer.between_accounts': 'Transfer Between Accounts',
+    'transaction.transfer.from': 'From Account',
+    'transaction.transfer.from_hint': 'Select source account',
+    'transaction.transfer.to': 'To Account',
+    'transaction.transfer.to_hint': 'Select destination account',
+
+    // ── Category ──────────────────────────────────────────────────────────────
+    'transaction.category.uncategorized': 'Uncategorized',
+    'transaction.category.empty_hint':
+        'No categories found. Add categories in Settings.',
+
+    // ── Payee ─────────────────────────────────────────────────────────────────
+    'transaction.payee.select_hint': 'Select a payee',
+    'transaction.payee.no_payees': 'No payees yet — add one in Settings',
+    'transaction.payee.none_recorded': 'No payee recorded',
+
+    // ── Validation errors ─────────────────────────────────────────────────────
+    'transaction.error.description_required': 'Please enter a description',
+    'transaction.error.amount_required':
+        'Please enter a valid amount greater than 0',
+    'transaction.error.account_required': 'Please select an account',
+    'transaction.error.source_account_required':
+        'Please select a source account',
+    'transaction.error.destination_account_required':
+        'Please select a destination account',
+    'transaction.error.category_required': 'Please select a category',
+
+    // ── History screen ────────────────────────────────────────────────────────
+    'transaction.history.empty_title': 'No transactions yet',
+    'transaction.history.empty_subtitle':
+        'Start tracking your money by adding your first transaction.',
+    'transaction.history.no_results': 'No matches found',
+    'transaction.history.no_results_hint':
+        'Try a different search term or clear your filters.',
+
+    // ── Filter ────────────────────────────────────────────────────────────────
+    'transaction.filter.all_types': 'All Types',
   };
 }

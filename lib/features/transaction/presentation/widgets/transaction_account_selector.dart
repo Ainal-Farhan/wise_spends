@@ -1,25 +1,170 @@
-// FIXED: Extracted from add_transaction_screen.dart
+// transaction_account_selector.dart
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
-import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
-import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import 'transaction_form_widgets.dart';
 
-/// Account selector widget for transactions
-class AccountSelector extends StatelessWidget {
-  final String? selectedAccountId;
-  final List<ListSavingVO> accounts;
-  final ValueChanged<String?> onAccountSelected;
+/// Single account selector dropdown
+class TransactionAccountDropdown extends StatelessWidget {
   final String label;
+  final String hint;
+  final String? selectedId;
+  final List<ListSavingVO> savingsList;
+  final String? excludeId;
+  final ValueChanged<String?> onChanged;
 
-  const AccountSelector({
+  const TransactionAccountDropdown({
     super.key,
-    required this.selectedAccountId,
-    required this.accounts,
-    required this.onAccountSelected,
-    this.label = 'transactions.account',
+    required this.label,
+    required this.hint,
+    required this.selectedId,
+    required this.savingsList,
+    this.excludeId,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final available = savingsList
+        .where((s) => s.saving.id != excludeId)
+        .toList();
+
+    if (available.isEmpty) {
+      return _NoAccountsHint();
+    }
+
+    final validSelectedId = available.any((s) => s.saving.id == selectedId)
+        ? selectedId
+        : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionLabel(text: label),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.divider),
+          ),
+          child: DropdownButtonFormField<String>(
+            initialValue: validSelectedId,
+            isExpanded: true,
+            decoration: InputDecoration(
+              hintText: hint,
+              prefixIcon: Padding(
+                padding: const EdgeInsets.only(left: 12, right: 8),
+                child: Icon(
+                  Icons.account_balance_rounded,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
+              ),
+              prefixIconConstraints: const BoxConstraints(
+                minWidth: 0,
+                minHeight: 0,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+              ),
+              filled: true,
+              fillColor: Colors.transparent,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 14,
+              ),
+            ),
+            items: available.map((s) {
+              return DropdownMenuItem<String>(
+                value: s.saving.id,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _savingTypeIcon(s.saving.type),
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            s.saving.name ?? 'transaction.account.unnamed'.tr,
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            'RM ${s.saving.currentAmount.toStringAsFixed(2)}',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            onChanged: onChanged,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _savingTypeIcon(String type) {
+    final (icon, color) = switch (type.toLowerCase()) {
+      'cash' => (Icons.payments_rounded, AppColors.success),
+      'bank' ||
+      'bank_account' => (Icons.account_balance_rounded, AppColors.primary),
+      'credit' ||
+      'credit_card' => (Icons.credit_card_rounded, AppColors.secondary),
+      'ewallet' ||
+      'e_wallet' => (Icons.phone_android_rounded, AppColors.tertiary),
+      'savings' => (Icons.savings_rounded, AppColors.income),
+      _ => (Icons.account_balance_wallet_rounded, AppColors.textSecondary),
+    };
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: color, size: 16),
+    );
+  }
+}
+
+/// Transfer between two accounts
+class TransferAccountSelector extends StatelessWidget {
+  final String? sourceAccountId;
+  final String? destinationAccountId;
+  final List<ListSavingVO> savingsList;
+  final ValueChanged<String?> onSourceChanged;
+  final ValueChanged<String?> onDestinationChanged;
+
+  const TransferAccountSelector({
+    super.key,
+    required this.sourceAccountId,
+    required this.destinationAccountId,
+    required this.savingsList,
+    required this.onSourceChanged,
+    required this.onDestinationChanged,
   });
 
   @override
@@ -27,169 +172,83 @@ class AccountSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+        SectionLabel(text: 'transaction.transfer.between_accounts'.tr),
+        const SizedBox(height: 12),
+        TransactionAccountDropdown(
+          label: 'transaction.transfer.from'.tr,
+          hint: 'transaction.transfer.from_hint'.tr,
+          selectedId: sourceAccountId,
+          savingsList: savingsList,
+          excludeId: destinationAccountId,
+          onChanged: onSourceChanged,
         ),
-        const SizedBox(height: AppSpacing.sm),
-        GestureDetector(
-          onTap: () => _showAccountSheet(context),
+        const SizedBox(height: 10),
+        Center(
           child: Container(
-            padding: const EdgeInsets.all(14),
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.primaryContainer,
+              shape: BoxShape.circle,
               border: Border.all(color: AppColors.divider),
             ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.account_balance,
-                  size: 20,
-                  color: AppColors.textSecondary,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textHint,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        _getSelectedAccountName(),
-                        style: AppTextStyles.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_down,
-                  color: AppColors.textSecondary,
-                ),
-              ],
+            child: const Icon(
+              Icons.arrow_downward_rounded,
+              color: AppColors.primary,
+              size: 18,
             ),
           ),
+        ),
+        const SizedBox(height: 10),
+        TransactionAccountDropdown(
+          label: 'transaction.transfer.to'.tr,
+          hint: 'transaction.transfer.to_hint'.tr,
+          selectedId: destinationAccountId,
+          savingsList: savingsList,
+          excludeId: sourceAccountId,
+          onChanged: onDestinationChanged,
         ),
       ],
     );
   }
-
-  String _getSelectedAccountName() {
-    if (selectedAccountId == null) return 'Select account';
-    final account = accounts.firstWhere(
-      (a) => a.saving.id == selectedAccountId,
-      orElse: () => throw Exception('Account not found'),
-    );
-    return account.saving.name ?? 'Unknown';
-  }
-
-  void _showAccountSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => AccountSelectionSheet(
-        accounts: accounts,
-        selectedAccountId: selectedAccountId,
-        onAccountSelected: onAccountSelected,
-      ),
-    );
-  }
 }
 
-/// Account selection bottom sheet
-class AccountSelectionSheet extends StatelessWidget {
-  final List<ListSavingVO> accounts;
-  final String? selectedAccountId;
-  final ValueChanged<String?> onAccountSelected;
+/// Chip showing account name — used in locked fields
+class AccountChip extends StatelessWidget {
+  final String name;
+  final IconData icon;
+  final Color color;
 
-  const AccountSelectionSheet({
+  const AccountChip({
     super.key,
-    required this.accounts,
-    this.selectedAccountId,
-    required this.onAccountSelected,
+    required this.name,
+    required this.icon,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.xxl),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppRadius.xxl),
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
-      child: Column(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.divider,
-                borderRadius: BorderRadius.circular(2),
+          Icon(icon, size: 15, color: color),
+          const SizedBox(width: 7),
+          Flexible(
+            child: Text(
+              name,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
               ),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xxl),
-          Text('transactions.select_account'.tr, style: AppTextStyles.h3),
-          const SizedBox(height: AppSpacing.lg),
-          if (accounts.isEmpty) ...[
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(
-                  children: [
-                    const Icon(
-                      Icons.account_balance_outlined,
-                      size: 48,
-                      color: AppColors.textHint,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(
-                      'transactions.no_accounts'.tr,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ] else
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 300),
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: accounts.length,
-                separatorBuilder: (_, _) =>
-                    const SizedBox(height: AppSpacing.sm),
-                itemBuilder: (context, index) {
-                  final account = accounts[index];
-                  return _AccountListTile(
-                    account: account,
-                    isSelected: account.saving.id == selectedAccountId,
-                    onTap: () {
-                      onAccountSelected(account.saving.id);
-                      Navigator.pop(context);
-                    },
-                  );
-                },
-              ),
-            ),
-          const SizedBox(height: AppSpacing.md),
-          SizedBox(
-            width: double.infinity,
-            child: AppButton.secondary(
-              label: 'general.cancel'.tr,
-              onPressed: () => Navigator.pop(context),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
@@ -198,77 +257,33 @@ class AccountSelectionSheet extends StatelessWidget {
   }
 }
 
-class _AccountListTile extends StatelessWidget {
-  final ListSavingVO account;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _AccountListTile({
-    required this.account,
-    required this.isSelected,
-    required this.onTap,
-  });
-
+class _NoAccountsHint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : AppColors.surface,
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.divider,
-            width: isSelected ? 2 : 1,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.account_balance_outlined,
+            size: 18,
+            color: AppColors.textSecondary,
           ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary.withValues(alpha: 0.2)
-                    : AppColors.surface,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Icon(
-                isSelected ? Icons.check_circle : Icons.account_balance,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                size: 20,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'transaction.account.no_accounts'.tr,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    account.saving.name ?? 'Unknown',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    'RM ${account.saving.currentAmount.toStringAsFixed(2)}',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isSelected)
-              const Icon(Icons.check, color: AppColors.primary, size: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
