@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/core/services/backup/backup_restore_bloc.dart';
 import 'package:wise_spends/domain/models/stored_file.dart';
+import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
-/// The "Data Management" tab: file management and reset data options.
-///
-/// Responsibilities:
-///   • Display list of all managed files with storage usage
-///   • Allow deleting individual files
-///   • Provide dangerous "Reset All Data" option
 class DataManagementTab extends StatefulWidget {
   const DataManagementTab({super.key});
 
@@ -27,30 +21,45 @@ class _DataManagementTabState extends State<DataManagementTab>
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<BackupRestoreBloc>().add(const LoadAllFiles());
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     return BlocBuilder<BackupRestoreBloc, BackupRestoreState>(
       builder: (context, state) {
+        // ✅ Read from state.data — never cast to FilesLoaded / BackupHistoryLoaded.
+        final data = state.data;
+        final isLoadingFiles = state is LoadingFiles;
+
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xl,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Full backup option
               _FullBackupCard(),
               const SizedBox(height: AppSpacing.lg),
-
-              // Storage overview card
-              _StorageOverviewCard(state: state),
+              _StorageOverviewCard(
+                storageSize: data.formattedStorageSize,
+                fileCount: data.files.length,
+                rawBytes: data.totalStorageBytes,
+              ),
               const SizedBox(height: AppSpacing.xl),
-
-              // Files list section
-              _FilesSection(state: state),
+              _FilesSection(files: data.files, isLoading: isLoadingFiles),
               const SizedBox(height: AppSpacing.xl),
-
-              // Danger zone - Reset all data
               _ResetDataCard(),
-              const SizedBox(height: AppSpacing.lg),
             ],
           ),
         );
@@ -76,10 +85,7 @@ class _FullBackupCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +97,7 @@ class _FullBackupCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.2),
+                  color: AppColors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
                 child: const Icon(
@@ -116,7 +122,7 @@ class _FullBackupCard extends StatelessWidget {
                     ),
                     SizedBox(height: AppSpacing.xs),
                     Text(
-                      'Includes all data AND files',
+                      'Includes database AND all uploaded files',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -125,90 +131,82 @@ class _FullBackupCard extends StatelessWidget {
                   ],
                 ),
               ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                ),
+                child: const Text(
+                  'ZIP',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.sm),
           const Text(
-            'Create a complete backup of your data including all uploaded files, images, and database records. This is the recommended option for complete device migration.',
+            'Create a complete backup including all uploaded files, images, and '
+            'database records. Ideal for migrating to a new device.',
             style: TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
-              height: 1.4,
+              height: 1.5,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
           BlocBuilder<BackupRestoreBloc, BackupRestoreState>(
             builder: (context, state) {
               final isLoading = state is BackupRestoreExportingFull;
-              return Flexible(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    // Stack vertically if width is too narrow for side-by-side buttons
-                    final isNarrow = constraints.maxWidth < 280;
-                    if (isNarrow) {
-                      return Column(
-                        children: [
-                          AppButton.primary(
-                            label: isLoading ? 'Creating...' : 'Save Backup',
-                            icon: isLoading ? null : Icons.save_outlined,
-                            isFullWidth: true,
-                            isLoading: isLoading,
-                            onPressed: isLoading
-                                ? null
-                                : () => context.read<BackupRestoreBloc>().add(
-                                      const ExportFullBackupWithFiles(share: false),
-                                    ),
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 280;
+                  final saveBtn = AppButton.primary(
+                    label: isLoading ? 'Creating…' : 'Save Backup',
+                    icon: isLoading ? null : Icons.save_outlined,
+                    isFullWidth: true,
+                    isLoading: isLoading,
+                    onPressed: isLoading
+                        ? null
+                        : () => context.read<BackupRestoreBloc>().add(
+                            const ExportFullBackupWithFiles(share: false),
                           ),
-                          const SizedBox(height: AppSpacing.sm),
-                          AppButton.secondary(
-                            label: isLoading ? 'Creating...' : 'Share Backup',
-                            icon: isLoading ? null : Icons.ios_share_rounded,
-                            isFullWidth: true,
-                            isLoading: isLoading,
-                            onPressed: isLoading
-                                ? null
-                                : () => context.read<BackupRestoreBloc>().add(
-                                      const ExportFullBackupWithFiles(share: true),
-                                    ),
+                  );
+                  final shareBtn = AppButton.secondary(
+                    label: isLoading ? 'Creating…' : 'Share Backup',
+                    icon: isLoading ? null : Icons.ios_share_rounded,
+                    isFullWidth: true,
+                    isLoading: isLoading,
+                    onPressed: isLoading
+                        ? null
+                        : () => context.read<BackupRestoreBloc>().add(
+                            const ExportFullBackupWithFiles(share: true),
                           ),
-                        ],
-                      );
-                    }
-                    return Row(
+                  );
+                  if (isNarrow) {
+                    return Column(
                       children: [
-                        Flexible(
-                          flex: 1,
-                          child: AppButton.primary(
-                            label: isLoading ? 'Creating...' : 'Save Backup',
-                            icon: isLoading ? null : Icons.save_outlined,
-                            isFullWidth: true,
-                            isLoading: isLoading,
-                            onPressed: isLoading
-                                ? null
-                                : () => context.read<BackupRestoreBloc>().add(
-                                      const ExportFullBackupWithFiles(share: false),
-                                    ),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Flexible(
-                          flex: 1,
-                          child: AppButton.secondary(
-                            label: isLoading ? 'Creating...' : 'Share Backup',
-                            icon: isLoading ? null : Icons.ios_share_rounded,
-                            isFullWidth: true,
-                            isLoading: isLoading,
-                            onPressed: isLoading
-                                ? null
-                                : () => context.read<BackupRestoreBloc>().add(
-                                      const ExportFullBackupWithFiles(share: true),
-                                    ),
-                          ),
-                        ),
+                        saveBtn,
+                        const SizedBox(height: AppSpacing.sm),
+                        shareBtn,
                       ],
                     );
-                  },
-                ),
+                  }
+                  return Row(
+                    children: [
+                      Flexible(child: saveBtn),
+                      const SizedBox(width: AppSpacing.md),
+                      Flexible(child: shareBtn),
+                    ],
+                  );
+                },
               );
             },
           ),
@@ -221,96 +219,145 @@ class _FullBackupCard extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _StorageOverviewCard extends StatelessWidget {
-  final BackupRestoreState state;
+  final String storageSize;
+  final int fileCount;
+  final int rawBytes;
 
-  const _StorageOverviewCard({required this.state});
+  static const int _softCapBytes = 100 * 1024 * 1024;
+
+  const _StorageOverviewCard({
+    required this.storageSize,
+    required this.fileCount,
+    required this.rawBytes,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final storageSize = _resolveStorageSize(state);
-    final fileCount = _resolveFileCount(state);
+    final fraction = (rawBytes / _softCapBytes).clamp(0.0, 1.0);
+    final barColor = fraction >= 0.9
+        ? AppColors.error
+        : fraction >= 0.7
+        ? AppColors.warning
+        : AppColors.primary;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.1),
-            AppColors.primaryContainer.withValues(alpha: 0.3),
+            AppColors.primary.withValues(alpha: 0.08),
+            AppColors.primaryContainer.withValues(alpha: 0.25),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
-          width: 1,
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(AppRadius.md),
-            ),
-            child: Icon(
-              Icons.storage_rounded,
-              color: AppColors.primary,
-              size: 32,
-            ),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: const Icon(
+                  Icons.storage_rounded,
+                  color: AppColors.primary,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Storage Used',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      storageSize,
+                      style: AppTextStyles.h2.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      '$fileCount file${fileCount != 1 ? 's' : ''}',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (rawBytes > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: barColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                  child: Text(
+                    '${(fraction * 100).round()}%',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: barColor,
+                    ),
+                  ),
+                ),
+            ],
           ),
-          const SizedBox(width: AppSpacing.lg),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Storage Used',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+          if (rawBytes > 0) ...[
+            const SizedBox(height: AppSpacing.md),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: fraction),
+                duration: const Duration(milliseconds: 800),
+                curve: Curves.easeOutCubic,
+                builder: (context, value, _) => LinearProgressIndicator(
+                  value: value,
+                  minHeight: 6,
+                  backgroundColor: AppColors.divider,
+                  valueColor: AlwaysStoppedAnimation(barColor),
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  storageSize,
-                  style: AppTextStyles.h2.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '$fileCount file${fileCount != 1 ? 's' : ''}',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              'of ~100 MB soft cap',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 10,
+              ),
+            ),
+          ],
         ],
       ),
     );
-  }
-
-  String _resolveStorageSize(BackupRestoreState state) {
-    if (state is FilesLoaded) return state.formattedStorageSize;
-    return '0 B';
-  }
-
-  int _resolveFileCount(BackupRestoreState state) {
-    if (state is FilesLoaded) return state.files.length;
-    return 0;
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _FilesSection extends StatelessWidget {
-  final BackupRestoreState state;
+  final List<StoredFile> files;
+  final bool isLoading;
 
-  const _FilesSection({required this.state});
+  const _FilesSection({required this.files, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
@@ -319,7 +366,7 @@ class _FilesSection extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
+            const Icon(
               Icons.folder_outlined,
               color: AppColors.textSecondary,
               size: 20,
@@ -329,9 +376,30 @@ class _FilesSection extends StatelessWidget {
               'Managed Files',
               style: AppTextStyles.h3.copyWith(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(width: AppSpacing.sm),
+            if (files.isNotEmpty) ...[
+              const SizedBox(width: AppSpacing.sm),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer,
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                ),
+                child: Text(
+                  '${files.length}',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
+            const Spacer(),
             IconButton(
-              icon: const Icon(Icons.refresh, size: 18),
+              icon: const Icon(Icons.refresh_rounded, size: 18),
               onPressed: () =>
                   context.read<BackupRestoreBloc>().add(const LoadAllFiles()),
               tooltip: 'Refresh',
@@ -341,45 +409,28 @@ class _FilesSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.md),
-        _buildFileList(context),
+        if (isLoading && files.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(AppSpacing.xl),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (files.isEmpty)
+          _EmptyFilesList()
+        else
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: files.length,
+            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+            itemBuilder: (context, index) => _FileListTile(
+              file: files[index],
+              onDelete: () => _confirmDeleteFile(context, files[index]),
+            ),
+          ),
       ],
     );
-  }
-
-  Widget _buildFileList(BuildContext context) {
-    if (state is LoadingFiles) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(AppSpacing.xl),
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    final files = _resolveFiles(state);
-
-    if (files.isEmpty) {
-      return _EmptyFilesList();
-    }
-
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: files.length,
-      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-      itemBuilder: (context, index) {
-        final file = files[index];
-        return _FileListTile(
-          file: file,
-          onDelete: () => _confirmDeleteFile(context, file),
-        );
-      },
-    );
-  }
-
-  List<StoredFile> _resolveFiles(BackupRestoreState state) {
-    if (state is FilesLoaded) return state.files;
-    return [];
   }
 
   void _confirmDeleteFile(BuildContext context, StoredFile file) {
@@ -389,7 +440,7 @@ class _FilesSection extends StatelessWidget {
         config: CustomDialogConfig(
           title: 'Delete File?',
           message:
-              'Are you sure you want to delete "${file.originalName}"? This action cannot be undone.',
+              'Are you sure you want to delete "${file.originalName}"?\nThis action cannot be undone.',
           icon: Icons.delete_outline_rounded,
           iconColor: AppColors.error,
           buttons: [
@@ -417,35 +468,39 @@ class _FilesSection extends StatelessWidget {
 class _EmptyFilesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceVariant,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.folder_open_outlined,
-            size: 48,
-            color: AppColors.textSecondary,
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'No files managed yet',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceVariant,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.folder_open_outlined,
+              size: 48,
+              color: AppColors.textSecondary.withValues(alpha: 0.5),
             ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'Files you upload will appear here',
-            style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'No files managed yet',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              'Files you upload in the app will appear here',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -461,68 +516,84 @@ class _FileListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final (iconData, accentColor) = _iconForMimeType(file.mimeType);
+
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(color: AppColors.divider),
       ),
-      child: Row(
-        children: [
-          _FileIcon(mimeType: file.mimeType),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  file.originalName,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Row(
-                  children: [
-                    Text(
-                      _formatFileSize(file.sizeBytes),
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        child: IntrinsicHeight(
+          child: Row(
+            children: [
+              Container(width: 3, color: accentColor),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                        ),
+                        child: Icon(iconData, color: accentColor, size: 22),
                       ),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.xs,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryContainer,
-                        borderRadius: BorderRadius.circular(AppRadius.full),
-                      ),
-                      child: Text(
-                        file.category.name.toUpperCase(),
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              file.originalName,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Row(
+                              children: [
+                                Text(
+                                  _formatFileSize(file.sizeBytes),
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.sm),
+                                _CategoryChip(
+                                  label: file.category.name,
+                                  color: accentColor,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline_rounded),
+                        color: AppColors.error,
+                        onPressed: onDelete,
+                        iconSize: 20,
+                        constraints: const BoxConstraints(
+                          minWidth: 36,
+                          minHeight: 36,
+                        ),
+                        padding: const EdgeInsets.all(8),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            color: AppColors.error,
-            onPressed: onDelete,
-            tooltip: 'Delete file',
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -532,38 +603,53 @@ class _FileListTile extends StatelessWidget {
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
+
+  (IconData, Color) _iconForMimeType(String mimeType) {
+    if (mimeType.startsWith('image/')) {
+      return (Icons.image_outlined, AppColors.primary);
+    }
+    if (mimeType.startsWith('video/')) {
+      return (Icons.video_file_outlined, const Color(0xFFEF4444));
+    }
+    if (mimeType.startsWith('audio/')) {
+      return (Icons.audio_file_outlined, const Color(0xFF8B5CF6));
+    }
+    if (mimeType.contains('pdf')) {
+      return (Icons.picture_as_pdf_outlined, const Color(0xFFEF4444));
+    }
+    if (mimeType.contains('word') || mimeType.contains('document')) {
+      return (Icons.description_outlined, const Color(0xFF2563EB));
+    }
+    if (mimeType.startsWith('text/')) {
+      return (Icons.description_outlined, AppColors.textSecondary);
+    }
+    return (Icons.insert_drive_file_outlined, AppColors.textSecondary);
+  }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-class _FileIcon extends StatelessWidget {
-  final String mimeType;
-
-  const _FileIcon({required this.mimeType});
+class _CategoryChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _CategoryChip({required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    final iconData = _getIconForMimeType(mimeType);
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: AppColors.primaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(AppRadius.sm),
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.full),
       ),
-      child: Icon(iconData, color: AppColors.primary, size: 24),
+      child: Text(
+        label.toUpperCase(),
+        style: TextStyle(
+          fontSize: 9,
+          fontWeight: FontWeight.w700,
+          color: color,
+          letterSpacing: 0.5,
+        ),
+      ),
     );
-  }
-
-  IconData _getIconForMimeType(String mimeType) {
-    if (mimeType.startsWith('image/')) return Icons.image_outlined;
-    if (mimeType.startsWith('video/')) return Icons.video_file_outlined;
-    if (mimeType.startsWith('audio/')) return Icons.audio_file_outlined;
-    if (mimeType.startsWith('text/')) return Icons.description_outlined;
-    if (mimeType.contains('pdf')) return Icons.picture_as_pdf_outlined;
-    if (mimeType.contains('word') || mimeType.contains('document')) {
-      return Icons.description_outlined;
-    }
-    return Icons.insert_drive_file_outlined;
   }
 }
 
@@ -575,16 +661,27 @@ class _ResetDataCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.1),
+        color: AppColors.error.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: AppColors.error),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: const Icon(
+                  Icons.warning_amber_rounded,
+                  color: AppColors.error,
+                  size: 20,
+                ),
+              ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(
@@ -599,9 +696,11 @@ class _ResetDataCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            'Reset all application data including database records and uploaded files. This action is irreversible!',
+            'Permanently delete all data: transactions, budgets, savings plans, '
+            'uploaded files, and settings. This action cannot be undone.',
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textSecondary,
+              height: 1.5,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),

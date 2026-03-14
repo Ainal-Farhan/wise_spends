@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/core/services/backup/backup_restore_bloc.dart';
+import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
@@ -14,8 +14,6 @@ import 'backup_restore_card.dart';
 import 'backup_section_label.dart';
 import 'backup_warning_card.dart';
 
-/// The "Backup" tab: hero card, share/save format selectors,
-/// restore trigger, auto-backup toggle, and warning notice.
 class BackupTab extends StatefulWidget {
   const BackupTab({super.key});
 
@@ -33,19 +31,22 @@ class _BackupTabState extends State<BackupTab>
     super.build(context);
     return BlocBuilder<BackupRestoreBloc, BackupRestoreState>(
       builder: (context, state) {
-        final autoBackupEnabled = state is BackupHistoryLoaded
-            ? state.autoBackupEnabled
-            : false;
+        // ✅ Read from state.data — works for every state type.
+        final autoBackupEnabled = state.data.autoBackupEnabled;
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xl,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const BackupHeroCard(),
               const SizedBox(height: AppSpacing.xl),
 
-              // ── Share Backup ──────────────────────────────────────────────────
               BackupSectionLabel(
                 icon: Icons.ios_share_rounded,
                 title: BackupRestoreKeys.sectionShareTitle.tr,
@@ -56,7 +57,6 @@ class _BackupTabState extends State<BackupTab>
 
               const SizedBox(height: AppSpacing.xl),
 
-              // ── Save to Device ────────────────────────────────────────────────
               BackupSectionLabel(
                 icon: Icons.save_alt_rounded,
                 title: BackupRestoreKeys.sectionSaveTitle.tr,
@@ -71,7 +71,6 @@ class _BackupTabState extends State<BackupTab>
 
               const SizedBox(height: AppSpacing.xl),
 
-              // ── Restore ───────────────────────────────────────────────────────
               BackupSectionLabel(
                 icon: Icons.restore_rounded,
                 title: BackupRestoreKeys.sectionRestoreTitle.tr,
@@ -82,7 +81,6 @@ class _BackupTabState extends State<BackupTab>
 
               const SizedBox(height: AppSpacing.xl),
 
-              // ── Auto-Backup ───────────────────────────────────────────────────
               BackupAutoBackupCard(
                 enabled: autoBackupEnabled,
                 onToggle: (value) => context.read<BackupRestoreBloc>().add(
@@ -92,15 +90,12 @@ class _BackupTabState extends State<BackupTab>
 
               const SizedBox(height: AppSpacing.xl),
               const BackupWarningCard(),
-              const SizedBox(height: AppSpacing.lg),
             ],
           ),
         );
       },
     );
   }
-
-  // ── Dialogs ─────────────────────────────────────────────────────────────────
 
   void _confirmShare(BuildContext context, String format) {
     showDialog(
@@ -153,7 +148,6 @@ class _BackupTabState extends State<BackupTab>
               isDestructive: true,
               onPressed: () {
                 Navigator.pop(ctx);
-                // This will open the file picker to select a backup file
                 context.read<BackupRestoreBloc>().add(
                   const ImportDataFromFile(),
                 );
@@ -166,8 +160,6 @@ class _BackupTabState extends State<BackupTab>
   }
 }
 
-// ── Private row helpers ───────────────────────────────────────────────────────
-
 class _ShareFormatRow extends StatelessWidget {
   final void Function(String format) onTap;
   const _ShareFormatRow({required this.onTap});
@@ -178,10 +170,11 @@ class _ShareFormatRow extends StatelessWidget {
       children: [
         Expanded(
           child: BackupFormatCard(
-            icon: Icons.description_outlined,
+            icon: Icons.data_object_rounded,
             label: BackupRestoreKeys.formatJsonLabel.tr,
             description: BackupRestoreKeys.formatJsonDesc.tr,
             color: AppColors.primary,
+            chipLabel: 'Universal',
             onTap: () => onTap('JSON'),
           ),
         ),
@@ -192,6 +185,7 @@ class _ShareFormatRow extends StatelessWidget {
             label: BackupRestoreKeys.formatSqliteLabel.tr,
             description: BackupRestoreKeys.formatSqliteDesc.tr,
             color: AppColors.tertiary,
+            chipLabel: 'Fast restore',
             onTap: () => onTap('SQLite'),
           ),
         ),
@@ -210,7 +204,7 @@ class _SaveFormatRow extends StatelessWidget {
       children: [
         Expanded(
           child: BackupFormatCard(
-            icon: Icons.description_outlined,
+            icon: Icons.data_object_rounded,
             label: BackupRestoreKeys.formatJsonLabel.tr,
             description: BackupRestoreKeys.formatJsonDesc.tr,
             color: AppColors.success,

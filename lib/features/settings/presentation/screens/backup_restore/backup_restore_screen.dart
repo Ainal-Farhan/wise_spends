@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/core/services/backup/backup_service.dart';
-import 'package:wise_spends/core/services/backup/backup_restore_bloc.dart';
+import 'package:wise_spends/features/settings/data/services/backup_service.dart';
+import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/widgets/data_management_tab.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
@@ -19,7 +19,8 @@ import 'widgets/history_tab.dart';
 ///   • Provide [BackupRestoreBloc] to the subtree.
 ///   • Own the [TabController] and [AppBar].
 ///   • Listen to BLoC state for snackbar feedback and tab navigation.
-///   • Delegate all UI to [BackupTab], [HistoryTab], and [BackupOperationLoading].
+///   • Delegate all UI to [BackupTab], [HistoryTab], [DataManagementTab],
+///     and [BackupOperationLoading].
 class BackupRestoreScreen extends StatelessWidget {
   const BackupRestoreScreen({super.key});
 
@@ -45,6 +46,10 @@ class _BackupRestoreView extends StatefulWidget {
 class _BackupRestoreViewState extends State<_BackupRestoreView>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+
+  // Tab indices — keep in sync with the [TabBar] children list below.
+  static const int _kBackupTab = 0;
+  static const int _kHistoryTab = 1;
 
   @override
   void initState() {
@@ -75,10 +80,7 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
               icon: const Icon(Icons.history_rounded),
               text: BackupRestoreKeys.tabHistory.tr,
             ),
-            Tab(
-              icon: const Icon(Icons.folder_outlined),
-              text: 'Data Management',
-            ),
+            Tab(icon: const Icon(Icons.folder_outlined), text: 'Data'),
           ],
         ),
       ),
@@ -90,18 +92,14 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
           }
           return TabBarView(
             controller: _tabController,
-            children: const [
-              BackupTab(),
-              HistoryTab(),
-              DataManagementTab(),
-            ],
+            children: const [BackupTab(), HistoryTab(), DataManagementTab()],
           );
         },
       ),
     );
   }
 
-  // ── State listener ───────────────────────────────────────────────────────────
+  // ── State listener ────────────────────────────────────────────────────────
 
   void _onStateChange(BuildContext context, BackupRestoreState state) {
     if (state is BackupRestoreExportSuccess) {
@@ -119,15 +117,15 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         color: AppColors.success,
       );
 
-      // Navigate to History tab after a silent save so the user sees the new file
       if (!state.shared) {
+        // Reload history then switch to History tab.
         context.read<BackupRestoreBloc>().add(const LoadBackupHistory());
-        _tabController.animateTo(1);
+        _tabController.animateTo(_kHistoryTab);
       }
     } else if (state is BackupRestoreExportFullSuccess) {
       final msg = state.shared
-          ? 'Full backup shared successfully (with files)'
-          : 'Full backup saved (with files)';
+          ? 'Full backup shared successfully (includes files)'
+          : 'Full backup saved successfully (includes files)';
       _snack(
         context,
         message: msg,
@@ -135,10 +133,9 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         color: AppColors.success,
       );
 
-      // Navigate to History tab after a silent save
       if (!state.shared) {
         context.read<BackupRestoreBloc>().add(const LoadBackupHistory());
-        _tabController.animateTo(1);
+        _tabController.animateTo(_kHistoryTab);
       }
     } else if (state is BackupRestoreImportSuccess) {
       _snack(
@@ -168,6 +165,10 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         icon: Icons.check_circle_rounded,
         color: AppColors.success,
       );
+      // Return to Backup tab after a full reset for a fresh start UX.
+      _tabController.animateTo(_kBackupTab);
+      // Reload history (will be empty) and files.
+      context.read<BackupRestoreBloc>().add(const LoadBackupHistory());
     } else if (state is FileDeleted) {
       _snack(
         context,
@@ -175,6 +176,8 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         icon: Icons.delete_outline_rounded,
         color: AppColors.textSecondary,
       );
+      // Reload file list so the Data Management tab refreshes automatically.
+      context.read<BackupRestoreBloc>().add(const LoadAllFiles());
     } else if (_isError(state)) {
       _snack(
         context,
@@ -185,7 +188,7 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
     }
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────────
+  // ── Helpers ───────────────────────────────────────────────────────────────
 
   bool _isLoading(BackupRestoreState state) =>
       state is BackupRestoreExporting ||

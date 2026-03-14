@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:wise_spends/core/services/backup/backup_service.dart';
+import 'package:wise_spends/domain/models/backup_file_info.dart';
+import 'package:wise_spends/features/settings/data/services/backup_service.dart';
 import 'package:equatable/equatable.dart';
 import 'package:wise_spends/domain/models/stored_file.dart';
 
@@ -9,7 +10,7 @@ part 'backup_restore_state.dart';
 class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
   final BackupService _backupService;
 
-  BackupRestoreBloc(this._backupService) : super(BackupRestoreInitial()) {
+  BackupRestoreBloc(this._backupService) : super(const BackupRestoreInitial()) {
     // ── Export ──────────────────────────────────────────────────────────────
     on<ExportDataToShare>(_onExportToShare);
     on<ExportDataToInternalStorage>(_onExportToInternalStorage);
@@ -49,6 +50,11 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     on<DeleteFile>(_onDeleteFile);
   }
 
+  // ── Convenience getter ────────────────────────────────────────────────────
+
+  /// The latest composite data, regardless of which state is current.
+  BackupData get _data => state.data;
+
   // ─── Export handlers ──────────────────────────────────────────────────────
 
   Future<void> _onExportToShare(
@@ -56,12 +62,14 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(BackupRestoreExporting(event.format));
+      emit(BackupRestoreExporting(event.format, data: _data));
       final type = event.format == 'JSON' ? '.json' : '.sqlite';
       await _backupService.backupAndShare(type: type);
-      emit(BackupRestoreExportSuccess('', event.format, shared: true));
+      emit(
+        BackupRestoreExportSuccess('', event.format, shared: true, data: _data),
+      );
     } catch (e) {
-      emit(BackupRestoreExportError(_friendlyError(e, 'export')));
+      emit(BackupRestoreExportError(_friendlyError(e, 'export'), data: _data));
     }
   }
 
@@ -70,12 +78,12 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(BackupRestoreExporting(event.format));
+      emit(BackupRestoreExporting(event.format, data: _data));
       final type = event.format == 'JSON' ? '.json' : '.sqlite';
       final filePath = await _backupService.backupToInternalStorage(type: type);
-      emit(BackupRestoreExportSuccess(filePath, event.format));
+      emit(BackupRestoreExportSuccess(filePath, event.format, data: _data));
     } catch (e) {
-      emit(BackupRestoreExportError(_friendlyError(e, 'export')));
+      emit(BackupRestoreExportError(_friendlyError(e, 'export'), data: _data));
     }
   }
 
@@ -84,13 +92,24 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(BackupRestoreExportingFull());
+      emit(BackupRestoreExportingFull(data: _data));
       final filePath = await _backupService.backupFullWithFiles(
         share: event.share,
       );
-      emit(BackupRestoreExportFullSuccess(filePath, shared: event.share));
+      emit(
+        BackupRestoreExportFullSuccess(
+          filePath,
+          shared: event.share,
+          data: _data,
+        ),
+      );
     } catch (e) {
-      emit(BackupRestoreExportFullError(_friendlyError(e, 'full backup')));
+      emit(
+        BackupRestoreExportFullError(
+          _friendlyError(e, 'full backup'),
+          data: _data,
+        ),
+      );
     }
   }
 
@@ -101,10 +120,10 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(BackupRestoreImporting());
+      emit(BackupRestoreImporting(data: _data));
       final success = await _backupService.restore();
       if (success) {
-        emit(const BackupRestoreImportSuccess());
+        emit(BackupRestoreImportSuccess(data: _data));
       } else {
         emit(
           const BackupRestoreImportError(
@@ -113,7 +132,7 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
         );
       }
     } catch (e) {
-      emit(BackupRestoreImportError(_friendlyError(e, 'restore')));
+      emit(BackupRestoreImportError(_friendlyError(e, 'restore'), data: _data));
     }
   }
 
@@ -122,10 +141,10 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(BackupRestoreImporting());
+      emit(BackupRestoreImporting(data: _data));
       final success = await _backupService.restoreFromPath(event.filePath);
       if (success) {
-        emit(const BackupRestoreImportSuccess());
+        emit(BackupRestoreImportSuccess(data: _data));
       } else {
         emit(
           const BackupRestoreImportError(
@@ -134,7 +153,7 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
         );
       }
     } catch (e) {
-      emit(BackupRestoreImportError(_friendlyError(e, 'restore')));
+      emit(BackupRestoreImportError(_friendlyError(e, 'restore'), data: _data));
     }
   }
 
@@ -145,14 +164,20 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(BackupHistoryLoading());
+      // Pass current data so the files section doesn't blank while history loads.
+      emit(BackupHistoryLoading(data: _data));
+
       final backups = await _backupService.listBackups();
       final autoEnabled = await _backupService.getAutoBackupEnabled();
-      emit(
-        BackupHistoryLoaded(backups: backups, autoBackupEnabled: autoEnabled),
+
+      // Merge into existing data — files stay intact.
+      final updated = _data.copyWith(
+        backups: backups,
+        autoBackupEnabled: autoEnabled,
       );
+      emit(BackupRestoreReady(data: updated));
     } catch (e) {
-      emit(BackupHistoryError(_friendlyError(e, 'load history')));
+      emit(BackupHistoryError(_friendlyError(e, 'load history'), data: _data));
     }
   }
 
@@ -161,11 +186,11 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(BackupSharingFile(event.filePath));
+      emit(BackupSharingFile(event.filePath, data: _data));
       await _backupService.shareBackupFile(event.filePath);
-      emit(BackupShareSuccess());
+      emit(BackupShareSuccess(data: _data));
     } catch (e) {
-      emit(BackupShareError(_friendlyError(e, 'share')));
+      emit(BackupShareError(_friendlyError(e, 'share'), data: _data));
     }
   }
 
@@ -173,20 +198,18 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     DeleteBackupFile event,
     Emitter<BackupRestoreState> emit,
   ) async {
-    // Preserve current list so the UI stays populated while the delete runs.
-    final currentBackups = state is BackupHistoryLoaded
-        ? (state as BackupHistoryLoaded).backups
-        : <BackupFileInfo>[];
-
     try {
-      emit(BackupDeletingFile(event.filePath));
+      emit(BackupDeletingFile(event.filePath, data: _data));
       await _backupService.deleteBackupFile(event.filePath);
-      final updated = currentBackups
+
+      // Remove from the list in-place; files remain untouched.
+      final updatedBackups = _data.backups
           .where((b) => b.filePath != event.filePath)
           .toList();
-      emit(BackupDeleteSuccess(updated));
+      final updated = _data.copyWith(backups: updatedBackups);
+      emit(BackupDeleteSuccess(data: updated));
     } catch (e) {
-      emit(BackupDeleteError(_friendlyError(e, 'delete')));
+      emit(BackupDeleteError(_friendlyError(e, 'delete'), data: _data));
     }
   }
 
@@ -197,13 +220,8 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     await _backupService.setAutoBackup(event.enabled);
-    if (state is BackupHistoryLoaded) {
-      emit(
-        (state as BackupHistoryLoaded).copyWith(
-          autoBackupEnabled: event.enabled,
-        ),
-      );
-    }
+    final updated = _data.copyWith(autoBackupEnabled: event.enabled);
+    emit(BackupRestoreReady(data: updated));
   }
 
   // ─── Reset Data handler ───────────────────────────────────────────────────
@@ -213,15 +231,16 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(ResettingData());
+      emit(ResettingData(data: _data));
       final success = await _backupService.resetAllData();
       if (success) {
-        emit(const ResetDataSuccess());
+        // Wipe composite data back to empty after a full reset.
+        emit(const ResetDataSuccess(data: BackupData()));
       } else {
-        emit(const ResetDataError('Failed to reset data'));
+        emit(ResetDataError('Failed to reset data', data: _data));
       }
     } catch (e) {
-      emit(ResetDataError(_friendlyError(e, 'reset data')));
+      emit(ResetDataError(_friendlyError(e, 'reset data'), data: _data));
     }
   }
 
@@ -232,12 +251,20 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(LoadingFiles());
+      // Pass current data so the history section doesn't blank while files load.
+      emit(LoadingFiles(data: _data));
+
       final files = await _backupService.listAllFiles();
       final totalStorage = await _backupService.getTotalStorageUsed();
-      emit(FilesLoaded(files: files, totalStorageBytes: totalStorage));
+
+      // Merge into existing data — backups stay intact.
+      final updated = _data.copyWith(
+        files: files,
+        totalStorageBytes: totalStorage,
+      );
+      emit(BackupRestoreReady(data: updated));
     } catch (e) {
-      emit(FilesError(_friendlyError(e, 'load files')));
+      emit(FilesError(_friendlyError(e, 'load files'), data: _data));
     }
   }
 
@@ -246,17 +273,22 @@ class BackupRestoreBloc extends Bloc<BackupRestoreEvent, BackupRestoreState> {
     Emitter<BackupRestoreState> emit,
   ) async {
     try {
-      emit(FileDeleting(event.fileId));
+      emit(FileDeleting(event.fileId, data: _data));
       final success = await _backupService.deleteFile(event.fileId);
       if (success) {
-        emit(FileDeleted(event.fileId));
-        // Reload files after deletion
+        // Optimistically remove from list; then reload for accurate storage size.
+        final updatedFiles = _data.files
+            .where((f) => f.id != event.fileId)
+            .toList();
+        final optimistic = _data.copyWith(files: updatedFiles);
+        emit(FileDeleted(event.fileId, data: optimistic));
+        // Full reload to get the corrected totalStorageBytes.
         add(const LoadAllFiles());
       } else {
-        emit(const FileDeleteError('Failed to delete file'));
+        emit(FileDeleteError('Failed to delete file', data: _data));
       }
     } catch (e) {
-      emit(FileDeleteError(_friendlyError(e, 'delete file')));
+      emit(FileDeleteError(_friendlyError(e, 'delete file'), data: _data));
     }
   }
 

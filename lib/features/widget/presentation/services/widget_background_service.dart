@@ -5,8 +5,8 @@ import 'package:home_widget/home_widget.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/di/impl/repository_locator.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
-import 'package:wise_spends/core/services/backup/backup_service.dart';
-import 'package:wise_spends/core/services/backup/workmanager/backup_task_config.dart';
+import 'package:wise_spends/features/settings/data/services/backup_service.dart';
+import 'package:wise_spends/features/settings/data/workmanager/backup_task_config.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:workmanager/workmanager.dart';
 

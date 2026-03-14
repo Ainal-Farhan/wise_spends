@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/core/services/backup/backup_restore_bloc.dart';
+import 'package:wise_spends/domain/models/backup_file_info.dart';
+import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
@@ -20,7 +21,8 @@ class HistoryTab extends StatefulWidget {
   State<HistoryTab> createState() => _HistoryTabState();
 }
 
-class _HistoryTabState extends State<HistoryTab> with AutomaticKeepAliveClientMixin<HistoryTab> {
+class _HistoryTabState extends State<HistoryTab>
+    with AutomaticKeepAliveClientMixin<HistoryTab> {
   @override
   bool get wantKeepAlive => true;
 
@@ -37,8 +39,9 @@ class _HistoryTabState extends State<HistoryTab> with AutomaticKeepAliveClientMi
 
         if (backups.isEmpty) {
           return BackupEmptyHistory(
-            onRefresh: () =>
-                context.read<BackupRestoreBloc>().add(const LoadBackupHistory()),
+            onRefresh: () => context.read<BackupRestoreBloc>().add(
+              const LoadBackupHistory(),
+            ),
           );
         }
 
@@ -67,7 +70,7 @@ class _HistoryTabState extends State<HistoryTab> with AutomaticKeepAliveClientMi
   }
 
   List<BackupFileInfo> _resolveBackups(BackupRestoreState state) {
-    if (state is BackupHistoryLoaded) return state.backups;
+    if (state is BackupHistoryLoaded) return state.data.backups;
     if (state is BackupDeleteSuccess) return state.remainingBackups;
     return [];
   }

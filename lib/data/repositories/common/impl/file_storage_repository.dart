@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:archive/archive_io.dart';
+import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
 import 'package:drift/drift.dart';
 import 'package:mime/mime.dart';
@@ -19,26 +19,31 @@ import 'package:wise_spends/domain/models/stored_file.dart';
 /// in sync.  All user files are written to:
 ///   {app_documents}/wise_spends_files/{category}/{storedName}
 ///
-/// Backups are written to:
-///   {app_documents}/wise_spends_backups/backup_{timestamp}.zip
+/// ── ZIP backup layout ────────────────────────────────────────────────────────
+///
+///   backup_YYYYMMDD_HHmmss_full.zip
+///   ├── manifest.json        ← file-storage DB records (for re-import)
+///   ├── data.json            ← full database export (all tables)
+///   ├── data.sqlite          ← SQLite VACUUM copy of the live database
+///   └── files/
+///       ├── profileImage/
+///       │   └── {storedName}
+///       ├── receipt/
+///       │   └── {storedName}
+///       └── …
+///
+/// Having both `data.json` and `data.sqlite` inside the ZIP means either
+/// restore strategy works from a single archive.
 class FileStorageRepository extends IFileStorageRepository {
   FileStorageRepository() : super(AppDatabase());
 
   // ─── Directories ──────────────────────────────────────────────────────────
 
   static const _filesDirName = 'wise_spends_files';
-  static const _backupsDirName = 'wise_spends_backups';
 
   Future<Directory> get _filesDir async {
     final docs = await getApplicationDocumentsDirectory();
     final dir = Directory(p.join(docs.path, _filesDirName));
-    if (!await dir.exists()) await dir.create(recursive: true);
-    return dir;
-  }
-
-  Future<Directory> get _backupsDir async {
-    final docs = await getApplicationDocumentsDirectory();
-    final dir = Directory(p.join(docs.path, _backupsDirName));
     if (!await dir.exists()) await dir.create(recursive: true);
     return dir;
   }
@@ -78,10 +83,7 @@ class FileStorageRepository extends IFileStorageRepository {
       final destDir = await _categoryDir(category);
       final destPath = p.join(destDir.path, storedName);
 
-      // Copy file to managed location
       final copiedFile = await sourceFile.copy(destPath);
-
-      // Compute MD5 checksum
       final bytes = await copiedFile.readAsBytes();
       final checksum = md5.convert(bytes).toString();
       final sizeBytes = await copiedFile.length();
@@ -195,7 +197,6 @@ class FileStorageRepository extends IFileStorageRepository {
       final row = await getFile(id);
       if (row == null) return false;
 
-      // Soft-delete in DB
       await (db.update(
         db.fileStorageTable,
       )..where((t) => t.id.equals(id))).write(
@@ -206,7 +207,6 @@ class FileStorageRepository extends IFileStorageRepository {
         ),
       );
 
-      // Remove physical file
       final file = File(row.localPath);
       if (await file.exists()) await file.delete();
 
@@ -236,91 +236,176 @@ class FileStorageRepository extends IFileStorageRepository {
 
   // ─── Backup ───────────────────────────────────────────────────────────────
 
+  /// Creates a full backup ZIP at [destinationPath].
+  ///
+  /// ZIP contents:
+  ///   manifest.json  – file-storage DB rows (used by [restoreFromBackup])
+  ///   data.json      – full database export via [AppDatabase.exportInto]
+  ///   data.sqlite    – SQLite VACUUM copy via [AppDatabase.exportInto]
+  ///   files/{cat}/{storedName} – every active physical file
+  ///
+  /// Returns the path of the created ZIP, or `null` on failure.
   @override
   Future<String?> createBackup({String? destinationPath}) async {
+    final tmpDir = await getTemporaryDirectory();
+    String? jsonExportPath;
+    String? sqliteExportPath;
+
     try {
+      // ── 1. Resolve archive destination ────────────────────────────────────
       final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      final backupsDir = await _backupsDir;
       final archivePath =
-          destinationPath ?? p.join(backupsDir.path, 'backup_$timestamp.zip');
+          destinationPath ?? p.join(tmpDir.path, 'backup_$timestamp.zip');
 
-      final encoder = ZipFileEncoder();
-      encoder.create(archivePath);
+      // ── 2. Export DB — fully await so bytes are flushed before we read ─────
+      jsonExportPath = await db.exportInto('.json');
+      sqliteExportPath = await db.exportInto('.sqlite');
 
-      // 1. Add all active physical files
-      final activeFiles = await (db.select(
+      // ── 3. Collect active file-storage records ────────────────────────────
+      final activeRows = await (db.select(
         db.fileStorageTable,
       )..where((t) => t.status.equals('active'))).get();
 
-      for (final row in activeFiles) {
-        final file = File(row.localPath);
-        if (await file.exists()) {
-          encoder.addFile(file, p.join(row.category.name, row.storedName));
-        }
+      // ── 4. Build manifest JSON bytes ──────────────────────────────────────
+      final manifestBytes = utf8.encode(
+        jsonEncode({
+          'version': 2,
+          'exportedAt': timestamp,
+          'files': activeRows.map((r) => r.toJson()).toList(),
+        }),
+      );
+
+      // ── 5. Build Archive in memory with explicit async reads ───────────────
+      //
+      // IMPORTANT: every readAsBytes() call is individually awaited so the
+      // Dart event loop has a chance to flush pending I/O before we compress.
+      final archive = Archive();
+
+      void addBytes(String entryName, List<int> bytes) {
+        archive.addFile(ArchiveFile(entryName, bytes.length, bytes));
       }
 
-      // 2. Export DB manifest as JSON
-      final manifest = activeFiles.map((r) => r.toJson()).toList();
-      final manifestJson = jsonEncode({
-        'files': manifest,
-        'exportedAt': timestamp,
-      });
-      final tmpDir = await getTemporaryDirectory();
-      final manifestFile = File(p.join(tmpDir.path, 'manifest.json'));
-      await manifestFile.writeAsString(manifestJson);
-      encoder.addFile(manifestFile, 'manifest.json');
+      // Database exports
+      addBytes('data.json', await File(jsonExportPath).readAsBytes());
+      addBytes('data.sqlite', await File(sqliteExportPath).readAsBytes());
 
-      encoder.close();
+      // File-storage manifest
+      addBytes('manifest.json', manifestBytes);
 
-      // Mark all as backed up
-      for (final row in activeFiles) {
+      // Physical uploaded files
+      for (final row in activeRows) {
+        final file = File(row.localPath);
+        if (!await file.exists()) continue;
+
+        // Use forward slashes inside the ZIP regardless of host OS.
+        final entryName = 'files/${row.category.name}/${row.storedName}';
+        addBytes(entryName, await file.readAsBytes());
+      }
+
+      // ── 6. Encode and write the ZIP to disk ───────────────────────────────
+      final zipBytes = ZipEncoder().encode(archive);
+      if (zipBytes.isEmpty) {
+        throw Exception('ZipEncoder produced empty output');
+      }
+
+      final archiveFile = File(archivePath);
+      await archiveFile.parent.create(recursive: true);
+      await archiveFile.writeAsBytes(zipBytes, flush: true);
+
+      // ── 7. Mark DB records as backed up ───────────────────────────────────
+      for (final row in activeRows) {
         await markAsBackedUp(row.id, backupPath: archivePath);
       }
-      await manifestFile.delete();
 
       return archivePath;
-    } catch (_) {
+    } catch (e) {
       return null;
+    } finally {
+      // ── 8. Clean up temp DB export files ──────────────────────────────────
+      _tryDelete(jsonExportPath);
+      _tryDelete(sqliteExportPath);
     }
   }
 
+  // ─── Restore ──────────────────────────────────────────────────────────────
+
+  /// Restores from a full-backup ZIP.
+  ///
+  /// Strategy:
+  ///   1. Extract `data.json` and restore all DB tables from it.
+  ///   2. Extract all `files/*` entries back to the managed files directory.
+  ///   3. Re-insert file-storage DB records from `manifest.json` (skip
+  ///      records that already exist to stay idempotent).
+  ///
+  /// Falls back to `data.sqlite` if `data.json` is missing (v1 archives).
   @override
   Future<bool> restoreFromBackup(String archivePath) async {
+    final tmpDir = await getTemporaryDirectory();
+
     try {
-      final archive = ZipDecoder().decodeBytes(
-        await File(archivePath).readAsBytes(),
-      );
+      final archiveBytes = await File(archivePath).readAsBytes();
+      final archive = ZipDecoder().decodeBytes(archiveBytes);
 
       final filesDir = await _filesDir;
 
-      // Read manifest
-      final manifestEntry = archive.files.firstWhere(
-        (f) => f.name == 'manifest.json',
-      );
-      final manifest =
-          jsonDecode(utf8.decode(manifestEntry.content as List<int>))
-              as Map<String, dynamic>;
+      // ── 1. Restore database ────────────────────────────────────────────────
+      final jsonEntry = _findEntry(archive, 'data.json');
+      final sqliteEntry = _findEntry(archive, 'data.sqlite');
 
-      final files = (manifest['files'] as List).cast<Map<String, dynamic>>();
+      if (jsonEntry != null) {
+        // Write data.json to a temp file then hand off to AppDatabase.
+        final tmpJson = File(p.join(tmpDir.path, 'restore_data.json'));
+        await tmpJson.writeAsBytes(jsonEntry.content as List<int>);
+        await db.restoreFromPath(tmpJson.path, '.json');
+        _tryDelete(tmpJson.path);
+      } else if (sqliteEntry != null) {
+        // Fallback: raw SQLite file swap (v1 archives).
+        final tmpSqlite = File(p.join(tmpDir.path, 'restore_data.sqlite'));
+        await tmpSqlite.writeAsBytes(sqliteEntry.content as List<int>);
+        await db.restoreFromPath(tmpSqlite.path, '.sqlite');
+        _tryDelete(tmpSqlite.path);
+      }
+      // If neither entry exists the ZIP is a legacy archive without a DB
+      // export — we still restore the files and manifest below.
 
-      for (final fileEntry in archive.files) {
-        if (fileEntry.name == 'manifest.json') continue;
-        if (!fileEntry.isFile) continue;
+      // ── 2. Extract physical files ──────────────────────────────────────────
+      for (final entry in archive.files) {
+        if (!entry.isFile) continue;
+        if (entry.name == 'manifest.json') continue;
+        if (entry.name == 'data.json') continue;
+        if (entry.name == 'data.sqlite') continue;
 
-        final destFile = File(p.join(filesDir.path, fileEntry.name));
+        // Entry path inside ZIP:  files/<category>/<storedName>
+        if (!entry.name.startsWith('files/')) continue;
+
+        // Strip the leading "files/" prefix to get <category>/<storedName>
+        final relativePath = entry.name.substring('files/'.length);
+        final destFile = File(p.join(filesDir.path, relativePath));
         await destFile.parent.create(recursive: true);
-        await destFile.writeAsBytes(fileEntry.content as List<int>);
+        await destFile.writeAsBytes(entry.content as List<int>);
       }
 
-      // Re-insert DB records
-      for (final json in files) {
-        final existing = await (db.select(
-          db.fileStorageTable,
-        )..where((t) => t.id.equals(json['id'] as String))).getSingleOrNull();
-        if (existing == null) {
-          await db
-              .into(db.fileStorageTable)
-              .insert(CmmnFileStorageTable.fromJson(json));
+      // ── 3. Re-insert file-storage records from manifest ────────────────────
+      final manifestEntry = _findEntry(archive, 'manifest.json');
+      if (manifestEntry != null) {
+        final raw =
+            jsonDecode(utf8.decode(manifestEntry.content as List<int>))
+                as Map<String, dynamic>;
+
+        // Support both v1 (list at root) and v2 ({ files: [...] }) manifests.
+        final fileList = raw.containsKey('files')
+            ? (raw['files'] as List).cast<Map<String, dynamic>>()
+            : (raw as List).cast<Map<String, dynamic>>();
+
+        for (final json in fileList) {
+          final existing = await (db.select(
+            db.fileStorageTable,
+          )..where((t) => t.id.equals(json['id'] as String))).getSingleOrNull();
+          if (existing == null) {
+            await db
+                .into(db.fileStorageTable)
+                .insert(CmmnFileStorageTable.fromJson(json));
+          }
         }
       }
 
@@ -329,6 +414,8 @@ class FileStorageRepository extends IFileStorageRepository {
       return false;
     }
   }
+
+  // ─── markAsBackedUp / getPendingBackupFiles ───────────────────────────────
 
   @override
   Future<bool> markAsBackedUp(String id, {String? backupPath}) async {
@@ -374,5 +461,25 @@ class FileStorageRepository extends IFileStorageRepository {
       db.fileStorageTable,
     )..where((t) => t.status.equals('active'))).get();
     return rows.map(StoredFile.fromCmmnFileStorage).toList();
+  }
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+
+  /// Finds the first archive entry whose name matches [name] (case-insensitive).
+  ArchiveFile? _findEntry(Archive archive, String name) {
+    try {
+      return archive.files.firstWhere(
+        (f) => f.name.toLowerCase() == name.toLowerCase(),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void _tryDelete(String? path) {
+    if (path == null) return;
+    File(path).exists().then((exists) {
+      if (exists) File(path).delete().catchError((_) => File(path));
+    });
   }
 }
