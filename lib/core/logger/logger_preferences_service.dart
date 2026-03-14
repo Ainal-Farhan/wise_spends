@@ -1,57 +1,30 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wise_spends/core/services/preferences_service.dart';
 import 'log_level.dart';
 
-/// Logger Preferences Service
-/// Handles persistent storage of logger settings using SharedPreferences
+/// Thin facade kept for backward compatibility.
+/// All reads/writes delegate to [PreferencesService] — the single source of
+/// truth for SharedPreferences. No raw [SharedPreferences] access here.
 class LoggerPreferencesService {
   static final LoggerPreferencesService _instance =
       LoggerPreferencesService._internal();
   factory LoggerPreferencesService() => _instance;
   LoggerPreferencesService._internal();
 
-  SharedPreferences? _prefs;
+  final _prefs = PreferencesService();
 
-  // Preference keys
-  static const String _loggingEnabledKey = 'logging_enabled';
-  static const String _logLevelKey = 'log_level';
+  /// Must be called once before any getter is used.
+  Future<void> init() => _prefs.init();
 
-  /// Initialize preferences
-  Future<void> init() async {
-    _prefs ??= await SharedPreferences.getInstance();
-  }
+  bool isLoggingEnabled() => _prefs.isLoggingEnabled();
 
-  /// Check if logging is enabled
-  bool isLoggingEnabled() {
-    return _prefs?.getBool(_loggingEnabledKey) ?? true;
-  }
+  Future<void> setLoggingEnabled(bool enabled) =>
+      _prefs.setLoggingEnabled(enabled);
 
-  /// Enable or disable logging
-  Future<void> setLoggingEnabled(bool enabled) async {
-    await _prefs?.setBool(_loggingEnabledKey, enabled);
-  }
+  LogLevel getMinLogLevel() => _prefs.getMinLogLevel();
 
-  /// Get current minimum log level
-  LogLevel getMinLogLevel() {
-    final levelIndex = _prefs?.getInt(_logLevelKey) ?? LogLevel.debug.index;
-    if (levelIndex < 0 || levelIndex >= LogLevel.values.length) {
-      return LogLevel.debug;
-    }
-    return LogLevel.values[levelIndex];
-  }
+  Future<void> setMinLogLevel(LogLevel level) => _prefs.setMinLogLevel(level);
 
-  /// Save minimum log level
-  Future<void> setMinLogLevel(LogLevel level) async {
-    await _prefs?.setInt(_logLevelKey, level.index);
-  }
+  List<LogLevel> getAvailableLevels() => LogLevel.values;
 
-  /// Get all available log levels for UI selection
-  List<LogLevel> getAvailableLevels() {
-    return LogLevel.values;
-  }
-
-  /// Clear logger preferences
-  Future<void> clear() async {
-    await _prefs?.remove(_loggingEnabledKey);
-    await _prefs?.remove(_logLevelKey);
-  }
+  Future<void> clear() => _prefs.clearLoggerPrefs();
 }

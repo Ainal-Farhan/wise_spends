@@ -1,52 +1,114 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wise_spends/core/config/app_locale.dart';
+import 'package:wise_spends/core/logger/log_level.dart';
 
-/// User Preferences Service
-/// Handles persistent storage of user settings using SharedPreferences
+/// Single source of truth for all [SharedPreferences] access in the app.
+///
+/// There is one shared [SharedPreferences] instance, loaded once via [init].
+///
+/// ## Usage
+/// ```dart
+/// final prefs = PreferencesService();
+/// await prefs.init();           // call once at app startup
+/// prefs.getLanguageCode();      // synchronous read thereafter
+/// await prefs.saveTheme(1);     // async write
+/// ```
 class PreferencesService {
+  // ── Singleton ──────────────────────────────────────────────────────────────
   static final PreferencesService _instance = PreferencesService._internal();
   factory PreferencesService() => _instance;
   PreferencesService._internal();
 
   SharedPreferences? _prefs;
 
-  // Preference keys
+  // ── Keys ───────────────────────────────────────────────────────────────────
+  // All keys live here so there is zero chance of collision between features.
+
+  // Settings
   static const String _languageKey = 'language_code';
   static const String _themeKey = 'theme_mode';
 
-  /// Initialize preferences
+  // Logger
+  static const String _loggingEnabledKey = 'logging_enabled';
+  static const String _logLevelKey = 'log_level';
+
+  // Widget
+  static const String _widgetQuickAccessKey = 'quick_access_button_enabled';
+  static const String _widgetHideDetailsKey = 'widget_hide_details';
+
+  // Backup
+  static const String _autoBackupKey = 'backup_auto_enabled';
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+
+  /// Must be called once before any synchronous getter is used.
+  /// Safe to call multiple times — subsequent calls are no-ops.
   Future<void> init() async {
     _prefs ??= await SharedPreferences.getInstance();
   }
 
-  /// Get current language code
-  String getLanguageCode() {
-    return _prefs?.getString(_languageKey) ?? 'en';
+  // ── Settings: Language ─────────────────────────────────────────────────────
+
+  String getLanguageCode() => _prefs?.getString(_languageKey) ?? 'en';
+
+  Future<void> saveLanguage(String languageCode) async =>
+      _prefs?.setString(_languageKey, languageCode);
+
+  AppLocale getAppLocale() => AppLocale.fromCode(getLanguageCode());
+
+  // ── Settings: Theme ────────────────────────────────────────────────────────
+
+  /// 0 = system (default), 1 = light, 2 = dark
+  int getThemeMode() => _prefs?.getInt(_themeKey) ?? 0;
+
+  Future<void> saveTheme(int themeIndex) async =>
+      _prefs?.setInt(_themeKey, themeIndex);
+
+  // ── Logger ─────────────────────────────────────────────────────────────────
+
+  bool isLoggingEnabled() => _prefs?.getBool(_loggingEnabledKey) ?? true;
+
+  Future<void> setLoggingEnabled(bool enabled) async =>
+      _prefs?.setBool(_loggingEnabledKey, enabled);
+
+  LogLevel getMinLogLevel() {
+    final index = _prefs?.getInt(_logLevelKey) ?? LogLevel.debug.index;
+    if (index < 0 || index >= LogLevel.values.length) return LogLevel.debug;
+    return LogLevel.values[index];
   }
 
-  /// Save language preference
-  Future<void> saveLanguage(String languageCode) async {
-    await _prefs?.setString(_languageKey, languageCode);
-  }
+  Future<void> setMinLogLevel(LogLevel level) async =>
+      _prefs?.setInt(_logLevelKey, level.index);
 
-  /// Get current theme mode (0=system, 1=light, 2=dark)
-  int getThemeMode() {
-    return _prefs?.getInt(_themeKey) ?? 0; // Default to system
-  }
+  // ── Widget ─────────────────────────────────────────────────────────────────
 
-  /// Save theme preference
-  Future<void> saveTheme(int themeIndex) async {
-    await _prefs?.setInt(_themeKey, themeIndex);
-  }
+  bool getWidgetQuickAccessEnabled() =>
+      _prefs?.getBool(_widgetQuickAccessKey) ?? true;
 
-  /// Get AppLocale from saved language code
-  AppLocale getAppLocale() {
-    final code = getLanguageCode();
-    return AppLocale.fromCode(code);
-  }
+  Future<void> setWidgetQuickAccessEnabled(bool enabled) async =>
+      _prefs?.setBool(_widgetQuickAccessKey, enabled);
 
-  /// Clear all preferences
-  Future<void> clearAll() async {
-    await _prefs?.clear();
+  bool getWidgetHideDetails() =>
+      _prefs?.getBool(_widgetHideDetailsKey) ?? false;
+
+  Future<void> setWidgetHideDetails(bool hide) async =>
+      _prefs?.setBool(_widgetHideDetailsKey, hide);
+
+  // ── Backup ─────────────────────────────────────────────────────────────────
+
+  bool getAutoBackupEnabled() => _prefs?.getBool(_autoBackupKey) ?? false;
+
+  Future<void> setAutoBackupEnabled(bool enabled) async =>
+      _prefs?.setBool(_autoBackupKey, enabled);
+
+  // ── Nuclear option ─────────────────────────────────────────────────────────
+
+  /// Clears ALL preferences. Use only on sign-out / data reset.
+  Future<void> clearAll() async => _prefs?.clear();
+
+  /// Clears only the logger-related keys (used in debug tooling).
+  Future<void> clearLoggerPrefs() async {
+    await _prefs?.remove(_loggingEnabledKey);
+    await _prefs?.remove(_logLevelKey);
   }
 }

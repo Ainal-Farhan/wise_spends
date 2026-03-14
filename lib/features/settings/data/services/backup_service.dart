@@ -2,18 +2,15 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
-import 'package:wise_spends/domain/models/backup_file_info.dart';
-import 'package:wise_spends/features/settings/data/workmanager/backup_task_config.dart';
+import 'package:wise_spends/core/services/preferences_service.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/repositories/common/impl/file_storage_repository.dart';
+import 'package:wise_spends/domain/models/backup_file_info.dart';
 import 'package:wise_spends/domain/models/stored_file.dart';
+import 'package:wise_spends/features/settings/data/workmanager/backup_task_config.dart';
 import 'package:workmanager/workmanager.dart';
-
-/// SharedPreferences key for the auto-backup toggle.
-const _kAutoBackupKey = 'backup_auto_enabled';
 
 /// All backup types the app can produce.
 enum BackupFormat {
@@ -23,7 +20,7 @@ enum BackupFormat {
   /// SQLite VACUUM copy          →  backup_YYYYMMDD_HHmmss.sqlite
   sqlite,
 
-  /// ZIP archive containing a DB export (JSON) + all uploaded files
+  /// ZIP archive (DB export + all uploaded files)
   /// →  backup_YYYYMMDD_HHmmss_full.zip
   fullZip,
 }
@@ -36,21 +33,15 @@ class BackupService {
   final AppDatabase _database = AppDatabase();
   final FileStorageRepository _fileStorage = FileStorageRepository();
 
-  // ─── Single backup directory ──────────────────────────────────────────────
-  //
-  // All backup files (JSON, SQLite, ZIP) live in ONE folder so that
-  // listBackups() can find every format with a single directory scan.
-  //
-  //   Android: /storage/emulated/0/Android/media/<pkg>/backup/db/
-  //
-  // This reuses the path that AppDatabase.getBackupFolderPath() already
-  // creates, so existing JSON/SQLite files are not orphaned.
+  /// Single source of truth for preferences — no raw SharedPreferences here.
+  final _prefs = PreferencesService();
+
+  // ── Backup directory ───────────────────────────────────────────────────────
 
   Future<String> _backupDirPath() => _database.getBackupFolderPath();
 
-  // ─── Filename helpers ─────────────────────────────────────────────────────
+  // ── Filename helpers ───────────────────────────────────────────────────────
 
-  /// Returns a timestamp string safe for use in file names: 20240315_142305
   String _fileTimestamp() {
     final now = DateTime.now();
     return '${now.year}'
@@ -62,7 +53,6 @@ class BackupService {
         '${_pad(now.second)}';
   }
 
-  /// Human-readable timestamp for share sheet text.
   String _displayTimestamp() {
     final now = DateTime.now();
     return '${now.year}-${_pad(now.month)}-${_pad(now.day)} '
@@ -71,20 +61,14 @@ class BackupService {
 
   String _pad(int n) => n.toString().padLeft(2, '0');
 
-  /// Resolves the [BackupFormat] from a file path by extension + suffix.
   BackupFormat _formatOf(String filePath) {
     if (filePath.endsWith('.zip')) return BackupFormat.fullZip;
     if (filePath.endsWith('.sqlite')) return BackupFormat.sqlite;
     return BackupFormat.json;
   }
 
-  // ─── Export & Share ───────────────────────────────────────────────────────
+  // ── Export & Share ─────────────────────────────────────────────────────────
 
-  /// Export a JSON or SQLite backup, open the system share sheet, then
-  /// delete the temp copy from [_database.exportInto] afterwards.
-  ///
-  /// Note: the file is NOT saved to the persistent backup folder here —
-  /// use [backupToInternalStorage] for that.
   Future<void> backupAndShare({String type = '.json'}) async {
     String? filePath;
     try {
@@ -102,8 +86,6 @@ class BackupService {
     }
   }
 
-  /// Saves a JSON or SQLite backup to the persistent backup folder and
-  /// returns the saved file path.
   Future<String> backupToInternalStorage({String type = '.json'}) async {
     try {
       return await _database.exportToInternalStorageMedia(type);
@@ -112,23 +94,13 @@ class BackupService {
     }
   }
 
-  // ─── Full backup (ZIP) ────────────────────────────────────────────────────
+  // ── Full backup (ZIP) ──────────────────────────────────────────────────────
 
-  /// Creates a full backup ZIP that contains:
-  ///   • `data.json`   — full database export (all tables as JSON)
-  ///   • `data.sqlite` — SQLite VACUUM copy of the live database
-  ///   • `files/`      — every active uploaded file at its original path
-  ///   • `manifest.json` — file-storage DB records for re-import
-  ///
-  /// The ZIP is saved to the unified backup folder so [listBackups] finds it.
-  /// If [share] is true the share sheet is opened; the file is kept either way.
   Future<String> backupFullWithFiles({bool share = false}) async {
     try {
       final backupDir = await _backupDirPath();
-      final zipName = 'backup_${_fileTimestamp()}_full.zip';
-      final zipPath = p.join(backupDir, zipName);
+      final zipPath = p.join(backupDir, 'backup_${_fileTimestamp()}_full.zip');
 
-      // createBackup writes the ZIP to [zipPath] and returns it (or null on failure).
       final result = await _fileStorage.createBackup(destinationPath: zipPath);
       if (result == null) throw Exception('ZIP creation failed');
 
@@ -147,11 +119,8 @@ class BackupService {
     }
   }
 
-  // ─── Restore ──────────────────────────────────────────────────────────────
+  // ── Restore ────────────────────────────────────────────────────────────────
 
-  /// Opens the system file picker and restores from the selected file.
-  /// Supports JSON, SQLite, and ZIP formats.
-  /// Returns `true` on success, `false` when the user cancels.
   Future<bool> restore() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -159,20 +128,15 @@ class BackupService {
         type: FileType.custom,
         allowedExtensions: ['zip', 'json', 'sqlite'],
       );
-
       if (result == null || result.files.isEmpty) return false;
-
       final filePath = result.files.single.path;
       if (filePath == null) return false;
-
       return await restoreFromPath(filePath);
     } catch (e) {
       throw Exception('Restore failed: $e');
     }
   }
 
-  /// Restores directly from [filePath] without showing a file picker.
-  /// Format is inferred from the file extension.
   Future<bool> restoreFromPath(String filePath) async {
     final file = File(filePath);
     if (!await file.exists()) {
@@ -192,14 +156,11 @@ class BackupService {
     }
   }
 
-  // ─── Backup History ───────────────────────────────────────────────────────
+  // ── Backup history ─────────────────────────────────────────────────────────
 
-  /// Returns metadata for ALL backup files in the unified backup folder,
-  /// covering JSON, SQLite, and ZIP formats, sorted newest-first.
   Future<List<BackupFileInfo>> listBackups() async {
     try {
-      final dirPath = await _backupDirPath();
-      final dir = Directory(dirPath);
+      final dir = Directory(await _backupDirPath());
       if (!await dir.exists()) return [];
 
       final files = dir
@@ -221,10 +182,10 @@ class BackupService {
     }
   }
 
-  /// Shares an existing backup file via the system share sheet.
   Future<void> shareBackupFile(String filePath) async {
-    final file = File(filePath);
-    if (!await file.exists()) throw Exception('Backup file not found');
+    if (!await File(filePath).exists()) {
+      throw Exception('Backup file not found');
+    }
     await SharePlus.instance.share(
       ShareParams(
         files: [XFile(filePath)],
@@ -233,23 +194,24 @@ class BackupService {
     );
   }
 
-  /// Permanently removes a backup file from the device.
   Future<void> deleteBackupFile(String filePath) async {
     final file = File(filePath);
     if (await file.exists()) await file.delete();
   }
 
-  // ─── Auto-Backup Preference ───────────────────────────────────────────────
+  // ── Auto-backup ────────────────────────────────────────────────────────────
 
+  /// Reads auto-backup toggle via [PreferencesService].
   Future<bool> getAutoBackupEnabled() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_kAutoBackupKey) ?? false;
+    await _prefs.init();
+    return _prefs.getAutoBackupEnabled();
   }
 
-  /// Persists [enabled] and registers or cancels the Workmanager periodic task.
+  /// Persists [enabled] via [PreferencesService] and registers/cancels the
+  /// Workmanager periodic task accordingly.
   Future<void> setAutoBackup(bool enabled) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_kAutoBackupKey, enabled);
+    await _prefs.init();
+    await _prefs.setAutoBackupEnabled(enabled);
 
     if (enabled) {
       await Workmanager().cancelByUniqueName(BackupTaskConfig.uniqueName);
@@ -269,9 +231,8 @@ class BackupService {
     }
   }
 
-  // ─── Reset Data ───────────────────────────────────────────────────────────
+  // ── Data reset ─────────────────────────────────────────────────────────────
 
-  /// Resets all application data. Irreversible. Returns `true` on success.
   Future<bool> resetAllData() async {
     try {
       final activeFiles = await _fileStorage.getAllActiveFiles();
@@ -296,7 +257,7 @@ class BackupService {
     }
   }
 
-  // ─── File Management ──────────────────────────────────────────────────────
+  // ── File management ────────────────────────────────────────────────────────
 
   Future<List<StoredFile>> listAllFiles() async {
     try {
@@ -322,22 +283,19 @@ class BackupService {
     }
   }
 
-  // ─── Helpers ──────────────────────────────────────────────────────────────
+  // ── Helpers ────────────────────────────────────────────────────────────────
 
   Future<BackupFileInfo> _toInfo(File file) async {
     final stat = await file.stat();
-    final name = p.basename(file.path);
-    final format = _labelOf(file.path);
     return BackupFileInfo(
       filePath: file.path,
-      fileName: name,
-      format: format,
+      fileName: p.basename(file.path),
+      format: _labelOf(file.path),
       sizeBytes: stat.size,
       createdAt: stat.modified,
     );
   }
 
-  /// Short display label used in [BackupFileInfo.format].
   String _labelOf(String filePath) {
     if (filePath.endsWith('.zip')) return 'ZIP';
     if (filePath.endsWith('.sqlite')) return 'SQLite';
