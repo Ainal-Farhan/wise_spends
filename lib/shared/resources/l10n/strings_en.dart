@@ -12,6 +12,7 @@ class EnglishStrings {
     'general.update': 'Update',
     'general.remove': 'Remove',
     'general.confirm': 'Confirm',
+    'general.go_back': 'Go Back',
     'general.back': 'Back',
     'general.next': 'Next',
     'general.done': 'Done',
@@ -71,6 +72,9 @@ class EnglishStrings {
     'general.see_all': 'See All',
     'general.version': 'Version',
     'general.account': 'Account',
+    'general.source_account': 'Account',
+    'general.target_account': 'Target Account',
+    'general.bank': 'Bank',
     'general.accounts': 'Accounts',
     'general.short_name': 'Short Name',
     'general.full_name': 'Full Name',
@@ -85,6 +89,7 @@ class EnglishStrings {
     'general.update_money_storage': 'Update Money Storage',
     'general.add_money_storage': 'Add Money Storage',
     'general.commitment_overview': 'Commitment Overview',
+    'commitment.task': 'Commitment Task',
     'general.manage_recurring': 'Manage Recurring Expenses',
     'general.tap_button_below':
         'Tap the button below to add your first commitment',
@@ -1170,8 +1175,25 @@ class EnglishStrings {
     'transaction.field.paid_from': 'Paid From Account',
     'transaction.field.category': 'Category',
     'transaction.field.payee': 'Payee',
+    'transaction.field.account': 'Account',
+    'transaction.field.source_account': 'Source Account',
+    'transaction.field.destination_account': 'Destination Account',
+    'transaction.field.bank': 'Bank',
+    'transaction.field.account_number': 'Account Number',
+    'transaction.field.transaction_id': 'Transaction ID',
+
+    // ── Transaction Detail ────────────────────────────────────────────────────
+    'transaction.detail.transaction_details': 'Transaction Details',
+    'transaction.detail.at': 'at',
+
+    // ── Transaction Actions ───────────────────────────────────────────────────
+    'transaction.action.edit': 'Edit Transaction',
+    'transaction.action.delete': 'Delete Transaction',
+    'transaction.not_set': 'Not Set',
 
     // ── Edit mode ─────────────────────────────────────────────────────────────
+    'transaction.edit_mode.title': 'Editing Transaction',
+    'transaction.edit_mode.subtitle': 'Some fields are locked to prevent accidental changes',
     'transaction.edit.locked_fields_info':
         'Type, amount, and account cannot be changed after a transaction is saved.',
 

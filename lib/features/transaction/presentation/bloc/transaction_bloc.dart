@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 import 'package:wise_spends/features/saving/data/repositories/i_saving_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
 import 'package:wise_spends/features/commitment/domain/entities/commitment_task_vo.dart';
@@ -62,6 +63,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       // ── Resolve category name + icon ───────────────────────────────────────
       String categoryName = 'Uncategorized';
+      CategoryEntity? categoryEntity;
       IconData categoryIcon = CategoryIconMapper.getIconForCategory(
         tx.categoryId ?? '',
       );
@@ -72,6 +74,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
               .getCategoryRepository();
           final category = await categoryRepo.findById(id: tx.categoryId!);
           if (category != null) {
+            categoryEntity = CategoryEntity.from(category);
             categoryName = category.name;
             categoryIcon = CategoryIconMapper.getIconForCategory(category.name);
           }
@@ -141,6 +144,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           targetAccountName: targetAccountName,
           payeeVO: payeeVO,
           commitmentTaskName: commitmentTaskName,
+          categoryEntity: categoryEntity,
         ),
       );
     } catch (e) {

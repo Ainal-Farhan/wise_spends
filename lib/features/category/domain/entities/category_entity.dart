@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:wise_spends/data/db/app_database.dart';
 
 /// Category entity for transactions
 class CategoryEntity extends Equatable {
@@ -26,16 +27,16 @@ class CategoryEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        iconCodePoint,
-        iconFontFamily,
-        isIncome,
-        isExpense,
-        orderIndex,
-        isActive,
-        createdAt,
-      ];
+    id,
+    name,
+    iconCodePoint,
+    iconFontFamily,
+    isIncome,
+    isExpense,
+    orderIndex,
+    isActive,
+    createdAt,
+  ];
 
   CategoryEntity copyWith({
     String? id,
@@ -58,6 +59,20 @@ class CategoryEntity extends Equatable {
       orderIndex: orderIndex ?? this.orderIndex,
       isActive: isActive ?? this.isActive,
       createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  factory CategoryEntity.from(TrnsctnCategory row) {
+    return CategoryEntity(
+      id: row.id,
+      name: row.name,
+      iconCodePoint: row.iconCodePoint,
+      iconFontFamily: row.iconFontFamily,
+      isIncome: row.isIncome,
+      isExpense: row.isExpense,
+      orderIndex: row.orderIndex,
+      isActive: row.isActive,
+      createdAt: row.createdAt,
     );
   }
 }

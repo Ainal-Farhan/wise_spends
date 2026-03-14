@@ -9,7 +9,7 @@ import 'package:wise_spends/features/transaction/domain/entities/transaction_ent
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_bloc.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_event.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_state.dart';
-import 'package:wise_spends/router/route_arguments.dart';
+import 'package:wise_spends/features/transaction/presentation/screens/transaction_form_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
@@ -71,15 +71,23 @@ class _TransactionDetailScreenContent extends StatelessWidget {
       appBar: AppBar(
         title: Text('transaction.detail.title'.tr),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () => _navigateToEdit(context),
-            tooltip: 'Edit',
+          BlocBuilder<TransactionBloc, TransactionState>(
+            builder: (context, state) {
+              if (state is! TransactionDetailLoaded) {
+                return const SizedBox.shrink();
+              }
+              return IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () =>
+                    _navigateToEdit(context, state.transaction, state),
+                tooltip: 'general.edit'.tr,
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => _showDeleteConfirmation(context),
-            tooltip: 'Delete',
+            tooltip: 'general.delete'.tr,
           ),
         ],
       ),
@@ -114,7 +122,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     AppButton.primary(
-                      label: 'Go Back',
+                      label: 'general.go_back'.tr,
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -142,7 +150,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           _buildDetailsCard(context, state),
           const SizedBox(height: AppSpacing.xxl),
-          _buildActionButtons(context, tx),
+          _buildActionButtons(context, tx, state),
         ],
       ),
     );
@@ -153,28 +161,18 @@ class _TransactionDetailScreenContent extends StatelessWidget {
   // ---------------------------------------------------------------------------
 
   Widget _buildAmountCard(TransactionEntity tx) {
-    final isIncome = tx.type == TransactionType.income;
-    final isTransfer = tx.type == TransactionType.transfer;
-    final isCommitment = tx.type == TransactionType.commitment;
-
-    final Color baseColor = isTransfer || isCommitment
-        ? AppColors.transfer
-        : isIncome
-        ? AppColors.income
-        : AppColors.expense;
-
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [baseColor, baseColor.withValues(alpha: 0.7)],
+          colors: [tx.type.color, tx.type.color.withValues(alpha: 0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: baseColor.withValues(alpha: 0.3),
+            color: tx.type.color.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -182,15 +180,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            isTransfer || isCommitment
-                ? Icons.swap_horiz_rounded
-                : isIncome
-                ? Icons.arrow_downward_rounded
-                : Icons.arrow_upward_rounded,
-            size: 48,
-            color: Colors.white,
-          ),
+          Icon(tx.type.icon, size: 48, color: Colors.white),
           const SizedBox(height: AppSpacing.md),
           Text(
             NumberFormat.currency(
@@ -213,7 +203,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.full),
             ),
             child: Text(
-              _typeLabel(tx.type),
+              tx.type.label,
               style: AppTextStyles.labelMedium.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
@@ -241,19 +231,14 @@ class _TransactionDetailScreenContent extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Category icon — resolved, not a UUID
           Container(
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: _typeColor(tx.type).withValues(alpha: 0.1),
+              color: tx.type.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
-            child: Icon(
-              state.categoryIcon,
-              color: _typeColor(tx.type),
-              size: 28,
-            ),
+            child: Icon(state.categoryIcon, color: tx.type.color, size: 28),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -267,7 +252,6 @@ class _TransactionDetailScreenContent extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                // Category name — resolved, not a UUID
                 Row(
                   children: [
                     Icon(
@@ -319,7 +303,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Details',
+            'transaction.detail.transaction_details'.tr,
             style: AppTextStyles.bodySemiBold.copyWith(fontSize: 18),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -327,14 +311,16 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           // Date AND time
           _buildDetailRow(
             icon: Icons.calendar_today_rounded,
-            label: 'Date & Time',
+            label: 'transaction.add.date_time'.tr,
             value: _formatDateTime(tx.date),
           ),
 
           // Account — resolved saving name, not UUID
           _buildDetailRow(
             icon: Icons.account_balance_rounded,
-            label: isTransfer ? 'Source Account' : 'Account',
+            label: isTransfer
+                ? 'transaction.field.source_account'.tr
+                : 'transaction.field.account'.tr,
             value: state.accountName,
           ),
 
@@ -342,7 +328,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           if ((isTransfer || isCommitment) && state.targetAccountName != null)
             _buildDetailRow(
               icon: Icons.account_balance_outlined,
-              label: 'Target Account',
+              label: 'transaction.field.destination_account'.tr,
               value: state.targetAccountName!,
             ),
 
@@ -350,19 +336,19 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           if (state.payeeVO?.name != null)
             _buildDetailRow(
               icon: Icons.person_outline,
-              label: 'Payee',
+              label: 'transaction.add.payee'.tr,
               value: state.payeeVO!.name!,
             ),
           if (state.payeeVO?.bankName != null)
             _buildDetailRow(
               icon: Icons.account_balance_wallet_outlined,
-              label: 'Bank',
+              label: 'transaction.field.bank'.tr,
               value: state.payeeVO!.bankName!,
             ),
           if (state.payeeVO?.accountNumber != null)
             _buildDetailRow(
               icon: Icons.credit_card_outlined,
-              label: 'Account No.',
+              label: 'transaction.field.account_number'.tr,
               value: state.payeeVO!.accountNumber!,
             ),
 
@@ -370,14 +356,14 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           if (state.commitmentTaskName != null)
             _buildDetailRow(
               icon: Icons.task_alt,
-              label: 'Commitment Task',
+              label: 'commitment.task'.tr,
               value: state.commitmentTaskName!,
             ),
 
           if (tx.note != null && tx.note!.isNotEmpty)
             _buildDetailRow(
               icon: Icons.note_rounded,
-              label: 'Note',
+              label: 'transaction.add.note'.tr,
               value: tx.note!,
               isMultiline: true,
             ),
@@ -388,7 +374,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           // Transaction ID — small, secondary
           _buildDetailRow(
             icon: Icons.tag,
-            label: 'Transaction ID',
+            label: 'transaction.field.transaction_id'.tr,
             value: tx.id,
             valueStyle: AppTextStyles.caption.copyWith(
               color: AppColors.textSecondary,
@@ -451,17 +437,21 @@ class _TransactionDetailScreenContent extends StatelessWidget {
   // Action buttons
   // ---------------------------------------------------------------------------
 
-  Widget _buildActionButtons(BuildContext context, TransactionEntity tx) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    TransactionEntity tx,
+    TransactionDetailLoaded state,
+  ) {
     return Column(
       children: [
         AppButton.primary(
-          label: 'Edit Transaction',
-          onPressed: () => _navigateToEdit(context),
+          label: 'transaction.action.edit'.tr,
+          onPressed: () => _navigateToEdit(context, tx, state),
           isFullWidth: true,
         ),
         const SizedBox(height: AppSpacing.md),
         AppButton.destructive(
-          label: 'Delete Transaction',
+          label: 'transaction.action.delete'.tr,
           onPressed: () => _showDeleteConfirmation(context),
           isFullWidth: true,
         ),
@@ -473,11 +463,27 @@ class _TransactionDetailScreenContent extends StatelessWidget {
   // Helpers
   // ---------------------------------------------------------------------------
 
-  void _navigateToEdit(BuildContext context) {
+  void _navigateToEdit(
+    BuildContext context,
+    TransactionEntity tx,
+    TransactionDetailLoaded state,
+  ) {
+    // Extract time from transaction date if it's not midnight
+    final TimeOfDay? storedTime = tx.date.hour == 0 && tx.date.minute == 0
+        ? null
+        : TimeOfDay(hour: tx.date.hour, minute: tx.date.minute);
+
     Navigator.pushNamed(
       context,
       AppRoutes.editTransaction,
-      arguments: EditTransactionArgs(transactionId),
+      arguments: TransactionFormScreenArgs(
+        editingTransactionId: tx.id,
+        preselectedType: tx.type,
+        existingTransaction: tx,
+        existingCategory: state.categoryEntity,
+        existingPayee: state.payeeVO,
+        existingTime: storedTime,
+      ),
     );
   }
 
@@ -498,39 +504,9 @@ class _TransactionDetailScreenContent extends StatelessWidget {
 
   /// Full date + time, e.g. "Friday, 6 March 2026 at 3:45 PM"
   String _formatDateTime(DateTime date) {
-    return DateFormat("EEEE, d MMMM y 'at' h:mm a").format(date);
-  }
-
-  String _typeLabel(TransactionType type) {
-    switch (type) {
-      case TransactionType.income:
-        return 'Income';
-      case TransactionType.expense:
-        return 'Expense';
-      case TransactionType.transfer:
-        return 'Transfer';
-      case TransactionType.commitment:
-        return 'Commitment Payment';
-      case TransactionType.budgetPlanDeposit:
-        return 'Budget Plan Deposit';
-      case TransactionType.budgetPlanExpense:
-        return 'Budget Plan Spending';
-    }
-  }
-
-  Color _typeColor(TransactionType type) {
-    switch (type) {
-      case TransactionType.income:
-        return AppColors.income;
-      case TransactionType.expense:
-        return AppColors.expense;
-      case TransactionType.transfer:
-        return AppColors.transfer;
-      case TransactionType.commitment:
-        return AppColors.commitment;
-      case TransactionType.budgetPlanDeposit:
-      case TransactionType.budgetPlanExpense:
-        return AppColors.budgetPlan;
-    }
+    // Use locale-aware date and time formatting
+    final dateFormat = DateFormat.yMMMMEEEEd();
+    final timeFormat = DateFormat.jm();
+    return '${dateFormat.format(date)} ${'transaction.detail.at'.tr} ${timeFormat.format(date)}';
   }
 }

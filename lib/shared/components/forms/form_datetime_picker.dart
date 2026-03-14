@@ -1,55 +1,58 @@
-// transaction_datetime_tile.dart
+// form_datetime_picker.dart
+// Reusable date/time picker with bottom sheet
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/features/transaction/presentation/bloc/transaction_form_bloc.dart';
-import 'package:wise_spends/features/transaction/presentation/bloc/transaction_form_event.dart';
-import 'package:wise_spends/features/transaction/presentation/bloc/transaction_form_state.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'transaction_form_widgets.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Public widget — drop-in replacement for the two old DateTimeTile blocks
-//
-// Usage:
-//   TransactionDateTimePicker(formState: formState),
-// ─────────────────────────────────────────────────────────────────────────────
+final _logger = WiseLogger();
 
-class TransactionDateTimePicker extends StatelessWidget {
-  final TransactionFormReady formState;
+class FormDateTimePicker extends StatelessWidget {
+  final DateTime selectedDate;
+  final TimeOfDay? selectedTime;
+  final String? label;
+  final bool enabled;
+  final ValueChanged<DateTime> onDateChanged;
+  final ValueChanged<TimeOfDay> onTimeChanged;
+  final VoidCallback? onTimeCleared;
 
-  const TransactionDateTimePicker({super.key, required this.formState});
+  const FormDateTimePicker({
+    super.key,
+    required this.selectedDate,
+    required this.selectedTime,
+    this.label,
+    this.enabled = true,
+    required this.onDateChanged,
+    required this.onTimeChanged,
+    this.onTimeCleared,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final timeSet = formState.selectedTime != null;
-    final dateStr = _formatDate(formState.selectedDate);
-    final timeStr = timeSet
-        ? formState.selectedTime!.format(context)
-        : 'transaction.add.time_not_set'.tr;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionLabel(text: 'transaction.add.date_time'.tr),
-        const SizedBox(height: 8),
+        if (label != null) _SectionLabel(text: label!),
+        if (label != null) const SizedBox(height: 8),
         Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => _openSheet(context),
+            onTap: enabled ? () => _openSheet(context) : null,
             borderRadius: BorderRadius.circular(14),
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: enabled ? AppColors.surface : AppColors.surfaceVariant,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.divider),
+                border: Border.all(
+                  color: enabled ? AppColors.divider : AppColors.border,
+                ),
               ),
               child: Row(
                 children: [
-                  // Icon bubble
                   Container(
                     width: 36,
                     height: 36,
@@ -64,14 +67,12 @@ class TransactionDateTimePicker extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-
-                  // Date · Time
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'transaction.add.date_time'.tr,
+                          label ?? 'transaction.add.date_time'.tr,
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.textHint,
                             fontSize: 11,
@@ -82,16 +83,14 @@ class TransactionDateTimePicker extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              dateStr,
+                              _formatDate(selectedDate),
                               style: AppTextStyles.bodyMedium.copyWith(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 6),
                               child: Text(
                                 '·',
                                 style: AppTextStyles.bodyMedium.copyWith(
@@ -100,11 +99,11 @@ class TransactionDateTimePicker extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              timeStr,
+                              _formatTime(context, selectedTime),
                               style: AppTextStyles.bodyMedium.copyWith(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
-                                color: timeSet
+                                color: selectedTime != null
                                     ? AppColors.textPrimary
                                     : AppColors.textHint,
                               ),
@@ -114,11 +113,12 @@ class TransactionDateTimePicker extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const Icon(
-                    Icons.expand_more_rounded,
-                    color: AppColors.textSecondary,
-                    size: 20,
-                  ),
+                  if (enabled)
+                    const Icon(
+                      Icons.expand_more_rounded,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
                 ],
               ),
             ),
@@ -129,17 +129,20 @@ class TransactionDateTimePicker extends StatelessWidget {
   }
 
   void _openSheet(BuildContext context) {
-    final bloc = context.read<TransactionFormBloc>();
+    _logger.debug(
+      'Opening date/time picker, current date: ${_formatDate(selectedDate)}',
+      tag: 'FormDateTimePicker',
+    );
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _DateTimeSheet(
-        initialDate: formState.selectedDate,
-        initialTime: formState.selectedTime,
-        onDateChanged: (d) => bloc.add(ChangeTransactionDate(d)),
-        onTimeChanged: (t) => bloc.add(ChangeTransactionTime(t)),
-        onTimeClear: () => bloc.add(const ClearTransactionTime()),
+        initialDate: selectedDate,
+        initialTime: selectedTime,
+        onDateChanged: onDateChanged,
+        onTimeChanged: onTimeChanged,
+        onTimeCleared: onTimeCleared,
       ),
     );
   }
@@ -154,6 +157,11 @@ class TransactionDateTimePicker extends StatelessWidget {
     if (date.year == now.year) return DateFormat('EEE, d MMM').format(date);
     return DateFormat('d MMM y').format(date);
   }
+
+  String _formatTime(BuildContext context, TimeOfDay? time) {
+    if (time == null) return 'transaction.add.time_not_set'.tr;
+    return time.format(context);
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -165,14 +173,14 @@ class _DateTimeSheet extends StatefulWidget {
   final TimeOfDay? initialTime;
   final ValueChanged<DateTime> onDateChanged;
   final ValueChanged<TimeOfDay> onTimeChanged;
-  final VoidCallback onTimeClear;
+  final VoidCallback? onTimeCleared;
 
   const _DateTimeSheet({
     required this.initialDate,
     required this.initialTime,
     required this.onDateChanged,
     required this.onTimeChanged,
-    required this.onTimeClear,
+    this.onTimeCleared,
   });
 
   @override
@@ -206,11 +214,15 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
       context: context,
       initialDate: _date,
       firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
     );
     if (picked != null) {
       setState(() => _date = picked);
       widget.onDateChanged(picked);
+      _logger.debug(
+        'Date changed to: ${_formatDate(picked)}',
+        tag: 'FormDateTimePicker',
+      );
     }
   }
 
@@ -222,12 +234,17 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
     if (picked != null) {
       setState(() => _time = picked);
       widget.onTimeChanged(picked);
+      _logger.debug(
+        'Time changed to: ${picked.format(context)}',
+        tag: 'FormDateTimePicker',
+      );
     }
   }
 
   void _clearTime() {
     setState(() => _time = null);
-    widget.onTimeClear();
+    widget.onTimeCleared?.call();
+    _logger.debug('Time cleared', tag: 'FormDateTimePicker');
   }
 
   @override
@@ -247,7 +264,6 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Handle
             Center(
               child: Container(
                 width: 36,
@@ -259,11 +275,8 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
                 ),
               ),
             ),
-
             Text('transaction.add.date_time'.tr, style: AppTextStyles.h3),
             const SizedBox(height: 16),
-
-            // Date + Time value cards
             Row(
               children: [
                 Expanded(
@@ -280,9 +293,7 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
                   child: _SheetCard(
                     icon: Icons.access_time_rounded,
                     label: 'transaction.add.time'.tr,
-                    value: timeSet
-                        ? _time!.format(context)
-                        : 'transaction.add.time_not_set'.tr,
+                    value: timeSet ? _time!.format(context) : 'transaction.add.time_not_set'.tr,
                     isValueSet: timeSet,
                     onTap: _pickTime,
                     trailing: timeSet
@@ -309,8 +320,6 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
               ],
             ),
             const SizedBox(height: 14),
-
-            // Action buttons row
             Row(
               children: [
                 Expanded(
@@ -400,9 +409,7 @@ class _SheetCard extends StatelessWidget {
                 child: Icon(
                   icon,
                   size: 14,
-                  color: isValueSet
-                      ? AppColors.primary
-                      : AppColors.textSecondary,
+                  color: isValueSet ? AppColors.primary : AppColors.textSecondary,
                 ),
               ),
               const SizedBox(width: 8),
@@ -424,9 +431,7 @@ class _SheetCard extends StatelessWidget {
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: isValueSet
-                            ? AppColors.textPrimary
-                            : AppColors.textHint,
+                        color: isValueSet ? AppColors.textPrimary : AppColors.textHint,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -501,5 +506,20 @@ class _SheetButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section label
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+
+  const _SectionLabel({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text, style: AppTextStyles.bodySemiBold);
   }
 }

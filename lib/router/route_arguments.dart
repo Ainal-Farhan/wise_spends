@@ -24,13 +24,6 @@ class TransactionDetailArgs extends RouteArguments {
   const TransactionDetailArgs(this.transactionId);
 }
 
-/// Arguments for Edit Transaction screen
-class EditTransactionArgs extends RouteArguments {
-  final String transactionId;
-
-  const EditTransactionArgs(this.transactionId);
-}
-
 /// Arguments for Category List screen
 class CategoryListArgs extends RouteArguments {
   final TransactionType? filterByType;

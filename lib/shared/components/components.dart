@@ -34,3 +34,11 @@ export 'empty_state_widget.dart';
 
 // Shimmer Loading
 export 'shimmer_loading.dart';
+
+// Form Components (excluding locked fields to avoid naming conflicts)
+export 'forms/form_amount_field.dart';
+export 'forms/form_category_picker.dart';
+export 'forms/form_payee_picker.dart';
+export 'forms/form_datetime_picker.dart';
+export 'forms/form_account_selector.dart';
+export 'forms/form_type_toggle.dart';

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 import 'package:wise_spends/features/commitment/domain/entities/commitment_task_vo.dart';
 import 'package:wise_spends/features/payee/domain/entities/payee_vo.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
@@ -182,6 +183,8 @@ final class TransactionDetailLoaded extends TransactionState {
   /// Resolved category icon — from [CategoryIconMapper].
   final IconData categoryIcon;
 
+  final CategoryEntity? categoryEntity;
+
   // Transfer / commitment extras — all nullable
   final String? targetAccountName;
   final PayeeVO? payeeVO;
@@ -195,6 +198,7 @@ final class TransactionDetailLoaded extends TransactionState {
     this.targetAccountName,
     this.payeeVO,
     this.commitmentTaskName,
+    this.categoryEntity,
   });
 
   @override
@@ -206,6 +210,7 @@ final class TransactionDetailLoaded extends TransactionState {
     targetAccountName,
     payeeVO,
     commitmentTaskName,
+    categoryEntity,
   ];
 }
 

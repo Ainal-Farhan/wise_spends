@@ -1,54 +1,81 @@
-// transaction_category_grid.dart
+// form_category_picker.dart
+// Reusable category picker with search and grid display
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
-import 'package:wise_spends/features/category/presentation/bloc/category_bloc.dart';
-import 'package:wise_spends/features/category/presentation/bloc/category_state.dart';
-import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:wise_spends/features/transaction/presentation/bloc/transaction_form_bloc.dart';
-import 'package:wise_spends/features/transaction/presentation/bloc/transaction_form_event.dart';
-import 'package:wise_spends/features/transaction/presentation/bloc/transaction_form_state.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
-import 'transaction_form_widgets.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main widget — drop-in replacement for TransactionCategoryGrid
-// ─────────────────────────────────────────────────────────────────────────────
+final _logger = WiseLogger();
 
-class TransactionCategoryGrid extends StatefulWidget {
-  final TransactionFormReady formState;
+/// Category item for the picker
+class FormCategoryItem {
+  final String id;
+  final String name;
+  final IconData? icon;
+  final int? iconCodePoint;
+  final bool isEnabled;
 
-  const TransactionCategoryGrid({super.key, required this.formState});
+  const FormCategoryItem({
+    required this.id,
+    required this.name,
+    this.icon,
+    this.iconCodePoint,
+    this.isEnabled = true,
+  });
 
-  @override
-  State<TransactionCategoryGrid> createState() =>
-      _TransactionCategoryGridState();
+  IconData get iconData {
+    if (icon != null) return icon!;
+    if (iconCodePoint != null) {
+      return IconData(iconCodePoint!, fontFamily: 'MaterialIcons');
+    }
+    return Icons.category_outlined;
+  }
 }
 
-class _TransactionCategoryGridState extends State<TransactionCategoryGrid> {
+class FormCategoryPicker extends StatefulWidget {
+  final FormCategoryItem? selectedCategory;
+  final List<FormCategoryItem> categories;
+  final Color typeColor;
+  final String? label;
+  final String? hint;
+  final bool enabled;
+  final ValueChanged<FormCategoryItem?> onCategorySelected;
+
+  const FormCategoryPicker({
+    super.key,
+    this.selectedCategory,
+    required this.categories,
+    required this.typeColor,
+    this.label,
+    this.hint,
+    this.enabled = true,
+    required this.onCategorySelected,
+  });
+
+  @override
+  State<FormCategoryPicker> createState() => _FormCategoryPickerState();
+}
+
+class _FormCategoryPickerState extends State<FormCategoryPicker> {
   late final TextEditingController _controller;
 
-  CategoryEntity? get _selected => widget.formState.selectedCategory;
-  Color get _typeColor => widget.formState.transactionType.color;
-
-  String _displayText(CategoryEntity? c) => c?.name ?? '';
+  String _displayText(FormCategoryItem? c) => c?.name ?? '';
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: _displayText(_selected));
+    _controller = TextEditingController(
+      text: _displayText(widget.selectedCategory),
+    );
   }
 
   @override
-  void didUpdateWidget(TransactionCategoryGrid old) {
+  void didUpdateWidget(FormCategoryPicker old) {
     super.didUpdateWidget(old);
-    if (old.formState.selectedCategory?.id !=
-        widget.formState.selectedCategory?.id) {
-      _controller.text = _displayText(_selected);
+    if (old.selectedCategory?.id != widget.selectedCategory?.id) {
+      _controller.text = _displayText(widget.selectedCategory);
     }
   }
 
@@ -60,61 +87,56 @@ class _TransactionCategoryGridState extends State<TransactionCategoryGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CategoryBloc, CategoryState>(
-      builder: (context, state) {
-        if (state is! CategoryLoaded) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final categories = state.categories.where((c) {
-          return widget.formState.transactionType == TransactionType.income
-              ? c.isIncome
-              : c.isExpense;
-        }).toList();
-
-        if (categories.isEmpty) return _EmptyCategoriesHint();
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SectionLabel(text: 'transaction.add.category'.tr),
-            const SizedBox(height: 8),
-            AppTextField(
-              controller: _controller,
-              hint: 'transaction.category.select_hint'.tr,
-              readOnly: true,
-              prefixWidget: _selected != null
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 12),
-                      child: _CategoryIconBubble(
-                        category: _selected!,
-                        color: _typeColor,
-                        size: 28,
-                        iconSize: 14,
-                      ),
-                    )
-                  : null,
-              prefixIcon: _selected == null ? Icons.category_outlined : null,
-              suffixIcon: Icons.keyboard_arrow_down_rounded,
-              onTap: () => _showPicker(context, categories),
-            ),
-          ],
-        );
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.label != null) _SectionLabel(text: widget.label!),
+        if (widget.label != null) const SizedBox(height: 8),
+        AppTextField(
+          controller: _controller,
+          hint: widget.hint ?? 'transaction.category.select_hint'.tr,
+          readOnly: true,
+          enabled: widget.enabled,
+          prefixWidget: widget.selectedCategory != null
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 12),
+                  child: _CategoryIconBubble(
+                    category: widget.selectedCategory!,
+                    color: widget.typeColor,
+                    size: 28,
+                    iconSize: 14,
+                  ),
+                )
+              : null,
+          prefixIcon: widget.selectedCategory == null
+              ? Icons.category_outlined
+              : null,
+          suffixIcon: Icons.keyboard_arrow_down_rounded,
+          onTap: widget.enabled ? () => _showPicker(context) : null,
+        ),
+      ],
     );
   }
 
-  void _showPicker(BuildContext context, List<CategoryEntity> categories) {
+  void _showPicker(BuildContext context) {
+    _logger.debug(
+      'Opening category picker, ${widget.categories.length} categories available',
+      tag: 'FormCategoryPicker',
+    );
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _CategoryPickerSheet(
-        categories: categories,
-        selectedId: _selected?.id,
-        typeColor: _typeColor,
+        categories: widget.categories,
+        selectedId: widget.selectedCategory?.id,
+        typeColor: widget.typeColor,
         onSelected: (category) {
-          context.read<TransactionFormBloc>().add(SelectCategory(category));
+          _logger.debug(
+            'Category selected: ${category.name} (${category.id})',
+            tag: 'FormCategoryPicker',
+          );
+          widget.onCategorySelected(category);
           Navigator.pop(context);
         },
       ),
@@ -127,10 +149,10 @@ class _TransactionCategoryGridState extends State<TransactionCategoryGrid> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _CategoryPickerSheet extends StatefulWidget {
-  final List<CategoryEntity> categories;
+  final List<FormCategoryItem> categories;
   final String? selectedId;
   final Color typeColor;
-  final ValueChanged<CategoryEntity> onSelected;
+  final ValueChanged<FormCategoryItem> onSelected;
 
   const _CategoryPickerSheet({
     required this.categories,
@@ -145,7 +167,7 @@ class _CategoryPickerSheet extends StatefulWidget {
 
 class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
   final TextEditingController _searchController = TextEditingController();
-  List<CategoryEntity> _filtered = [];
+  List<FormCategoryItem> _filtered = [];
 
   @override
   void initState() {
@@ -265,11 +287,11 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Category tile (used inside the sheet grid)
+// Category tile
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _CategoryTile extends StatelessWidget {
-  final CategoryEntity category;
+  final FormCategoryItem category;
   final bool isSelected;
   final Color typeColor;
   final VoidCallback onTap;
@@ -332,11 +354,11 @@ class _CategoryTile extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Reusable icon bubble
+// Category icon bubble
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _CategoryIconBubble extends StatelessWidget {
-  final CategoryEntity category;
+  final FormCategoryItem category;
   final Color color;
   final bool filled;
   final double size;
@@ -361,7 +383,7 @@ class _CategoryIconBubble extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Icon(
-        CategoryIconMapper.getIconForCategory(category.iconCodePoint),
+        category.iconData,
         color: filled ? Colors.white : color,
         size: iconSize,
       ),
@@ -370,40 +392,8 @@ class _CategoryIconBubble extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Empty / hint states
+// Empty states
 // ─────────────────────────────────────────────────────────────────────────────
-
-class _EmptyCategoriesHint extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.info_outline_rounded,
-            size: 18,
-            color: AppColors.textSecondary,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'transaction.category.empty_hint'.tr,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _SearchEmptyState extends StatelessWidget {
   final String query;
@@ -435,5 +425,20 @@ class _SearchEmptyState extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section label
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+
+  const _SectionLabel({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text, style: AppTextStyles.bodySemiBold);
   }
 }

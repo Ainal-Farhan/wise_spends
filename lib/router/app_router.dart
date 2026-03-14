@@ -7,14 +7,12 @@ import 'package:wise_spends/features/auth/presentation/screens/profile_screen.da
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/backup_restore_screen.dart';
 import 'package:wise_spends/features/category/presentation/screens/category_management_screen.dart';
 import 'package:wise_spends/features/settings/presentation/screens/ui/settings_screen_wrapper.dart';
-import 'package:wise_spends/features/transaction/presentation/screens/add_transaction_screen.dart'
-    as transaction_screen;
+import 'package:wise_spends/features/transaction/presentation/screens/transaction_form_screen.dart'
+    as transaction_form_screen;
 import 'package:wise_spends/features/transaction/presentation/screens/transaction_history_screen.dart'
     as transaction_history_screen;
 import 'package:wise_spends/features/transaction/presentation/screens/transaction_detail_screen.dart'
     as transaction_detail_screen;
-import 'package:wise_spends/features/transaction/presentation/screens/edit_transaction_screen.dart'
-    as edit_transaction_screen;
 import 'package:wise_spends/features/budget/presentation/screens/budget_list_screen.dart'
     as budget_screen;
 import 'package:wise_spends/features/reports/presentation/screens/reports_screen.dart'
@@ -70,13 +68,19 @@ abstract class AppRouter {
 
       // Transaction routes
       case AppRoutes.addTransaction:
+        if (args is AddTransactionArgs) {
+          return _createRoute(
+            transaction_form_screen.TransactionFormScreen(
+              args: transaction_form_screen.TransactionFormScreenArgs(
+                preselectedType: args.preselectedType,
+              ),
+            ),
+            settings,
+          );
+        }
         return _createRoute(
-          transaction_screen.AddTransactionScreen(
-            args: args is AddTransactionArgs
-                ? transaction_screen.AddTransactionScreenArgs(
-                    preselectedType: args.preselectedType,
-                  )
-                : const transaction_screen.AddTransactionScreenArgs(),
+          const transaction_form_screen.TransactionFormScreen(
+            args: transaction_form_screen.TransactionFormScreenArgs(),
           ),
           settings,
         );
@@ -96,11 +100,9 @@ abstract class AppRouter {
         );
 
       case AppRoutes.editTransaction:
-        if (args is EditTransactionArgs) {
+        if (args is transaction_form_screen.TransactionFormScreenArgs) {
           return _createRoute(
-            edit_transaction_screen.EditTransactionScreen(
-              transactionId: args.transactionId,
-            ),
+            transaction_form_screen.TransactionFormScreen(args: args),
             settings,
           );
         }

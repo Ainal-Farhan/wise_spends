@@ -1,54 +1,93 @@
-// transaction_account_selector.dart
+// form_account_selector.dart
+// Reusable account/savings selector for forms
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'transaction_form_widgets.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Single account selector
-// ─────────────────────────────────────────────────────────────────────────────
+final _logger = WiseLogger();
 
-class TransactionAccountDropdown extends StatefulWidget {
-  final String label;
-  final String hint;
-  final String? selectedId;
-  final List<ListSavingVO> savingsList;
+/// Account item for the selector
+class FormAccountItem {
+  final String id;
+  final String name;
+  final String type; // cash, bank, credit_card, ewallet, savings
+  final double balance;
+  final String? currencySymbol;
+
+  const FormAccountItem({
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.balance,
+    this.currencySymbol = 'RM',
+  });
+
+  String get displayBalance => '$currencySymbol ${balance.toStringAsFixed(2)}';
+
+  IconData get typeIcon {
+    return switch (type.toLowerCase()) {
+      'cash' => Icons.payments_rounded,
+      'bank' || 'bank_account' => Icons.account_balance_rounded,
+      'credit' || 'credit_card' => Icons.credit_card_rounded,
+      'ewallet' || 'e_wallet' => Icons.phone_android_rounded,
+      'savings' => Icons.savings_rounded,
+      _ => Icons.account_balance_wallet_rounded,
+    };
+  }
+
+  Color get typeColor {
+    return switch (type.toLowerCase()) {
+      'cash' => AppColors.success,
+      'bank' || 'bank_account' => AppColors.primary,
+      'credit' || 'credit_card' => AppColors.secondary,
+      'ewallet' || 'e_wallet' => AppColors.tertiary,
+      'savings' => AppColors.income,
+      _ => AppColors.textSecondary,
+    };
+  }
+}
+
+class FormAccountSelector extends StatefulWidget {
+  final FormAccountItem? selectedAccount;
+  final List<FormAccountItem> accounts;
   final String? excludeId;
-  final ValueChanged<String?> onChanged;
+  final String? label;
+  final String? hint;
+  final bool enabled;
+  final ValueChanged<FormAccountItem?> onAccountSelected;
 
-  const TransactionAccountDropdown({
+  const FormAccountSelector({
     super.key,
-    required this.label,
-    required this.hint,
-    required this.selectedId,
-    required this.savingsList,
+    this.selectedAccount,
+    required this.accounts,
     this.excludeId,
-    required this.onChanged,
+    this.label,
+    this.hint,
+    this.enabled = true,
+    required this.onAccountSelected,
   });
 
   @override
-  State<TransactionAccountDropdown> createState() =>
-      _TransactionAccountDropdownState();
+  State<FormAccountSelector> createState() => _FormAccountSelectorState();
 }
 
-class _TransactionAccountDropdownState
-    extends State<TransactionAccountDropdown> {
+class _FormAccountSelectorState extends State<FormAccountSelector> {
   late final TextEditingController _controller;
 
-  List<ListSavingVO> get _available =>
-      widget.savingsList.where((s) => s.saving.id != widget.excludeId).toList();
+  List<FormAccountItem> get _available =>
+      widget.accounts.where((a) => a.id != widget.excludeId).toList();
 
-  ListSavingVO? get _selected => _available.cast<ListSavingVO?>().firstWhere(
-    (s) => s?.saving.id == widget.selectedId,
-    orElse: () => null,
-  );
+  FormAccountItem? get _selected =>
+      _available.cast<FormAccountItem?>().firstWhere(
+        (a) => a?.id == widget.selectedAccount?.id,
+        orElse: () => null,
+      );
 
-  String _displayText(ListSavingVO? s) => s == null
-      ? ''
-      : '${s.saving.name ?? 'transaction.account.unnamed'.tr}  ·  RM ${s.saving.currentAmount.toStringAsFixed(2)}';
+  String _displayText(FormAccountItem? a) =>
+      a == null ? '' : '${a.name}  ·  ${a.displayBalance}';
 
   @override
   void initState() {
@@ -57,11 +96,10 @@ class _TransactionAccountDropdownState
   }
 
   @override
-  void didUpdateWidget(TransactionAccountDropdown old) {
+  void didUpdateWidget(FormAccountSelector old) {
     super.didUpdateWidget(old);
-    // Update text whenever selection or list changes
-    if (old.selectedId != widget.selectedId ||
-        old.savingsList != widget.savingsList) {
+    if (old.selectedAccount?.id != widget.selectedAccount?.id ||
+        old.accounts != widget.accounts) {
       _controller.text = _displayText(_selected);
     }
   }
@@ -76,41 +114,56 @@ class _TransactionAccountDropdownState
   Widget build(BuildContext context) {
     final available = _available;
 
-    if (available.isEmpty) return const _NoAccountsHint();
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionLabel(text: widget.label),
-        const SizedBox(height: 8),
-        AppTextField(
-          hint: widget.hint,
-          readOnly: true,
-          prefixWidget: _selected != null
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 12),
-                  child: _SavingTypeIcon(type: _selected!.saving.type),
-                )
-              : null,
-          prefixIcon: _selected == null ? Icons.account_balance_rounded : null,
-          suffixIcon: Icons.keyboard_arrow_down_rounded,
-          controller: _controller,
-          onTap: () => _showPicker(context, available),
-        ),
+        if (widget.label != null) _SectionLabel(text: widget.label!),
+        if (widget.label != null) const SizedBox(height: 8),
+        if (available.isEmpty)
+          _NoAccountsHint()
+        else
+          AppTextField(
+            hint: widget.hint ?? 'transaction.account.select'.tr,
+            readOnly: true,
+            enabled: widget.enabled,
+            prefixWidget: _selected != null
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: _AccountTypeIcon(account: _selected!),
+                  )
+                : null,
+            prefixIcon: _selected == null
+                ? Icons.account_balance_rounded
+                : null,
+            suffixIcon: Icons.keyboard_arrow_down_rounded,
+            controller: _controller,
+            onTap: widget.enabled
+                ? () => _showPicker(context, available)
+                : null,
+          ),
       ],
     );
   }
 
-  void _showPicker(BuildContext context, List<ListSavingVO> available) {
+  void _showPicker(BuildContext context, List<FormAccountItem> available) {
+    _logger.debug(
+      'Opening account picker, ${available.length} accounts available',
+      tag: 'FormAccountSelector',
+    );
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => _AccountPickerSheet(
         accounts: available,
-        selectedId: widget.selectedId,
+        selectedId: widget.selectedAccount?.id,
         onSelected: (id) {
-          widget.onChanged(id);
+          final account = available.firstWhere((a) => a.id == id);
+          _logger.debug(
+            'Account selected: ${account.name} (${account.id})',
+            tag: 'FormAccountSelector',
+          );
+          widget.onAccountSelected(account);
           Navigator.pop(context);
         },
       ),
@@ -119,21 +172,25 @@ class _TransactionAccountDropdownState
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Transfer selector (two dropdowns with arrow)
+// Transfer account selector (source and destination)
 // ─────────────────────────────────────────────────────────────────────────────
 
-class TransferAccountSelector extends StatelessWidget {
-  final String? sourceAccountId;
-  final String? destinationAccountId;
-  final List<ListSavingVO> savingsList;
-  final ValueChanged<String?> onSourceChanged;
-  final ValueChanged<String?> onDestinationChanged;
+class FormTransferAccountSelector extends StatelessWidget {
+  final FormAccountItem? sourceAccount;
+  final FormAccountItem? destinationAccount;
+  final List<FormAccountItem> accounts;
+  final String? label;
+  final bool enabled;
+  final ValueChanged<FormAccountItem?> onSourceChanged;
+  final ValueChanged<FormAccountItem?> onDestinationChanged;
 
-  const TransferAccountSelector({
+  const FormTransferAccountSelector({
     super.key,
-    required this.sourceAccountId,
-    required this.destinationAccountId,
-    required this.savingsList,
+    this.sourceAccount,
+    this.destinationAccount,
+    required this.accounts,
+    this.label,
+    this.enabled = true,
     required this.onSourceChanged,
     required this.onDestinationChanged,
   });
@@ -143,15 +200,16 @@ class TransferAccountSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SectionLabel(text: 'transaction.transfer.between_accounts'.tr),
-        const SizedBox(height: 12),
-        TransactionAccountDropdown(
+        if (label != null) _SectionLabel(text: label!),
+        if (label != null) const SizedBox(height: 12),
+        FormAccountSelector(
+          selectedAccount: sourceAccount,
+          accounts: accounts,
+          excludeId: destinationAccount?.id,
           label: 'transaction.transfer.from'.tr,
           hint: 'transaction.transfer.from_hint'.tr,
-          selectedId: sourceAccountId,
-          savingsList: savingsList,
-          excludeId: destinationAccountId,
-          onChanged: onSourceChanged,
+          enabled: enabled,
+          onAccountSelected: onSourceChanged,
         ),
         const SizedBox(height: 10),
         Center(
@@ -171,62 +229,16 @@ class TransferAccountSelector extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        TransactionAccountDropdown(
+        FormAccountSelector(
+          selectedAccount: destinationAccount,
+          accounts: accounts,
+          excludeId: sourceAccount?.id,
           label: 'transaction.transfer.to'.tr,
           hint: 'transaction.transfer.to_hint'.tr,
-          selectedId: destinationAccountId,
-          savingsList: savingsList,
-          excludeId: sourceAccountId,
-          onChanged: onDestinationChanged,
+          enabled: enabled,
+          onAccountSelected: onDestinationChanged,
         ),
       ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// AccountChip (locked fields)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class AccountChip extends StatelessWidget {
-  final String name;
-  final IconData icon;
-  final Color color;
-
-  const AccountChip({
-    super.key,
-    required this.name,
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 15, color: color),
-          const SizedBox(width: 7),
-          Flexible(
-            child: Text(
-              name,
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: color,
-                fontWeight: FontWeight.w600,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -236,7 +248,7 @@ class AccountChip extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _AccountPickerSheet extends StatelessWidget {
-  final List<ListSavingVO> accounts;
+  final List<FormAccountItem> accounts;
   final String? selectedId;
   final ValueChanged<String> onSelected;
 
@@ -289,11 +301,11 @@ class _AccountPickerSheet extends StatelessWidget {
               separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final account = accounts[index];
-                final isSelected = account.saving.id == selectedId;
+                final isSelected = account.id == selectedId;
                 return _AccountTile(
                   account: account,
                   isSelected: isSelected,
-                  onTap: () => onSelected(account.saving.id),
+                  onTap: () => onSelected(account.id),
                 );
               },
             ),
@@ -305,7 +317,7 @@ class _AccountPickerSheet extends StatelessWidget {
 }
 
 class _AccountTile extends StatelessWidget {
-  final ListSavingVO account;
+  final FormAccountItem account;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -324,36 +336,36 @@ class _AccountTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.06)
+              ? account.typeColor.withValues(alpha: 0.06)
               : AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.4)
+                ? account.typeColor.withValues(alpha: 0.4)
                 : AppColors.divider,
             width: isSelected ? 1.5 : 1,
           ),
         ),
         child: Row(
           children: [
-            _SavingTypeIcon(type: account.saving.type),
+            _AccountTypeIcon(account: account),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                account.saving.name ?? 'transaction.account.unnamed'.tr,
+                account.name,
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                  color: isSelected ? account.typeColor : AppColors.textPrimary,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             const SizedBox(width: 8),
             Text(
-              'RM ${account.saving.currentAmount.toStringAsFixed(2)}',
+              account.displayBalance,
               style: AppTextStyles.bodySmall.copyWith(
                 color: isSelected
-                    ? AppColors.primary.withValues(alpha: 0.7)
+                    ? account.typeColor.withValues(alpha: 0.7)
                     : AppColors.textSecondary,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
@@ -383,42 +395,33 @@ class _AccountTile extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Shared private widgets
+// Account type icon
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _SavingTypeIcon extends StatelessWidget {
-  final String type;
+class _AccountTypeIcon extends StatelessWidget {
+  final FormAccountItem account;
 
-  const _SavingTypeIcon({required this.type});
+  const _AccountTypeIcon({required this.account});
 
   @override
   Widget build(BuildContext context) {
-    final (icon, color) = switch (type.toLowerCase()) {
-      'cash' => (Icons.payments_rounded, AppColors.success),
-      'bank' ||
-      'bank_account' => (Icons.account_balance_rounded, AppColors.primary),
-      'credit' ||
-      'credit_card' => (Icons.credit_card_rounded, AppColors.secondary),
-      'ewallet' ||
-      'e_wallet' => (Icons.phone_android_rounded, AppColors.tertiary),
-      'savings' => (Icons.savings_rounded, AppColors.income),
-      _ => (Icons.account_balance_wallet_rounded, AppColors.textSecondary),
-    };
     return Container(
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: account.typeColor.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: color, size: 16),
+      child: Icon(account.typeIcon, color: account.typeColor, size: 16),
     );
   }
 }
 
-class _NoAccountsHint extends StatelessWidget {
-  const _NoAccountsHint();
+// ─────────────────────────────────────────────────────────────────────────────
+// No accounts hint
+// ─────────────────────────────────────────────────────────────────────────────
 
+class _NoAccountsHint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -447,5 +450,20 @@ class _NoAccountsHint extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section label
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+
+  const _SectionLabel({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text, style: AppTextStyles.bodySemiBold);
   }
 }

@@ -13,6 +13,7 @@ class MalayStrings {
     'general.update': 'Kemas kini',
     'general.remove': 'Buang',
     'general.confirm': 'Sahkan',
+    'general.go_back': 'Kembali',
     'general.back': 'Kembali',
     'general.next': 'Seterusnya',
     'general.done': 'Selesai',
@@ -69,6 +70,9 @@ class MalayStrings {
     'general.version': 'Versi',
     'general.account': 'Akaun',
     'general.accounts': 'Akaun',
+    'general.source_account': 'Sumber Akaun',
+    'general.target_account': 'Akaun Sasaran',
+    'general.bank': 'Bank',
     'general.short_name': 'Nama Pendek',
     'general.full_name': 'Nama Penuh',
     'general.goal_amount': 'Jumlah Sasaran (RM)',
@@ -83,6 +87,7 @@ class MalayStrings {
     'general.update_money_storage': 'Kemas Kini Storan Wang',
     'general.add_money_storage': 'Tambah Storan Wang',
     'general.commitment_overview': 'Gambaran Keseluruhan Komitmen',
+    'commitment.task': 'Tugas Komitmen',
     'general.manage_recurring': 'Urus Perbelanjaan Berulang',
     'general.tap_button_below':
         'Tekan butang di bawah untuk menambah komitmen pertama anda',
@@ -1155,7 +1160,7 @@ class MalayStrings {
     'transaction.add.description_hint': 'Ini untuk apa?',
     'transaction.add.date': 'Tarikh',
     'transaction.add.time': 'Masa',
-    'transaction.add.time_not_set': 'Tidak ditetapkan (guna tengah malam)',
+    'transaction.add.time_not_set': 'Tidak ditetapkan',
     'transaction.add.note': 'Nota',
     'transaction.add.note_hint': 'Tambah butiran lain',
     'transaction.add.add_note': 'Tambah nota (pilihan)',
@@ -1170,6 +1175,26 @@ class MalayStrings {
     'transaction.field.paid_from': 'Dibayar Dari Akaun',
     'transaction.field.category': 'Kategori',
     'transaction.field.payee': 'Penerima',
+    'transaction.field.account': 'Akaun',
+    'transaction.field.source_account': 'Akaun Sumber',
+    'transaction.field.destination_account': 'Akaun Destinasi',
+    'transaction.field.bank': 'Bank',
+    'transaction.field.account_number': 'Nombor Akaun',
+    'transaction.field.transaction_id': 'ID Transaksi',
+
+    // ── Transaction Detail ────────────────────────────────────────────────────
+    'transaction.detail.transaction_details': 'Butiran Transaksi',
+    'transaction.detail.at': 'pada',
+
+    // ── Transaction Actions ───────────────────────────────────────────────────
+    'transaction.action.edit': 'Edit Transaksi',
+    'transaction.action.delete': 'Padam Transaksi',
+    'transaction.not_set': 'Tidak Ditetapkan',
+
+    // ── Edit mode ─────────────────────────────────────────────────────────────
+    'transaction.edit_mode.title': 'Mengedit Transaksi',
+    'transaction.edit_mode.subtitle':
+        'Beberapa medan dikunci untuk mengelakkan perubahan tidak sengaja',
     'transaction.add.date_time': 'Tarikh & Masa',
     'transaction.add.change_date': 'Tukar tarikh',
     'transaction.add.change_time': 'Tukar masa',
