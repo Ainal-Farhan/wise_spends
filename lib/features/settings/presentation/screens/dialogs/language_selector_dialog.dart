@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/app_locale.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
@@ -20,16 +21,23 @@ Future<String?> showLanguageSelectorDialog({
         iconColor: AppColors.tertiary,
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          children: LanguageOption.options.map((option) {
-            final isSelected = option.code == currentLanguageCode;
-            return _LanguageOptionTile(
-              option: option,
-              isSelected: isSelected,
-              onTap: () {
-                Navigator.pop(dialogContext, option.code);
-              },
-            );
-          }).toList(),
+          children: LanguageOption.options
+              .where(
+                (option) => AppLocale.values.any(
+                  (locale) => option.code == locale.code,
+                ),
+              )
+              .map((option) {
+                final isSelected = option.code == currentLanguageCode;
+                return _LanguageOptionTile(
+                  option: option,
+                  isSelected: isSelected,
+                  onTap: () {
+                    Navigator.pop(dialogContext, option.code);
+                  },
+                );
+              })
+              .toList(),
         ),
         buttons: [
           CustomDialogButton(
@@ -84,10 +92,7 @@ class _LanguageOptionTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Center(
-                child: Text(
-                  option.flag,
-                  style: const TextStyle(fontSize: 20),
-                ),
+                child: Text(option.flag, style: const TextStyle(fontSize: 20)),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -98,13 +103,12 @@ class _LanguageOptionTile extends StatelessWidget {
                   Text(
                     option.nativeName,
                     style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    option.name,
-                    style: AppTextStyles.bodySmall,
-                  ),
+                  Text(option.name, style: AppTextStyles.bodySmall),
                 ],
               ),
             ),

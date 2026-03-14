@@ -1,28 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/core/config/app_locale.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/core/services/preferences_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
+import 'package:wise_spends/features/settings/presentation/screens/bloc/settings_bloc.dart';
+import 'package:wise_spends/features/settings/presentation/screens/dialogs/language_selector_dialog.dart';
+import 'package:wise_spends/features/settings/presentation/screens/dialogs/theme_selector_dialog.dart';
+import 'package:wise_spends/features/settings/presentation/screens/widgets/settings_profile_header.dart';
+import 'package:wise_spends/features/settings/presentation/screens/widgets/settings_widgets.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
-import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import '../widgets/settings_widgets.dart';
-import '../dialogs/theme_selector_dialog.dart';
-import '../dialogs/language_selector_dialog.dart';
 
-/// Modern Settings Screen with Material 3 design and Expansion Panels
-///
-/// Features:
-/// - Collapsible expansion panels for each section
-/// - 'Coming Soon' badges for unimplemented features
-/// - Interactive dialogs for selections
-/// - Clean, organized layout
-/// - Destructive action confirmations
-/// - Profile header with actual user data
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
@@ -33,16 +24,11 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   UserProfile? _userProfile;
 
-  // Settings state
-  ThemeMode _currentTheme = ThemeMode.system;
-  String _currentLanguage = 'en';
-  final String _currentCurrency = 'RM';
-
-  // Feature toggles (for demo purposes)
+  // Feature toggles (UI-only until backend support lands)
   bool _notificationsEnabled = true;
   bool _biometricEnabled = false;
 
-  // Track which panels are expanded
+  // Panel expansion state
   bool _isAccountExpanded = false;
   bool _isNotificationsExpanded = false;
   bool _isPreferencesExpanded = false;
@@ -53,19 +39,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _loadUserProfile();
+    // Trigger a fresh load so the BLoC always reflects persisted prefs.
+    context.read<SettingsBloc>().add(const LoadSettingsEvent());
   }
 
   Future<void> _loadUserProfile() async {
     try {
-      final repository = UserRepository();
-      final profile = await repository.getCurrentUser();
+      final profile = await UserRepository().getCurrentUser();
       if (mounted && profile != null) {
         setState(() => _userProfile = UserProfile.fromCmmnUser(profile));
       }
-    } catch (e) {
-      // Ignore errors, will show default values
-    }
+    } catch (_) {}
   }
+
+  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -76,457 +63,231 @@ class _SettingsScreenState extends State<SettingsScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Profile Header
-            _buildProfileHeader(),
+      // BlocListener handles side-effects (snackbars) while BlocBuilder
+      // rebuilds only the parts of the UI that changed.
+      body: BlocConsumer<SettingsBloc, SettingsState>(
+        listenWhen: (prev, curr) => curr is SettingsLoaded && prev != curr,
+        listener: (context, state) {
+          if (state is SettingsLoaded) {
+            // Nothing to do here — side-effects (snackbars) are triggered from
+            // the dialog callbacks so the user sees immediate feedback.
+          }
+        },
+        builder: (context, state) {
+          if (state is SettingsLoading || state is SettingsInitial) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (state is SettingsError) {
+            return Center(child: Text(state.message));
+          }
 
-            const SizedBox(height: AppSpacing.lg),
-
-            // Account & Security Section
-            _buildExpansionPanel(
-              id: 'account',
-              title: 'settings.account_security'.tr,
-              description: 'settings.account_security_desc'.tr,
-              leadingIcon: Icons.security_outlined,
-              isExpanded: _isAccountExpanded,
-              onExpansionChanged: (expanded) {
-                setState(() => _isAccountExpanded = expanded);
-              },
-              children: [
-                SettingsTile(
-                  leadingIcon: Icons.person_outline,
-                  title: 'settings.edit_profile'.tr,
-                  subtitle: 'settings.profile_subtitle'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.profile);
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.lock_outline,
-                  title: 'settings.privacy_security'.tr,
-                  subtitle: 'settings.privacy_security_desc'.tr,
-                  showComingSoon: true,
-                  hideTrailing: true,
-                  onTap: () {
-                    _showComingSoonMessage(
-                      context,
-                      'settings.privacy_security'.tr,
-                    );
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsToggleTile(
-                  leadingIcon: Icons.fingerprint,
-                  title: 'settings.biometric_login'.tr,
-                  subtitle: 'settings.biometric_subtitle'.tr,
-                  value: _biometricEnabled,
-                  onChanged: (value) {
-                    setState(() => _biometricEnabled = value);
-                    _showComingSoonMessage(
-                      context,
-                      value
-                          ? 'settings.biometric_enabled'.tr
-                          : 'settings.biometric_disabled'.tr,
-                    );
-                  },
-                ),
-              ],
-            ),
-
-            // Notifications Section
-            _buildExpansionPanel(
-              id: 'notifications',
-              title: 'settings.notifications'.tr,
-              description: 'settings.notifications_desc'.tr,
-              leadingIcon: Icons.notifications_outlined,
-              isExpanded: _isNotificationsExpanded,
-              onExpansionChanged: (expanded) {
-                setState(() => _isNotificationsExpanded = expanded);
-              },
-              children: [
-                SettingsToggleTile(
-                  leadingIcon: Icons.notifications_active,
-                  title: 'settings.push_notifications'.tr,
-                  subtitle: 'settings.push_notifications_desc'.tr,
-                  value: _notificationsEnabled,
-                  onChanged: (value) {
-                    setState(() => _notificationsEnabled = value);
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.calendar_month_outlined,
-                  title: 'settings.budget_reminders'.tr,
-                  subtitle: 'settings.budget_reminders_desc'.tr,
-                  showComingSoon: true,
-                  hideTrailing: true,
-                  isDisabled: !_notificationsEnabled,
-                  onTap: () {
-                    if (_notificationsEnabled) {
-                      _showComingSoonMessage(
-                        context,
-                        'settings.budget_reminders'.tr,
-                      );
-                    }
-                  },
-                ),
-              ],
-            ),
-
-            // Preferences Section
-            _buildExpansionPanel(
-              id: 'preferences',
-              title: 'settings.preferences'.tr,
-              description: 'settings.preferences_desc'.tr,
-              leadingIcon: Icons.tune,
-              leadingBackgroundColor: AppColors.secondaryContainer,
-              isExpanded: _isPreferencesExpanded,
-              onExpansionChanged: (expanded) {
-                setState(() => _isPreferencesExpanded = expanded);
-              },
-              children: [
-                SettingsTile(
-                  leadingIcon: Icons.palette_outlined,
-                  title: 'settings.theme'.tr,
-                  subtitle: _getThemeSubtitle(),
-                  hideTrailing: true,
-                  onTap: () => _showThemeSelector(),
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.language_outlined,
-                  title: 'settings.language'.tr,
-                  subtitle: _getLanguageSubtitle(),
-                  showComingSoon: true,
-                  hideTrailing: true,
-                  onTap: () => _showLanguageSelector(),
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.currency_exchange,
-                  title: 'settings.currency'.tr,
-                  subtitle: _getCurrencySubtitle(),
-                  showComingSoon: true,
-                  hideTrailing: true,
-                  onTap: () {
-                    _showComingSoonMessage(context, 'settings.currency'.tr);
-                  },
-                ),
-              ],
-            ),
-
-            // Data & Storage Section
-            _buildExpansionPanel(
-              id: 'data',
-              title: 'settings.data_storage'.tr,
-              description: 'settings.data_storage_desc'.tr,
-              leadingIcon: Icons.storage_outlined,
-              leadingBackgroundColor: AppColors.warning.withValues(alpha: 0.1),
-              isExpanded: _isDataExpanded,
-              onExpansionChanged: (expanded) {
-                setState(() => _isDataExpanded = expanded);
-              },
-              children: [
-                SettingsTile(
-                  leadingIcon: Icons.backup_outlined,
-                  title: 'settings.backup_restore'.tr,
-                  subtitle: 'settings.backup_restore_desc'.tr,
-                  hideTrailing: true,
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.backupRestore);
-                  },
-                ),
-              ],
-            ),
-
-            // Support Section
-            _buildExpansionPanel(
-              id: 'support',
-              title: 'settings.support'.tr,
-              description: 'settings.support_desc'.tr,
-              leadingIcon: Icons.help_outline,
-              leadingBackgroundColor: AppColors.info.withValues(alpha: 0.1),
-              isExpanded: _isSupportExpanded,
-              onExpansionChanged: (expanded) {
-                setState(() => _isSupportExpanded = expanded);
-              },
-              children: [
-                SettingsTile(
-                  leadingIcon: Icons.help_center,
-                  title: 'settings.help_faq'.tr,
-                  subtitle: 'settings.help_faq_desc'.tr,
-                  showComingSoon: true,
-                  hideTrailing: true,
-                  onTap: () {
-                    _showComingSoonMessage(context, 'settings.help_faq'.tr);
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.feedback_outlined,
-                  title: 'settings.send_feedback'.tr,
-                  subtitle: 'settings.send_feedback_desc'.tr,
-                  showComingSoon: true,
-                  hideTrailing: true,
-                  onTap: () {
-                    _showComingSoonMessage(
-                      context,
-                      'settings.send_feedback'.tr,
-                    );
-                  },
-                ),
-                const Divider(height: 1, indent: 60),
-                SettingsTile(
-                  leadingIcon: Icons.info_outline,
-                  title: 'settings.about_app'.tr,
-                  subtitle: 'Version 1.0.0',
-                  hideTrailing: true,
-                  onTap: () => _showAboutDialog(),
-                ),
-              ],
-            ),
-
-            // Sign Out Button
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: AppButton.destructive(
-                label: 'settings.sign_out'.tr,
-                onPressed: _showSignOutConfirmation,
-                isFullWidth: true,
-              ),
-            ),
-
-            const SizedBox(height: AppSpacing.xxl),
-          ],
-        ),
+          final loaded = state as SettingsLoaded;
+          return _buildBody(loaded);
+        },
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // UI Builders
-  // ---------------------------------------------------------------------------
-
-  Widget _buildProfileHeader() {
-    final name = _userProfile?.name ?? 'Guest User';
-    final email = _userProfile?.email ?? 'guest@example.com';
-
-    return Container(
-      margin: const EdgeInsets.all(AppSpacing.lg),
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(AppRadius.md),
-            ),
-            child: CircleAvatar(
-              backgroundColor: Colors.white.withValues(alpha: 0.3),
-              child: Text(
-                name.isNotEmpty ? name[0].toUpperCase() : 'U',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  email,
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-              ],
-            ),
-          ),
-          InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, AppRoutes.profile);
-            },
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              child: const Icon(
-                Icons.edit,
-                color: Colors.white,
-                size: AppIconSize.sm,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExpansionPanel({
-    required String id,
-    required String title,
-    required String description,
-    required IconData leadingIcon,
-    Color? leadingBackgroundColor,
-    required bool isExpanded,
-    required ValueChanged<bool> onExpansionChanged,
-    required List<Widget> children,
-  }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
-      ),
+  Widget _buildBody(SettingsLoaded state) {
+    return SingleChildScrollView(
       child: Column(
         children: [
-          // Header (always visible)
-          InkWell(
-            onTap: () {
-              onExpansionChanged(!isExpanded);
-            },
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color:
-                          leadingBackgroundColor ?? AppColors.primaryContainer,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                    child: Icon(
-                      leadingIcon,
-                      color: leadingBackgroundColor != null
-                          ? AppColors.primary
-                          : AppColors.primary,
-                      size: AppIconSize.sm,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Text(
-                          title,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        // Info icon with tooltip
-                        GestureDetector(
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(description),
-                                backgroundColor: AppColors.primary,
-                                behavior: SnackBarBehavior.floating,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadius.md,
-                                  ),
-                                ),
-                                duration: const Duration(seconds: 3),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryContainer,
-                              borderRadius: BorderRadius.circular(
-                                AppRadius.full,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.info_outline,
-                              size: 16,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  AnimatedRotation(
-                    turns: isExpanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    child: const Icon(
-                      Icons.expand_more,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+          SettingsProfileHeader(userProfile: _userProfile),
+          const SizedBox(height: AppSpacing.lg),
+
+          // ── Account & Security ──────────────────────────────────────────
+          SettingsExpansionPanel(
+            title: 'settings.account_security'.tr,
+            description: 'settings.account_security_desc'.tr,
+            leadingIcon: Icons.security_outlined,
+            isExpanded: _isAccountExpanded,
+            onExpansionChanged: (v) => setState(() => _isAccountExpanded = v),
+            children: [
+              SettingsTile(
+                leadingIcon: Icons.person_outline,
+                title: 'settings.edit_profile'.tr,
+                subtitle: 'settings.profile_subtitle'.tr,
+                hideTrailing: true,
+                onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
               ),
+              const Divider(height: 1, indent: 60),
+              SettingsTile(
+                leadingIcon: Icons.lock_outline,
+                title: 'settings.privacy_security'.tr,
+                subtitle: 'settings.privacy_security_desc'.tr,
+                showComingSoon: true,
+                hideTrailing: true,
+                onTap: () => _showComingSoon('settings.privacy_security'.tr),
+              ),
+              const Divider(height: 1, indent: 60),
+              SettingsToggleTile(
+                leadingIcon: Icons.fingerprint,
+                title: 'settings.biometric_login'.tr,
+                subtitle: 'settings.biometric_subtitle'.tr,
+                showComingSoon: true,
+                isDisabled: true,
+                value: _biometricEnabled,
+                onChanged: (v) {
+                  setState(() => _biometricEnabled = v);
+                  _showComingSoon(
+                    v
+                        ? 'settings.biometric_enabled'.tr
+                        : 'settings.biometric_disabled'.tr,
+                  );
+                },
+              ),
+            ],
+          ),
+
+          // ── Notifications ───────────────────────────────────────────────
+          SettingsExpansionPanel(
+            title: 'settings.notifications'.tr,
+            description: 'settings.notifications_desc'.tr,
+            leadingIcon: Icons.notifications_outlined,
+            isExpanded: _isNotificationsExpanded,
+            onExpansionChanged: (v) =>
+                setState(() => _isNotificationsExpanded = v),
+            children: [
+              SettingsToggleTile(
+                leadingIcon: Icons.notifications_active,
+                title: 'settings.push_notifications'.tr,
+                subtitle: 'settings.push_notifications_desc'.tr,
+                showComingSoon: true,
+                isDisabled: true,
+                value: _notificationsEnabled,
+                onChanged: (v) => setState(() => _notificationsEnabled = v),
+              ),
+              const Divider(height: 1, indent: 60),
+              SettingsTile(
+                leadingIcon: Icons.calendar_month_outlined,
+                title: 'settings.budget_reminders'.tr,
+                subtitle: 'settings.budget_reminders_desc'.tr,
+                showComingSoon: true,
+                hideTrailing: true,
+                isDisabled: !_notificationsEnabled,
+                onTap: _notificationsEnabled
+                    ? () => _showComingSoon('settings.budget_reminders'.tr)
+                    : null,
+              ),
+            ],
+          ),
+
+          // ── Preferences ─────────────────────────────────────────────────
+          SettingsExpansionPanel(
+            title: 'settings.preferences'.tr,
+            description: 'settings.preferences_desc'.tr,
+            leadingIcon: Icons.tune,
+            leadingBackgroundColor: AppColors.secondaryContainer,
+            isExpanded: _isPreferencesExpanded,
+            onExpansionChanged: (v) =>
+                setState(() => _isPreferencesExpanded = v),
+            children: [
+              // Theme — live subtitle driven by BLoC state
+              SettingsTile(
+                leadingIcon: Icons.palette_outlined,
+                title: 'settings.theme'.tr,
+                subtitle: _themeSubtitle(state.themeMode),
+                hideTrailing: true,
+                onTap: () => _openThemeSelector(state.themeMode),
+              ),
+              const Divider(height: 1, indent: 60),
+              // Language — live subtitle driven by BLoC state
+              SettingsTile(
+                leadingIcon: Icons.language_outlined,
+                title: 'settings.language'.tr,
+                subtitle: _languageSubtitle(state.languageCode),
+                hideTrailing: true,
+                onTap: () => _openLanguageSelector(state.languageCode),
+              ),
+              const Divider(height: 1, indent: 60),
+              SettingsTile(
+                leadingIcon: Icons.currency_exchange,
+                title: 'settings.currency'.tr,
+                subtitle: 'Malaysian Ringgit (RM)',
+                showComingSoon: true,
+                hideTrailing: true,
+                onTap: () => _showComingSoon('settings.currency'.tr),
+              ),
+            ],
+          ),
+
+          // ── Data & Storage ───────────────────────────────────────────────
+          SettingsExpansionPanel(
+            title: 'settings.data_storage'.tr,
+            description: 'settings.data_storage_desc'.tr,
+            leadingIcon: Icons.storage_outlined,
+            leadingBackgroundColor: AppColors.warning.withValues(alpha: 0.1),
+            isExpanded: _isDataExpanded,
+            onExpansionChanged: (v) => setState(() => _isDataExpanded = v),
+            children: [
+              SettingsTile(
+                leadingIcon: Icons.backup_outlined,
+                title: 'settings.backup_restore'.tr,
+                subtitle: 'settings.backup_restore_desc'.tr,
+                hideTrailing: true,
+                onTap: () =>
+                    Navigator.pushNamed(context, AppRoutes.backupRestore),
+              ),
+            ],
+          ),
+
+          // ── Support ──────────────────────────────────────────────────────
+          SettingsExpansionPanel(
+            title: 'settings.support'.tr,
+            description: 'settings.support_desc'.tr,
+            leadingIcon: Icons.help_outline,
+            leadingBackgroundColor: AppColors.info.withValues(alpha: 0.1),
+            isExpanded: _isSupportExpanded,
+            onExpansionChanged: (v) => setState(() => _isSupportExpanded = v),
+            children: [
+              SettingsTile(
+                leadingIcon: Icons.help_center,
+                title: 'settings.help_faq'.tr,
+                subtitle: 'settings.help_faq_desc'.tr,
+                showComingSoon: true,
+                hideTrailing: true,
+                onTap: () => _showComingSoon('settings.help_faq'.tr),
+              ),
+              const Divider(height: 1, indent: 60),
+              SettingsTile(
+                leadingIcon: Icons.feedback_outlined,
+                title: 'settings.send_feedback'.tr,
+                subtitle: 'settings.send_feedback_desc'.tr,
+                showComingSoon: true,
+                hideTrailing: true,
+                onTap: () => _showComingSoon('settings.send_feedback'.tr),
+              ),
+              const Divider(height: 1, indent: 60),
+              SettingsTile(
+                leadingIcon: Icons.info_outline,
+                title: 'settings.about_app'.tr,
+                subtitle: 'Version 1.0.0',
+                hideTrailing: true,
+                onTap: _showAboutDialog,
+              ),
+            ],
+          ),
+
+          // ── Sign out ─────────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: AppButton.destructive(
+              label: 'settings.sign_out'.tr,
+              onPressed: _showSignOutConfirmation,
+              isFullWidth: true,
             ),
           ),
-          // Content (shown when expanded)
-          AnimatedCrossFade(
-            firstChild: const SizedBox.shrink(),
-            secondChild: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(AppRadius.md),
-                bottomRight: Radius.circular(AppRadius.md),
-              ),
-              child: Column(children: children),
-            ),
-            crossFadeState: isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 200),
-          ),
+
+          const SizedBox(height: AppSpacing.xxl),
         ],
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------------------
+  // ── Subtitle helpers (pure — no setState needed) ─────────────────────────
 
-  String _getThemeSubtitle() {
-    switch (_currentTheme) {
+  String _themeSubtitle(ThemeMode mode) {
+    switch (mode) {
       case ThemeMode.light:
         return 'Light theme';
       case ThemeMode.dark:
@@ -536,10 +297,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  String _getLanguageSubtitle() {
-    switch (_currentLanguage) {
-      case 'en':
-        return 'English';
+  String _languageSubtitle(String code) {
+    switch (code) {
       case 'ms':
         return 'Bahasa Melayu';
       case 'zh':
@@ -551,11 +310,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  String _getCurrencySubtitle() {
-    return 'Malaysian Ringgit ($_currentCurrency)';
+  // ── Dialog launchers ──────────────────────────────────────────────────────
+
+  Future<void> _openThemeSelector(ThemeMode current) async {
+    final selected = await showThemeSelectorDialog(
+      context: context,
+      currentTheme: current,
+    );
+    if (selected == null || selected == current) return;
+
+    // Dispatch → BLoC persists + emits to themeStream → MaterialApp rebuilds.
+    if (mounted) {
+      context.read<SettingsBloc>().add(ChangeThemeEvent(selected));
+      _showSuccessSnackbar('Theme changed to ${_themeSubtitle(selected)}');
+    }
   }
 
-  void _showComingSoonMessage(BuildContext context, String feature) {
+  Future<void> _openLanguageSelector(String currentCode) async {
+    final selected = await showLanguageSelectorDialog(
+      context: context,
+      currentLanguageCode: currentCode,
+    );
+    if (selected == null || selected == currentCode) return;
+
+    if (mounted) {
+      context.read<SettingsBloc>().add(ChangeLanguageEvent(selected));
+      _showSuccessSnackbar(
+        'Language changed to ${_languageSubtitle(selected)}',
+      );
+    }
+  }
+
+  // ── Snackbar / dialog helpers ─────────────────────────────────────────────
+
+  void _showComingSoon(String feature) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -578,84 +366,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Dialogs
-  // ---------------------------------------------------------------------------
-
-  Future<void> _showThemeSelector() async {
-    final themeMode = await showThemeSelectorDialog(
-      context: context,
-      currentTheme: _currentTheme,
-    );
-
-    if (themeMode != null && themeMode != _currentTheme) {
-      setState(() => _currentTheme = themeMode);
-
-      // Save theme preference
-      final prefs = PreferencesService();
-      await prefs.init();
-      final themeIndex = themeMode == ThemeMode.system
-          ? 0
-          : themeMode == ThemeMode.light
-          ? 1
-          : 2;
-      await prefs.saveTheme(themeIndex);
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Theme changed to ${_getThemeSubtitle()}',
-            style: const TextStyle(color: Colors.white),
-          ),
-          backgroundColor: AppColors.success,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
+  void _showSuccessSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message, style: const TextStyle(color: Colors.white)),
+        backgroundColor: AppColors.success,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
-      );
-    }
-  }
-
-  Future<void> _showLanguageSelector() async {
-    final languageCode = await showLanguageSelectorDialog(
-      context: context,
-      currentLanguageCode: _currentLanguage,
+      ),
     );
-
-    if (languageCode != null && languageCode != _currentLanguage) {
-      // Change the app locale and save to preferences
-      final locale = AppLocale.fromCode(languageCode);
-      await LocalizationService().setLocale(locale);
-
-      setState(() => _currentLanguage = languageCode);
-
-      // Show success message and rebuild UI
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Language changed to ${_getLanguageSubtitle()}',
-              style: const TextStyle(color: Colors.white),
-            ),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppRadius.md),
-            ),
-          ),
-        );
-
-        // Rebuild the widget to reflect new language
-        setState(() {});
-      }
-    }
   }
 
   void _showSignOutConfirmation() {
     showDialog(
       context: context,
-      builder: (dialogContext) => CustomDialog(
+      builder: (ctx) => CustomDialog(
         config: CustomDialogConfig(
           title: 'settings.sign_out'.tr,
           message: 'settings.sign_out_msg'.tr,
@@ -664,20 +391,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           buttons: [
             CustomDialogButton(
               text: 'general.cancel'.tr,
-              onPressed: () => Navigator.pop(dialogContext),
+              onPressed: () => Navigator.pop(ctx),
             ),
             CustomDialogButton(
               text: 'settings.sign_out'.tr,
               isDestructive: true,
               onPressed: () {
-                Navigator.pop(dialogContext);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('settings.signed_out'.tr),
-                    backgroundColor: AppColors.success,
-                    behavior: SnackBarBehavior.floating,
-                  ),
-                );
+                Navigator.pop(ctx);
+                _showSuccessSnackbar('settings.signed_out'.tr);
               },
             ),
           ],

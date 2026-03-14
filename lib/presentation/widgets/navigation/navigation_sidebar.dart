@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/services/document_service.dart';
 import 'package:wise_spends/data/repositories/common/impl/user_repository.dart';
@@ -235,7 +236,11 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
           children: [
             const Icon(Icons.construction_outlined, color: Colors.white),
             const SizedBox(width: AppSpacing.sm),
-            Expanded(child: Text('$feature is coming soon!')),
+            Expanded(
+              child: Text(
+                'settings.feature_coming_soon'.trWith({"feature": feature}),
+              ),
+            ),
           ],
         ),
         backgroundColor: AppColors.tertiary,

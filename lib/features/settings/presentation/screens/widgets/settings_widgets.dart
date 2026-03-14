@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
-/// Expansion panel tile for settings sections
-/// Provides collapsible/expandable sections for better organization
+/// Expansion panel tile for settings sections.
+///
+/// This widget is **fully controlled** — the parent owns the expanded state
+/// via [isExpanded] and [onExpansionChanged]. This matches the pattern used
+/// in [SettingsScreen] where each panel's bool lives in the screen's State.
 class SettingsExpansionPanel extends StatelessWidget {
   final String title;
   final String? description;
   final IconData leadingIcon;
   final Color? leadingBackgroundColor;
   final List<Widget> children;
-  final bool initiallyExpanded;
+
+  /// Whether the panel is currently expanded. Required — the parent owns this.
+  final bool isExpanded;
+
+  /// Called when the user taps the header to toggle expansion.
   final ValueChanged<bool>? onExpansionChanged;
 
   const SettingsExpansionPanel({
@@ -21,7 +29,7 @@ class SettingsExpansionPanel extends StatelessWidget {
     required this.leadingIcon,
     this.leadingBackgroundColor,
     required this.children,
-    this.initiallyExpanded = false,
+    required this.isExpanded,
     this.onExpansionChanged,
   });
 
@@ -39,12 +47,14 @@ class SettingsExpansionPanel extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header (always visible)
+          // ── Header (always visible) ──────────────────────────────────────
           InkWell(
-            onTap: () {
-              // Expansion is handled by ExpansionPanelList
-            },
-            borderRadius: BorderRadius.circular(AppRadius.md),
+            onTap: () => onExpansionChanged?.call(!isExpanded),
+            borderRadius: isExpanded
+                ? const BorderRadius.vertical(
+                    top: Radius.circular(AppRadius.md),
+                  )
+                : BorderRadius.circular(AppRadius.md),
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.md),
               child: Row(
@@ -54,8 +64,8 @@ class SettingsExpansionPanel extends StatelessWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: leadingBackgroundColor ??
-                          AppColors.primaryContainer,
+                      color:
+                          leadingBackgroundColor ?? AppColors.primaryContainer,
                       borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Icon(
@@ -65,7 +75,7 @@ class SettingsExpansionPanel extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
-                  // Title and description
+                  // Title + optional description
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,24 +99,35 @@ class SettingsExpansionPanel extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Expand/collapse indicator
-                  const Icon(
-                    Icons.expand_more,
-                    color: AppColors.textSecondary,
+                  // Animated chevron
+                  AnimatedRotation(
+                    turns: isExpanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeInOut,
+                    child: const Icon(
+                      Icons.expand_more,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          // Content (shown when expanded)
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(AppRadius.md),
-              bottomRight: Radius.circular(AppRadius.md),
+          // ── Collapsible content ──────────────────────────────────────────
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(AppRadius.md),
+                bottomRight: Radius.circular(AppRadius.md),
+              ),
+              child: Column(children: children),
             ),
-            child: Column(
-              children: children,
-            ),
+            crossFadeState: isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 220),
+            sizeCurve: Curves.easeInOut,
           ),
         ],
       ),
@@ -114,15 +135,14 @@ class SettingsExpansionPanel extends StatelessWidget {
   }
 }
 
-/// Enhanced settings tile with modern Material 3 design
-/// Supports:
-/// - Leading icon with customizable background
-/// - Title and subtitle
-/// - Trailing widget (chevron, toggle, or custom)
-/// - 'Coming Soon' badge for unimplemented features
-/// - Destructive action styling
-/// - Disabled state
-/// - Option to hide trailing chevron
+// ────────────────────────────────────────────────────────────────────────────
+// SettingsTile
+// ────────────────────────────────────────────────────────────────────────────
+
+/// Enhanced settings tile with Material 3 design.
+///
+/// Supports leading icon, title/subtitle, coming-soon badge, destructive
+/// style, disabled state, and an optional custom trailing widget.
 class SettingsTile extends StatelessWidget {
   final IconData leadingIcon;
   final String title;
@@ -153,12 +173,10 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveOnTap = isDisabled ? null : onTap;
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: effectiveOnTap,
+        onTap: isDisabled ? null : onTap,
         borderRadius: BorderRadius.circular(AppRadius.md),
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -167,12 +185,13 @@ class SettingsTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Leading icon container
+              // Leading icon
               Container(
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: leadingBackgroundColor ??
+                  color:
+                      leadingBackgroundColor ??
                       (isDestructive
                           ? AppColors.secondary.withValues(alpha: 0.1)
                           : AppColors.primaryContainer),
@@ -180,15 +199,14 @@ class SettingsTile extends StatelessWidget {
                 ),
                 child: Icon(
                   leadingIcon,
-                  color: leadingIconColor ??
-                      (isDestructive
-                          ? AppColors.secondary
-                          : AppColors.primary),
+                  color:
+                      leadingIconColor ??
+                      (isDestructive ? AppColors.secondary : AppColors.primary),
                   size: AppIconSize.md,
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
-              // Title and subtitle
+              // Title + subtitle
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,7 +229,7 @@ class SettingsTile extends StatelessWidget {
                         ),
                         if (showComingSoon) ...[
                           const SizedBox(width: AppSpacing.sm),
-                          _ComingSoonBadge(),
+                          const _ComingSoonBadge(),
                         ],
                       ],
                     ),
@@ -232,17 +250,16 @@ class SettingsTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              // Trailing widget
-              hideTrailing
-                  ? const SizedBox.shrink()
-                  : (trailing ??
-                      Icon(
-                        Icons.chevron_right,
-                        color: isDisabled
-                            ? AppColors.textDisabled
-                            : AppColors.textSecondary,
-                        size: AppIconSize.md,
-                      )),
+              // Trailing
+              if (!hideTrailing)
+                trailing ??
+                    Icon(
+                      Icons.chevron_right,
+                      color: isDisabled
+                          ? AppColors.textDisabled
+                          : AppColors.textSecondary,
+                      size: AppIconSize.md,
+                    ),
             ],
           ),
         ),
@@ -251,38 +268,11 @@ class SettingsTile extends StatelessWidget {
   }
 }
 
-/// 'Coming Soon' badge widget
-class _ComingSoonBadge extends StatelessWidget {
-  const _ComingSoonBadge();
+// ────────────────────────────────────────────────────────────────────────────
+// SettingsToggleTile
+// ────────────────────────────────────────────────────────────────────────────
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: 2,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.tertiaryContainer,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(
-          color: AppColors.tertiary.withValues(alpha: 0.3),
-          width: 1,
-        ),
-      ),
-      child: Text(
-        'Coming Soon',
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-          color: AppColors.tertiaryDark,
-        ),
-      ),
-    );
-  }
-}
-
-/// Settings tile with switch toggle
+/// Settings tile with a [Switch] as the trailing widget.
 class SettingsToggleTile extends StatefulWidget {
   final IconData leadingIcon;
   final String title;
@@ -291,6 +281,7 @@ class SettingsToggleTile extends StatefulWidget {
   final ValueChanged<bool>? onChanged;
   final bool isDisabled;
   final Color? leadingBackgroundColor;
+  final bool showComingSoon;
 
   const SettingsToggleTile({
     super.key,
@@ -301,6 +292,7 @@ class SettingsToggleTile extends StatefulWidget {
     this.onChanged,
     this.isDisabled = false,
     this.leadingBackgroundColor,
+    this.showComingSoon = false,
   });
 
   @override
@@ -317,6 +309,15 @@ class _SettingsToggleTileState extends State<SettingsToggleTile> {
   }
 
   @override
+  void didUpdateWidget(SettingsToggleTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Keep local state in sync if the parent passes a new value.
+    if (oldWidget.value != widget.value) {
+      _isOn = widget.value;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -325,13 +326,13 @@ class _SettingsToggleTileState extends State<SettingsToggleTile> {
       ),
       child: Row(
         children: [
-          // Leading icon container
+          // Leading icon
           Container(
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: widget.leadingBackgroundColor ??
-                  AppColors.primaryContainer,
+              color:
+                  widget.leadingBackgroundColor ?? AppColors.primaryContainer,
               borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Icon(
@@ -341,19 +342,29 @@ class _SettingsToggleTileState extends State<SettingsToggleTile> {
             ),
           ),
           const SizedBox(width: AppSpacing.md),
-          // Title and subtitle
+          // Title + badge + subtitle
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  widget.title,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: widget.isDisabled
-                        ? AppColors.textDisabled
-                        : AppColors.textPrimary,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.title,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: widget.isDisabled
+                              ? AppColors.textDisabled
+                              : AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                    if (widget.showComingSoon) ...[
+                      const SizedBox(width: AppSpacing.sm),
+                      const _ComingSoonBadge(),
+                    ],
+                  ],
                 ),
                 if (widget.subtitle != null) ...[
                   const SizedBox(height: 2),
@@ -385,6 +396,37 @@ class _SettingsToggleTileState extends State<SettingsToggleTile> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// _ComingSoonBadge (private)
+// ────────────────────────────────────────────────────────────────────────────
+
+class _ComingSoonBadge extends StatelessWidget {
+  const _ComingSoonBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.tertiaryContainer,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        'settings.coming_soon'.tr,
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: AppColors.tertiaryDark,
+        ),
       ),
     );
   }

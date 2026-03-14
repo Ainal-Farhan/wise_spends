@@ -11,14 +11,14 @@ class NotificationsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('home.notifications'.tr)),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.notifications_none, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text(
-              'Coming soon',
+              'settings.coming_soon'.tr,
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
           ],

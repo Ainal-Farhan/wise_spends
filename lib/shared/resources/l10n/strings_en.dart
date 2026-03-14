@@ -570,6 +570,7 @@ class EnglishStrings {
     'settings.push_notifications_desc':
         'Receive transaction alerts and reminders',
     'settings.budget_reminders': 'Budget Reminders',
+    'settings.currency': 'Currency',
     'settings.budget_reminders_desc':
         'Get notified when approaching budget limits',
     'settings.backup_restore': 'Backup & Restore',

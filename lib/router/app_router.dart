@@ -50,6 +50,8 @@ abstract class AppRouter {
 
   static final RouteObserver<ModalRoute<void>> budgetPlanRouteObserver =
       RouteObserver<ModalRoute<void>>();
+  static final RouteObserver<ModalRoute> homeRouteObserver =
+      RouteObserver<ModalRoute>();
 
   /// Generate route with typed arguments
   static Route<dynamic> generateRoute(RouteSettings settings) {

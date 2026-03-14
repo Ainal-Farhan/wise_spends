@@ -2,11 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wise_spends/features/home/presentation/screens/widgets/add_transaction_sheet.dart';
-import 'package:wise_spends/features/home/presentation/screens/widgets/home_app_bar.dart';
-import 'package:wise_spends/features/home/presentation/screens/widgets/home_balance_section.dart';
-import 'package:wise_spends/features/home/presentation/screens/widgets/home_quick_actions.dart';
-import 'package:wise_spends/features/home/presentation/screens/widgets/home_transaction_section.dart';
 import 'package:wise_spends/features/saving/data/repositories/i_saving_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
 import 'package:wise_spends/features/commitment/data/repositories/impl/commitment_task_repository.dart';
@@ -15,9 +10,16 @@ import 'package:wise_spends/features/transaction/presentation/bloc/transaction_b
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_event.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_state.dart';
 import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
+import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+
+import 'widgets/add_transaction_sheet.dart';
+import 'widgets/home_app_bar.dart';
+import 'widgets/home_balance_section.dart';
+import 'widgets/home_quick_actions.dart';
+import 'widgets/home_transaction_section.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -46,7 +48,8 @@ class _HomeScreenContent extends StatefulWidget {
   State<_HomeScreenContent> createState() => _HomeScreenContentState();
 }
 
-class _HomeScreenContentState extends State<_HomeScreenContent> {
+class _HomeScreenContentState extends State<_HomeScreenContent>
+    with RouteAware {
   int _pendingTaskCount = 0;
   StreamSubscription? _taskStreamSubscription;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -59,20 +62,41 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
     _setupNavigationListener();
   }
 
-  /// Subscribes to the live stream from Drift so any insert/update/delete
-  /// on the commitment task table immediately updates the badge count —
-  /// no manual refresh needed.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Subscribe to the global RouteObserver so this State receives
+    // didPopNext() whenever any screen pushed on top of home is popped.
+    AppRouter.homeRouteObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  // ── RouteAware callbacks ───────────────────────────────────────────────────
+
+  /// Fired when the user presses the back button / top-bar back arrow
+  /// on any screen that was pushed on top of this one, revealing home again.
+  @override
+  void didPopNext() => _refreshTransactions();
+
+  // ── Internal helpers ───────────────────────────────────────────────────────
+
+  /// Single source-of-truth for triggering a data refresh.
+  void _refreshTransactions() {
+    if (mounted) {
+      context.read<TransactionBloc>().add(RefreshTransactionsEvent());
+    }
+  }
+
+  /// Subscribes to the live Drift stream so any insert/update/delete on the
+  /// commitment task table immediately updates the badge — no polling needed.
   void _subscribeToTaskStream() {
     _taskStreamSubscription = _repository
         .watchAll(false) // false = pending (not done) tasks
         .listen(
           (tasks) {
-            if (mounted) {
-              setState(() => _pendingTaskCount = tasks.length);
-            }
+            if (mounted) setState(() => _pendingTaskCount = tasks.length);
           },
           onError: (_) {
-            // Silently swallow errors; badge stays at last known value
+            // Silently ignore; badge retains last known value.
           },
         );
   }
@@ -80,31 +104,26 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
   void _setupNavigationListener() {
     context.read<NavigationBloc>().stream.listen((state) {
       if (state is DashboardRefreshRequested || state is NavigationNavigating) {
-        Future.delayed(const Duration(milliseconds: 300), () {
-          if (mounted) {
-            context.read<TransactionBloc>().add(RefreshTransactionsEvent());
-          }
-        });
+        Future.delayed(const Duration(milliseconds: 300), _refreshTransactions);
       }
     });
   }
 
   @override
   void dispose() {
+    AppRouter.homeRouteObserver.unsubscribe(this);
     _taskStreamSubscription?.cancel();
     super.dispose();
   }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: AppColors.background,
-      drawer: NavigationSidebar(
-        onNavigate: () {
-          context.read<TransactionBloc>().add(RefreshTransactionsEvent());
-        },
-      ),
+      drawer: NavigationSidebar(onNavigate: _refreshTransactions),
       body: BlocListener<NavigationBloc, NavigationState>(
         listener: (context, state) {
           if (state is NavigationNavigating) {
@@ -112,9 +131,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
           }
         },
         child: RefreshIndicator(
-          onRefresh: () async {
-            context.read<TransactionBloc>().add(RefreshTransactionsEvent());
-          },
+          onRefresh: () async => _refreshTransactions(),
           child: CustomScrollView(
             slivers: [
               HomeAppBar(
@@ -132,7 +149,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _BalanceOverview(),
+                      const _BalanceOverview(),
                       const SizedBox(height: AppSpacing.xxl),
                       const HomeQuickActions(),
                       const SizedBox(height: AppSpacing.xxl),
@@ -156,9 +173,11 @@ class _HomeScreenContentState extends State<_HomeScreenContent> {
   }
 }
 
-/// Reads from [TransactionBloc] and renders [HomeBalanceSection]
-/// or its shimmer placeholder depending on state.
+// ── Balance overview ──────────────────────────────────────────────────────────
+
 class _BalanceOverview extends StatelessWidget {
+  const _BalanceOverview();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TransactionBloc, TransactionState>(
@@ -182,6 +201,8 @@ class _BalanceOverview extends StatelessWidget {
     );
   }
 }
+
+// ── FAB ───────────────────────────────────────────────────────────────────────
 
 class _HomeFAB extends StatelessWidget {
   final VoidCallback onPressed;
