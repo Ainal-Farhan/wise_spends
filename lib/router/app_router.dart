@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/features/commitment/presentation/screens/commitment_screen.dart';
-import 'package:wise_spends/features/auth/presentation/screens/home_screen.dart';
+import 'package:wise_spends/features/home/presentation/screens/home_screen.dart';
 import 'package:wise_spends/features/auth/presentation/screens/ui/login_page.dart';
 import 'package:wise_spends/features/auth/presentation/screens/profile_screen.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/backup_restore_screen.dart';

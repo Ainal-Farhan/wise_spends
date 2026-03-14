@@ -752,6 +752,8 @@ class MalayStrings {
     'commitment_tasks.select_target': 'Pilih akaun sasaran',
     'commitment_tasks.select_payee': 'Pilih penerima bayaran',
     'commitment_tasks.no_payees': 'Tiada penerima bayaran ditemui',
+    'transaction.surplus': 'Lebihan',
+    'transaction.deficit': 'Defisit',
 
     // Transaction Screens
     'transaction.detail.title': 'Butiran Transaksi',

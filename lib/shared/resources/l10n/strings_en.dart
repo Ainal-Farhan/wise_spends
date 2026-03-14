@@ -778,6 +778,8 @@ class EnglishStrings {
     'commitment_tasks.select_target': 'Select target account',
     'commitment_tasks.select_payee': 'Select payee',
     'commitment_tasks.no_payees': 'No payees found',
+    'transaction.surplus': 'Surplus',
+    'transaction.deficit': 'Deficit',
 
     // Transaction Screens
     'transaction.detail.title': 'Transaction Details',
@@ -1193,7 +1195,8 @@ class EnglishStrings {
 
     // ── Edit mode ─────────────────────────────────────────────────────────────
     'transaction.edit_mode.title': 'Editing Transaction',
-    'transaction.edit_mode.subtitle': 'Some fields are locked to prevent accidental changes',
+    'transaction.edit_mode.subtitle':
+        'Some fields are locked to prevent accidental changes',
     'transaction.edit.locked_fields_info':
         'Type, amount, and account cannot be changed after a transaction is saved.',
 
