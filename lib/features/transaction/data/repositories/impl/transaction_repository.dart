@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/data/db/app_database.dart';
+import 'package:wise_spends/data/db/domain/transaction/transaction_table.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/features/widget/presentation/services/widget_service.dart';
@@ -22,12 +23,34 @@ class TransactionRepository extends ITransactionRepository {
   }
 
   // ---------------------------------------------------------------------------
+  // Ordering — shared helper
+  // ---------------------------------------------------------------------------
+
+  /// Standard sort applied to every fetch:
+  ///   1. transactionDateTime DESC — NULL rows sort first (newest-feeling)
+  ///   2. dateCreated DESC         — stable tiebreaker when datetime is equal
+  ///                                 or both are null
+  ///
+  /// The lambda type must match the Drift-generated table class
+  /// [$TransactionTableTable], not the companion/table-definition [TransactionTable].
+  List<OrderingTerm Function($TransactionTableTable)> get _defaultOrder => [
+    (tbl) => OrderingTerm(
+      expression: tbl.transactionDateTime,
+      mode: OrderingMode.desc,
+      nulls: NullsOrder.first,
+    ),
+    (tbl) => OrderingTerm.desc(tbl.dateCreated),
+  ];
+
+  // ---------------------------------------------------------------------------
   // Fetch — all / recent
   // ---------------------------------------------------------------------------
 
   @override
   Future<List<TransactionEntity>> fetchAll() async {
-    final rows = await db.select(db.transactionTable).get();
+    final rows = await (db.select(
+      db.transactionTable,
+    )..orderBy(_defaultOrder)).get();
     return rows.map(_toEntity).toList();
   }
 
@@ -35,7 +58,7 @@ class TransactionRepository extends ITransactionRepository {
   Future<List<TransactionEntity>> fetchRecent({int limit = 10}) async {
     final rows =
         await (db.select(db.transactionTable)
-              ..orderBy([(tbl) => OrderingTerm.desc(tbl.dateCreated)])
+              ..orderBy(_defaultOrder)
               ..limit(limit))
             .get();
     return rows.map(_toEntity).toList();
@@ -51,28 +74,41 @@ class TransactionRepository extends ITransactionRepository {
     required DateTime to,
   }) async {
     final rows =
-        await (db.select(db.transactionTable)..where(
-              (tbl) =>
-                  tbl.dateCreated.isBiggerOrEqualValue(from) &
-                  tbl.dateCreated.isSmallerOrEqualValue(to),
-            ))
+        await (db.select(db.transactionTable)
+              ..where(
+                (tbl) =>
+                    // Filter on transactionDateTime when present, fall back to
+                    // dateCreated for rows where the user didn't set a date.
+                    (tbl.transactionDateTime.isBiggerOrEqualValue(from) |
+                            tbl.transactionDateTime.isNull()) &
+                        (tbl.transactionDateTime.isSmallerOrEqualValue(to) |
+                            tbl.transactionDateTime.isNull()) |
+                    (tbl.transactionDateTime.isNull() &
+                        tbl.dateCreated.isBiggerOrEqualValue(from) &
+                        tbl.dateCreated.isSmallerOrEqualValue(to)),
+              )
+              ..orderBy(_defaultOrder))
             .get();
     return rows.map(_toEntity).toList();
   }
 
   @override
   Future<List<TransactionEntity>> fetchByType(TransactionType type) async {
-    final rows = await (db.select(
-      db.transactionTable,
-    )..where((tbl) => tbl.type.equals(type.name))).get();
+    final rows =
+        await (db.select(db.transactionTable)
+              ..where((tbl) => tbl.type.equals(type.name))
+              ..orderBy(_defaultOrder))
+            .get();
     return rows.map(_toEntity).toList();
   }
 
   @override
   Future<List<TransactionEntity>> fetchByCategory(String categoryId) async {
-    final rows = await (db.select(
-      db.transactionTable,
-    )..where((tbl) => tbl.categoryId.equals(categoryId))).get();
+    final rows =
+        await (db.select(db.transactionTable)
+              ..where((tbl) => tbl.categoryId.equals(categoryId))
+              ..orderBy(_defaultOrder))
+            .get();
     return rows.map(_toEntity).toList();
   }
 
@@ -82,11 +118,12 @@ class TransactionRepository extends ITransactionRepository {
 
   @override
   Future<TransactionEntity?> fetchById(String transactionId) async {
-    final rows = await (db.select(
-      db.transactionTable,
-    )..where((tbl) => tbl.id.equals(transactionId))).get();
-    if (rows.isEmpty) return null;
-    return _toEntity(rows.first);
+    final row =
+        await (db.select(db.transactionTable)
+              ..where((tbl) => tbl.id.equals(transactionId))
+              ..limit(1))
+            .getSingleOrNull();
+    return row != null ? _toEntity(row) : null;
   }
 
   // ---------------------------------------------------------------------------
@@ -106,7 +143,7 @@ class TransactionRepository extends ITransactionRepository {
                   tbl.dateCreated.isSmallerOrEqualValue(to),
             ))
             .get();
-    return rows.fold(0.0, (sum, row) async => await sum + row.amount);
+    return rows.fold<double>(0.0, (sum, row) => sum + row.amount);
   }
 
   @override
@@ -122,7 +159,7 @@ class TransactionRepository extends ITransactionRepository {
                   tbl.dateCreated.isSmallerOrEqualValue(to),
             ))
             .get();
-    return rows.fold(0.0, (sum, row) async => await sum + row.amount);
+    return rows.fold<double>(0.0, (sum, row) => sum + row.amount);
   }
 
   // ---------------------------------------------------------------------------
@@ -152,7 +189,6 @@ class TransactionRepository extends ITransactionRepository {
     );
 
     await db.into(db.transactionTable).insert(companion);
-
     await WidgetService.updateLastTransaction(transaction);
     return transaction;
   }
@@ -181,7 +217,6 @@ class TransactionRepository extends ITransactionRepository {
     )..where((tbl) => tbl.id.equals(transaction.id))).write(companion);
 
     await WidgetService.updateLastTransaction(transaction);
-
     return transaction;
   }
 
@@ -198,8 +233,10 @@ class TransactionRepository extends ITransactionRepository {
 
   @override
   Future<List<TransactionEntity>> searchByKeyword(String keyword) async {
-    final rows = await db.select(db.transactionTable).get();
     final lower = keyword.toLowerCase();
+    final rows = await (db.select(
+      db.transactionTable,
+    )..orderBy(_defaultOrder)).get();
     return rows
         .where(
           (row) =>
