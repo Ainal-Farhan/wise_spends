@@ -1,6 +1,5 @@
 // FIXED: Extracted from budget_list_screen.dart to reduce file size
 import 'package:flutter/material.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 
 /// Budget category icon widget
@@ -13,12 +12,12 @@ class BudgetCategoryIcon extends StatelessWidget {
       width: AppTouchTarget.min,
       height: AppTouchTarget.min,
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
-      child: const Icon(
+      child: Icon(
         Icons.shopping_bag_outlined,
-        color: AppColors.primary,
+        color: Theme.of(context).colorScheme.primary,
         size: AppIconSize.lg,
       ),
     );

@@ -14,7 +14,6 @@ import 'package:wise_spends/features/budget/presentation/widgets/budget_card.dar
 import 'package:wise_spends/features/category/data/repositories/impl/category_repository.dart';
 import 'package:wise_spends/features/category/presentation/bloc/category_bloc.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -155,10 +154,10 @@ class _BudgetListScreenContent extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.error_outline,
                   size: 48,
-                  color: AppColors.error,
+                  color: Theme.of(context).colorScheme.error,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 Text(
@@ -180,9 +179,7 @@ class _BudgetListScreenContent extends StatelessWidget {
       );
     }
 
-    return const SliverToBoxAdapter(
-      child: SizedBox.shrink(),
-    );
+    return const SliverToBoxAdapter(child: SizedBox.shrink());
   }
 
   void _showFilterBottomSheet(BuildContext context) {
@@ -225,8 +222,8 @@ class BudgetFilterBottomSheet extends StatelessWidget {
 
         return Container(
           padding: const EdgeInsets.all(AppSpacing.xxl),
-          decoration: const BoxDecoration(
-            color: AppColors.background,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppRadius.xxl),
             ),
@@ -240,7 +237,7 @@ class BudgetFilterBottomSheet extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.divider,
+                    color: Theme.of(context).colorScheme.outline,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -317,11 +314,13 @@ class _FilterChip extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.primary.withValues(alpha: 0.1)
-                : AppColors.surface,
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.md),
             border: Border.all(
-              color: selected ? AppColors.primary : AppColors.divider,
+              color: selected
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.outline,
               width: selected ? 2 : 1,
             ),
           ),
@@ -329,14 +328,18 @@ class _FilterChip extends StatelessWidget {
             children: [
               Icon(
                 selected ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: selected ? AppColors.primary : AppColors.textSecondary,
+                color: selected
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 20,
               ),
               const SizedBox(width: AppSpacing.md),
               Text(
                 label,
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: selected ? AppColors.primary : AppColors.textPrimary,
+                  color: selected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurface,
                   fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),

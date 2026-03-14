@@ -5,7 +5,6 @@ import 'package:wise_spends/domain/models/backup_file_info.dart';
 import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 
 import 'backup_empty_history.dart';
@@ -87,7 +86,7 @@ class _HistoryTabState extends State<HistoryTab>
             'name': backup.fileName,
           }),
           icon: Icons.delete_outline_rounded,
-          iconColor: AppColors.error,
+          iconColor: Theme.of(context).colorScheme.error,
           buttons: [
             CustomDialogButton(
               text: BackupRestoreKeys.dialogCancel.tr,
@@ -119,7 +118,7 @@ class _HistoryTabState extends State<HistoryTab>
             'name': backup.fileName,
           }),
           icon: Icons.warning_amber_rounded,
-          iconColor: AppColors.warning,
+          iconColor: Theme.of(context).colorScheme.tertiary,
           buttons: [
             CustomDialogButton(
               text: BackupRestoreKeys.dialogCancel.tr,

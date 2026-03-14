@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/budget/domain/entities/budget_entity.dart';
 import 'package:wise_spends/features/budget/presentation/bloc/budget_state.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -54,10 +53,10 @@ class BudgetFilterChipRow extends StatelessWidget {
                 final next = selected ? null : periods[i];
                 onFilterSelected(next);
               },
-              selectedColor: AppColors.tertiary.withValues(alpha: 0.2),
-              checkmarkColor: AppColors.tertiary,
+              selectedColor: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.2),
+              checkmarkColor: Theme.of(context).colorScheme.tertiary,
               labelStyle: AppTextStyles.labelSmall.copyWith(
-                color: selected ? AppColors.tertiary : AppColors.textSecondary,
+                color: selected ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
               ),
               visualDensity: VisualDensity.compact,

@@ -11,7 +11,6 @@ import 'package:wise_spends/features/settings/presentation/screens/widgets/setti
 import 'package:wise_spends/features/settings/presentation/screens/widgets/settings_widgets.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -57,7 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
         title: Text('settings.title'.tr),
         centerTitle: true,
@@ -177,7 +176,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'settings.preferences'.tr,
             description: 'settings.preferences_desc'.tr,
             leadingIcon: Icons.tune,
-            leadingBackgroundColor: AppColors.secondaryContainer,
+            leadingBackgroundColor: Theme.of(context).colorScheme.secondaryContainer,
             isExpanded: _isPreferencesExpanded,
             onExpansionChanged: (v) =>
                 setState(() => _isPreferencesExpanded = v),
@@ -216,7 +215,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'settings.data_storage'.tr,
             description: 'settings.data_storage_desc'.tr,
             leadingIcon: Icons.storage_outlined,
-            leadingBackgroundColor: AppColors.warning.withValues(alpha: 0.1),
+            leadingBackgroundColor: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.1),
             isExpanded: _isDataExpanded,
             onExpansionChanged: (v) => setState(() => _isDataExpanded = v),
             children: [
@@ -236,7 +235,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'settings.support'.tr,
             description: 'settings.support_desc'.tr,
             leadingIcon: Icons.help_outline,
-            leadingBackgroundColor: AppColors.info.withValues(alpha: 0.1),
+            leadingBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             isExpanded: _isSupportExpanded,
             onExpansionChanged: (v) => setState(() => _isSupportExpanded = v),
             children: [
@@ -357,7 +356,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ],
         ),
-        backgroundColor: AppColors.tertiary,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -370,7 +369,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: const TextStyle(color: Colors.white)),
-        backgroundColor: AppColors.success,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -387,7 +386,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           title: 'settings.sign_out'.tr,
           message: 'settings.sign_out_msg'.tr,
           icon: Icons.logout,
-          iconColor: AppColors.tertiary,
+          iconColor: Theme.of(context).colorScheme.tertiary,
           buttons: [
             CustomDialogButton(
               text: 'general.cancel'.tr,
@@ -416,7 +415,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         width: AppTouchTarget.min,
         height: AppTouchTarget.min,
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: const Icon(Icons.account_balance_wallet, color: Colors.white),

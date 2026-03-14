@@ -12,7 +12,6 @@ import 'package:wise_spends/features/transaction/presentation/bloc/transaction_s
 import 'package:wise_spends/presentation/widgets/components/transaction_card.dart';
 import 'package:wise_spends/router/route_arguments.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
@@ -375,9 +374,9 @@ class _TransactionHistoryScreenContentState
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
@@ -404,7 +403,9 @@ class _TransactionHistoryScreenContentState
                   decimalDigits: 2,
                 ).format(netAmount),
                 style: AppTextStyles.amountSmall.copyWith(
-                  color: netAmount >= 0 ? AppColors.income : AppColors.expense,
+                  color: netAmount >= 0
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.secondary,
                 ),
               ),
 
@@ -424,7 +425,7 @@ class _TransactionHistoryScreenContentState
                     Icon(
                       TransactionType.transfer.icon,
                       size: 10,
-                      color: TransactionType.transfer.color,
+                      color: TransactionType.transfer.getColor(context),
                     ),
                     const SizedBox(width: 3),
                     Text(
@@ -433,7 +434,7 @@ class _TransactionHistoryScreenContentState
                         decimalDigits: 2,
                       ).format(totalTransfer),
                       style: AppTextStyles.captionSmall.copyWith(
-                        color: TransactionType.transfer.color,
+                        color: TransactionType.transfer.getColor(context),
                       ),
                     ),
                   ],
@@ -447,7 +448,7 @@ class _TransactionHistoryScreenContentState
                     Icon(
                       TransactionType.commitment.icon,
                       size: 10,
-                      color: TransactionType.commitment.color,
+                      color: TransactionType.commitment.getColor(context),
                     ),
                     const SizedBox(width: 3),
                     Text(
@@ -456,7 +457,7 @@ class _TransactionHistoryScreenContentState
                         decimalDigits: 2,
                       ).format(totalCommitment),
                       style: AppTextStyles.captionSmall.copyWith(
-                        color: TransactionType.commitment.color,
+                        color: TransactionType.commitment.getColor(context),
                       ),
                     ),
                   ],
@@ -503,13 +504,21 @@ class _TransactionHistoryScreenContentState
             vertical: AppSpacing.sm,
           ),
           decoration: BoxDecoration(
-            color: AppColors.primaryContainer,
+            color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(AppRadius.sm),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.2),
+            ),
           ),
           child: Row(
             children: [
-              const Icon(Icons.filter_alt, size: 14, color: AppColors.primary),
+              Icon(
+                Icons.filter_alt,
+                size: 14,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(width: AppSpacing.xs),
               Expanded(
                 child: Wrap(
@@ -518,7 +527,7 @@ class _TransactionHistoryScreenContentState
                     if (state.filterType != null)
                       ActiveFilterChip(
                         label: state.filterType!.label,
-                        color: state.filterType!.color,
+                        color: state.filterType!.getColor(context),
                         onRemove: () => context.read<TransactionBloc>().add(
                           FilterTransactionsByTypeEvent(null),
                         ),
@@ -526,7 +535,7 @@ class _TransactionHistoryScreenContentState
                     if (state.dateRangeLabel != null)
                       ActiveFilterChip(
                         label: state.dateRangeLabel!,
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         onRemove: () => context.read<TransactionBloc>().add(
                           FilterTransactionsByDateRangeEvent(),
                         ),
@@ -535,7 +544,7 @@ class _TransactionHistoryScreenContentState
                         state.searchQuery!.isNotEmpty)
                       ActiveFilterChip(
                         label: '"${state.searchQuery}"',
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         onRemove: () {
                           context.read<TransactionBloc>().add(
                             ClearSearchEvent(),
@@ -559,7 +568,7 @@ class _TransactionHistoryScreenContentState
                 child: Text(
                   'Clear all',
                   style: AppTextStyles.labelSmall.copyWith(
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -586,8 +595,8 @@ class _TransactionHistoryScreenContentState
           maxChildSize: 0.95,
           expand: false,
           builder: (ctx, scrollController) => Container(
-            decoration: const BoxDecoration(
-              color: AppColors.background,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(AppRadius.xxl),
               ),
@@ -601,7 +610,7 @@ class _TransactionHistoryScreenContentState
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppColors.divider,
+                      color: Theme.of(context).colorScheme.outline,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -746,7 +755,7 @@ class _TransactionHistoryScreenContentState
                           label: 'All Transactions',
                           type: null,
                           icon: Icons.all_inclusive,
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         ...TransactionType.values.expand(
                           (t) => [
@@ -755,7 +764,7 @@ class _TransactionHistoryScreenContentState
                               label: t.label,
                               type: t,
                               icon: t.icon,
-                              color: t.color,
+                              color: t.getColor(context),
                             ),
                             const SizedBox(height: AppSpacing.xs),
                           ],
@@ -808,19 +817,25 @@ class _TransactionHistoryScreenContentState
             ),
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppColors.primary
-                  : AppColors.primary.withValues(alpha: 0.07),
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.07),
               borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(
                 color: isSelected
-                    ? AppColors.primary
-                    : AppColors.primary.withValues(alpha: 0.2),
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
             child: Text(
               label,
               style: AppTextStyles.labelMedium.copyWith(
-                color: isSelected ? Colors.white : AppColors.primary,
+                color: isSelected
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -884,8 +899,8 @@ class _TransactionHistoryScreenContentState
       builder: (ctx) => BlocProvider.value(
         value: bloc,
         child: Container(
-          decoration: const BoxDecoration(
-            color: AppColors.background,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.vertical(
               top: Radius.circular(AppRadius.xxl),
             ),
@@ -905,7 +920,7 @@ class _TransactionHistoryScreenContentState
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.divider,
+                    color: Theme.of(context).colorScheme.outline,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

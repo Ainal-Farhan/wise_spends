@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// A labelled icon + value row used inside detail bottom sheets.
 ///
@@ -28,7 +27,7 @@ class DetailRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: WiseSpendsColors.textSecondary),
+          Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
@@ -37,7 +36,7 @@ class DetailRow extends StatelessWidget {
                 Text(
                   label,
                   style: AppTextStyles.caption.copyWith(
-                    color: WiseSpendsColors.textHint,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 const SizedBox(height: 2),

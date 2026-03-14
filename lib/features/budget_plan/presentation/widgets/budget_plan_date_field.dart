@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Date picker field widget
 class BudgetPlanDateField extends StatelessWidget {
@@ -40,12 +39,12 @@ class BudgetPlanDateField extends StatelessWidget {
           vertical: AppSpacing.md,
         ),
         decoration: BoxDecoration(
-          color: WiseSpendsColors.surface,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: selectedDate != null
-                ? WiseSpendsColors.primary.withValues(alpha: 0.4)
-                : WiseSpendsColors.divider,
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
+                : Theme.of(context).colorScheme.outline,
           ),
         ),
         child: Row(
@@ -54,15 +53,19 @@ class BudgetPlanDateField extends StatelessWidget {
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: selectedDate != null
-                    ? WiseSpendsColors.primary.withValues(alpha: 0.1)
-                    : WiseSpendsColors.divider.withValues(alpha: 0.5),
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1)
+                    : Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Icon(
                 Icons.calendar_today_outlined,
                 color: selectedDate != null
-                    ? WiseSpendsColors.primary
-                    : WiseSpendsColors.textSecondary,
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 16,
               ),
             ),
@@ -74,7 +77,7 @@ class BudgetPlanDateField extends StatelessWidget {
                   Text(
                     label,
                     style: AppTextStyles.caption.copyWith(
-                      color: WiseSpendsColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -88,8 +91,8 @@ class BudgetPlanDateField extends StatelessWidget {
                           ? FontWeight.w600
                           : FontWeight.normal,
                       color: selectedDate != null
-                          ? WiseSpendsColors.textPrimary
-                          : WiseSpendsColors.textHint,
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context).colorScheme.outline,
                     ),
                   ),
                 ],
@@ -100,21 +103,21 @@ class BudgetPlanDateField extends StatelessWidget {
                 onTap: onClear,
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: WiseSpendsColors.divider,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.outline,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.close,
                     size: 12,
-                    color: WiseSpendsColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               )
             else
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: WiseSpendsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 20,
               ),
           ],

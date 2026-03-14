@@ -10,7 +10,6 @@ import 'package:wise_spends/features/category/presentation/bloc/add_category_for
 import 'package:wise_spends/features/category/presentation/bloc/add_category_form_event.dart';
 import 'package:wise_spends/features/category/presentation/bloc/add_category_form_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 class AddCategoryScreen extends StatelessWidget {
@@ -58,7 +57,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('categories.added'.tr),
-              backgroundColor: AppColors.success,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
           Navigator.pop(context);
@@ -66,7 +65,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: AppColors.error,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -105,9 +104,9 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
 
                     return Container(
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.divider),
+                        border: Border.all(color: Theme.of(context).colorScheme.outline),
                       ),
                       // RadioGroup is valid in latest stable Flutter
                       child: RadioGroup<CategoryType>(
@@ -126,7 +125,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
                                 children: [
                                   Icon(
                                     Icons.arrow_downward,
-                                    color: AppColors.income,
+                                    color: Theme.of(context).colorScheme.primary,
                                     size: 20,
                                   ),
                                   SizedBox(width: 8),
@@ -142,7 +141,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
                                 children: [
                                   Icon(
                                     Icons.arrow_downward,
-                                    color: AppColors.expense,
+                                    color: Theme.of(context).colorScheme.secondary,
                                     size: 20,
                                   ),
                                   SizedBox(width: 8),
@@ -158,7 +157,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
                                 children: [
                                   Icon(
                                     Icons.swap_horiz,
-                                    color: AppColors.tertiary,
+                                    color: Theme.of(context).colorScheme.tertiary,
                                     size: 20,
                                   ),
                                   SizedBox(width: 8),
@@ -337,11 +336,11 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
         height: 90,
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : AppColors.surface,
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.divider,
+            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -350,7 +349,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
           children: [
             Icon(
               icon,
-              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
               size: 32,
             ),
             const SizedBox(height: 8),
@@ -358,7 +357,7 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
               label,
               style: AppTextStyles.caption.copyWith(
                 fontSize: 10,
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
               maxLines: 1,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -34,9 +33,11 @@ class SettingsExpansionPanel extends StatelessWidget {
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+        ),
       ),
       child: Column(
         children: [
@@ -45,7 +46,8 @@ class SettingsExpansionPanel extends StatelessWidget {
             description: description,
             leadingIcon: leadingIcon,
             leadingBackgroundColor:
-                leadingBackgroundColor ?? AppColors.primaryContainer,
+                leadingBackgroundColor ??
+                Theme.of(context).colorScheme.primaryContainer,
             isExpanded: isExpanded,
             onTap: () => onExpansionChanged(!isExpanded),
           ),
@@ -106,7 +108,7 @@ class _PanelHeader extends StatelessWidget {
               ),
               child: Icon(
                 leadingIcon,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 size: AppIconSize.sm,
               ),
             ),
@@ -119,7 +121,7 @@ class _PanelHeader extends StatelessWidget {
                     title,
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -128,7 +130,9 @@ class _PanelHeader extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(description),
-                          backgroundColor: AppColors.primary,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppRadius.md),
@@ -140,13 +144,13 @@ class _PanelHeader extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryContainer,
+                        color: Theme.of(context).colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(AppRadius.full),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.info_outline,
                         size: 14,
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
@@ -157,9 +161,9 @@ class _PanelHeader extends StatelessWidget {
             AnimatedRotation(
               turns: isExpanded ? 0.5 : 0,
               duration: const Duration(milliseconds: 200),
-              child: const Icon(
+              child: Icon(
                 Icons.expand_more,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],

@@ -26,7 +26,6 @@ import 'package:wise_spends/features/transaction/presentation/adapters/transacti
 import 'package:wise_spends/features/transaction/presentation/widgets/transaction_form_widgets.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/components/forms/form_locked_fields.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 
 class TransactionFormScreenArgs {
   final TransactionType? preselectedType;
@@ -192,7 +191,7 @@ class _TransactionFormScreenContentState
                     ),
                   ],
                 ),
-                backgroundColor: AppColors.success,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -208,7 +207,7 @@ class _TransactionFormScreenContentState
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -447,7 +446,7 @@ class _TransactionFormScreenContentState
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: AppColors.error,
+        backgroundColor: Theme.of(context).colorScheme.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),

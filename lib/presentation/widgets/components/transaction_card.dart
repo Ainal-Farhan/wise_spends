@@ -4,7 +4,7 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/presentation/widgets/components/amount_display.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
+import 'package:wise_spends/shared/theme/ui_constants.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 
 /// Check if transaction is a budget plan type
@@ -14,14 +14,6 @@ bool isBudgetPlanType(TransactionType type) {
 }
 
 /// Reusable transaction card widget
-/// Displays a single transaction with all relevant information
-/// Features:
-/// - Clean Material 3 design
-/// - Color-coded amounts by transaction type
-/// - Relative date display (Today, Yesterday, etc.)
-/// - Optional note indicator
-/// - Budget plan indicator (if linked)
-/// - 48dp minimum touch targets
 class TransactionCard extends StatelessWidget {
   final String title;
   final double amount;
@@ -52,12 +44,14 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
       margin: const EdgeInsets.only(bottom: UIConstants.spacingSmall),
       elevation: UIConstants.elevationNone,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-        side: const BorderSide(color: WiseSpendsColors.divider),
+        side: BorderSide(color: colorScheme.outline),
       ),
       child: InkWell(
         onTap: onTap,
@@ -68,7 +62,7 @@ class TransactionCard extends StatelessWidget {
           child: Row(
             children: [
               // Category Icon
-              _buildIconContainer(context),
+              _buildIconContainer(context, colorScheme),
               const SizedBox(width: UIConstants.spacingLarge),
 
               // Transaction Details
@@ -80,7 +74,7 @@ class TransactionCard extends StatelessWidget {
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: WiseSpendsColors.textPrimary,
+                        color: colorScheme.onSurface,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -91,7 +85,7 @@ class TransactionCard extends StatelessWidget {
                         Text(
                           _formatDate(date),
                           style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: WiseSpendsColors.textHint),
+                              ?.copyWith(color: colorScheme.onSurfaceVariant),
                         ),
                         if (showBudgetPlanIndicator) ...[
                           const SizedBox(width: UIConstants.spacingXS),
@@ -101,7 +95,7 @@ class TransactionCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: WiseSpendsColors.budgetPlanContainer,
+                              color: colorScheme.primaryContainer,
                               borderRadius: BorderRadius.circular(
                                 UIConstants.radiusSmall,
                               ),
@@ -109,16 +103,16 @@ class TransactionCard extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.account_balance_wallet_outlined,
                                   size: 10,
-                                  color: WiseSpendsColors.primary,
+                                  color: colorScheme.primary,
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   'budget_plans.linked'.tr,
                                   style: AppTextStyles.bodySmall.copyWith(
-                                    color: WiseSpendsColors.primary,
+                                    color: colorScheme.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -133,8 +127,8 @@ class TransactionCard extends StatelessWidget {
                           Container(
                             width: 4,
                             height: 4,
-                            decoration: const BoxDecoration(
-                              color: WiseSpendsColors.textHint,
+                            decoration: BoxDecoration(
+                              color: colorScheme.onSurfaceVariant,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -143,7 +137,9 @@ class TransactionCard extends StatelessWidget {
                             child: Text(
                               _formatNote(note!),
                               style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(color: WiseSpendsColors.textHint),
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -169,12 +165,12 @@ class TransactionCard extends StatelessWidget {
                 InkWell(
                   onTap: onDelete,
                   borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
-                  child: const Padding(
+                  child: Padding(
                     padding: EdgeInsets.all(UIConstants.spacingSmall),
                     child: Icon(
                       Icons.delete_outline,
                       size: UIConstants.iconMedium,
-                      color: WiseSpendsColors.textHint,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -186,31 +182,31 @@ class TransactionCard extends StatelessWidget {
     );
   }
 
-  Widget _buildIconContainer(BuildContext context) {
+  Widget _buildIconContainer(BuildContext context, ColorScheme colorScheme) {
     // Get background color based on transaction type
     Color backgroundColor;
     IconData defaultIcon;
     Color iconColor;
 
     defaultIcon = type.icon;
-    iconColor = type.color;
+    iconColor = type.getColor(context);
 
     switch (type) {
       case TransactionType.income:
-        backgroundColor = WiseSpendsColors.primaryContainer;
+        backgroundColor = colorScheme.primaryContainer;
         break;
       case TransactionType.expense:
-        backgroundColor = WiseSpendsColors.secondaryContainer;
+        backgroundColor = colorScheme.secondaryContainer;
         break;
       case TransactionType.transfer:
-        backgroundColor = WiseSpendsColors.tertiaryContainer;
+        backgroundColor = colorScheme.tertiaryContainer;
         break;
       case TransactionType.commitment:
-        backgroundColor = WiseSpendsColors.commitmentContainer;
+        backgroundColor = colorScheme.tertiaryContainer;
         break;
       case TransactionType.budgetPlanDeposit:
       case TransactionType.budgetPlanExpense:
-        backgroundColor = WiseSpendsColors.budgetPlanContainer;
+        backgroundColor = colorScheme.primaryContainer;
         break;
     }
 
@@ -284,6 +280,8 @@ class SwipeableTransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Dismissible(
       key: Key(title + date.toString()),
       direction: DismissDirection.endToStart,
@@ -291,7 +289,7 @@ class SwipeableTransactionCard extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: UIConstants.spacingLarge),
         decoration: BoxDecoration(
-          color: WiseSpendsColors.secondary,
+          color: colorScheme.secondary,
           borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
         ),
         child: const Icon(
@@ -310,7 +308,7 @@ class SwipeableTransactionCard extends StatelessWidget {
               message:
                   'This action cannot be undone. Are you sure you want to delete this transaction?',
               icon: Icons.delete_outline,
-              iconColor: WiseSpendsColors.secondary,
+              iconColor: colorScheme.secondary,
               buttons: [
                 CustomDialogButton(
                   text: 'Cancel',
@@ -331,7 +329,7 @@ class SwipeableTransactionCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('transaction.deleted'.tr),
-            backgroundColor: WiseSpendsColors.textPrimary,
+            backgroundColor: colorScheme.inverseSurface,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(UIConstants.radiusSmall),

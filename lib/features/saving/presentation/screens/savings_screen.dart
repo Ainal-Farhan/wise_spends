@@ -11,7 +11,6 @@ import 'package:wise_spends/features/saving/presentation/bloc/savings_event.dart
 import 'package:wise_spends/features/saving/presentation/bloc/savings_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
@@ -48,7 +47,7 @@ class _SavingsScreenContent extends StatelessWidget {
                   Text(state.message),
                 ],
               ),
-              backgroundColor: AppColors.success,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
@@ -65,7 +64,7 @@ class _SavingsScreenContent extends StatelessWidget {
                   Text(state.message),
                 ],
               ),
-              backgroundColor: AppColors.error,
+              backgroundColor: Theme.of(context).colorScheme.error,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
@@ -183,10 +182,13 @@ class _SavingsScreenContent extends StatelessWidget {
     required int withGoal,
   }) {
     return SectionHeader.card(
-      gradient: const LinearGradient(
+      gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.primary, AppColors.primaryDark],
+        colors: [
+          Theme.of(context).colorScheme.primary,
+          Theme.of(context).colorScheme.primary,
+        ],
       ),
       icon: Icons.savings_outlined,
       label: 'general.your_savings'.tr,
@@ -239,13 +241,15 @@ class _SavingsScreenContent extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.folder_outlined,
                 size: 16,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             subtitle:
@@ -277,7 +281,7 @@ class _SavingsScreenContent extends StatelessWidget {
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: AppColors.primary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 radius: 24,
                 child: const Icon(Icons.savings, color: Colors.white),
               ),
@@ -349,15 +353,17 @@ class _SavingsScreenContent extends StatelessWidget {
                     value: 'delete',
                     child: Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.delete,
                           size: 18,
-                          color: AppColors.secondary,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'general.delete'.tr,
-                          style: const TextStyle(color: AppColors.secondary),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                         ),
                       ],
                     ),
@@ -389,9 +395,11 @@ class _SavingsScreenContent extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                valueColor: const AlwaysStoppedAnimation<Color>(
-                  AppColors.primary,
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.15),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).colorScheme.primary,
                 ),
                 minHeight: 8,
               ),
@@ -631,7 +639,7 @@ class NoSavingsEmptyState extends StatelessWidget {
       actionLabel: 'general.add_new_saving'.tr,
       onAction: () =>
           context.read<SavingsBloc>().add(LoadAddSavingsFormEvent()),
-      iconColor: AppColors.success,
+      iconColor: Theme.of(context).colorScheme.primary,
     );
   }
 }

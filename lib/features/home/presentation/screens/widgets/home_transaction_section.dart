@@ -10,7 +10,6 @@ import 'package:wise_spends/presentation/widgets/components/transaction_card.dar
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/router/route_arguments.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
@@ -124,6 +123,8 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.xxxl),
       child: Column(
@@ -131,13 +132,13 @@ class _ErrorState extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppSpacing.xl),
             decoration: BoxDecoration(
-              color: AppColors.error.withValues(alpha: 0.08),
+              color: colorScheme.error.withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.error_outline_rounded,
               size: AppIconSize.hero,
-              color: AppColors.error,
+              color: colorScheme.error,
             ),
           ),
           const SizedBox(height: AppSpacing.xxl),
@@ -150,7 +151,7 @@ class _ErrorState extends StatelessWidget {
           Text(
             message,
             style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
           ),

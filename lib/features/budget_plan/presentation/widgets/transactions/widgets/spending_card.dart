@@ -12,7 +12,6 @@ import 'package:wise_spends/features/budget_plan/presentation/widgets/transactio
 import 'package:wise_spends/shared/components/section_header.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Spending card
@@ -31,7 +30,7 @@ class SpendingCard extends StatelessWidget {
     final hasReceipt = transaction.receiptImagePath?.isNotEmpty == true;
 
     final config = TransactionCardConfig(
-      accentColor: WiseSpendsColors.secondary,
+      accentColor: Theme.of(context).colorScheme.secondary,
       icon: Icons.north_outlined,
       amountPrefix: '- RM ',
       amountLabel: '- RM ${fmt.format(transaction.amount)}',
@@ -44,7 +43,9 @@ class SpendingCard extends StatelessWidget {
         ? Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
             decoration: BoxDecoration(
-              color: WiseSpendsColors.primary.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Row(
@@ -53,7 +54,7 @@ class SpendingCard extends StatelessWidget {
                 Icon(
                   Icons.receipt_outlined,
                   size: 11,
-                  color: WiseSpendsColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(width: 3),
                 Text(
@@ -61,7 +62,7 @@ class SpendingCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: WiseSpendsColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
@@ -142,12 +143,14 @@ class SpendingDetailSheet extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: WiseSpendsColors.secondary.withValues(alpha: 0.12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.secondary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.north_outlined,
-                    color: WiseSpendsColors.secondary,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.lg),
@@ -163,7 +166,7 @@ class SpendingDetailSheet extends StatelessWidget {
                 Text(
                   '- RM ${fmt.format(transaction.amount)}',
                   style: AppTextStyles.amountMedium.copyWith(
-                    color: WiseSpendsColors.secondary,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
               ],
@@ -218,24 +221,24 @@ class _ReceiptErrorPlaceholder extends StatelessWidget {
     return Container(
       height: 160,
       decoration: BoxDecoration(
-        color: WiseSpendsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: WiseSpendsColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.broken_image_outlined,
-              color: WiseSpendsColors.textHint,
+              color: Theme.of(context).colorScheme.outline,
               size: 32,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               'budget_plans.receipt_unavailable'.tr,
               style: AppTextStyles.caption.copyWith(
-                color: WiseSpendsColors.textHint,
+                color: Theme.of(context).colorScheme.outline,
               ),
             ),
           ],

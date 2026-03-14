@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/budget_plan_enums.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'budget_plan_form_data.dart';
 import 'budget_plan_form_widgets.dart';
@@ -72,7 +71,7 @@ class StepBasics extends StatelessWidget {
                 selectedColor: Color(
                   data.accentColorValue,
                 ).withValues(alpha: 0.2),
-                checkmarkColor: AppColors.primary,
+                checkmarkColor: Theme.of(context).colorScheme.primary,
               );
             }).toList(),
           ),
@@ -81,7 +80,7 @@ class StepBasics extends StatelessWidget {
             FormSectionLabel(label: 'budget_plans.accent_color'.tr),
             const SizedBox(height: AppSpacing.sm),
             Row(
-              children: _AccentColors.argbValues.map((colorValue) {
+              children: _AccentColors.getArgbValues(context).map((colorValue) {
                 return Padding(
                   padding: const EdgeInsets.only(right: AppSpacing.sm),
                   child: CustomColorSwatch(
@@ -100,11 +99,13 @@ class StepBasics extends StatelessWidget {
 }
 
 class _AccentColors {
-  static final List<int> argbValues = [
-    AppColors.primary.toARGB32(),
-    AppColors.secondary.toARGB32(),
-    AppColors.tertiary.toARGB32(),
-    AppColors.warning.toARGB32(),
-    AppColors.info.toARGB32(),
-  ];
+  static List<int> getArgbValues(BuildContext context) {
+    return [
+      Theme.of(context).colorScheme.primary.toARGB32(),
+      Theme.of(context).colorScheme.secondary.toARGB32(),
+      Theme.of(context).colorScheme.tertiary.toARGB32(),
+      Theme.of(context).colorScheme.tertiary.toARGB32(),
+      Theme.of(context).colorScheme.primary.toARGB32(),
+    ];
+  }
 }

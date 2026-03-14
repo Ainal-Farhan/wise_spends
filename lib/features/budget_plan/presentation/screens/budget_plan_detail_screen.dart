@@ -17,8 +17,6 @@ import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
 import 'package:wise_spends/shared/components/speed_dial_fab.dart';
 import 'package:wise_spends/shared/components/empty_state_widget.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Budget Plan Detail Screen — Tabbed Interface (Overview · Items · Transactions · Charts)
 class BudgetPlanDetailScreen extends StatelessWidget {
@@ -123,13 +121,15 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
             PopupMenuItem(
               value: 'delete',
               child: ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.delete,
-                  color: WiseSpendsColors.secondary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
                 title: Text(
                   'general.delete'.tr,
-                  style: const TextStyle(color: WiseSpendsColors.secondary),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                 ),
                 contentPadding: EdgeInsets.zero,
               ),
@@ -186,7 +186,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       messenger.showSnackBar(
         SnackBar(
           content: Text('budget_plans.deposit_added'.tr),
-          backgroundColor: WiseSpendsColors.success,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -194,7 +194,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       messenger.showSnackBar(
         SnackBar(
           content: Text('budget_plans.spending_added'.tr),
-          backgroundColor: WiseSpendsColors.success,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -202,7 +202,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       messenger.showSnackBar(
         SnackBar(
           content: Text('budget_plans.milestone_deleted'.tr),
-          backgroundColor: WiseSpendsColors.success,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -211,7 +211,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       messenger.showSnackBar(
         SnackBar(
           content: Text('budget_plans.deleted'.tr),
-          backgroundColor: WiseSpendsColors.success,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -219,7 +219,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       messenger.showSnackBar(
         SnackBar(
           content: Text(state.message),
-          backgroundColor: WiseSpendsColors.error,
+          backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -274,7 +274,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       confirmText: 'general.delete'.tr,
       cancelText: 'general.cancel'.tr,
       icon: Icons.delete_outline,
-      iconColor: AppColors.error,
+      iconColor: Theme.of(context).colorScheme.error,
       onConfirm: () {
         context.read<BudgetPlanDetailBloc>().add(DeletePlanEvent(uuid));
       },
@@ -302,7 +302,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       confirmText: 'general.confirm'.tr,
       cancelText: 'general.cancel'.tr,
       icon: Icons.check_circle,
-      iconColor: AppColors.success,
+      iconColor: Theme.of(context).colorScheme.primary,
       onConfirm: () {
         context.read<BudgetPlanDetailBloc>().add(
           CompleteMilestoneEvent(milestoneId),
@@ -324,7 +324,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       confirmText: 'general.unlink'.tr,
       cancelText: 'general.cancel'.tr,
       icon: Icons.link_off,
-      iconColor: AppColors.warning,
+      iconColor: Theme.of(context).colorScheme.tertiary,
       onConfirm: () {
         context.read<BudgetPlanDetailBloc>().add(UnlinkAccountEvent(accountId));
       },

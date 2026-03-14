@@ -5,7 +5,6 @@ import 'package:wise_spends/features/settings/data/services/backup_service.dart'
 import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/widgets/data_management_tab.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -114,7 +113,7 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         context,
         message: msg,
         icon: Icons.check_circle_rounded,
-        color: AppColors.success,
+        color: Theme.of(context).colorScheme.primary,
       );
 
       if (!state.shared) {
@@ -130,7 +129,7 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         context,
         message: msg,
         icon: Icons.check_circle_rounded,
-        color: AppColors.success,
+        color: Theme.of(context).colorScheme.primary,
       );
 
       if (!state.shared) {
@@ -142,28 +141,28 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         context,
         message: BackupRestoreKeys.snackImportSuccess.tr,
         icon: Icons.check_circle_rounded,
-        color: AppColors.success,
+        color: Theme.of(context).colorScheme.primary,
       );
     } else if (state is BackupShareSuccess) {
       _snack(
         context,
         message: BackupRestoreKeys.snackShareSuccess.tr,
         icon: Icons.ios_share_rounded,
-        color: AppColors.success,
+        color: Theme.of(context).colorScheme.primary,
       );
     } else if (state is BackupDeleteSuccess) {
       _snack(
         context,
         message: BackupRestoreKeys.snackDeleteSuccess.tr,
         icon: Icons.delete_outline_rounded,
-        color: AppColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       );
     } else if (state is ResetDataSuccess) {
       _snack(
         context,
         message: 'All data has been reset successfully',
         icon: Icons.check_circle_rounded,
-        color: AppColors.success,
+        color: Theme.of(context).colorScheme.primary,
       );
       // Return to Backup tab after a full reset for a fresh start UX.
       _tabController.animateTo(_kBackupTab);
@@ -174,7 +173,7 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         context,
         message: 'File deleted successfully',
         icon: Icons.delete_outline_rounded,
-        color: AppColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       );
       // Reload file list so the Data Management tab refreshes automatically.
       context.read<BackupRestoreBloc>().add(const LoadAllFiles());
@@ -183,7 +182,7 @@ class _BackupRestoreViewState extends State<_BackupRestoreView>
         context,
         message: _errorMessage(state),
         icon: Icons.error_outline_rounded,
-        color: AppColors.error,
+        color: Theme.of(context).colorScheme.error,
       );
     }
   }

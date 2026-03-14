@@ -11,7 +11,6 @@ import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 import 'add_edit_budget_plan_item_bottom_sheet.dart';
 
 // ---------------------------------------------------------------------------
@@ -247,18 +246,15 @@ class _BudgetPlanItemsListContentState
     final bloc = context.read<BudgetPlanItemsListBloc>();
     final state = bloc.state;
     int? nextBilNumber;
-    
+
     if (state is BudgetPlanItemsListLoaded) {
-      final maxBil = state.items.fold<int>(
-        0,
-        (max, item) {
-          final itemBil = int.tryParse(item.bil) ?? 0;
-          return itemBil > max ? itemBil : max;
-        },
-      );
+      final maxBil = state.items.fold<int>(0, (max, item) {
+        final itemBil = int.tryParse(item.bil) ?? 0;
+        return itemBil > max ? itemBil : max;
+      });
       nextBilNumber = maxBil + 1;
     }
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -305,8 +301,8 @@ class _BudgetPlanItemsListContentState
       SnackBar(
         content: Text(message),
         backgroundColor: isError
-            ? WiseSpendsColors.error
-            : WiseSpendsColors.success,
+            ? Theme.of(context).colorScheme.error
+            : Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -351,10 +347,10 @@ class _FilterChips extends StatelessWidget {
                     selected: isSelected,
                     onSelected: (selected) =>
                         onPaymentStatusSelected(selected ? f.value : null),
-                    selectedColor: WiseSpendsColors.primary.withValues(
-                      alpha: 0.2,
-                    ),
-                    checkmarkColor: WiseSpendsColors.primary,
+                    selectedColor: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.2),
+                    checkmarkColor: Theme.of(context).colorScheme.primary,
                   );
                 }).toList(),
               ),
@@ -385,10 +381,12 @@ class _FilterChips extends StatelessWidget {
                             label: Text('budget_plans.filter_all'.tr),
                             selected: selectedTag == null,
                             onSelected: (_) => onTagSelected(null),
-                            selectedColor: WiseSpendsColors.primary.withValues(
-                              alpha: 0.2,
-                            ),
-                            checkmarkColor: WiseSpendsColors.primary,
+                            selectedColor: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.2),
+                            checkmarkColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
                           ),
                           ...allTags.map(
                             (tag) => FilterChip(
@@ -396,9 +394,12 @@ class _FilterChips extends StatelessWidget {
                               selected: selectedTag == tag,
                               onSelected: (selected) =>
                                   onTagSelected(selected ? tag : null),
-                              selectedColor: WiseSpendsColors.primary
-                                  .withValues(alpha: 0.2),
-                              checkmarkColor: WiseSpendsColors.primary,
+                              selectedColor: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.2),
+                              checkmarkColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -426,8 +427,8 @@ class _FilterChips extends StatelessWidget {
                 child: Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
-                    color: WiseSpendsColors.primary,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primary,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -511,10 +512,13 @@ class _SummaryCard extends StatelessWidget {
         if (state is BudgetPlanItemsListLoaded) {
           final summary = state.summary;
           return SectionHeader.card(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [WiseSpendsColors.primary, WiseSpendsColors.primaryDark],
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primary,
+              ],
             ),
             icon: Icons.format_list_bulleted,
             label: 'budget_plans.items_summary'.tr,
@@ -545,21 +549,21 @@ class _SummaryDetail extends StatelessWidget {
         _SummaryRow(
           label: 'budget_plans.total_deposit'.tr,
           amount: summary.totalDepositPaid,
-          color: WiseSpendsColors.warning,
+          color: Theme.of(context).colorScheme.tertiary,
         ),
         const SizedBox(height: AppSpacing.xs),
         _SummaryRow(
           label: 'budget_plans.total_paid'.tr,
           amount: summary.totalAmountPaid,
-          color: WiseSpendsColors.success,
+          color: Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(height: AppSpacing.xs),
         _SummaryRow(
           label: 'budget_plans.total_outstanding'.tr,
           amount: summary.totalOutstanding,
           color: summary.totalOutstanding > 0
-              ? WiseSpendsColors.secondary
-              : WiseSpendsColors.success,
+              ? Theme.of(context).colorScheme.secondary
+              : Theme.of(context).colorScheme.primary,
         ),
         const SizedBox(height: AppSpacing.md),
         Row(
@@ -567,19 +571,19 @@ class _SummaryDetail extends StatelessWidget {
             _SummaryChip(
               label: 'budget_plans.fully_paid'.tr,
               count: summary.fullyPaidItems,
-              color: WiseSpendsColors.success,
+              color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(width: AppSpacing.xs),
             _SummaryChip(
               label: 'budget_plans.deposit_paid'.tr,
               count: summary.depositPaidItems,
-              color: WiseSpendsColors.warning,
+              color: Theme.of(context).colorScheme.tertiary,
             ),
             const SizedBox(width: AppSpacing.xs),
             _SummaryChip(
               label: 'budget_plans.outstanding'.tr,
               count: summary.outstandingItems,
-              color: WiseSpendsColors.secondary,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ],
         ),
@@ -732,7 +736,7 @@ class _ItemCard extends StatelessWidget {
       background: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.md),
         decoration: BoxDecoration(
-          color: WiseSpendsColors.secondary,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         alignment: Alignment.centerRight,
@@ -768,13 +772,13 @@ class _ItemCardContent extends StatelessWidget {
     final Color statusColor;
     final String statusLabel;
     if (item.isFullyPaid) {
-      statusColor = WiseSpendsColors.success;
+      statusColor = Theme.of(context).colorScheme.primary;
       statusLabel = 'budget_plans.status_fully_paid'.tr;
     } else if (item.depositPaid > 0) {
-      statusColor = WiseSpendsColors.warning;
+      statusColor = Theme.of(context).colorScheme.tertiary;
       statusLabel = 'budget_plans.status_deposit_paid'.tr;
     } else {
-      statusColor = WiseSpendsColors.secondary;
+      statusColor = Theme.of(context).colorScheme.secondary;
       statusLabel = 'budget_plans.status_not_paid'.tr;
     }
 
@@ -783,7 +787,7 @@ class _ItemCardContent extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: AppSpacing.md),
         decoration: BoxDecoration(
-          color: WiseSpendsColors.surface,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: statusColor.withValues(alpha: 0.25),
@@ -843,14 +847,16 @@ class _ItemCardContent extends StatelessWidget {
                               Icon(
                                 Icons.calendar_today_outlined,
                                 size: 11,
-                                color: WiseSpendsColors.textHint,
+                                color: Theme.of(context).colorScheme.outline,
                               ),
                               const SizedBox(width: 3),
                               Flexible(
                                 child: Text(
                                   _formatDate(item.dueDate!),
                                   style: AppTextStyles.caption.copyWith(
-                                    color: WiseSpendsColors.textHint,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.outline,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -895,7 +901,7 @@ class _ItemCardContent extends StatelessWidget {
                             child: Icon(
                               Icons.more_vert,
                               size: 18,
-                              color: WiseSpendsColors.textHint,
+                              color: Theme.of(context).colorScheme.outline,
                             ),
                           ),
                         ),
@@ -926,7 +932,7 @@ class _ItemCardContent extends StatelessWidget {
                           Text(
                             'budget_plans.status_fully_paid'.tr,
                             style: AppTextStyles.caption.copyWith(
-                              color: WiseSpendsColors.success,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                             textAlign: TextAlign.right,
@@ -976,9 +982,9 @@ class _ItemCardContent extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: progress,
                         minHeight: 6,
-                        backgroundColor: WiseSpendsColors.textHint.withValues(
-                          alpha: 0.15,
-                        ),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.15),
                         valueColor: AlwaysStoppedAnimation<Color>(statusColor),
                       ),
                     ),
@@ -1009,14 +1015,14 @@ class _ItemCardContent extends StatelessWidget {
                   _AmountPill(
                     label: 'Paid',
                     amount: item.totalPaid,
-                    color: WiseSpendsColors.success,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   if (item.depositPaid > 0) ...[
                     const SizedBox(width: AppSpacing.sm),
                     _AmountPill(
                       label: 'Deposit',
                       amount: item.depositPaid,
-                      color: WiseSpendsColors.warning,
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ],
                 ],
@@ -1062,13 +1068,15 @@ class _ItemCardContent extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(
+              leading: Icon(
                 Icons.delete_outline,
-                color: WiseSpendsColors.secondary,
+                color: Theme.of(context).colorScheme.secondary,
               ),
               title: Text(
                 'general.delete'.tr,
-                style: const TextStyle(color: WiseSpendsColors.secondary),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
               onTap: () {
                 Navigator.pop(context);
@@ -1151,8 +1159,8 @@ class _TagBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: isOverflow
-            ? WiseSpendsColors.textHint.withValues(alpha: 0.1)
-            : WiseSpendsColors.primary.withValues(alpha: 0.1),
+            ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)
+            : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
@@ -1160,8 +1168,8 @@ class _TagBadge extends StatelessWidget {
         style: TextStyle(
           fontSize: 10,
           color: isOverflow
-              ? WiseSpendsColors.textHint
-              : WiseSpendsColors.primary,
+              ? Theme.of(context).colorScheme.outline
+              : Theme.of(context).colorScheme.primary,
         ),
       ),
     );

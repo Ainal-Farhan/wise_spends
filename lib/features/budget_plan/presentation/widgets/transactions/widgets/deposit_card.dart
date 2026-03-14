@@ -11,7 +11,6 @@ import 'package:wise_spends/features/budget_plan/presentation/widgets/transactio
 import 'package:wise_spends/features/budget_plan/presentation/widgets/transactions/widgets/transaction_card.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Deposit card
@@ -28,7 +27,7 @@ class DepositCard extends StatelessWidget {
     final fmt = NumberFormat('#,##0.00', 'en_US');
 
     final config = TransactionCardConfig(
-      accentColor: WiseSpendsColors.success,
+      accentColor: Theme.of(context).colorScheme.primary,
       icon: _sourceIcon(deposit.source),
       amountPrefix: '+ RM ',
       amountLabel: '+ RM ${fmt.format(deposit.amount)}',
@@ -103,12 +102,14 @@ class DepositDetailSheet extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: WiseSpendsColors.success.withValues(alpha: 0.12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.south_outlined,
-                    color: WiseSpendsColors.success,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const SizedBox(width: AppSpacing.lg),
@@ -120,7 +121,7 @@ class DepositDetailSheet extends StatelessWidget {
                       Text(
                         'budget_plans.deposit'.tr,
                         style: AppTextStyles.caption.copyWith(
-                          color: WiseSpendsColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -129,7 +130,7 @@ class DepositDetailSheet extends StatelessWidget {
                 Text(
                   '+ RM ${fmt.format(deposit.amount)}',
                   style: AppTextStyles.amountMedium.copyWith(
-                    color: WiseSpendsColors.success,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],

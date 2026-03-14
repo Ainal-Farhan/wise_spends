@@ -4,7 +4,6 @@ import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/router/route_arguments.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -13,6 +12,8 @@ class HomeQuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -23,41 +24,41 @@ class HomeQuickActions extends StatelessWidget {
             _QuickActionData(
               icon: TransactionType.income.icon,
               label: TransactionType.income.label,
-              color: TransactionType.income.color,
+              color: colorScheme.primary,
               onTap: (ctx) =>
                   _navigateToAddTransaction(ctx, TransactionType.income),
             ),
             _QuickActionData(
               icon: TransactionType.expense.icon,
               label: TransactionType.expense.label,
-              color: TransactionType.expense.color,
+              color: colorScheme.secondary,
               onTap: (ctx) =>
                   _navigateToAddTransaction(ctx, TransactionType.expense),
             ),
             _QuickActionData(
               icon: Icons.swap_horiz_rounded,
               label: 'home.transfer'.tr,
-              color: AppColors.transfer,
+              color: colorScheme.tertiary,
               onTap: (ctx) =>
                   _navigateToAddTransaction(ctx, TransactionType.transfer),
             ),
             _QuickActionData(
               icon: Icons.savings_rounded,
               label: 'Savings',
-              color: AppColors.commitment,
+              color: colorScheme.tertiary,
               onTap: (ctx) => Navigator.pushNamed(ctx, AppRoutes.savings),
             ),
             _QuickActionData(
               icon: Icons.account_balance_wallet_rounded,
               label: 'Budgets',
-              color: AppColors.budgetGood,
+              color: colorScheme.primary,
               onTap: (ctx) =>
                   Navigator.pushNamed(ctx, AppRoutes.budgetPlansList),
             ),
             _QuickActionData(
               icon: Icons.task_alt_rounded,
               label: 'home.tasks'.tr,
-              color: AppColors.tertiary,
+              color: colorScheme.tertiary,
               onTap: (ctx) =>
                   Navigator.pushNamed(ctx, AppRoutes.commitmentTask),
             ),

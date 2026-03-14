@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 /// Transaction type for amount display
@@ -152,7 +151,8 @@ class AmountText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _getColor();
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = _getColor(colorScheme);
     final prefix = _getPrefix();
     final formattedAmount = _formatAmount();
 
@@ -170,16 +170,16 @@ class AmountText extends StatelessWidget {
     );
   }
 
-  Color _getColor() {
+  Color _getColor(ColorScheme colorScheme) {
     switch (type) {
       case AmountType.income:
-        return AppColors.income;
+        return colorScheme.primary;
       case AmountType.expense:
-        return AppColors.expense;
+        return colorScheme.secondary;
       case AmountType.transfer:
-        return AppColors.transfer;
+        return colorScheme.tertiary;
       case AmountType.neutral:
-        return style?.color ?? AppColors.textPrimary;
+        return style?.color ?? colorScheme.onSurface;
     }
   }
 

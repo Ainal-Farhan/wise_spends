@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Total paid summary card
 class TotalPaidCard extends StatelessWidget {
@@ -34,13 +33,13 @@ class TotalPaidCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: isFullyPaid
-            ? WiseSpendsColors.success.withValues(alpha: 0.06)
-            : WiseSpendsColors.primary.withValues(alpha: 0.04),
+            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.06)
+            : Theme.of(context).colorScheme.primary.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(
           color: isFullyPaid
-              ? WiseSpendsColors.success.withValues(alpha: 0.3)
-              : WiseSpendsColors.primary.withValues(alpha: 0.15),
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+              : Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
         ),
       ),
       child: Column(
@@ -55,8 +54,8 @@ class TotalPaidCard extends StatelessWidget {
                     : Icons.account_balance_wallet_outlined,
                 size: 15,
                 color: isFullyPaid
-                    ? WiseSpendsColors.success
-                    : WiseSpendsColors.primary,
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
@@ -64,8 +63,8 @@ class TotalPaidCard extends StatelessWidget {
                 style: AppTextStyles.caption.copyWith(
                   fontWeight: FontWeight.w700,
                   color: isFullyPaid
-                      ? WiseSpendsColors.success
-                      : WiseSpendsColors.primary,
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.primary,
                   letterSpacing: 0.6,
                 ),
               ),
@@ -77,16 +76,16 @@ class TotalPaidCard extends StatelessWidget {
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: WiseSpendsColors.success.withValues(alpha: 0.1),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppRadius.full),
                     border: Border.all(
-                      color: WiseSpendsColors.success.withValues(alpha: 0.3),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Text(
                     'budget_plans.fully_paid'.tr,
                     style: AppTextStyles.labelSmall.copyWith(
-                      color: WiseSpendsColors.success,
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -109,7 +108,7 @@ class TotalPaidCard extends StatelessWidget {
                 Container(
                   width: 1,
                   height: 36,
-                  color: WiseSpendsColors.divider,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
                 const SizedBox(width: AppSpacing.sm),
               ],
@@ -120,15 +119,15 @@ class TotalPaidCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
-              Container(width: 1, height: 36, color: WiseSpendsColors.divider),
+              Container(width: 1, height: 36, color: Theme.of(context).colorScheme.outline),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: _SummaryValue(
                   label: 'budget_plans.total_paid_label'.tr,
                   value: 'RM ${NumberFormat('#,##0.00').format(totalPaid)}',
                   valueColor: isFullyPaid
-                      ? WiseSpendsColors.success
-                      : WiseSpendsColors.primary,
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],
@@ -141,10 +140,10 @@ class TotalPaidCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               backgroundColor: isFullyPaid
-                  ? WiseSpendsColors.success.withValues(alpha: 0.15)
-                  : WiseSpendsColors.primary.withValues(alpha: 0.15),
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
+                  : Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
               valueColor: AlwaysStoppedAnimation<Color>(
-                isFullyPaid ? WiseSpendsColors.success : WiseSpendsColors.primary,
+                isFullyPaid ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.primary,
               ),
               minHeight: 6,
             ),
@@ -158,7 +157,7 @@ class TotalPaidCard extends StatelessWidget {
               Text(
                 'budget_plans.remaining'.tr,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: WiseSpendsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               Text(
@@ -166,8 +165,8 @@ class TotalPaidCard extends StatelessWidget {
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                   color: isFullyPaid
-                      ? WiseSpendsColors.success
-                      : WiseSpendsColors.error,
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.error,
                 ),
               ),
             ],
@@ -197,7 +196,7 @@ class _SummaryValue extends StatelessWidget {
         Text(
           label,
           style: AppTextStyles.bodySmall.copyWith(
-            color: WiseSpendsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -209,7 +208,7 @@ class _SummaryValue extends StatelessWidget {
           child: Text(
             value,
             style: AppTextStyles.bodyMedium.copyWith(
-              color: valueColor ?? WiseSpendsColors.textPrimary,
+              color: valueColor ?? Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w600,
             ),
           ),

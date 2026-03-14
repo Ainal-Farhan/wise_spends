@@ -7,7 +7,6 @@ import 'package:wise_spends/features/commitment/domain/entities/commitment_detai
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_bloc.dart';
 import 'package:wise_spends/features/commitment/presentation/widgets/forms/commitment_detail_form.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/components/components.dart';
 
@@ -69,7 +68,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.success,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -78,7 +77,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -177,7 +176,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.tertiary.withValues(alpha: 0.12),
+                  color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -186,7 +185,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                     decimalDigits: 2,
                   ).format(detail.amount ?? 0.0),
                   style: AppTextStyles.amountSmall.copyWith(
-                    color: AppColors.tertiary,
+                    color: Theme.of(context).colorScheme.tertiary,
                     fontSize: 13,
                   ),
                 ),
@@ -205,7 +204,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                 onPressed: () => _showDetailForm(context, state, detail),
                 icon: const Icon(Icons.edit_outlined, size: 16),
                 label: Text('general.edit'.tr),
-                style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+                style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
               ),
               TextButton.icon(
                 onPressed: () async {
@@ -228,7 +227,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                 },
                 icon: const Icon(Icons.delete_outline, size: 16),
                 label: Text('general.delete'.tr),
-                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
               ),
             ],
           ),
@@ -281,7 +280,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
             Icon(
               Icons.playlist_add_outlined,
               size: 80,
-              color: AppColors.textHint,
+              color: Theme.of(context).colorScheme.outline,
             ),
             const SizedBox(height: 16),
             Text('commitments.no_details'.tr, style: AppTextStyles.h3),
@@ -289,7 +288,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
             Text(
               'Add details to define how this commitment will be paid out on distribute.',
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),

@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/budget_plan_enums.dart';
 import 'package:wise_spends/shared/components/app_card.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'budget_plan_form_data.dart';
@@ -125,7 +124,7 @@ class StepReview extends StatelessWidget {
             Text(
               'budget_plans.no_milestones_review'.tr,
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -159,14 +158,14 @@ class ReviewRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: AppIconSize.sm, color: AppColors.textSecondary),
+          Icon(icon, size: AppIconSize.sm, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: AppSpacing.md),
           Expanded(child: Text(label, style: AppTextStyles.caption)),
           Text(
             value,
             style: highlight
                 ? AppTextStyles.bodySemiBold.copyWith(
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 16,
                   )
                 : AppTextStyles.bodySemiBold,
@@ -191,9 +190,9 @@ class CategoryBadge extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -266,7 +265,7 @@ class MilestoneSummaryTile extends StatelessWidget {
                 Text(
                   'RM ${amount.toStringAsFixed(2)}',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

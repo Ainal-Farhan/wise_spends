@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/features/widget/presentation/bloc/widget_settings_cubit.dart';
 import 'package:wise_spends/features/widget/presentation/services/widget_service.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 /// Widget Settings Screen
@@ -35,19 +34,19 @@ class _WidgetSettingsView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            _buildHeader(),
+            _buildHeader(context),
             const SizedBox(height: 24),
 
             // Widget Preview
-            _buildWidgetPreview(),
+            _buildWidgetPreview(context),
             const SizedBox(height: 24),
 
             // Benefits
-            _buildBenefitsSection(),
+            _buildBenefitsSection(context),
             const SizedBox(height: 24),
 
             // Installation Instructions
-            _buildInstallationInstructions(),
+            _buildInstallationInstructions(context),
             const SizedBox(height: 24),
 
             // Add Widget Button
@@ -65,14 +64,17 @@ class _WidgetSettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryDark],
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.primary,
+          ],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -114,7 +116,7 @@ class _WidgetSettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildWidgetPreview() {
+  Widget _buildWidgetPreview(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -122,9 +124,9 @@ class _WidgetSettingsView extends StatelessWidget {
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.1),
@@ -141,7 +143,10 @@ class _WidgetSettingsView extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.primary, AppColors.primaryDark],
+                    colors: [
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primary,
+                    ],
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -175,7 +180,10 @@ class _WidgetSettingsView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [AppColors.expense, AppColors.secondaryDark],
+                          colors: [
+                            Theme.of(context).colorScheme.secondary,
+                            Theme.of(context).colorScheme.secondary,
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -205,7 +213,10 @@ class _WidgetSettingsView extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [AppColors.income, AppColors.primaryDark],
+                          colors: [
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.primary,
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -236,21 +247,27 @@ class _WidgetSettingsView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceVariant,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.expense.withValues(alpha: 0.1),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.secondary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.shopping_cart,
-                        color: AppColors.expense,
+                        color: Theme.of(context).colorScheme.secondary,
                         size: 20,
                       ),
                     ),
@@ -262,7 +279,9 @@ class _WidgetSettingsView extends StatelessWidget {
                           Text(
                             'Last Transaction',
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                           Text(
@@ -275,7 +294,7 @@ class _WidgetSettingsView extends StatelessWidget {
                     Text(
                       '- RM 45.00',
                       style: AppTextStyles.amountSmall.copyWith(
-                        color: AppColors.expense,
+                        color: Theme.of(context).colorScheme.secondary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -289,35 +308,39 @@ class _WidgetSettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildBenefitsSection() {
+  Widget _buildBenefitsSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Why Use the Widget?', style: AppTextStyles.h3),
         const SizedBox(height: 12),
         _buildBenefitItem(
+          context,
           icon: Icons.flash_on,
           title: 'Lightning Fast',
           description: 'Add transactions in seconds without opening the app',
-          color: AppColors.warning,
+          color: Theme.of(context).colorScheme.tertiary,
         ),
         _buildBenefitItem(
+          context,
           icon: Icons.touch_app,
           title: 'One-Tap Access',
           description: 'Direct access from your home screen',
-          color: AppColors.primary,
+          color: Theme.of(context).colorScheme.primary,
         ),
         _buildBenefitItem(
+          context,
           icon: Icons.visibility,
           title: 'Stay Updated',
           description: 'See your balance and recent transactions at a glance',
-          color: AppColors.info,
+          color: Theme.of(context).colorScheme.primary,
         ),
       ],
     );
   }
 
-  Widget _buildBenefitItem({
+  Widget _buildBenefitItem(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required String description,
@@ -345,7 +368,7 @@ class _WidgetSettingsView extends StatelessWidget {
                 Text(
                   description,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -356,7 +379,7 @@ class _WidgetSettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildInstallationInstructions() {
+  Widget _buildInstallationInstructions(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -365,13 +388,14 @@ class _WidgetSettingsView extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: Column(
             children: [
               _buildInstructionStep(
+                context,
                 step: 1,
                 title: 'Long press on home screen',
                 description:
@@ -379,18 +403,21 @@ class _WidgetSettingsView extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               _buildInstructionStep(
+                context,
                 step: 2,
                 title: 'Tap "Widgets"',
                 description: 'Select Widgets from the menu that appears',
               ),
               const SizedBox(height: 16),
               _buildInstructionStep(
+                context,
                 step: 3,
                 title: 'Find WiseSpends',
                 description: 'Scroll to find WiseSpends in the widgets list',
               ),
               const SizedBox(height: 16),
               _buildInstructionStep(
+                context,
                 step: 4,
                 title: 'Drag to home screen',
                 description:
@@ -403,7 +430,8 @@ class _WidgetSettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildInstructionStep({
+  Widget _buildInstructionStep(
+    BuildContext context, {
     required int step,
     required String title,
     required String description,
@@ -415,7 +443,7 @@ class _WidgetSettingsView extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -437,7 +465,7 @@ class _WidgetSettingsView extends StatelessWidget {
               Text(
                 description,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -458,7 +486,7 @@ class _WidgetSettingsView extends StatelessWidget {
         icon: const Icon(Icons.add_home),
         label: const Text('Add Widget to Home Screen'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
@@ -473,21 +501,25 @@ class _WidgetSettingsView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primaryContainer,
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.2),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.widgets,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               size: 24,
             ),
           ),
@@ -500,7 +532,7 @@ class _WidgetSettingsView extends StatelessWidget {
                 Text(
                   'Show quick transaction button in app bar',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -515,7 +547,7 @@ class _WidgetSettingsView extends StatelessWidget {
                     value: value,
                   );
                 },
-                activeThumbColor: AppColors.primary,
+                activeThumbColor: Theme.of(context).colorScheme.primary,
               );
             },
           ),
@@ -528,21 +560,23 @@ class _WidgetSettingsView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.textSecondary.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               Icons.visibility_off_outlined,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               size: 24,
             ),
           ),
@@ -558,7 +592,7 @@ class _WidgetSettingsView extends StatelessWidget {
                 Text(
                   'Blur amounts on the home screen widget',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

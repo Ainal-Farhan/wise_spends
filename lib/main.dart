@@ -20,7 +20,7 @@ import 'package:wise_spends/features/widget/presentation/services/widget_platfor
 import 'package:wise_spends/features/widget/presentation/services/widget_service.dart';
 import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
+import 'package:wise_spends/shared/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -144,8 +144,8 @@ class _AppRootState extends State<_AppRoot> {
                 title: 'WiseSpends',
                 debugShowCheckedModeBanner: false,
                 themeMode: themeSnap.data ?? ThemeMode.system,
-                theme: getLightTheme(),
-                darkTheme: getDarkTheme(),
+                theme: AppTheme.getLightTheme(context),
+                darkTheme: AppTheme.getDarkTheme(context),
                 locale: localeSnap.data,
                 navigatorObservers: [
                   AppRouter.budgetPlanRouteObserver,

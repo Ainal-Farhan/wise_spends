@@ -4,7 +4,6 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'budget_plan_form_data.dart';
@@ -120,18 +119,25 @@ class EmptyMilestonesPlaceholder extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider, style: BorderStyle.solid),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          style: BorderStyle.solid,
+        ),
       ),
       child: Column(
         children: [
-          Icon(Icons.flag_outlined, size: 40, color: AppColors.textHint),
+          Icon(
+            Icons.flag_outlined,
+            size: 40,
+            color: Theme.of(context).colorScheme.outline,
+          ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             'budget_plans.no_milestones_yet'.tr,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -165,7 +171,7 @@ class MilestoneTile extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: AppSpacing.lg),
         decoration: BoxDecoration(
-          color: AppColors.error.withValues(alpha: 0.7),
+          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: const Icon(Icons.delete, color: Colors.white),
@@ -182,20 +188,28 @@ class MilestoneTile extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
-            child: const Icon(Icons.flag, color: AppColors.primary),
+            child: Icon(
+              Icons.flag,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           title: Text(title, style: AppTextStyles.bodyMedium),
           subtitle: Text(
             'RM ${amount.toStringAsFixed(2)}',
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           trailing: IconButton(
-            icon: const Icon(Icons.delete_outline, color: AppColors.textHint),
+            icon: Icon(
+              Icons.delete_outline,
+              color: Theme.of(context).colorScheme.outline,
+            ),
             onPressed: () => onDelete(),
           ),
         ),

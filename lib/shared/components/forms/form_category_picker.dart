@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 final _logger = WiseLogger();
@@ -204,7 +203,7 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -219,7 +218,7 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 18),
                 decoration: BoxDecoration(
-                  color: AppColors.divider,
+                  color: Theme.of(context).colorScheme.outline,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -233,7 +232,7 @@ class _CategoryPickerSheetState extends State<_CategoryPickerSheet> {
                 Text(
                   '${_filtered.length}',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -313,10 +312,12 @@ class _CategoryTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? typeColor.withValues(alpha: 0.1)
-              : AppColors.surface,
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected ? typeColor : AppColors.divider,
+            color: isSelected
+                ? typeColor
+                : Theme.of(context).colorScheme.outline,
             width: isSelected ? 1.8 : 1,
           ),
         ),
@@ -336,7 +337,9 @@ class _CategoryTile extends StatelessWidget {
               child: Text(
                 category.name,
                 style: AppTextStyles.labelSmall.copyWith(
-                  color: isSelected ? typeColor : AppColors.textSecondary,
+                  color: isSelected
+                      ? typeColor
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
                   fontSize: 10,
                   height: 1.2,
@@ -408,16 +411,16 @@ class _SearchEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.search_off_rounded,
               size: 36,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 12),
             Text(
               'transaction.category.no_results'.trWith({'query': query}),
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),

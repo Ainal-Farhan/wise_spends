@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_bloc.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/add_commitment_form_bloc.dart';
@@ -82,7 +81,7 @@ class _EditCommitmentScreenContentState
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           }
@@ -116,12 +115,14 @@ class _EditCommitmentScreenContentState
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: AppColors.tertiary.withValues(alpha: 0.2),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.tertiary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit,
-                      color: AppColors.tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                       size: 24,
                     ),
                   ),
@@ -184,12 +185,14 @@ class _EditCommitmentScreenContentState
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: AppColors.tertiary.withValues(alpha: 0.2),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.tertiary.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.info_outline,
-                          color: AppColors.tertiary,
+                          color: Theme.of(context).colorScheme.tertiary,
                           size: 20,
                         ),
                       ),
@@ -206,7 +209,9 @@ class _EditCommitmentScreenContentState
                             Text(
                               'Total is calculated from all commitment tasks. Add or edit tasks to update the total.',
                               style: AppTextStyles.caption.copyWith(
-                                color: AppColors.textSecondary,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -230,9 +235,13 @@ class _EditCommitmentScreenContentState
 
                 return Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.divider),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                   child: DropdownButtonFormField<String>(
                     initialValue: selectedFrequency,
@@ -253,12 +262,18 @@ class _EditCommitmentScreenContentState
                         value: 'quarterly',
                         child: Text('commitments.quarterly'.tr),
                       ),
-                      DropdownMenuItem(value: 'yearly', child: Text('commitments.yearly'.tr)),
+                      DropdownMenuItem(
+                        value: 'yearly',
+                        child: Text('commitments.yearly'.tr),
+                      ),
                       DropdownMenuItem(
                         value: 'biweekly',
                         child: Text('commitments.bi_weekly'.tr),
                       ),
-                      DropdownMenuItem(value: 'weekly', child: Text('commitments.weekly'.tr)),
+                      DropdownMenuItem(
+                        value: 'weekly',
+                        child: Text('commitments.weekly'.tr),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -296,7 +311,10 @@ class _EditCommitmentScreenContentState
                   ),
                   hint: Text('commitments.select_savings'.tr),
                   items: [
-                    DropdownMenuItem(value: null, child: Text('commitments.none'.tr)),
+                    DropdownMenuItem(
+                      value: null,
+                      child: Text('commitments.none'.tr),
+                    ),
                     ...savingVOList.map((saving) {
                       return DropdownMenuItem<String>(
                         value: saving.saving.id as String,
@@ -361,7 +379,7 @@ class _EditCommitmentScreenContentState
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('commitments.select_savings_required'.tr),
-          backgroundColor: AppColors.error,
+          backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

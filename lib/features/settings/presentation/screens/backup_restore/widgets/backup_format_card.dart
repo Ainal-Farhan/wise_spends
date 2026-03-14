@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 
 /// A tappable card that represents one backup format (JSON or SQLite).
 ///
@@ -104,7 +103,7 @@ class _BackupFormatCardState extends State<BackupFormatCard>
               Text(
                 widget.description,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),

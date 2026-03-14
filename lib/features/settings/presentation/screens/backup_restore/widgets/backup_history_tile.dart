@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/domain/models/backup_file_info.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -30,14 +29,16 @@ class BackupHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (color, icon, formatLabel) = _resolveFormat(backup.format);
+    final (color, icon, formatLabel) = _resolveFormat(context, backup.format);
     final dateStr = DateFormat('dd MMM yyyy • HH:mm').format(backup.createdAt);
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider.withValues(alpha: 0.4)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.4),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -89,13 +90,17 @@ class BackupHistoryTile extends StatelessWidget {
                                 Icon(
                                   Icons.access_time_rounded,
                                   size: 11,
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(width: 3),
                                 Text(
                                   dateStr,
                                   style: AppTextStyles.bodySmall.copyWith(
-                                    color: AppColors.textSecondary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -107,13 +112,17 @@ class BackupHistoryTile extends StatelessWidget {
                                 Icon(
                                   Icons.data_usage_rounded,
                                   size: 11,
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(width: 3),
                                 Text(
                                   backup.formattedSize,
                                   style: AppTextStyles.bodySmall.copyWith(
-                                    color: AppColors.textSecondary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -141,17 +150,28 @@ class BackupHistoryTile extends StatelessWidget {
   }
 
   /// Returns (accentColor, icon, shortLabel) based on the backup format string.
-  (Color, IconData, String) _resolveFormat(String format) {
+  (Color, IconData, String) _resolveFormat(
+    BuildContext context,
+    String format,
+  ) {
     switch (format.toUpperCase()) {
       case 'JSON':
-        return (AppColors.primary, Icons.data_object_rounded, 'JSON');
+        return (
+          Theme.of(context).colorScheme.primary,
+          Icons.data_object_rounded,
+          'JSON',
+        );
       case 'SQLITE':
-        return (AppColors.tertiary, Icons.storage_rounded, 'SQL');
+        return (
+          Theme.of(context).colorScheme.tertiary,
+          Icons.storage_rounded,
+          'SQL',
+        );
       case 'ZIP':
-        return (const Color(0xFF8B5CF6), Icons.folder_zip_rounded, 'ZIP');
+        return (Theme.of(context).colorScheme.primary, Icons.folder_zip_rounded, 'ZIP');
       default:
         return (
-          AppColors.textSecondary,
+          Theme.of(context).colorScheme.onSurfaceVariant,
           Icons.insert_drive_file_outlined,
           format,
         );
@@ -222,19 +242,19 @@ class _TileActions extends StatelessWidget {
         _IconBtn(
           icon: Icons.restore_rounded,
           tooltip: BackupRestoreKeys.historyActionRestore.tr,
-          color: AppColors.tertiary,
+          color: Theme.of(context).colorScheme.tertiary,
           onTap: onRestore,
         ),
         _IconBtn(
           icon: Icons.ios_share_rounded,
           tooltip: BackupRestoreKeys.historyActionShare.tr,
-          color: AppColors.primary,
+          color: Theme.of(context).colorScheme.primary,
           onTap: onShare,
         ),
         _IconBtn(
           icon: Icons.delete_outline_rounded,
           tooltip: BackupRestoreKeys.historyActionDelete.tr,
-          color: AppColors.error,
+          color: Theme.of(context).colorScheme.error,
           onTap: onDelete,
         ),
       ],

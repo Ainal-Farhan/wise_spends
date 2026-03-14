@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Deposit section with toggle and paid amount field
 class DepositSection extends StatelessWidget {
@@ -28,9 +27,9 @@ class DepositSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: WiseSpendsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: WiseSpendsColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         children: [
@@ -38,7 +37,9 @@ class DepositSection extends StatelessWidget {
           InkWell(
             onTap: () => onToggle(!hasDeposit),
             borderRadius: hasDeposit
-                ? const BorderRadius.vertical(top: Radius.circular(AppRadius.lg))
+                ? const BorderRadius.vertical(
+                    top: Radius.circular(AppRadius.lg),
+                  )
                 : BorderRadius.circular(AppRadius.lg),
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -51,16 +52,20 @@ class DepositSection extends StatelessWidget {
                     padding: const EdgeInsets.all(7),
                     decoration: BoxDecoration(
                       color: hasDeposit
-                          ? WiseSpendsColors.primary.withValues(alpha: 0.12)
-                          : WiseSpendsColors.divider.withValues(alpha: 0.5),
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.12)
+                          : Theme.of(
+                              context,
+                            ).colorScheme.outline.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.handshake_outlined,
                       size: 16,
                       color: hasDeposit
-                          ? WiseSpendsColors.primary
-                          : WiseSpendsColors.textSecondary,
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
@@ -77,7 +82,9 @@ class DepositSection extends StatelessWidget {
                         Text(
                           'budget_plans.has_deposit_sub'.tr,
                           style: AppTextStyles.caption.copyWith(
-                            color: WiseSpendsColors.textSecondary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -86,7 +93,7 @@ class DepositSection extends StatelessWidget {
                   Switch(
                     value: hasDeposit,
                     onChanged: onToggle,
-                    activeThumbColor: WiseSpendsColors.primary,
+                    activeThumbColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],
               ),
@@ -101,7 +108,10 @@ class DepositSection extends StatelessWidget {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Divider(height: 1, color: WiseSpendsColors.divider),
+                      Divider(
+                        height: 1,
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(AppSpacing.lg),
                         child: Row(
@@ -109,14 +119,17 @@ class DepositSection extends StatelessWidget {
                             Expanded(
                               child: TextFormField(
                                 controller: depositPaidCtrl,
-                                keyboardType: const TextInputType.numberWithOptions(
-                                  decimal: true,
-                                ),
+                                keyboardType:
+                                    const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                    ),
                                 decoration: InputDecoration(
                                   labelText: 'budget_plans.deposit_paid'.tr,
                                   prefixText: 'RM ',
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(AppRadius.md),
+                                    borderRadius: BorderRadius.circular(
+                                      AppRadius.md,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -128,10 +141,16 @@ class DepositSection extends StatelessWidget {
                                 vertical: AppSpacing.sm,
                               ),
                               decoration: BoxDecoration(
-                                color: depositStatusColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(AppRadius.full),
+                                color: depositStatusColor.withValues(
+                                  alpha: 0.1,
+                                ),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.full,
+                                ),
                                 border: Border.all(
-                                  color: depositStatusColor.withValues(alpha: 0.3),
+                                  color: depositStatusColor.withValues(
+                                    alpha: 0.3,
+                                  ),
                                 ),
                               ),
                               child: Row(
@@ -187,9 +206,9 @@ class PaymentSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: WiseSpendsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: WiseSpendsColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,13 +218,15 @@ class PaymentSection extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
-                  color: WiseSpendsColors.primary.withValues(alpha: 0.12),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.payment_outlined,
                   size: 16,
-                  color: WiseSpendsColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -222,7 +243,7 @@ class PaymentSection extends StatelessWidget {
                     Text(
                       'budget_plans.payment_sub'.tr,
                       style: AppTextStyles.caption.copyWith(
-                        color: WiseSpendsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],

@@ -10,7 +10,6 @@ import 'package:wise_spends/features/budget/presentation/screens/edit_budget_she
 import 'package:wise_spends/features/budget/presentation/widgets/budget_options_sheet.dart';
 import 'package:wise_spends/features/category/presentation/bloc/category_bloc.dart';
 import 'package:wise_spends/shared/components/app_card.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'budget_category_icon.dart';
@@ -25,10 +24,15 @@ class BudgetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final spentAmount = budget.spentAmount;
     final budgetAmount = budget.limitAmount.clamp(0.01, double.infinity);
     final progress = (spentAmount / budgetAmount).clamp(0.0, 1.0);
-    final progressColor = AppColors.getBudgetProgressColor(progress);
+    final progressColor = progress < 0.6 
+        ? colorScheme.primary 
+        : progress < 0.85 
+            ? colorScheme.tertiary 
+            : colorScheme.secondary;
     final currencyFmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 2);
     final isInactive = !budget.isActive;
 
@@ -67,16 +71,20 @@ class BudgetCard extends StatelessWidget {
                               child: Text(
                                 categoryName!,
                                 style: AppTextStyles.bodySmall.copyWith(
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             const SizedBox(width: AppSpacing.xs),
-                            const Text(
+                            Text(
                               '·',
-                              style: TextStyle(color: AppColors.textHint),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
                             ),
                             const SizedBox(width: AppSpacing.xs),
                           ],
@@ -86,14 +94,20 @@ class BudgetCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.surface,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(AppRadius.sm),
-                              border: Border.all(color: AppColors.border),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline,
+                              ),
                             ),
                             child: Text(
                               _formatPeriod(budget.period),
                               style: AppTextStyles.captionSmall.copyWith(
-                                color: AppColors.textSecondary,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -143,7 +157,7 @@ class BudgetCard extends StatelessWidget {
                 Text(
                   'of ${currencyFmt.format(budgetAmount)}',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

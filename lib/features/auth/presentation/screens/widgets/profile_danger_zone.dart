@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -18,9 +17,9 @@ class ProfileDangerZone extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.secondaryContainer,
+        color: Theme.of(context).colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
+        border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,7 +29,7 @@ class ProfileDangerZone extends StatelessWidget {
           Text(
             'profile.danger_zone_desc'.tr,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -53,7 +52,7 @@ class ProfileDangerZone extends StatelessWidget {
           title: 'profile.delete_account'.tr,
           message: 'profile.delete_account_confirm'.tr,
           icon: Icons.warning_amber_rounded,
-          iconColor: AppColors.secondary,
+          iconColor: Theme.of(context).colorScheme.secondary,
           buttons: [
             CustomDialogButton(
               text: 'general.cancel'.tr,
@@ -81,7 +80,7 @@ class _DangerZoneHeader extends StatelessWidget {
       children: [
         Icon(
           Icons.warning_amber_rounded,
-          color: AppColors.secondary,
+          color: Theme.of(context).colorScheme.secondary,
           size: AppIconSize.md,
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -89,7 +88,7 @@ class _DangerZoneHeader extends StatelessWidget {
           'profile.danger_zone'.tr,
           style: AppTextStyles.bodyMedium.copyWith(
             fontWeight: FontWeight.w600,
-            color: AppColors.secondary,
+            color: Theme.of(context).colorScheme.secondary,
           ),
         ),
       ],

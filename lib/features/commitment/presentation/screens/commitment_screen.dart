@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_bloc.dart';
@@ -96,7 +95,7 @@ class _CommitmentScreenContent extends StatelessWidget {
         context,
         message: state.message,
         icon: Icons.check_circle,
-        color: AppColors.success,
+        color: Theme.of(context).colorScheme.primary,
       );
       context.read<CommitmentBloc>().add(state.nextEvent);
     } else if (state is CommitmentStateDistributionSuccess) {
@@ -113,7 +112,7 @@ class _CommitmentScreenContent extends StatelessWidget {
         context,
         message: state.message,
         icon: Icons.error_outline,
-        color: AppColors.error,
+        color: Theme.of(context).colorScheme.error,
       );
     }
   }
@@ -155,7 +154,7 @@ class _CommitmentScreenContent extends StatelessWidget {
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.tertiary, AppColors.tertiaryDark],
+        colors: [Color(0xFF42A5F5), Color(0xFF42A5F5)],
       ),
       icon: Icons.calendar_month,
       label: 'general.commitment_overview'.tr,
@@ -203,7 +202,7 @@ class _CommitmentScreenContent extends StatelessWidget {
           Icon(
             Icons.calendar_month_outlined,
             size: 80,
-            color: AppColors.textHint,
+            color: Theme.of(context).colorScheme.outline,
           ),
           const SizedBox(height: 16),
           Text('commitments.no_commitments'.tr, style: AppTextStyles.h3),
@@ -211,7 +210,7 @@ class _CommitmentScreenContent extends StatelessWidget {
           Text(
             'general.tap_button_below'.tr,
             style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
           ),
@@ -251,12 +250,12 @@ class _CommitmentScreenContent extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: AppColors.tertiary.withValues(alpha: 0.2),
+                  color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.calendar_month,
-                  color: AppColors.tertiary,
+                  color: Color(0xFF42A5F5),
                   size: 24,
                 ),
               ),
@@ -285,10 +284,7 @@ class _CommitmentScreenContent extends StatelessWidget {
                 ),
               ),
               PopupMenuButton<String>(
-                icon: const Icon(
-                  Icons.more_vert,
-                  color: AppColors.textSecondary,
-                ),
+                icon: const Icon(Icons.more_vert, color: Color(0xFF666666)),
                 onSelected: (value) {
                   if (value == 'edit') {
                     _navigateToEditCommitment(context, commitment);
@@ -314,12 +310,12 @@ class _CommitmentScreenContent extends StatelessWidget {
                         const Icon(
                           Icons.delete,
                           size: 18,
-                          color: AppColors.secondary,
+                          color: Color(0xFFFF6B6B),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           'general.delete'.tr,
-                          style: const TextStyle(color: AppColors.secondary),
+                          style: const TextStyle(color: Color(0xFFFF6B6B)),
                         ),
                       ],
                     ),
@@ -347,7 +343,7 @@ class _CommitmentScreenContent extends StatelessWidget {
                       decimalDigits: 2,
                     ).format(totalAmount),
                     style: AppTextStyles.amountSmall.copyWith(
-                      color: AppColors.tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ),
                 ],
@@ -360,7 +356,7 @@ class _CommitmentScreenContent extends StatelessWidget {
                     Text(
                       'general.tap_to_manage'.tr,
                       style: AppTextStyles.captionSmall.copyWith(
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                 ],
@@ -394,9 +390,9 @@ class _CommitmentScreenContent extends StatelessWidget {
                   icon: const Icon(Icons.list_alt_rounded, size: 16),
                   label: Text('commitments.details'.tr),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primary,
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                     side: BorderSide(
-                      color: AppColors.primary.withValues(alpha: 0.5),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -460,7 +456,7 @@ class _CommitmentScreenContent extends StatelessWidget {
             'name': name,
           }),
           icon: Icons.send_and_archive_rounded,
-          iconColor: AppColors.success,
+          iconColor: Theme.of(context).colorScheme.primary,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,7 +480,7 @@ class _CommitmentScreenContent extends StatelessWidget {
                       'commitments.total_to_distribute'.tr,
                       style: const TextStyle(
                         fontSize: 13,
-                        color: AppColors.textSecondary,
+                        color: Color(0xFF666666),
                       ),
                     ),
                     Text(
@@ -504,10 +500,7 @@ class _CommitmentScreenContent extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 'commitments.distribute_task_msg'.tr,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF666666)),
               ),
             ],
           ),
@@ -544,7 +537,7 @@ class _CommitmentScreenContent extends StatelessWidget {
           title: 'commitments.delete'.tr,
           message: 'commitments.delete_msg'.tr,
           icon: Icons.delete_outline,
-          iconColor: AppColors.secondary,
+          iconColor: Theme.of(context).colorScheme.secondary,
           buttons: [
             CustomDialogButton(
               text: 'general.cancel'.tr,

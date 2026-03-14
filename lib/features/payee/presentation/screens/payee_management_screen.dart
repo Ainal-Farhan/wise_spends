@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
@@ -58,7 +57,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                     Text(message),
                   ],
                 ),
-                backgroundColor: AppColors.success,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
@@ -76,7 +75,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                     Text(state.message),
                   ],
                 ),
-                backgroundColor: AppColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
@@ -98,7 +97,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                 subtitle: 'payees.no_payees_desc'.tr,
                 actionLabel: 'payees.add_payee'.tr,
                 onAction: () => _showAddPayeeDialog(context),
-                iconColor: AppColors.tertiary,
+                iconColor: Theme.of(context).colorScheme.tertiary,
               );
             }
 
@@ -138,7 +137,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.tertiary, AppColors.tertiaryDark],
+        colors: [Color(0xFF42A5F5), Color(0xFF42A5F5)],
       ),
       icon: Icons.people_outline,
       label: 'payees.title'.tr,
@@ -180,14 +179,10 @@ class _PayeeManagementScreenContent extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: AppColors.tertiary.withValues(alpha: 0.12),
+              color: Color(0xFF42A5F5).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(
-              Icons.person,
-              color: AppColors.tertiary,
-              size: 24,
-            ),
+            child: const Icon(Icons.person, color: Color(0xFF42A5F5), size: 24),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -249,12 +244,12 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                     const Icon(
                       Icons.delete,
                       size: 18,
-                      color: AppColors.secondary,
+                      color: Color(0xFFFF6B6B),
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'general.delete'.tr,
-                      style: const TextStyle(color: AppColors.secondary),
+                      style: const TextStyle(color: Color(0xFFFF6B6B)),
                     ),
                   ],
                 ),
@@ -282,7 +277,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
         config: CustomDialogConfig(
           title: 'payees.add_payee'.tr,
           icon: Icons.person_add_outlined,
-          iconColor: AppColors.primary,
+          iconColor: Theme.of(context).colorScheme.primary,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -330,7 +325,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('payees.enter_name'.tr),
-                      backgroundColor: AppColors.error,
+                      backgroundColor: Theme.of(context).colorScheme.error,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -378,7 +373,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
         config: CustomDialogConfig(
           title: 'payees.edit_payee'.tr,
           icon: Icons.edit_note,
-          iconColor: AppColors.tertiary,
+          iconColor: Theme.of(context).colorScheme.tertiary,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -422,7 +417,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('payees.enter_name'.tr),
-                      backgroundColor: AppColors.error,
+                      backgroundColor: Theme.of(context).colorScheme.error,
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -463,7 +458,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
           title: 'payees.delete_payee'.tr,
           message: 'payees.delete_payee_msg'.tr,
           icon: Icons.delete_outline,
-          iconColor: AppColors.secondary,
+          iconColor: Theme.of(context).colorScheme.secondary,
           buttons: [
             CustomDialogButton(
               text: 'general.cancel'.tr,

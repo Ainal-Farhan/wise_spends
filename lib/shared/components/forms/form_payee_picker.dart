@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 final _logger = WiseLogger();
@@ -67,10 +66,12 @@ class FormPayeePicker extends StatelessWidget {
         if (selectedPayee != null) ...[
           SelectedPayeeChip(
             payee: selectedPayee!,
-            onClear: enabled ? () {
-              _logger.debug('Payee cleared', tag: 'FormPayeePicker');
-              onPayeeSelected(null);
-            } : null,
+            onClear: enabled
+                ? () {
+                    _logger.debug('Payee cleared', tag: 'FormPayeePicker');
+                    onPayeeSelected(null);
+                  }
+                : null,
           ),
         ] else if (payees.isEmpty)
           _NoPayeesHint()
@@ -118,9 +119,9 @@ class _PayeeDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: DropdownButtonFormField<FormPayeeItem?>(
         initialValue: payees.any((p) => p.id == selectedPayee?.id)
@@ -131,9 +132,9 @@ class _PayeeDropdown extends StatelessWidget {
           hintText: hint,
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 12, right: 8),
-            child: const Icon(
+            child: Icon(
               Icons.person_search_rounded,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               size: 20,
             ),
           ),
@@ -174,7 +175,7 @@ class _PayeeDropdown extends StatelessWidget {
                   Text(
                     p.subtitle!,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -208,9 +209,11 @@ class SelectedPayeeChip extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.07),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25),
+        ),
       ),
       child: Row(
         children: [
@@ -218,13 +221,15 @@ class SelectedPayeeChip extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.12),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.person_rounded,
               size: 18,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(width: 10),
@@ -235,7 +240,7 @@ class SelectedPayeeChip extends StatelessWidget {
                 Text(
                   payee.displayName,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -243,7 +248,9 @@ class SelectedPayeeChip extends StatelessWidget {
                   Text(
                     payee.subtitle!,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.primary.withValues(alpha: 0.65),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.65),
                     ),
                   ),
               ],
@@ -256,13 +263,15 @@ class SelectedPayeeChip extends StatelessWidget {
                 width: 26,
                 height: 26,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.close_rounded,
                   size: 14,
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -282,22 +291,22 @@ class _NoPayeesHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.person_outline_rounded,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             size: 18,
           ),
           const SizedBox(width: 10),
           Text(
             'transaction.payee.no_payees'.tr,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -327,7 +336,9 @@ class _SectionLabel extends StatelessWidget {
           const SizedBox(width: 5),
           Text(
             optionalSuffix!,
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textHint),
+            style: AppTextStyles.bodySmall.copyWith(
+              color: Theme.of(context).colorScheme.outline,
+            ),
           ),
         ],
       ],

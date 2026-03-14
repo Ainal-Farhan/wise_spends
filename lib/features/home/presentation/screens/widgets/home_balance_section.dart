@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -32,7 +31,7 @@ class HomeBalanceSection extends StatelessWidget {
                 icon: TransactionType.income.icon,
                 label: TransactionType.income.label,
                 value: _formatCurrency(totalIncome),
-                color: TransactionType.income.color,
+                color: TransactionType.income.getColor(context),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -41,7 +40,7 @@ class HomeBalanceSection extends StatelessWidget {
                 icon: TransactionType.expense.icon,
                 label: TransactionType.expense.label,
                 value: _formatCurrency(totalExpenses),
-                color: TransactionType.expense.color,
+                color: TransactionType.expense.getColor(context),
               ),
             ),
           ],
@@ -61,11 +60,13 @@ class _TotalBalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return AppCard.gradient(
-      gradient: const LinearGradient(
+      gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.primary, AppColors.primaryDark],
+        colors: [colorScheme.primary, colorScheme.primaryContainer],
       ),
       borderRadius: BorderRadius.circular(AppRadius.lg),
       padding: const EdgeInsets.all(AppSpacing.xxl),
@@ -175,6 +176,8 @@ class _IncomeExpenseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -207,7 +210,7 @@ class _IncomeExpenseCard extends StatelessWidget {
                 Text(
                   label,
                   style: AppTextStyles.labelSmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 2),

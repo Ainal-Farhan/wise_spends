@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 
 /// Custom Dialog Button Configuration
@@ -64,7 +63,7 @@ class CustomDialog extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Dialog(
-      backgroundColor: isDark ? AppColors.darkSurface : AppColors.surface,
+      backgroundColor: isDark ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.surface,
       elevation: AppElevation.lg,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.dialog),
@@ -90,14 +89,14 @@ class CustomDialog extends StatelessWidget {
                   height: 56,
                   margin: const EdgeInsets.only(bottom: AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: (config.iconColor ?? AppColors.primary).withValues(
+                    color: (config.iconColor ?? Theme.of(context).colorScheme.primary).withValues(
                       alpha: 0.1,
                     ),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     config.icon,
-                    color: config.iconColor ?? AppColors.primary,
+                    color: config.iconColor ?? Theme.of(context).colorScheme.primary,
                     size: 28,
                   ),
                 ),
@@ -109,7 +108,7 @@ class CustomDialog extends StatelessWidget {
                     config.title!,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : AppColors.textPrimary,
+                      color: isDark ? Colors.white : Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
               if (config.message != null) const SizedBox(height: AppSpacing.xs),
@@ -118,7 +117,7 @@ class CustomDialog extends StatelessWidget {
               Text(
                 config.message!,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             if (config.content != null) ...[
@@ -191,7 +190,7 @@ class CustomDialog extends StatelessWidget {
       builtButton = FilledButton(
         onPressed: button.onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.secondary,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Colors.white,
           minimumSize: const Size(0, buttonHeight),
           maximumSize: const Size(double.infinity, buttonHeight),
@@ -205,7 +204,7 @@ class CustomDialog extends StatelessWidget {
       builtButton = FilledButton(
         onPressed: button.onPressed,
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
           minimumSize: const Size(0, buttonHeight),
           maximumSize: const Size(double.infinity, buttonHeight),
@@ -225,7 +224,7 @@ class CustomDialog extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.button),
           ),
           side: BorderSide(
-            color: isDark ? AppColors.darkBorder : AppColors.border,
+            color: isDark ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.outline,
           ),
         ),
         child: Text(
@@ -233,7 +232,7 @@ class CustomDialog extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 14,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       );

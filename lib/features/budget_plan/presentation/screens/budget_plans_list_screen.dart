@@ -18,7 +18,6 @@ import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 // =============================================================================
 // Root screen
@@ -103,7 +102,7 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: WiseSpendsColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -111,7 +110,7 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: WiseSpendsColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -119,7 +118,7 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: WiseSpendsColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -127,7 +126,7 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('budget_plans.recalculated'.tr),
-                backgroundColor: WiseSpendsColors.success,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -272,10 +271,13 @@ class _SummaryCard extends StatelessWidget {
         );
 
         return SectionHeader.card(
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [WiseSpendsColors.tertiary, WiseSpendsColors.tertiaryDark],
+            colors: [
+              Theme.of(context).colorScheme.tertiary,
+              Theme.of(context).colorScheme.tertiary,
+            ],
           ),
           icon: Icons.pie_chart_outline,
           label: 'budget_plans.overall_summary'.tr,
@@ -381,8 +383,10 @@ class _FilterChips extends StatelessWidget {
       onSelected: (selected) => context.read<BudgetPlanListBloc>().add(
         FilterBudgetPlans(status: selected ? status : null),
       ),
-      selectedColor: WiseSpendsColors.primary.withValues(alpha: 0.2),
-      checkmarkColor: WiseSpendsColors.primary,
+      selectedColor: Theme.of(
+        context,
+      ).colorScheme.primary.withValues(alpha: 0.2),
+      checkmarkColor: Theme.of(context).colorScheme.primary,
     );
   }
 }
@@ -399,7 +403,7 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double progress = plan.progressPercentage.clamp(0.0, 1.0);
-    final Color healthColor = _healthColor(plan.healthStatus);
+    final Color healthColor = _healthColor(context, plan.healthStatus);
     final NumberFormat fmt = NumberFormat.currency(
       symbol: 'RM',
       decimalDigits: 0,
@@ -466,7 +470,9 @@ class _PlanCard extends StatelessWidget {
                         Text(
                           plan.category.displayName,
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: WiseSpendsColors.textSecondary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -510,7 +516,7 @@ class _PlanCard extends StatelessWidget {
                     Text(
                       '${plan.healthStatus.displayName} · ${plan.daysRemaining}d',
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: WiseSpendsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -537,17 +543,17 @@ class _PlanCard extends StatelessWidget {
   }
 
   // WAS: Color _healthColor(dynamic healthStatus)
-  Color _healthColor(BudgetHealthStatus healthStatus) {
+  Color _healthColor(BuildContext context, BudgetHealthStatus healthStatus) {
     switch (healthStatus) {
       case BudgetHealthStatus.onTrack:
-        return WiseSpendsColors.success;
+        return Theme.of(context).colorScheme.primary;
       case BudgetHealthStatus.slightlyBehind:
-        return WiseSpendsColors.warning;
+        return Theme.of(context).colorScheme.tertiary;
       case BudgetHealthStatus.atRisk:
       case BudgetHealthStatus.overBudget:
-        return WiseSpendsColors.secondary;
+        return Theme.of(context).colorScheme.secondary;
       case BudgetHealthStatus.completed:
-        return WiseSpendsColors.primary;
+        return Theme.of(context).colorScheme.primary;
     }
   }
 
@@ -592,9 +598,9 @@ class _AmountsGrid extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: WiseSpendsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: WiseSpendsColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -606,7 +612,7 @@ class _AmountsGrid extends StatelessWidget {
                 label: 'budget_plans.available'.tr,
                 value: fmt.format(currentAmount),
                 icon: Icons.account_balance_wallet_outlined,
-                color: WiseSpendsColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 isLarge: true,
                 flex: 5,
               ),
@@ -615,7 +621,7 @@ class _AmountsGrid extends StatelessWidget {
                 label: 'budget_plans.spent'.tr,
                 value: fmt.format(totalSpent),
                 icon: Icons.north_outlined,
-                color: WiseSpendsColors.secondary,
+                color: Theme.of(context).colorScheme.secondary,
                 flex: 1,
               ),
               _GridDivider(),
@@ -623,7 +629,7 @@ class _AmountsGrid extends StatelessWidget {
                 label: 'budget_plans.deposited'.tr,
                 value: fmt.format(totalDeposited),
                 icon: Icons.south_outlined,
-                color: WiseSpendsColors.success,
+                color: Theme.of(context).colorScheme.primary,
                 flex: 1,
               ),
             ],
@@ -642,7 +648,7 @@ class _AmountsGrid extends StatelessWidget {
                     'budget_plans.item_payments'.tr,
                     style: AppTextStyles.bodySmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: WiseSpendsColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -653,7 +659,7 @@ class _AmountsGrid extends StatelessWidget {
                     fmt.format(itemPaidTotal),
                     style: AppTextStyles.bodySmall.copyWith(
                       fontWeight: FontWeight.w600,
-                      color: WiseSpendsColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     textAlign: TextAlign.right,
                     maxLines: 1,
@@ -668,9 +674,11 @@ class _AmountsGrid extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppRadius.full),
               child: LinearProgressIndicator(
                 value: itemProgress,
-                backgroundColor: WiseSpendsColors.primary.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  WiseSpendsColors.primary,
+                  Theme.of(context).colorScheme.primary,
                 ),
                 minHeight: 4,
               ),
@@ -684,7 +692,7 @@ class _AmountsGrid extends StatelessWidget {
                   child: Text(
                     'budget_plans.outstanding'.tr,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: WiseSpendsColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -695,8 +703,8 @@ class _AmountsGrid extends StatelessWidget {
                   style: AppTextStyles.bodySmall.copyWith(
                     fontWeight: FontWeight.w600,
                     color: itemOutstanding > 0
-                        ? WiseSpendsColors.error
-                        : WiseSpendsColors.success,
+                        ? Theme.of(context).colorScheme.error
+                        : Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
@@ -744,10 +752,18 @@ class _AmountCell extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: (isLarge ? AppTextStyles.caption : AppTextStyles.captionSmall).copyWith(
-                    color: WiseSpendsColors.textSecondary,
-                    fontWeight: isLarge ? FontWeight.w600 : FontWeight.normal,
-                  ),
+                  style:
+                      (isLarge
+                              ? AppTextStyles.caption
+                              : AppTextStyles.captionSmall)
+                          .copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                            fontWeight: isLarge
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                          ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -759,10 +775,9 @@ class _AmountCell extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: Text(
               value,
-              style: (isLarge ? AppTextStyles.bodyLarge : AppTextStyles.bodyMedium).copyWith(
-                color: color,
-                fontWeight: FontWeight.w600,
-              ),
+              style:
+                  (isLarge ? AppTextStyles.bodyLarge : AppTextStyles.bodyMedium)
+                      .copyWith(color: color, fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -777,7 +792,7 @@ class _GridDivider extends StatelessWidget {
     return Container(
       width: 1,
       height: 32,
-      color: WiseSpendsColors.divider,
+      color: Theme.of(context).colorScheme.outline,
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
     );
   }
@@ -827,13 +842,13 @@ class _PlanOptionsSheet extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(
+            leading: Icon(
               Icons.delete_outline,
-              color: WiseSpendsColors.secondary,
+              color: Theme.of(context).colorScheme.secondary,
             ),
             title: Text(
               'general.delete'.tr,
-              style: const TextStyle(color: WiseSpendsColors.secondary),
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
             ),
             onTap: () {
               Navigator.pop(context);
@@ -863,7 +878,7 @@ class _PlanOptionsSheet extends StatelessWidget {
           messenger.showSnackBar(
             SnackBar(
               content: Text('budget_plans.plan_exported'.tr),
-              backgroundColor: WiseSpendsColors.success,
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
         }
@@ -875,7 +890,7 @@ class _PlanOptionsSheet extends StatelessWidget {
             content: Text(
               'budget_plans.export_failed'.trWith({'error': e.toString()}),
             ),
-            backgroundColor: WiseSpendsColors.error,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }

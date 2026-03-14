@@ -4,7 +4,6 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 
 import 'backup_auto_backup_card.dart';
@@ -107,7 +106,7 @@ class _BackupTabState extends State<BackupTab>
             'format': format,
           }),
           icon: Icons.ios_share_rounded,
-          iconColor: AppColors.primary,
+          iconColor: Theme.of(context).colorScheme.primary,
           buttons: [
             CustomDialogButton(
               text: BackupRestoreKeys.dialogCancel.tr,
@@ -137,7 +136,7 @@ class _BackupTabState extends State<BackupTab>
           title: BackupRestoreKeys.dialogRestoreTitle.tr,
           message: BackupRestoreKeys.dialogRestoreMessage.tr,
           icon: Icons.warning_amber_rounded,
-          iconColor: AppColors.warning,
+          iconColor: Theme.of(context).colorScheme.tertiary,
           buttons: [
             CustomDialogButton(
               text: BackupRestoreKeys.dialogCancel.tr,
@@ -173,7 +172,7 @@ class _ShareFormatRow extends StatelessWidget {
             icon: Icons.data_object_rounded,
             label: BackupRestoreKeys.formatJsonLabel.tr,
             description: BackupRestoreKeys.formatJsonDesc.tr,
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             chipLabel: 'Universal',
             onTap: () => onTap('JSON'),
           ),
@@ -184,7 +183,7 @@ class _ShareFormatRow extends StatelessWidget {
             icon: Icons.storage_rounded,
             label: BackupRestoreKeys.formatSqliteLabel.tr,
             description: BackupRestoreKeys.formatSqliteDesc.tr,
-            color: AppColors.tertiary,
+            color: Theme.of(context).colorScheme.tertiary,
             chipLabel: 'Fast restore',
             onTap: () => onTap('SQLite'),
           ),
@@ -207,7 +206,7 @@ class _SaveFormatRow extends StatelessWidget {
             icon: Icons.data_object_rounded,
             label: BackupRestoreKeys.formatJsonLabel.tr,
             description: BackupRestoreKeys.formatJsonDesc.tr,
-            color: AppColors.success,
+            color: Theme.of(context).colorScheme.primary,
             onTap: () => onTap('JSON'),
           ),
         ),
@@ -217,7 +216,7 @@ class _SaveFormatRow extends StatelessWidget {
             icon: Icons.storage_rounded,
             label: BackupRestoreKeys.formatSqliteLabel.tr,
             description: BackupRestoreKeys.formatSqliteDesc.tr,
-            color: AppColors.success,
+            color: Theme.of(context).colorScheme.primary,
             onTap: () => onTap('SQLite'),
           ),
         ),

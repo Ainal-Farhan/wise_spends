@@ -10,7 +10,6 @@ import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Link account sheet widget - allows linking savings accounts to budget plan
 class LinkAccountSheet extends StatefulWidget {
@@ -67,8 +66,8 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
         top: AppSpacing.xxl,
         bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.xxl,
       ),
-      decoration: const BoxDecoration(
-        color: WiseSpendsColors.background,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppRadius.xxl),
         ),
@@ -86,7 +85,7 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: WiseSpendsColors.divider,
+                    color: Theme.of(context).colorScheme.outline,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -99,12 +98,14 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.sm),
                     decoration: BoxDecoration(
-                      color: WiseSpendsColors.primary.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.add_link,
-                      color: WiseSpendsColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
@@ -115,7 +116,7 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
               Text(
                 'budget_plans.link_account_desc'.tr,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: WiseSpendsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.xxl),
@@ -134,15 +135,19 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   decoration: BoxDecoration(
-                    color: WiseSpendsColors.surface,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: WiseSpendsColors.divider),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.info_outline,
-                        color: WiseSpendsColors.textHint,
+                        color: Theme.of(context).colorScheme.outline,
                         size: 20,
                       ),
                       const SizedBox(width: AppSpacing.md),
@@ -150,7 +155,9 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                         child: Text(
                           'budget_plans.no_savings_to_link'.tr,
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: WiseSpendsColors.textSecondary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -172,15 +179,17 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                           padding: const EdgeInsets.all(AppSpacing.lg),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? WiseSpendsColors.primary.withValues(
-                                    alpha: 0.08,
-                                  )
-                                : WiseSpendsColors.surface,
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withValues(alpha: 0.08)
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(AppRadius.md),
                             border: Border.all(
                               color: isSelected
-                                  ? WiseSpendsColors.primary
-                                  : WiseSpendsColors.divider,
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.outline,
                               width: isSelected ? 2 : 1,
                             ),
                           ),
@@ -191,8 +200,10 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                                     ? Icons.check_circle
                                     : Icons.radio_button_unchecked,
                                 color: isSelected
-                                    ? WiseSpendsColors.primary
-                                    : WiseSpendsColors.textSecondary,
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: AppSpacing.md),
                               Expanded(
@@ -204,14 +215,18 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                                       style: AppTextStyles.bodyMedium.copyWith(
                                         fontWeight: FontWeight.w600,
                                         color: isSelected
-                                            ? WiseSpendsColors.primary
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.primary
                                             : null,
                                       ),
                                     ),
                                     Text(
                                       'RM ${account.currentAmount ?? 0}',
                                       style: AppTextStyles.bodySmall.copyWith(
-                                        color: WiseSpendsColors.textSecondary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                   ],

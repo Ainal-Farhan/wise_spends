@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import '../models/settings_models.dart';
@@ -17,7 +16,7 @@ Future<ThemeMode?> showThemeSelectorDialog({
       config: CustomDialogConfig(
         title: 'settings.theme'.tr,
         icon: Icons.palette_outlined,
-        iconColor: AppColors.primary,
+        iconColor: Theme.of(context).colorScheme.primary,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ThemeOption.options.map((option) {
@@ -63,13 +62,13 @@ class _ThemeOptionTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.08)
-              : AppColors.surface,
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.08)
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.3)
-                : AppColors.divider,
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+                : Theme.of(context).colorScheme.outline,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -79,12 +78,12 @@ class _ThemeOptionTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.primaryContainer,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Icon(
                 option.icon,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 size: AppIconSize.sm,
               ),
             ),
@@ -96,20 +95,19 @@ class _ThemeOptionTile extends StatelessWidget {
                   Text(
                     option.title,
                     style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
                     ),
                   ),
-                  Text(
-                    option.subtitle,
-                    style: AppTextStyles.bodySmall,
-                  ),
+                  Text(option.subtitle, style: AppTextStyles.bodySmall),
                 ],
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 size: AppIconSize.md,
               ),
           ],

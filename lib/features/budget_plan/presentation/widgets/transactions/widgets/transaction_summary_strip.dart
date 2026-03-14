@@ -3,7 +3,6 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/amount_text.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Summary strip shown above the deposit/spending tab bar.
 ///
@@ -46,15 +45,15 @@ class TransactionSummaryStrip extends StatelessWidget {
 
     // Progress bar colour: green when healthy, amber when >80%, red when >100%
     final barColor = spentRatio >= 1.0
-        ? WiseSpendsColors.error
+        ? Theme.of(context).colorScheme.error
         : spentRatio >= 0.8
-        ? WiseSpendsColors.warning
-        : WiseSpendsColors.success;
+        ? Theme.of(context).colorScheme.tertiary
+        : Theme.of(context).colorScheme.primary;
 
     return Container(
       decoration: BoxDecoration(
-        color: WiseSpendsColors.surface,
-        border: Border(bottom: BorderSide(color: WiseSpendsColors.divider)),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline)),
       ),
       child: Column(
         children: [
@@ -72,14 +71,14 @@ class TransactionSummaryStrip extends StatelessWidget {
                     _SummaryCell(
                       label: 'budget_plans.deposits'.tr,
                       amount: totalDeposited,
-                      color: WiseSpendsColors.success,
+                      color: Theme.of(context).colorScheme.primary,
                       icon: Icons.south_outlined,
                     ),
                     _SummaryDivider(),
                     _SummaryCell(
                       label: 'budget_plans.spending'.tr,
                       amount: totalSpent,
-                      color: WiseSpendsColors.secondary,
+                      color: Theme.of(context).colorScheme.secondary,
                       icon: Icons.north_outlined,
                     ),
                     _SummaryDivider(),
@@ -87,8 +86,8 @@ class TransactionSummaryStrip extends StatelessWidget {
                       label: 'budget_plans.net'.tr,
                       amount: net,
                       color: net >= 0
-                          ? WiseSpendsColors.success
-                          : WiseSpendsColors.error,
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.error,
                       icon: net >= 0
                           ? Icons.trending_up_rounded
                           : Icons.trending_down_rounded,
@@ -105,8 +104,8 @@ class TransactionSummaryStrip extends StatelessWidget {
                         label: 'budget_plans.available'.tr,
                         amount: totalAvailable!,
                         color: totalAvailable! >= 0
-                            ? WiseSpendsColors.primary
-                            : WiseSpendsColors.error,
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.error,
                         icon: Icons.account_balance_wallet_outlined,
                         isLarge: true,
                       ),
@@ -133,13 +132,13 @@ class TransactionSummaryStrip extends StatelessWidget {
                     Text(
                       '$spentPct% ${'budget_plans.spent'.tr}',
                       style: AppTextStyles.captionSmall.copyWith(
-                        color: WiseSpendsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Text(
                       '$remainPct% ${'budget_plans.remaining'.tr}',
                       style: AppTextStyles.captionSmall.copyWith(
-                        color: WiseSpendsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -149,7 +148,7 @@ class TransactionSummaryStrip extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: spentRatio,
-                    backgroundColor: WiseSpendsColors.divider.withValues(
+                    backgroundColor: Theme.of(context).colorScheme.outline.withValues(
                       alpha: 0.5,
                     ),
                     valueColor: AlwaysStoppedAnimation<Color>(barColor),
@@ -196,7 +195,7 @@ class _SummaryCell extends StatelessWidget {
               Text(
                 label,
                 style: (isLarge ? AppTextStyles.caption : AppTextStyles.captionSmall).copyWith(
-                  color: WiseSpendsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: isLarge ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
@@ -224,7 +223,7 @@ class _SummaryDivider extends StatelessWidget {
     return Container(
       width: 1,
       height: 32,
-      color: WiseSpendsColors.divider,
+      color: Theme.of(context).colorScheme.outline,
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
     );
   }

@@ -4,7 +4,6 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/linked_account_entity.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Linked accounts total banner widget
 class LinkedAccountsTotalBanner extends StatelessWidget {
@@ -31,10 +30,10 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: WiseSpendsColors.primary.withValues(alpha: 0.06),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
-          color: WiseSpendsColors.primary.withValues(alpha: 0.2),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -42,16 +41,16 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.account_balance_outlined,
                 size: 16,
-                color: WiseSpendsColors.primary,
+                color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
                 'budget_plans.total_allocated'.tr,
                 style: AppTextStyles.caption.copyWith(
-                  color: WiseSpendsColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -59,7 +58,7 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
               Text(
                 '${accounts.length} ${'budget_plans.accounts'.tr}',
                 style: AppTextStyles.caption.copyWith(
-                  color: WiseSpendsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -68,7 +67,7 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
           Text(
             fmt.format(totalAllocated),
             style: AppTextStyles.amountMedium.copyWith(
-              color: WiseSpendsColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -77,9 +76,11 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 6,
-              backgroundColor: WiseSpendsColors.primary.withValues(alpha: 0.15),
-              valueColor: const AlwaysStoppedAnimation(
-                WiseSpendsColors.primary,
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.15),
+              valueColor: AlwaysStoppedAnimation(
+                Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
@@ -87,7 +88,7 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
           Text(
             '${(progress * 100).toStringAsFixed(1)}% ${'budget_plans.of_target'.tr}',
             style: AppTextStyles.caption.copyWith(
-              color: WiseSpendsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],

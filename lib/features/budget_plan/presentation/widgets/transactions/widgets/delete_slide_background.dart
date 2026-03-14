@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Red background revealed when the user swipes a card end-to-start.
 /// Used identically by both deposit and spending cards.
@@ -11,7 +10,7 @@ class DeleteSlideBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: WiseSpendsColors.error,
+        color: Theme.of(context).colorScheme.error,
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       alignment: Alignment.centerRight,

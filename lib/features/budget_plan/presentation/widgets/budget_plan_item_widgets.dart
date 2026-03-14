@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Bottom sheet handle for drag indication
 class BottomSheetHandle extends StatelessWidget {
@@ -15,7 +14,7 @@ class BottomSheetHandle extends StatelessWidget {
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: WiseSpendsColors.divider,
+          color: Theme.of(context).colorScheme.outline,
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -39,7 +38,7 @@ class SectionLabel extends StatelessWidget {
     return Row(
       children: [
         if (icon != null) ...[
-          Icon(icon, size: 18, color: WiseSpendsColors.textSecondary),
+          Icon(icon, size: 18, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(width: AppSpacing.sm),
         ],
         Text(
@@ -76,10 +75,10 @@ class SheetHeader extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: WiseSpendsColors.primary.withValues(alpha: 0.1),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
-              child: Icon(icon, color: WiseSpendsColors.primary, size: 24),
+              child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 24),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -92,7 +91,7 @@ class SheetHeader extends StatelessWidget {
                     Text(
                       subtitle!,
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: WiseSpendsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -167,14 +166,14 @@ class SummaryValue extends StatelessWidget {
         Text(
           label,
           style: AppTextStyles.bodySmall.copyWith(
-            color: WiseSpendsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
           value,
           style: AppTextStyles.bodyLarge.copyWith(
-            color: valueColor ?? WiseSpendsColors.textPrimary,
+            color: valueColor ?? Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),

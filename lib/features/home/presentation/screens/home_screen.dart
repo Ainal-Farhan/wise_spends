@@ -11,7 +11,6 @@ import 'package:wise_spends/features/transaction/presentation/bloc/transaction_e
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_state.dart';
 import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/router/app_router.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -120,9 +119,11 @@ class _HomeScreenContentState extends State<_HomeScreenContent>
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surfaceContainerHighest,
       drawer: NavigationSidebar(onNavigate: _refreshTransactions),
       body: BlocListener<NavigationBloc, NavigationState>(
         listener: (context, state) {
@@ -211,6 +212,8 @@ class _HomeFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return FloatingActionButton.extended(
       onPressed: onPressed,
       elevation: AppElevation.sm,
@@ -222,7 +225,7 @@ class _HomeFAB extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-      backgroundColor: AppColors.primary,
+      backgroundColor: colorScheme.primary,
     );
   }
 }

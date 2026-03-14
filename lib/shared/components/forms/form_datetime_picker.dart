@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 final _logger = WiseLogger();
@@ -45,10 +44,16 @@ class FormDateTimePicker extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
               decoration: BoxDecoration(
-                color: enabled ? AppColors.surface : AppColors.surfaceVariant,
+                color: enabled
+                    ? Theme.of(context).colorScheme.surfaceContainerHighest
+                    : Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: enabled ? AppColors.divider : AppColors.border,
+                  color: enabled
+                      ? Theme.of(context).colorScheme.outline
+                      : Theme.of(context).colorScheme.outline,
                 ),
               ),
               child: Row(
@@ -57,12 +62,14 @@ class FormDateTimePicker extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.schedule_rounded,
-                      color: AppColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 18,
                     ),
                   ),
@@ -74,7 +81,7 @@ class FormDateTimePicker extends StatelessWidget {
                         Text(
                           label ?? 'transaction.add.date_time'.tr,
                           style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textHint,
+                            color: Theme.of(context).colorScheme.outline,
                             fontSize: 11,
                             letterSpacing: 0.3,
                           ),
@@ -90,11 +97,15 @@ class FormDateTimePicker extends StatelessWidget {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
                               child: Text(
                                 '·',
                                 style: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ),
@@ -104,8 +115,8 @@ class FormDateTimePicker extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                                 fontSize: 14,
                                 color: selectedTime != null
-                                    ? AppColors.textPrimary
-                                    : AppColors.textHint,
+                                    ? Theme.of(context).colorScheme.onSurface
+                                    : Theme.of(context).colorScheme.outline,
                               ),
                             ),
                           ],
@@ -114,9 +125,9 @@ class FormDateTimePicker extends StatelessWidget {
                     ),
                   ),
                   if (enabled)
-                    const Icon(
+                    Icon(
                       Icons.expand_more_rounded,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       size: 20,
                     ),
                 ],
@@ -256,7 +267,7 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
       padding: EdgeInsets.only(bottom: bottomInset),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -270,7 +281,7 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 20),
                 decoration: BoxDecoration(
-                  color: AppColors.divider,
+                  color: Theme.of(context).colorScheme.outline,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -293,7 +304,9 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
                   child: _SheetCard(
                     icon: Icons.access_time_rounded,
                     label: 'transaction.add.time'.tr,
-                    value: timeSet ? _time!.format(context) : 'transaction.add.time_not_set'.tr,
+                    value: timeSet
+                        ? _time!.format(context)
+                        : 'transaction.add.time_not_set'.tr,
                     isValueSet: timeSet,
                     onTap: _pickTime,
                     trailing: timeSet
@@ -304,13 +317,15 @@ class _DateTimeSheetState extends State<_DateTimeSheet> {
                               width: 20,
                               height: 20,
                               decoration: BoxDecoration(
-                                color: AppColors.divider,
+                                color: Theme.of(context).colorScheme.outline,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.close_rounded,
                                 size: 12,
-                                color: AppColors.textSecondary,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           )
@@ -386,12 +401,12 @@ class _SheetCard extends StatelessWidget {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isValueSet
-                  ? AppColors.primary.withValues(alpha: 0.3)
-                  : AppColors.divider,
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+                  : Theme.of(context).colorScheme.outline,
               width: isValueSet ? 1.5 : 1,
             ),
           ),
@@ -402,14 +417,20 @@ class _SheetCard extends StatelessWidget {
                 height: 28,
                 decoration: BoxDecoration(
                   color: isValueSet
-                      ? AppColors.primary.withValues(alpha: 0.1)
-                      : AppColors.divider.withValues(alpha: 0.5),
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.1)
+                      : Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   icon,
                   size: 14,
-                  color: isValueSet ? AppColors.primary : AppColors.textSecondary,
+                  color: isValueSet
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: 8),
@@ -421,7 +442,7 @@ class _SheetCard extends StatelessWidget {
                       label,
                       style: AppTextStyles.bodySmall.copyWith(
                         fontSize: 10,
-                        color: AppColors.textHint,
+                        color: Theme.of(context).colorScheme.outline,
                         letterSpacing: 0.2,
                       ),
                     ),
@@ -431,7 +452,9 @@ class _SheetCard extends StatelessWidget {
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: isValueSet ? AppColors.textPrimary : AppColors.textHint,
+                        color: isValueSet
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Theme.of(context).colorScheme.outline,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -474,9 +497,13 @@ class _SheetButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 11),
           decoration: BoxDecoration(
-            color: isPrimary ? AppColors.primary : AppColors.surface,
+            color: isPrimary
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(10),
-            border: isPrimary ? null : Border.all(color: AppColors.divider),
+            border: isPrimary
+                ? null
+                : Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -485,7 +512,9 @@ class _SheetButton extends StatelessWidget {
                 Icon(
                   icon,
                   size: 13,
-                  color: isPrimary ? Colors.white : AppColors.textSecondary,
+                  color: isPrimary
+                      ? Colors.white
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
               ],
@@ -495,7 +524,9 @@ class _SheetButton extends StatelessWidget {
                   style: AppTextStyles.labelMedium.copyWith(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isPrimary ? Colors.white : AppColors.textSecondary,
+                    color: isPrimary
+                        ? Colors.white
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,

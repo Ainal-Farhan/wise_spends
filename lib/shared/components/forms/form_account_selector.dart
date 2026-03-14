@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 final _logger = WiseLogger();
@@ -38,14 +37,14 @@ class FormAccountItem {
     };
   }
 
-  Color get typeColor {
+  Color getTypeColor(BuildContext context) {
     return switch (type.toLowerCase()) {
-      'cash' => AppColors.success,
-      'bank' || 'bank_account' => AppColors.primary,
-      'credit' || 'credit_card' => AppColors.secondary,
-      'ewallet' || 'e_wallet' => AppColors.tertiary,
-      'savings' => AppColors.income,
-      _ => AppColors.textSecondary,
+      'cash' => Theme.of(context).colorScheme.primary,
+      'bank' || 'bank_account' => Theme.of(context).colorScheme.primary,
+      'credit' || 'credit_card' => Theme.of(context).colorScheme.secondary,
+      'ewallet' || 'e_wallet' => Theme.of(context).colorScheme.tertiary,
+      'savings' => Theme.of(context).colorScheme.primary,
+      _ => Theme.of(context).colorScheme.onSurfaceVariant,
     };
   }
 }
@@ -217,13 +216,13 @@ class FormTransferAccountSelector extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: AppColors.primaryContainer,
+              color: Theme.of(context).colorScheme.primaryContainer,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.divider),
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.arrow_downward_rounded,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               size: 18,
             ),
           ),
@@ -262,7 +261,7 @@ class _AccountPickerSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
@@ -275,7 +274,7 @@ class _AccountPickerSheet extends StatelessWidget {
             height: 4,
             margin: const EdgeInsets.only(bottom: 20),
             decoration: BoxDecoration(
-              color: AppColors.divider,
+              color: Theme.of(context).colorScheme.outline,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -336,13 +335,13 @@ class _AccountTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? account.typeColor.withValues(alpha: 0.06)
-              : AppColors.surface,
+              ? account.getTypeColor(context).withValues(alpha: 0.06)
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isSelected
-                ? account.typeColor.withValues(alpha: 0.4)
-                : AppColors.divider,
+                ? account.getTypeColor(context).withValues(alpha: 0.4)
+                : Theme.of(context).colorScheme.outline,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -355,7 +354,9 @@ class _AccountTile extends StatelessWidget {
                 account.name,
                 style: AppTextStyles.bodyMedium.copyWith(
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                  color: isSelected ? account.typeColor : AppColors.textPrimary,
+                  color: isSelected
+                      ? account.getTypeColor(context)
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -365,8 +366,8 @@ class _AccountTile extends StatelessWidget {
               account.displayBalance,
               style: AppTextStyles.bodySmall.copyWith(
                 color: isSelected
-                    ? account.typeColor.withValues(alpha: 0.7)
-                    : AppColors.textSecondary,
+                    ? account.getTypeColor(context).withValues(alpha: 0.7)
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
@@ -374,15 +375,15 @@ class _AccountTile extends StatelessWidget {
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 150),
               child: isSelected
-                  ? const Icon(
+                  ? Icon(
                       Icons.check_circle_rounded,
-                      color: AppColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 18,
                       key: ValueKey('check'),
                     )
-                  : const Icon(
+                  : Icon(
                       Icons.circle_outlined,
-                      color: AppColors.divider,
+                      color: Theme.of(context).colorScheme.outline,
                       size: 18,
                       key: ValueKey('empty'),
                     ),
@@ -409,10 +410,14 @@ class _AccountTypeIcon extends StatelessWidget {
       width: 32,
       height: 32,
       decoration: BoxDecoration(
-        color: account.typeColor.withValues(alpha: 0.1),
+        color: account.getTypeColor(context).withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
-      child: Icon(account.typeIcon, color: account.typeColor, size: 16),
+      child: Icon(
+        account.typeIcon,
+        color: account.getTypeColor(context),
+        size: 16,
+      ),
     );
   }
 }
@@ -427,23 +432,23 @@ class _NoAccountsHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.account_balance_outlined,
             size: 18,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               'transaction.account.no_accounts'.tr,
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),

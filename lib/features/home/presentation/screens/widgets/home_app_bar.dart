@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -17,10 +16,12 @@ class HomeAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return SliverAppBar(
       floating: true,
       snap: true,
-      backgroundColor: AppColors.background,
+      backgroundColor: colorScheme.surfaceContainerHighest,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       leading: _MenuButton(onTap: onMenuTap),
@@ -56,19 +57,21 @@ class _MenuButton extends StatelessWidget {
 class _AppBarTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           _getGreeting(),
           style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.textSecondary,
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
           'WiseSpends',
           style: AppTextStyles.h2.copyWith(
-            color: AppColors.textPrimary,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -120,16 +123,18 @@ class _TaskCountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.elasticOut,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: AppColors.error,
+        color: colorScheme.error,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: AppColors.error.withValues(alpha: 0.4),
+            color: colorScheme.error.withValues(alpha: 0.4),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

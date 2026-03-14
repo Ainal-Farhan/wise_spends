@@ -4,7 +4,6 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/budget/domain/entities/budget_entity.dart';
 import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -26,9 +25,11 @@ class BudgetOptionsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xxl)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.xxl),
+        ),
       ),
       padding: const EdgeInsets.all(AppSpacing.xxl),
       child: Column(
@@ -41,7 +42,7 @@ class BudgetOptionsSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.divider,
+                color: Theme.of(context).colorScheme.outline,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -65,14 +66,16 @@ class BudgetOptionsSheet extends StatelessWidget {
           ),
           _OptionTile(
             icon: budget.isActive ? Icons.visibility_off : Icons.visibility,
-            label: budget.isActive ? 'budgets.deactivate'.tr : 'budgets.activate'.tr,
+            label: budget.isActive
+                ? 'budgets.deactivate'.tr
+                : 'budgets.activate'.tr,
             onTap: onToggleActive ?? () => Navigator.pop(context),
           ),
           _OptionTile(
             icon: Icons.delete_outline,
             label: 'general.delete'.tr,
-            labelColor: AppColors.error,
-            iconColor: AppColors.error,
+            labelColor: Theme.of(context).colorScheme.error,
+            iconColor: Theme.of(context).colorScheme.error,
             onTap: () => _confirmDelete(context),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -99,7 +102,7 @@ class BudgetOptionsSheet extends StatelessWidget {
       confirmText: 'general.delete'.tr,
       cancelText: 'general.cancel'.tr,
       icon: Icons.delete_outline,
-      iconColor: AppColors.error,
+      iconColor: Theme.of(context).colorScheme.error,
       onConfirm: onDelete,
     );
   }
@@ -125,18 +128,18 @@ class _OptionTile extends StatelessWidget {
     return ListTile(
       leading: Icon(
         icon,
-        color: iconColor ?? AppColors.textPrimary,
+        color: iconColor ?? Theme.of(context).colorScheme.onSurface,
         size: AppIconSize.md,
       ),
       title: Text(
         label,
         style: AppTextStyles.bodyMedium.copyWith(
-          color: labelColor ?? AppColors.textPrimary,
+          color: labelColor ?? Theme.of(context).colorScheme.onSurface,
         ),
       ),
       trailing: Icon(
         Icons.chevron_right,
-        color: AppColors.textSecondary,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       onTap: onTap,
       contentPadding: EdgeInsets.zero,

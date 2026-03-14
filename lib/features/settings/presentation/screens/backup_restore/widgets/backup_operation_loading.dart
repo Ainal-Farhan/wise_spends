@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -79,8 +78,8 @@ class _BackupOperationLoadingState extends State<BackupOperationLoading>
                           shape: BoxShape.circle,
                           gradient: SweepGradient(
                             colors: [
-                              AppColors.primary.withValues(alpha: 0.0),
-                              AppColors.primary.withValues(alpha: 0.6),
+                              Theme.of(context).colorScheme.primary.withValues(alpha: 0.0),
+                              Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                             ],
                           ),
                         ),
@@ -90,10 +89,10 @@ class _BackupOperationLoadingState extends State<BackupOperationLoading>
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: AppColors.primaryContainer,
+                        color: Theme.of(context).colorScheme.primaryContainer,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(icon, size: 38, color: AppColors.primary),
+                      child: Icon(icon, size: 38, color: Theme.of(context).colorScheme.primary),
                     ),
                   ],
                 ),
@@ -110,7 +109,7 @@ class _BackupOperationLoadingState extends State<BackupOperationLoading>
               Text(
                 subtitle,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -222,7 +221,7 @@ class _StepList extends StatelessWidget {
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -231,7 +230,7 @@ class _StepList extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -240,7 +239,7 @@ class _StepList extends StatelessWidget {
               Text(
                 step,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],

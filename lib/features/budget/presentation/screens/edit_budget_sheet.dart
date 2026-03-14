@@ -11,7 +11,6 @@ import 'package:wise_spends/features/category/presentation/bloc/category_event.d
 import 'package:wise_spends/features/category/presentation/bloc/category_state.dart';
 import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -67,8 +66,8 @@ class _EditBudgetSheetState extends State<EditBudgetSheet> {
         top: AppSpacing.xxl,
         bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.xxl,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppRadius.xxl),
         ),
@@ -86,7 +85,7 @@ class _EditBudgetSheetState extends State<EditBudgetSheet> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.divider,
+                    color: Theme.of(context).colorScheme.outline,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -152,11 +151,13 @@ class _EditBudgetSheetState extends State<EditBudgetSheet> {
                     onSelected: (selected) {
                       if (selected) setState(() => _period = period);
                     },
-                    selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                    selectedColor: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.2),
                     labelStyle: AppTextStyles.labelSmall.copyWith(
                       color: isSelected
-                          ? AppColors.primary
-                          : AppColors.textSecondary,
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.normal,
@@ -282,7 +283,7 @@ class _EditBudgetSheetState extends State<EditBudgetSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('budgets.update_success'.tr),
-        backgroundColor: AppColors.success,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
       ),
     );

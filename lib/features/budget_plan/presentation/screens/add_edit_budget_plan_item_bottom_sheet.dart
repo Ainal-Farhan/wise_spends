@@ -12,7 +12,6 @@ import 'package:wise_spends/features/budget_plan/presentation/widgets/budget_pla
 import 'package:wise_spends/features/budget_plan/presentation/widgets/budget_plan_total_paid_card.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Add/Edit Budget Plan Item Bottom Sheet
 ///
@@ -64,14 +63,14 @@ extension _DepositStatusX on _DepositStatus {
     }
   }
 
-  Color get color {
+  Color getColor(BuildContext context) {
     switch (this) {
       case _DepositStatus.unpaid:
-        return WiseSpendsColors.error;
+        return Theme.of(context).colorScheme.error;
       case _DepositStatus.partial:
-        return WiseSpendsColors.warning;
+        return Theme.of(context).colorScheme.tertiary;
       case _DepositStatus.paid:
-        return WiseSpendsColors.success;
+        return Theme.of(context).colorScheme.primary;
     }
   }
 }
@@ -101,14 +100,14 @@ extension _PaymentStatusX on _PaymentStatus {
     }
   }
 
-  Color get color {
+  Color getColor(BuildContext context) {
     switch (this) {
       case _PaymentStatus.unpaid:
-        return WiseSpendsColors.error;
+        return Theme.of(context).colorScheme.error;
       case _PaymentStatus.partial:
-        return WiseSpendsColors.warning;
+        return Theme.of(context).colorScheme.tertiary;
       case _PaymentStatus.paid:
-        return WiseSpendsColors.success;
+        return Theme.of(context).colorScheme.primary;
     }
   }
 }
@@ -225,9 +224,9 @@ class _AddEditBudgetPlanItemBottomSheetState
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: WiseSpendsColors.background,
-        borderRadius: BorderRadius.vertical(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppRadius.xxl),
         ),
       ),
@@ -270,7 +269,7 @@ class _AddEditBudgetPlanItemBottomSheetState
               DepositSection(
                 hasDeposit: _hasDeposit,
                 depositStatus: _depositStatus.label,
-                depositStatusColor: _depositStatus.color,
+                depositStatusColor: _depositStatus.getColor(context),
                 depositStatusIcon: _depositStatus.icon,
                 depositPaidCtrl: _depositPaidCtrl,
                 onToggle: _onDepositToggled,
@@ -282,7 +281,7 @@ class _AddEditBudgetPlanItemBottomSheetState
               const SizedBox(height: AppSpacing.md),
               PaymentSection(
                 paymentStatus: _paymentStatus.label,
-                paymentStatusColor: _paymentStatus.color,
+                paymentStatusColor: _paymentStatus.getColor(context),
                 paymentStatusIcon: _paymentStatus.icon,
                 paidCtrl: _paidCtrl,
                 totalCost: _totalCost,

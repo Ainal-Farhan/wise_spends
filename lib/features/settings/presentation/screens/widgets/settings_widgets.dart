@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -41,9 +40,11 @@ class SettingsExpansionPanel extends StatelessWidget {
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+        ),
       ),
       child: Column(
         children: [
@@ -65,12 +66,13 @@ class SettingsExpansionPanel extends StatelessWidget {
                     height: 40,
                     decoration: BoxDecoration(
                       color:
-                          leadingBackgroundColor ?? AppColors.primaryContainer,
+                          leadingBackgroundColor ??
+                          Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(AppRadius.sm),
                     ),
                     child: Icon(
                       leadingIcon,
-                      color: AppColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                       size: AppIconSize.sm,
                     ),
                   ),
@@ -84,7 +86,7 @@ class SettingsExpansionPanel extends StatelessWidget {
                           title,
                           style: AppTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textPrimary,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         if (description != null) ...[
@@ -92,7 +94,9 @@ class SettingsExpansionPanel extends StatelessWidget {
                           Text(
                             description!,
                             style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -104,9 +108,9 @@ class SettingsExpansionPanel extends StatelessWidget {
                     turns: isExpanded ? 0.5 : 0,
                     duration: const Duration(milliseconds: 220),
                     curve: Curves.easeInOut,
-                    child: const Icon(
+                    child: Icon(
                       Icons.expand_more,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -193,15 +197,19 @@ class SettingsTile extends StatelessWidget {
                   color:
                       leadingBackgroundColor ??
                       (isDestructive
-                          ? AppColors.secondary.withValues(alpha: 0.1)
-                          : AppColors.primaryContainer),
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.secondary.withValues(alpha: 0.1)
+                          : Theme.of(context).colorScheme.primaryContainer),
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(
                   leadingIcon,
                   color:
                       leadingIconColor ??
-                      (isDestructive ? AppColors.secondary : AppColors.primary),
+                      (isDestructive
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).colorScheme.primary),
                   size: AppIconSize.md,
                 ),
               ),
@@ -219,8 +227,8 @@ class SettingsTile extends StatelessWidget {
                             style: AppTextStyles.bodyMedium.copyWith(
                               fontWeight: FontWeight.w600,
                               color: isDestructive
-                                  ? AppColors.secondary
-                                  : AppColors.textPrimary,
+                                  ? Theme.of(context).colorScheme.secondary
+                                  : Theme.of(context).colorScheme.onSurface,
                               decoration: isDisabled
                                   ? TextDecoration.lineThrough
                                   : null,
@@ -239,8 +247,8 @@ class SettingsTile extends StatelessWidget {
                         subtitle!,
                         style: AppTextStyles.bodySmall.copyWith(
                           color: isDisabled
-                              ? AppColors.textHint
-                              : AppColors.textSecondary,
+                              ? Theme.of(context).colorScheme.outline
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -256,8 +264,8 @@ class SettingsTile extends StatelessWidget {
                     Icon(
                       Icons.chevron_right,
                       color: isDisabled
-                          ? AppColors.textDisabled
-                          : AppColors.textSecondary,
+                          ? Theme.of(context).colorScheme.onSurface
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                       size: AppIconSize.md,
                     ),
             ],
@@ -332,12 +340,13 @@ class _SettingsToggleTileState extends State<SettingsToggleTile> {
             height: 44,
             decoration: BoxDecoration(
               color:
-                  widget.leadingBackgroundColor ?? AppColors.primaryContainer,
+                  widget.leadingBackgroundColor ??
+                  Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Icon(
               widget.leadingIcon,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               size: AppIconSize.md,
             ),
           ),
@@ -355,8 +364,8 @@ class _SettingsToggleTileState extends State<SettingsToggleTile> {
                         style: AppTextStyles.bodyMedium.copyWith(
                           fontWeight: FontWeight.w600,
                           color: widget.isDisabled
-                              ? AppColors.textDisabled
-                              : AppColors.textPrimary,
+                              ? Theme.of(context).colorScheme.onSurface
+                              : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
@@ -372,8 +381,8 @@ class _SettingsToggleTileState extends State<SettingsToggleTile> {
                     widget.subtitle!,
                     style: AppTextStyles.bodySmall.copyWith(
                       color: widget.isDisabled
-                          ? AppColors.textHint
-                          : AppColors.textSecondary,
+                          ? Theme.of(context).colorScheme.outline
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -392,7 +401,7 @@ class _SettingsToggleTileState extends State<SettingsToggleTile> {
                       setState(() => _isOn = value);
                       widget.onChanged?.call(value);
                     },
-              activeThumbColor: AppColors.primary,
+              activeThumbColor: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],
@@ -416,16 +425,18 @@ class _ComingSoonBadge extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: AppColors.tertiaryContainer,
+        color: Theme.of(context).colorScheme.tertiaryContainer,
         borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(color: AppColors.tertiary.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.3),
+        ),
       ),
       child: Text(
         'settings.coming_soon'.tr,
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
-          color: AppColors.tertiaryDark,
+          color: Theme.of(context).colorScheme.tertiary,
         ),
       ),
     );

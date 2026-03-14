@@ -20,7 +20,6 @@ import 'package:wise_spends/features/transaction/presentation/bloc/transaction_f
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/components/forms/form_locked_fields.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -133,17 +132,17 @@ class TransactionLockedAccountSection extends StatelessWidget {
                 AccountChip(
                   name: nameFor(formState.selectedSourceAccount),
                   icon: TransactionType.expense.icon,
-                  color: TransactionType.expense.color,
+                  color: TransactionType.expense.getColor(context),
                 ),
-                const Icon(
+                Icon(
                   Icons.arrow_forward_rounded,
                   size: 14,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 AccountChip(
                   name: nameFor(formState.selectedDestinationAccount),
                   icon: TransactionType.income.icon,
-                  color: TransactionType.income.color,
+                  color: TransactionType.income.getColor(context),
                 ),
               ],
             ),
@@ -206,7 +205,7 @@ class TransactionCategoryPicker extends StatelessWidget {
         return FormCategoryPicker(
           selectedCategory: formState.selectedCategory?.toFormCategoryItem(),
           categories: categories,
-          typeColor: formState.transactionType.color,
+          typeColor: formState.transactionType.getColor(context),
           label: 'transaction.add.category'.tr,
           onCategorySelected: (category) {
             final domainCategory = state.categories.firstWhere(
@@ -289,7 +288,7 @@ class _TransactionNoteSectionState extends State<TransactionNoteSection> {
         icon: const Icon(Icons.add_rounded, size: 18),
         label: Text('transaction.add.add_note'.tr),
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.textSecondary,
+          foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         ),
       );
@@ -353,23 +352,23 @@ class TransactionEmptyCategoriesHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.info_outline_rounded,
             size: 18,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               'transaction.category.empty_hint'.tr,
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),

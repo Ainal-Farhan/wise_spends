@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/custom_dialog.dart';
 import 'package:wise_spends/shared/resources/ui/snack_bar/message.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 
 /// Show a simple confirmation dialog
 Future<bool?> showConfirmDialog({
@@ -25,7 +24,7 @@ Future<bool?> showConfirmDialog({
         message: message,
         content: content,
         icon: icon ?? Icons.help_outline,
-        iconColor: iconColor ?? AppColors.primary,
+        iconColor: iconColor ?? Theme.of(context).colorScheme.primary,
         buttons: [
           CustomDialogButton(
             text: cancelText,
@@ -71,7 +70,7 @@ Future<bool?> showDeleteDialog({
         message: message ?? 'Are you sure you want to delete this?',
         content: content,
         icon: Icons.delete_outline,
-        iconColor: AppColors.secondary,
+        iconColor: Theme.of(context).colorScheme.secondary,
         buttons: [
           CustomDialogButton(
             text: cancelText,
@@ -82,7 +81,7 @@ Future<bool?> showDeleteDialog({
                 showSnackBarMessage(
                   snackBarContext,
                   'Delete cancelled',
-                  type: SnackBarMessageType.info,
+                  type: SnackBarMessageType.warning,
                 );
               }
             },
@@ -97,7 +96,7 @@ Future<bool?> showDeleteDialog({
                 showSnackBarMessage(
                   snackBarContext,
                   'Successfully deleted',
-                  type: SnackBarMessageType.success,
+                  type: SnackBarMessageType.warning,
                 );
               }
             },
@@ -127,7 +126,7 @@ Future<void> showInfoDialog({
         message: message,
         content: content,
         icon: icon ?? Icons.info_outline,
-        iconColor: iconColor ?? AppColors.info,
+        iconColor: iconColor ?? Theme.of(context).colorScheme.primary,
         buttons: [
           CustomDialogButton(
             text: okText,
@@ -164,8 +163,8 @@ Future<bool?> showWarningDialog({
         title: title,
         message: message,
         content: content,
-        icon: icon ?? Icons.warning_amber_rounded,
-        iconColor: iconColor ?? AppColors.warning,
+        icon: icon ?? Icons.warning_rounded,
+        iconColor: iconColor ?? Theme.of(context).colorScheme.tertiary,
         buttons: [
           CustomDialogButton(
             text: cancelText,
@@ -205,7 +204,7 @@ Future<void> showErrorDialog({
         message: message,
         content: content,
         icon: Icons.error_outline,
-        iconColor: AppColors.error,
+        iconColor: Theme.of(context).colorScheme.error,
         buttons: [
           CustomDialogButton(
             text: okText,
@@ -238,7 +237,7 @@ Future<void> showSuccessDialog({
         message: message,
         content: content,
         icon: Icons.check_circle_outline,
-        iconColor: AppColors.success,
+        iconColor: Theme.of(context).colorScheme.primary,
         buttons: [
           CustomDialogButton(
             text: okText,
@@ -371,7 +370,9 @@ void showLoadingDialog(
               const SizedBox(height: 16),
               Text(
                 message,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ],

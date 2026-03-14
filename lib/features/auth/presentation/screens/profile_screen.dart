@@ -15,7 +15,6 @@ import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_d
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_form_fields.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -89,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context,
         message: 'profile.updated_success'.tr,
         icon: Icons.check_circle,
-        color: AppColors.success,
+        color: Theme.of(context).colorScheme.primary,
       );
       Timer(const Duration(milliseconds: 400), () {
         if (mounted) context.read<ProfileBloc>().add(LoadProfileEvent());
@@ -99,14 +98,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context,
         message: 'Photo updated successfully',
         icon: Icons.check_circle,
-        color: AppColors.success,
+        color: Theme.of(context).colorScheme.primary,
       );
     } else if (state is ProfileError) {
       _showSnackBar(
         context,
         message: state.message,
         icon: Icons.error_outline,
-        color: AppColors.error,
+        color: Theme.of(context).colorScheme.error,
       );
     }
   }
@@ -233,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         context,
         message: 'profile.fix_errors'.tr,
         icon: Icons.error_outline,
-        color: AppColors.error,
+        color: Theme.of(context).colorScheme.error,
       );
       return;
     }
@@ -283,13 +282,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             if (hasImage)
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.delete_outline,
-                  color: AppColors.error,
+                  color: Theme.of(context).colorScheme.error,
                 ),
                 title: Text(
                   'profile.remove_photo'.tr,
-                  style: const TextStyle(color: AppColors.error),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -354,7 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         config: CustomDialogConfig(
           title: 'profile.change_password'.tr,
           icon: Icons.lock_outline,
-          iconColor: AppColors.tertiary,
+          iconColor: Theme.of(context).colorScheme.tertiary,
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -413,7 +412,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-        backgroundColor: AppColors.tertiary,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -487,7 +486,7 @@ class _ErrorScaffold extends StatelessWidget {
               Icon(
                 Icons.error_outline,
                 size: AppIconSize.hero,
-                color: AppColors.secondary,
+                color: Theme.of(context).colorScheme.secondary,
               ),
               const SizedBox(height: AppSpacing.xxl),
               Text('profile.something_wrong'.tr, style: AppTextStyles.h3),
@@ -495,7 +494,7 @@ class _ErrorScaffold extends StatelessWidget {
               Text(
                 message,
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Centred empty-state shown when a deposits or spending list has no entries.
 class TransactionEmpty extends StatelessWidget {
@@ -37,17 +36,17 @@ class TransactionEmpty extends StatelessWidget {
               width: 72,
               height: 72,
               decoration: BoxDecoration(
-                color: WiseSpendsColors.surface,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 shape: BoxShape.circle,
-                border: Border.all(color: WiseSpendsColors.divider),
+                border: Border.all(color: Theme.of(context).colorScheme.outline),
               ),
-              child: Icon(icon, size: 32, color: WiseSpendsColors.textHint),
+              child: Icon(icon, size: 32, color: Theme.of(context).colorScheme.outline),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               messageKey.tr,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: WiseSpendsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -57,7 +56,7 @@ class TransactionEmpty extends StatelessWidget {
               Text(
                 subMessageKey!.tr,
                 style: AppTextStyles.caption.copyWith(
-                  color: WiseSpendsColors.textHint,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
                 textAlign: TextAlign.center,
               ),

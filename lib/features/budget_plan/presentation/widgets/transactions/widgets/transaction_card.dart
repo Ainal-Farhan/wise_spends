@@ -4,7 +4,6 @@ import 'package:wise_spends/features/budget_plan/presentation/widgets/transactio
 import 'package:wise_spends/features/budget_plan/presentation/widgets/transactions/widgets/delete_slide_background.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// A single card layout shared by both deposits and spending entries.
 class TransactionCard extends StatelessWidget {
@@ -134,7 +133,7 @@ class _DetailsColumn extends StatelessWidget {
         Text(
           subtitle,
           style: AppTextStyles.caption.copyWith(
-            color: WiseSpendsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -144,7 +143,7 @@ class _DetailsColumn extends StatelessWidget {
           Text(
             note!,
             style: AppTextStyles.caption.copyWith(
-              color: WiseSpendsColors.textHint,
+              color: Theme.of(context).colorScheme.outline,
               fontStyle: FontStyle.italic,
             ),
             maxLines: 1,

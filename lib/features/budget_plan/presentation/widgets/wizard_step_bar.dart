@@ -1,7 +1,6 @@
 // FIXED: Extracted from budget_plans_forms.dart
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -61,7 +60,7 @@ class FullStepBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.background,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.md,
         AppSpacing.sm,
@@ -104,8 +103,8 @@ class FullStepBar extends StatelessWidget {
                   stepLabels[stepIndex].tr,
                   style: AppTextStyles.caption.copyWith(
                     color: (active || done)
-                        ? AppColors.textPrimary
-                        : AppColors.textHint,
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Theme.of(context).colorScheme.outline,
                     fontWeight: active ? FontWeight.w600 : FontWeight.normal,
                   ),
                   textAlign: TextAlign.center,
@@ -155,11 +154,11 @@ class StepCircle extends StatelessWidget {
         ),
       );
     } else {
-      bg = AppColors.divider;
+      bg = Theme.of(context).colorScheme.outline;
       child = Text(
         '${index + 1}',
         style: TextStyle(
-          color: AppColors.textHint,
+          color: Theme.of(context).colorScheme.outline,
           fontWeight: FontWeight.bold,
           fontSize: 13,
         ),
@@ -207,7 +206,7 @@ class AnimatedConnector extends StatelessWidget {
       curve: Curves.easeInOut,
       height: 2,
       margin: const EdgeInsets.symmetric(horizontal: 2),
-      color: filled ? accentColor : AppColors.divider,
+      color: filled ? accentColor : Theme.of(context).colorScheme.outline,
     );
   }
 }
@@ -230,7 +229,7 @@ class CompactStepBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.background,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.md,
@@ -248,7 +247,7 @@ class CompactStepBar extends StatelessWidget {
                 width: active ? 22 : 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: (active || done) ? accentColor : AppColors.divider,
+                  color: (active || done) ? accentColor : Theme.of(context).colorScheme.outline,
                   borderRadius: BorderRadius.circular(4),
                 ),
               );
@@ -259,7 +258,7 @@ class CompactStepBar extends StatelessWidget {
             child: Text(
               stepLabels[currentStep].tr,
               style: AppTextStyles.caption.copyWith(
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
               maxLines: 1,

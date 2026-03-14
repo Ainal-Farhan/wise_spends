@@ -7,7 +7,6 @@ import 'package:wise_spends/features/category/presentation/bloc/category_bloc.da
 import 'package:wise_spends/features/category/presentation/bloc/category_event.dart';
 import 'package:wise_spends/features/category/presentation/bloc/category_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
@@ -83,7 +82,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                   subtitle: 'categories.no_categories_desc'.tr,
                   actionLabel: 'categories.add'.tr,
                   onAction: () => _navigateToAddCategory(context),
-                  iconColor: AppColors.primary,
+                  iconColor: Theme.of(context).colorScheme.primary,
                 );
               }
 
@@ -105,6 +104,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return _buildHeaderCard(
+                        context,
                         totalCount: state.categories.length,
                         incomeCount: incomeCount,
                         expenseCount: expenseCount,
@@ -132,16 +132,20 @@ class _CategoryManagementScreenContent extends StatelessWidget {
   // Header card
   // ---------------------------------------------------------------------------
 
-  Widget _buildHeaderCard({
+  Widget _buildHeaderCard(
+    BuildContext context, {
     required int totalCount,
     required int incomeCount,
     required int expenseCount,
   }) {
     return SectionHeader.card(
-      gradient: const LinearGradient(
+      gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.primary, AppColors.primaryDark],
+        colors: [
+          Theme.of(context).colorScheme.primary,
+          Theme.of(context).colorScheme.primary,
+        ],
       ),
       icon: Icons.category_outlined,
       label: 'categories.manage'.tr,
@@ -183,7 +187,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
 
     final isIncome = category.isIncome == true;
     final isExpense = category.isExpense == true;
-    final color = _getCategoryColor(category);
+    final color = _getCategoryColor(context, category);
 
     final typeLabel = isIncome && isExpense
         ? 'categories.both'.tr
@@ -192,10 +196,10 @@ class _CategoryManagementScreenContent extends StatelessWidget {
         : 'categories.expense'.tr;
 
     final typeColor = isIncome && isExpense
-        ? AppColors.tertiary
+        ? Theme.of(context).colorScheme.tertiary
         : isIncome
-        ? AppColors.income
-        : AppColors.expense;
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.secondary;
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -252,15 +256,17 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                   value: 'delete',
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.delete,
                         size: 18,
-                        color: AppColors.secondary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'general.delete'.tr,
-                        style: const TextStyle(color: AppColors.secondary),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
                       ),
                     ],
                   ),
@@ -273,12 +279,12 @@ class _CategoryManagementScreenContent extends StatelessWidget {
     );
   }
 
-  Color _getCategoryColor(dynamic category) {
+  Color _getCategoryColor(BuildContext context, dynamic category) {
     final isIncome = category.isIncome == true;
     final isExpense = category.isExpense == true;
-    if (isIncome && isExpense) return AppColors.tertiary;
-    if (isIncome) return AppColors.income;
-    return AppColors.expense;
+    if (isIncome && isExpense) return Theme.of(context).colorScheme.tertiary;
+    if (isIncome) return Theme.of(context).colorScheme.primary;
+    return Theme.of(context).colorScheme.secondary;
   }
 
   Widget _buildTypeBadge({required String label, required Color color}) {
@@ -335,7 +341,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
             config: CustomDialogConfig(
               title: 'categories.edit'.tr,
               icon: Icons.edit_note,
-              iconColor: AppColors.tertiary,
+              iconColor: Theme.of(context).colorScheme.tertiary,
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -385,7 +391,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('categories.enter_name'.tr),
-                          backgroundColor: AppColors.error,
+                          backgroundColor: Theme.of(context).colorScheme.error,
                           behavior: SnackBarBehavior.floating,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppRadius.md),
@@ -417,7 +423,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                             Text('categories.updated'.tr),
                           ],
                         ),
-                        backgroundColor: AppColors.success,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -450,7 +456,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
             'name': category.name ?? '',
           }),
           icon: Icons.delete_outline,
-          iconColor: AppColors.secondary,
+          iconColor: Theme.of(context).colorScheme.secondary,
           buttons: [
             CustomDialogButton(
               text: 'general.cancel'.tr,
@@ -471,7 +477,7 @@ class _CategoryManagementScreenContent extends StatelessWidget {
                         Text('categories.deleted'.tr),
                       ],
                     ),
-                    backgroundColor: AppColors.success,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.md),

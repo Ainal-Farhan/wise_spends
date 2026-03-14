@@ -6,7 +6,6 @@ import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/features/commitment/data/constants/commitment_task_type.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_task_bloc.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_task_event.dart';
@@ -74,7 +73,7 @@ class _CommitmentTaskScreenContentState
                       Text(state.message),
                     ],
                   ),
-                  backgroundColor: AppColors.success,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -93,7 +92,7 @@ class _CommitmentTaskScreenContentState
                       Text(state.message),
                     ],
                   ),
-                  backgroundColor: AppColors.error,
+                  backgroundColor: Theme.of(context).colorScheme.error,
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -143,7 +142,7 @@ class _CommitmentTaskScreenContentState
                     Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -154,7 +153,7 @@ class _CommitmentTaskScreenContentState
                     Text(
                       state.message,
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -237,7 +236,7 @@ class _CommitmentTaskScreenContentState
               Icon(
                 icon,
                 size: 16,
-                color: isSelected ? Colors.white : AppColors.textSecondary,
+                color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 4),
               Text(label),
@@ -247,10 +246,10 @@ class _CommitmentTaskScreenContentState
           onSelected: (selected) => context.read<CommitmentTaskBloc>().add(
             FilterCommitmentTasksEvent(selected ? label.toLowerCase() : 'all'),
           ),
-          selectedColor: AppColors.tertiary,
+          selectedColor: Theme.of(context).colorScheme.tertiary,
           checkmarkColor: Colors.white,
           labelStyle: AppTextStyles.labelMedium.copyWith(
-            color: isSelected ? Colors.white : AppColors.textSecondary,
+            color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         );
       },
@@ -282,7 +281,7 @@ class _CommitmentTaskScreenContentState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.checklist_outlined, size: 80, color: AppColors.textHint),
+            Icon(Icons.checklist_outlined, size: 80, color: Theme.of(context).colorScheme.outline),
             const SizedBox(height: 16),
             Text('commitment_tasks.no_tasks'.tr, style: AppTextStyles.h3),
             const SizedBox(height: 8),
@@ -291,7 +290,7 @@ class _CommitmentTaskScreenContentState
                   ? 'Tasks will appear here after you distribute a commitment'
                   : 'No $filterStatus tasks',
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
@@ -327,7 +326,7 @@ class _CommitmentTaskScreenContentState
             width: 4,
             height: 60,
             decoration: BoxDecoration(
-              color: isDone ? AppColors.success : AppColors.warning,
+              color: isDone ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -337,13 +336,13 @@ class _CommitmentTaskScreenContentState
             height: 48,
             decoration: BoxDecoration(
               color: isDone
-                  ? AppColors.success.withValues(alpha: 0.2)
-                  : AppColors.tertiary.withValues(alpha: 0.2),
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
+                  : Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               _iconForType(task.type),
-              color: isDone ? AppColors.success : AppColors.tertiary,
+              color: isDone ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
               size: 24,
             ),
           ),
@@ -358,15 +357,15 @@ class _CommitmentTaskScreenContentState
                     fontWeight: FontWeight.w600,
                     decoration: isDone ? TextDecoration.lineThrough : null,
                     color: isDone
-                        ? AppColors.textSecondary
-                        : AppColors.textPrimary,
+                        ? Theme.of(context).colorScheme.onSurfaceVariant
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'RM ${(task.amount ?? 0.0).toStringAsFixed(2)}',
                   style: AppTextStyles.amountSmall.copyWith(
-                    color: isDone ? AppColors.success : AppColors.tertiary,
+                    color: isDone ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
                     fontSize: 14,
                   ),
                 ),
@@ -375,7 +374,7 @@ class _CommitmentTaskScreenContentState
                   _subtitleForTask(task),
                   style: AppTextStyles.caption.copyWith(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -409,7 +408,7 @@ class _CommitmentTaskScreenContentState
                       Icon(
                         Icons.check_circle,
                         size: 18,
-                        color: AppColors.success,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                       SizedBox(width: 8),
                       Text('commitment_tasks.mark_complete'.tr),
@@ -420,11 +419,11 @@ class _CommitmentTaskScreenContentState
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete, size: 18, color: AppColors.secondary),
+                    Icon(Icons.delete, size: 18, color: Theme.of(context).colorScheme.secondary),
                     SizedBox(width: 8),
                     Text(
                       'Delete',
-                      style: TextStyle(color: AppColors.secondary),
+                      style: TextStyle(color: Theme.of(context).colorScheme.secondary),
                     ),
                   ],
                 ),
@@ -885,7 +884,7 @@ class _CommitmentTaskScreenContentState
       confirmText: 'commitment_tasks.mark_complete'.tr,
       cancelText: 'general.cancel'.tr,
       icon: Icons.check_circle_outline,
-      iconColor: AppColors.success,
+      iconColor: Theme.of(context).colorScheme.primary,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -935,7 +934,7 @@ class _CommitmentTaskScreenContentState
       ..showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: AppColors.error,
+          backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -955,7 +954,7 @@ class _CommitmentTaskScreenContentState
             child: Text(
               label,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),

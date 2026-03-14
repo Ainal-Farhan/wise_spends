@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'app_button.dart';
@@ -104,7 +103,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_items.subtitle'.tr,
           actionLabel: 'empty.no_items.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.primary,
+          iconColor: const Color(0xFF4CAF82), // primary
         );
       case EmptyStateType.noTransactions:
         return EmptyStateWidget(
@@ -113,7 +112,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_transactions.subtitle'.tr,
           actionLabel: 'empty.no_transactions.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.primary,
+          iconColor: const Color(0xFF4CAF82), // primary
         );
       case EmptyStateType.noBudgets:
         return EmptyStateWidget(
@@ -122,7 +121,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_budgets.subtitle'.tr,
           actionLabel: 'empty.no_budgets.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.tertiary,
+          iconColor: const Color(0xFF42A5F5), // tertiary
         );
       case EmptyStateType.noBudgetPlans:
         return EmptyStateWidget(
@@ -131,7 +130,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_budget_plans.subtitle'.tr,
           actionLabel: 'empty.no_budget_plans.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.tertiary,
+          iconColor: const Color(0xFF42A5F5), // tertiary
         );
       case EmptyStateType.noBudgetPlanItems:
         return EmptyStateWidget(
@@ -140,7 +139,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_budget_plan_items.subtitle'.tr,
           actionLabel: 'empty.no_budget_plan_items.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.primary,
+          iconColor: const Color(0xFF4CAF82), // primary
         );
       case EmptyStateType.noSavings:
         return EmptyStateWidget(
@@ -149,28 +148,28 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_savings.subtitle'.tr,
           actionLabel: 'empty.no_savings.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.success,
+          iconColor: const Color(0xFF4CAF50), // success
         );
       case EmptyStateType.noSearchResults:
         return EmptyStateWidget(
           icon: Icons.search_off_outlined,
           title: 'empty.no_search.title'.tr,
           subtitle: 'empty.no_search.subtitle'.tr,
-          iconColor: AppColors.textHint,
+          iconColor: const Color(0xFFADB5BD), // textHint
         );
       case EmptyStateType.noNotifications:
         return EmptyStateWidget(
           icon: Icons.notifications_none,
           title: 'empty.no_notifications.title'.tr,
           subtitle: 'empty.no_notifications.subtitle'.tr,
-          iconColor: AppColors.info,
+          iconColor: const Color(0xFF42A5F5), // info
         );
       case EmptyStateType.noReports:
         return EmptyStateWidget(
           icon: Icons.insights_outlined,
           title: 'empty.no_reports.title'.tr,
           subtitle: 'empty.no_reports.subtitle'.tr,
-          iconColor: AppColors.info,
+          iconColor: const Color(0xFF42A5F5), // info
         );
       case EmptyStateType.noCategories:
         return EmptyStateWidget(
@@ -179,7 +178,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_categories.subtitle'.tr,
           actionLabel: 'empty.no_categories.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.warning,
+          iconColor: const Color(0xFFFFC107), // warning
         );
       case EmptyStateType.noMoneyStorage:
         return EmptyStateWidget(
@@ -188,7 +187,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_money_storage.subtitle'.tr,
           actionLabel: 'empty.no_money_storage.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.tertiary,
+          iconColor: const Color(0xFF42A5F5), // tertiary
         );
       case EmptyStateType.noPayees:
         return EmptyStateWidget(
@@ -197,7 +196,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_payees.subtitle'.tr,
           actionLabel: 'empty.no_payees.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.tertiary,
+          iconColor: const Color(0xFF42A5F5), // tertiary
         );
       case EmptyStateType.noCommitments:
         return EmptyStateWidget(
@@ -206,7 +205,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.no_commitments.subtitle'.tr,
           actionLabel: 'empty.no_commitments.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.tertiary,
+          iconColor: const Color(0xFF42A5F5), // tertiary
         );
       case EmptyStateType.permissionDenied:
         return EmptyStateWidget(
@@ -215,7 +214,7 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.permission_denied.subtitle'.tr,
           actionLabel: 'empty.permission_denied.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.secondary,
+          iconColor: const Color(0xFFFF6B6B), // secondary
         );
       case EmptyStateType.offline:
         return EmptyStateWidget(
@@ -224,13 +223,15 @@ class EmptyStateWidget extends StatelessWidget {
           subtitle: 'empty.offline.subtitle'.tr,
           actionLabel: 'empty.offline.action'.tr,
           onAction: onAction,
-          iconColor: AppColors.textHint,
+          iconColor: const Color(0xFFADB5BD), // textHint
         );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final iconColorValue = iconColor ?? const Color(0xFFADB5BD); // textHint
+    
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: maxWidth ?? 320),
@@ -248,15 +249,13 @@ class EmptyStateWidget extends StatelessWidget {
                   width: iconSize ?? 120,
                   height: iconSize ?? 120,
                   decoration: BoxDecoration(
-                    color: (iconColor ?? AppColors.textHint).withValues(
-                      alpha: 0.1,
-                    ),
+                    color: iconColorValue.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     icon,
                     size: iconSize != null ? iconSize! * 0.47 : 56,
-                    color: iconColor ?? AppColors.textHint,
+                    color: iconColorValue,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xxl),
@@ -448,7 +447,7 @@ class ErrorStateWidget extends StatelessWidget {
       subtitle: message,
       actionLabel: actionLabel ?? (showRetry ? 'general.retry'.tr : null),
       onAction: onAction,
-      iconColor: AppColors.secondary,
+      iconColor: const Color(0xFFFF6B6B), // secondary
     );
   }
 }

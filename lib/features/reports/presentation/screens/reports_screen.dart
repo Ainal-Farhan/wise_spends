@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -55,7 +54,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('reports.export_success'.tr),
-                    backgroundColor: AppColors.success,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -64,7 +63,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('reports.export_failed'.trWith({'error': e.toString()})),
-                    backgroundColor: AppColors.error,
+                    backgroundColor: Theme.of(context).colorScheme.error,
                     behavior: SnackBarBehavior.floating,
                   ),
                 );
@@ -123,9 +122,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget _buildPeriodSelector() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.full),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       padding: const EdgeInsets.all(AppSpacing.xs),
       child: Row(
@@ -168,14 +167,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.transparent,
+          color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(AppRadius.full),
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
           style: AppTextStyles.labelMedium.copyWith(
-            color: isSelected ? Colors.white : AppColors.textSecondary,
+            color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -194,7 +193,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 label: 'Income',
                 value: NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(5420.00),
                 trend: '+12.5%',
-                color: AppColors.income,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -204,7 +203,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 label: 'Expenses',
                 value: NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(3250.50),
                 trend: '-8.2%',
-                color: AppColors.expense,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
           ],
@@ -218,7 +217,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 label: 'Savings',
                 value: NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(2169.50),
                 trend: '+25.3%',
-                color: AppColors.success,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -228,7 +227,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 label: 'Balance',
                 value: NumberFormat.currency(symbol: 'RM ', decimalDigits: 2).format(8750.25),
                 trend: '+5.7%',
-                color: AppColors.tertiary,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
             ),
           ],
@@ -242,9 +241,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
       height: 200,
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: BarChart(
         BarChartData(
@@ -297,29 +296,29 @@ class _ReportsScreenState extends State<ReportsScreen> {
             BarChartGroupData(
               x: 0,
               barRods: [
-                BarChartRodData(toY: 5000, color: AppColors.income, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
-                BarChartRodData(toY: 3000, color: AppColors.expense, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 5000, color: Theme.of(context).colorScheme.primary, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 3000, color: Theme.of(context).colorScheme.secondary, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
               ],
             ),
             BarChartGroupData(
               x: 1,
               barRods: [
-                BarChartRodData(toY: 6000, color: AppColors.income, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
-                BarChartRodData(toY: 4000, color: AppColors.expense, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 6000, color: Theme.of(context).colorScheme.primary, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 4000, color: Theme.of(context).colorScheme.secondary, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
               ],
             ),
             BarChartGroupData(
               x: 2,
               barRods: [
-                BarChartRodData(toY: 4500, color: AppColors.income, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
-                BarChartRodData(toY: 3500, color: AppColors.expense, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 4500, color: Theme.of(context).colorScheme.primary, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 3500, color: Theme.of(context).colorScheme.secondary, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
               ],
             ),
             BarChartGroupData(
               x: 3,
               barRods: [
-                BarChartRodData(toY: 7000, color: AppColors.income, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
-                BarChartRodData(toY: 4500, color: AppColors.expense, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 7000, color: Theme.of(context).colorScheme.primary, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+                BarChartRodData(toY: 4500, color: Theme.of(context).colorScheme.secondary, width: 12, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
               ],
             ),
           ],
@@ -333,9 +332,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
       height: 250,
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: PieChart(
         PieChartData(
@@ -345,7 +344,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 35,
               title: 'Food\n35%',
-              color: AppColors.expense,
+              color: Theme.of(context).colorScheme.secondary,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -356,7 +355,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 25,
               title: 'Transport\n25%',
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -367,7 +366,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 20,
               title: 'Shopping\n20%',
-              color: AppColors.tertiary,
+              color: Theme.of(context).colorScheme.tertiary,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -378,7 +377,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 15,
               title: 'Bills\n15%',
-              color: AppColors.warning,
+              color: Theme.of(context).colorScheme.tertiary,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -389,7 +388,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             PieChartSectionData(
               value: 5,
               title: 'Other\n5%',
-              color: AppColors.textHint,
+              color: Theme.of(context).colorScheme.outline,
               radius: 60,
               titleStyle: const TextStyle(
                 fontSize: 12,
@@ -406,9 +405,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
   Widget _buildCategoryBreakdown() {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         children: [
@@ -416,7 +415,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Food & Dining',
             amount: 1250.00,
             percentage: 35,
-            color: AppColors.expense,
+            color: Theme.of(context).colorScheme.secondary,
             icon: Icons.restaurant,
           ),
           const Divider(height: 1),
@@ -424,7 +423,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Transportation',
             amount: 890.50,
             percentage: 25,
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             icon: Icons.directions_car,
           ),
           const Divider(height: 1),
@@ -432,7 +431,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Shopping',
             amount: 715.25,
             percentage: 20,
-            color: AppColors.tertiary,
+            color: Theme.of(context).colorScheme.tertiary,
             icon: Icons.shopping_bag,
           ),
           const Divider(height: 1),
@@ -440,7 +439,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Bills & Utilities',
             amount: 536.75,
             percentage: 15,
-            color: AppColors.warning,
+            color: Theme.of(context).colorScheme.tertiary,
             icon: Icons.receipt_long,
           ),
           const Divider(height: 1),
@@ -448,7 +447,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             name: 'Others',
             amount: 178.00,
             percentage: 5,
-            color: AppColors.textHint,
+            color: Theme.of(context).colorScheme.outline,
             icon: Icons.more_horiz,
           ),
         ],

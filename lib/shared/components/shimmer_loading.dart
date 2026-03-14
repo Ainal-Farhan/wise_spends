@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 
 // ---------------------------------------------------------------------------
@@ -22,11 +21,13 @@ class _ShimmerBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: shape == BoxShape.circle
             ? null
             : (borderRadius ?? BorderRadius.circular(AppRadius.xs)),
@@ -46,18 +47,20 @@ class ShimmerTransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Semantics(
       label: 'Loading transaction',
       excludeSemantics: true,
       child: Shimmer.fromColors(
-        baseColor: AppColors.divider,
-        highlightColor: AppColors.border,
+        baseColor: colorScheme.outline,
+        highlightColor: colorScheme.outline.withValues(alpha: 0.2),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: colorScheme.outline),
           ),
           child: Row(
             children: [
@@ -97,18 +100,20 @@ class ShimmerNotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Semantics(
       label: 'Loading notification',
       excludeSemantics: true,
       child: Shimmer.fromColors(
-        baseColor: AppColors.divider,
-        highlightColor: AppColors.border,
+        baseColor: colorScheme.outline,
+        highlightColor: colorScheme.outline.withValues(alpha: 0.2),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: colorScheme.outline),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,19 +149,21 @@ class ShimmerBudgetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Semantics(
       label: 'Loading budget',
       excludeSemantics: true,
       child: Shimmer.fromColors(
-        baseColor: AppColors.divider,
-        highlightColor: AppColors.border,
+        baseColor: colorScheme.outline,
+        highlightColor: colorScheme.outline.withValues(alpha: 0.2),
         child: Container(
           margin: const EdgeInsets.only(bottom: AppSpacing.md),
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: colorScheme.outline),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,16 +212,18 @@ class ShimmerBalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Semantics(
       label: 'Loading balance',
       excludeSemantics: true,
       child: Shimmer.fromColors(
-        baseColor: AppColors.divider,
-        highlightColor: AppColors.border,
+        baseColor: colorScheme.outline,
+        highlightColor: colorScheme.outline.withValues(alpha: 0.2),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.xxl),
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           child: Column(
@@ -239,18 +248,20 @@ class ShimmerProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Semantics(
       label: 'Loading profile',
       excludeSemantics: true,
       child: Shimmer.fromColors(
-        baseColor: AppColors.divider,
-        highlightColor: AppColors.border,
+        baseColor: colorScheme.outline,
+        highlightColor: colorScheme.outline.withValues(alpha: 0.2),
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.xl),
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: colorScheme.outline),
           ),
           child: Row(
             children: [
@@ -291,12 +302,14 @@ class ShimmerSummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Semantics(
       label: 'Loading summary',
       excludeSemantics: true,
       child: Shimmer.fromColors(
-        baseColor: AppColors.divider,
-        highlightColor: AppColors.border,
+        baseColor: colorScheme.outline,
+        highlightColor: colorScheme.outline.withValues(alpha: 0.2),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -317,18 +330,20 @@ class ShimmerChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Semantics(
       label: 'Loading chart',
       excludeSemantics: true,
       child: Shimmer.fromColors(
-        baseColor: AppColors.divider,
-        highlightColor: AppColors.border,
+        baseColor: colorScheme.outline,
+        highlightColor: colorScheme.outline.withValues(alpha: 0.2),
         child: Container(
           height: height,
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: colorScheme.outline),
           ),
         ),
       ),
@@ -353,18 +368,20 @@ class ShimmerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Semantics(
       label: 'Loading',
       excludeSemantics: true,
       child: Shimmer.fromColors(
-        baseColor: AppColors.divider,
-        highlightColor: AppColors.border,
+        baseColor: colorScheme.outline,
+        highlightColor: colorScheme.outline.withValues(alpha: 0.2),
         child: Container(
           width: width,
           height: height,
           padding: padding,
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: borderRadius ?? BorderRadius.circular(AppRadius.md),
           ),
         ),
@@ -459,9 +476,11 @@ class ShimmerCategoryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Shimmer.fromColors(
-      baseColor: AppColors.divider,
-      highlightColor: AppColors.border,
+      baseColor: colorScheme.outline,
+      highlightColor: colorScheme.outline.withValues(alpha: 0.2),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -475,9 +494,9 @@ class ShimmerCategoryGrid extends StatelessWidget {
         itemBuilder: (_, _) {
           return Container(
             decoration: BoxDecoration(
-              color: AppColors.background,
+              color: colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: AppColors.divider),
+              border: Border.all(color: colorScheme.outline),
             ),
             child: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -639,9 +658,11 @@ class ShimmerFullPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Shimmer.fromColors(
-      baseColor: AppColors.divider,
-      highlightColor: AppColors.border,
+      baseColor: colorScheme.outline,
+      highlightColor: colorScheme.outline.withValues(alpha: 0.2),
       child: child,
     );
   }

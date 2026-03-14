@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
 
 /// WiseSpends Typography System
 /// Consistent text styles using Montserrat font family
-/// 
+///
 /// Usage: Always use these styles instead of inline TextStyle creation
 /// Example: `style: AppTextStyles.h1` instead of `style: TextStyle(fontSize: 24)`
 
@@ -19,33 +18,33 @@ class AppTextStyles {
 
   /// H1 - 24sp, Bold
   /// Usage: Screen titles, hero headings
-  static const TextStyle h1 = TextStyle(
+  static TextStyle h1 = TextStyle(
     fontFamily: fontFamily,
     fontSize: 24,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.3,
     letterSpacing: -0.5,
   );
 
   /// H2 - 20sp, Bold
   /// Usage: Section headings, card titles
-  static const TextStyle h2 = TextStyle(
+  static TextStyle h2 = TextStyle(
     fontFamily: fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.3,
     letterSpacing: -0.3,
   );
 
   /// H3 - 16sp, SemiBold
   /// Usage: Subsection headings, prominent labels
-  static const TextStyle h3 = TextStyle(
+  static TextStyle h3 = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.4,
   );
 
@@ -55,52 +54,52 @@ class AppTextStyles {
 
   /// Body Large - 16sp, Regular
   /// Usage: Primary body text, important content
-  static const TextStyle bodyLarge = TextStyle(
+  static TextStyle bodyLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.5,
   );
 
   /// Body Medium - 14sp, Regular
   /// Usage: Standard body text, descriptions
-  static const TextStyle bodyMedium = TextStyle(
+  static TextStyle bodyMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.5,
   );
 
   /// Body Small - 12sp, Regular
   /// Usage: Secondary text, metadata
-  static const TextStyle bodySmall = TextStyle(
+  static TextStyle bodySmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
+    color: const Color(0xFF1A1A1A),
     height: 1.4,
   );
 
   // ==========================================================================
   /// Body Medium - 14sp, SemiBold
   /// Usage: Emphasized body text, important labels
-  static const TextStyle bodySemiBold = TextStyle(
+  static TextStyle bodySemiBold = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.5,
   );
 
   /// Body Large - 16sp, SemiBold
   /// Usage: Emphasized larger text
-  static const TextStyle bodyLargeSemiBold = TextStyle(
+  static TextStyle bodyLargeSemiBold = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.5,
   );
 
@@ -110,42 +109,42 @@ class AppTextStyles {
 
   /// Amount Extra Large - 32sp, Bold
   /// Usage: Hero balance displays, primary amounts
-  static const TextStyle amountXLarge = TextStyle(
+  static TextStyle amountXLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 32,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.2,
     letterSpacing: -0.5,
   );
 
   /// Amount Large - 24sp, Bold
   /// Usage: Large amount displays, card amounts
-  static const TextStyle amountLarge = TextStyle(
+  static TextStyle amountLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 24,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.3,
   );
 
   /// Amount Medium - 20sp, Bold
   /// Usage: Medium amount displays
-  static const TextStyle amountMedium = TextStyle(
+  static TextStyle amountMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.3,
   );
 
   /// Amount Small - 16sp, SemiBold
   /// Usage: Small amount displays, list item amounts
-  static const TextStyle amountSmall = TextStyle(
+  static TextStyle amountSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.4,
   );
 
@@ -155,33 +154,33 @@ class AppTextStyles {
 
   /// Label Large - 14sp, SemiBold
   /// Usage: Button text, prominent labels
-  static const TextStyle labelLarge = TextStyle(
+  static TextStyle labelLarge = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.4,
     letterSpacing: 0.1,
   );
 
   /// Label Medium - 12sp, SemiBold
   /// Usage: Chip text, small labels
-  static const TextStyle labelMedium = TextStyle(
+  static TextStyle labelMedium = TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.4,
     letterSpacing: 0.15,
   );
 
   /// Label Small - 11sp, Medium
   /// Usage: Tiny labels, overlines
-  static const TextStyle labelSmall = TextStyle(
+  static TextStyle labelSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
     fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
+    color: const Color(0xFF1A1A1A),
     height: 1.4,
     letterSpacing: 0.5,
   );
@@ -192,31 +191,31 @@ class AppTextStyles {
 
   /// Caption - 12sp, Regular
   /// Usage: Helper text, hints, timestamps
-  static const TextStyle caption = TextStyle(
+  static TextStyle caption = TextStyle(
     fontFamily: fontFamily,
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
+    color: const Color(0xFF1A1A1A),
     height: 1.4,
   );
 
   /// Caption Small - 11sp, Regular
   /// Usage: Tiny helper text
-  static const TextStyle captionSmall = TextStyle(
+  static TextStyle captionSmall = TextStyle(
     fontFamily: fontFamily,
     fontSize: 11,
     fontWeight: FontWeight.w400,
-    color: AppColors.textHint,
+    color: const Color(0xFFE0E0E0),
     height: 1.4,
   );
 
   /// Overline - 10sp, SemiBold, Uppercase
   /// Usage: Category labels, section markers
-  static const TextStyle overline = TextStyle(
+  static TextStyle overline = TextStyle(
     fontFamily: fontFamily,
     fontSize: 10,
     fontWeight: FontWeight.w600,
-    color: AppColors.textSecondary,
+    color: const Color(0xFF1A1A1A),
     height: 1.5,
     letterSpacing: 1.5,
   );
@@ -227,7 +226,7 @@ class AppTextStyles {
 
   /// Balance Display - 28sp, Bold
   /// Usage: Main balance display on home screen
-  static const TextStyle balanceDisplay = TextStyle(
+  static TextStyle balanceDisplay = TextStyle(
     fontFamily: fontFamily,
     fontSize: 28,
     fontWeight: FontWeight.w700,
@@ -238,31 +237,31 @@ class AppTextStyles {
 
   /// Stat Number - 20sp, Bold
   /// Usage: Statistics, metrics
-  static const TextStyle statNumber = TextStyle(
+  static TextStyle statNumber = TextStyle(
     fontFamily: fontFamily,
     fontSize: 20,
     fontWeight: FontWeight.w700,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.3,
   );
 
   /// Empty State Title - 18sp, SemiBold
   /// Usage: Empty state headings
-  static const TextStyle emptyStateTitle = TextStyle(
+  static TextStyle emptyStateTitle = TextStyle(
     fontFamily: fontFamily,
     fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
+    color: const Color(0xFF1A1A1A),
     height: 1.4,
   );
 
   /// Empty State Subtitle - 14sp, Regular
   /// Usage: Empty state descriptions
-  static const TextStyle emptyStateSubtitle = TextStyle(
+  static TextStyle emptyStateSubtitle = TextStyle(
     fontFamily: fontFamily,
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.textSecondary,
+    color: const Color(0xFF1A1A1A),
     height: 1.5,
   );
 
@@ -290,24 +289,22 @@ class AppTextStyles {
     Color color;
     switch (type.toLowerCase()) {
       case 'income':
-        color = AppColors.income;
+        color = const Color(0xFF4CAF82);
         break;
       case 'expense':
-        color = AppColors.expense;
+        color = const Color(0xFFFF6B6B);
         break;
       case 'transfer':
-        color = AppColors.transfer;
+        color = const Color(0xFF42A5F5);
         break;
       default:
-        color = AppColors.textPrimary;
+        color = const Color(0xFF1A1A1A);
     }
     return amountMedium.copyWith(color: color);
   }
 
   /// Get status badge style
   static TextStyle getBadgeStyle(String status) {
-    return labelMedium.copyWith(
-      color: AppColors.getBudgetHealthColor(status),
-    );
+    return labelMedium.copyWith(color: const Color(0xFF4CAF82));
   }
 }

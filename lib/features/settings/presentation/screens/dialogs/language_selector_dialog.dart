@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/app_locale.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import '../models/settings_models.dart';
@@ -18,7 +17,7 @@ Future<String?> showLanguageSelectorDialog({
       config: CustomDialogConfig(
         title: 'settings.language'.tr,
         icon: Icons.language_outlined,
-        iconColor: AppColors.tertiary,
+        iconColor: Theme.of(context).colorScheme.tertiary,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: LanguageOption.options
@@ -71,13 +70,13 @@ class _LanguageOptionTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppSpacing.sm),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.tertiary.withValues(alpha: 0.08)
-              : AppColors.surface,
+              ? Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.08)
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(
             color: isSelected
-                ? AppColors.tertiary.withValues(alpha: 0.3)
-                : AppColors.divider,
+                ? Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.3)
+                : Theme.of(context).colorScheme.outline,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -88,7 +87,7 @@ class _LanguageOptionTile extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.tertiaryContainer,
+                color: Theme.of(context).colorScheme.tertiaryContainer,
                 borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Center(
@@ -113,9 +112,9 @@ class _LanguageOptionTile extends StatelessWidget {
               ),
             ),
             if (isSelected)
-              const Icon(
+              Icon(
                 Icons.check_circle,
-                color: AppColors.tertiary,
+                color: Theme.of(context).colorScheme.tertiary,
                 size: AppIconSize.md,
               ),
           ],

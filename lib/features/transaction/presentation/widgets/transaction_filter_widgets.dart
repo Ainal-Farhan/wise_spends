@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -22,13 +21,13 @@ class TransactionFilterDropdown extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: selectedType != null
-            ? selectedType!.color.withValues(alpha: 0.07)
-            : AppColors.surface,
+            ? selectedType!.getColor(context).withValues(alpha: 0.07)
+            : Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: selectedType != null
-              ? selectedType!.color.withValues(alpha: 0.3)
-              : AppColors.divider,
+              ? selectedType!.getColor(context).withValues(alpha: 0.3)
+              : Theme.of(context).colorScheme.outline,
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
@@ -40,21 +39,21 @@ class TransactionFilterDropdown extends StatelessWidget {
           Icons.tune_rounded,
           size: 18,
           color: selectedType != null
-              ? selectedType!.color
-              : AppColors.textSecondary,
+              ? selectedType!.getColor(context)
+              : Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         hint: Row(
           children: [
             Icon(
               Icons.all_inclusive_rounded,
               size: 17,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: 8),
             Text(
               'transaction.filter.all_types'.tr,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -68,14 +67,18 @@ class TransactionFilterDropdown extends StatelessWidget {
                   width: 26,
                   height: 26,
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.divider),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.all_inclusive_rounded,
                     size: 14,
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -92,10 +95,14 @@ class TransactionFilterDropdown extends StatelessWidget {
                     width: 26,
                     height: 26,
                     decoration: BoxDecoration(
-                      color: type.color.withValues(alpha: 0.1),
+                      color: type.getColor(context).withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(type.icon, size: 14, color: type.color),
+                    child: Icon(
+                      type.icon,
+                      size: 14,
+                      color: type.getColor(context),
+                    ),
                   ),
                   const SizedBox(width: 10),
                   Text(type.label),
@@ -108,16 +115,16 @@ class TransactionFilterDropdown extends StatelessWidget {
           // "All types" selected item
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.all_inclusive_rounded,
                 size: 17,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 8),
               Text(
                 'transaction.filter.all_types'.tr,
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -125,12 +132,12 @@ class TransactionFilterDropdown extends StatelessWidget {
           ...TransactionType.values.map(
             (type) => Row(
               children: [
-                Icon(type.icon, size: 17, color: type.color),
+                Icon(type.icon, size: 17, color: type.getColor(context)),
                 const SizedBox(width: 8),
                 Text(
                   type.label,
                   style: AppTextStyles.bodyMedium.copyWith(
-                    color: type.color,
+                    color: type.getColor(context),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -224,19 +231,21 @@ class DateRangeChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primary
-              : AppColors.primary.withValues(alpha: 0.06),
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.primary.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: isSelected
-                ? AppColors.primary
-                : AppColors.primary.withValues(alpha: 0.2),
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           ),
         ),
         child: Text(
           label,
           style: AppTextStyles.labelMedium.copyWith(
-            color: isSelected ? Colors.white : AppColors.primary,
+            color: isSelected
+                ? Colors.white
+                : Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -302,7 +311,9 @@ class FilterOptionTile extends StatelessWidget {
                   label,
                   style: AppTextStyles.bodyMedium.copyWith(
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? color : AppColors.textPrimary,
+                    color: isSelected
+                        ? color
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -316,7 +327,7 @@ class FilterOptionTile extends StatelessWidget {
                       )
                     : Icon(
                         Icons.chevron_right_rounded,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         key: const ValueKey('arrow'),
                       ),
               ),

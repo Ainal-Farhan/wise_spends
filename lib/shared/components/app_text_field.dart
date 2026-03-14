@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -161,16 +160,18 @@ class _AppTextFieldState extends State<AppTextField> {
   // Border colour logic — single source of truth
   // ─────────────────────────────────────────────────────────────────────────
 
-  Color get _activeBorderColor {
-    if (_hasError) return AppColors.error;
-    if (_isFocused) return AppColors.primary;
-    return AppColors.border;
+  Color _getActiveBorderColor(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    if (_hasError) return colorScheme.error;
+    if (_isFocused) return colorScheme.primary;
+    return colorScheme.outline;
   }
 
-  Color? get _focusRingColor {
+  Color? _getFocusRingColor(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     if (!_isFocused) return null;
-    if (_hasError) return AppColors.error.withValues(alpha: 0.12);
-    return AppColors.primary.withValues(alpha: 0.12);
+    if (_hasError) return colorScheme.error.withValues(alpha: 0.12);
+    return colorScheme.primary.withValues(alpha: 0.12);
   }
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -179,6 +180,8 @@ class _AppTextFieldState extends State<AppTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -193,30 +196,30 @@ class _AppTextFieldState extends State<AppTextField> {
 
         // ── Input container ─────────────────────────────────────────────
         if (widget.suppressContainer)
-          _buildInputContent()
+          _buildInputContent(context)
         else
           AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             decoration: BoxDecoration(
               color: widget.enabled
-                  ? AppColors.surface
-                  : AppColors.surfaceVariant,
+                  ? colorScheme.surfaceContainerHighest
+                  : colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(AppRadius.input),
               border: Border.all(
-                color: _activeBorderColor,
+                color: _getActiveBorderColor(context),
                 width: _isFocused ? 1.5 : 1.0,
               ),
-              boxShadow: _focusRingColor != null
+              boxShadow: _getFocusRingColor(context) != null
                   ? [
                       BoxShadow(
-                        color: _focusRingColor!,
+                        color: _getFocusRingColor(context)!,
                         blurRadius: 0,
                         spreadRadius: 3,
                       ),
                     ]
                   : null,
             ),
-            child: _buildInputContent(),
+            child: _buildInputContent(context),
           ),
 
         if (_hasError) ...[
@@ -236,7 +239,9 @@ class _AppTextFieldState extends State<AppTextField> {
     );
   }
 
-  Widget _buildInputContent() {
+  Widget _buildInputContent(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     // Multiline gets a slightly different layout with optional footer
     if ((widget.maxLines ?? 1) > 1 || widget.minLines != null) {
       return Column(
@@ -251,12 +256,12 @@ class _AppTextFieldState extends State<AppTextField> {
                       Icon(
                         widget.prefixIcon,
                         color: _hasError
-                            ? AppColors.error
-                            : AppColors.textSecondary,
+                            ? colorScheme.error
+                            : colorScheme.onSurfaceVariant,
                         size: AppIconSize.md,
                       ),
                 ),
-              Expanded(child: _buildTextField()),
+              Expanded(child: _buildTextField(context)),
             ],
           ),
           // Counter footer for multiline
@@ -280,10 +285,10 @@ class _AppTextFieldState extends State<AppTextField> {
             child: Icon(
               widget.prefixIcon,
               color: _hasError
-                  ? AppColors.error
+                  ? colorScheme.error
                   : _isFocused
-                  ? AppColors.primary
-                  : AppColors.textSecondary,
+                  ? colorScheme.primary
+                  : colorScheme.onSurfaceVariant,
               size: AppIconSize.md,
             ),
           )
@@ -293,25 +298,27 @@ class _AppTextFieldState extends State<AppTextField> {
             child: Text(
               widget.prefixText!,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ),
 
         // Input
-        Expanded(child: _buildTextField()),
+        Expanded(child: _buildTextField(context)),
 
         // Suffix
-        _buildSuffixArea(),
+        _buildSuffixArea(context),
       ],
     );
   }
 
-  Widget _buildTextField() {
+  Widget _buildTextField(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return TextFormField(
       controller: _controller,
       focusNode: _focusNode,
-      decoration: _buildDecoration(),
+      decoration: _buildDecoration(context),
       keyboardType: _getKeyboardType(),
       textInputAction: widget.textInputAction ?? TextInputAction.next,
       obscureText: _obscureText,
@@ -337,16 +344,18 @@ class _AppTextFieldState extends State<AppTextField> {
           widget.textStyle ??
           AppTextStyles.bodyMedium.copyWith(
             color: widget.enabled
-                ? AppColors.textPrimary
-                : AppColors.textSecondary,
+                ? colorScheme.onSurface
+                : colorScheme.onSurfaceVariant,
           ),
     );
   }
 
-  InputDecoration _buildDecoration() {
+  InputDecoration _buildDecoration(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return InputDecoration(
       hintText: widget.hint,
-      hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textHint),
+      hintStyle: AppTextStyles.bodyMedium.copyWith(color: colorScheme.outline),
       // All border styling is on the AnimatedContainer — keep these invisible
       border: InputBorder.none,
       enabledBorder: InputBorder.none,
@@ -374,7 +383,9 @@ class _AppTextFieldState extends State<AppTextField> {
     );
   }
 
-  Widget _buildSuffixArea() {
+  Widget _buildSuffixArea(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     // Clear button
     if (widget.showClearButton && _showClearButton) {
       return _SuffixButton(
@@ -410,7 +421,7 @@ class _AppTextFieldState extends State<AppTextField> {
       return _PrefixIconContainer(
         child: Icon(
           widget.suffixIcon,
-          color: AppColors.textSecondary,
+          color: colorScheme.onSurfaceVariant,
           size: AppIconSize.md,
         ),
       );
@@ -533,14 +544,16 @@ class _LabelRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Text(
       label,
       style: AppTextStyles.bodyMedium.copyWith(
         color: hasError
-            ? AppColors.error
+            ? colorScheme.error
             : enabled
-            ? AppColors.textPrimary
-            : AppColors.textSecondary,
+            ? colorScheme.onSurface
+            : colorScheme.onSurfaceVariant,
         fontWeight: FontWeight.w600,
       ),
     );
@@ -555,18 +568,20 @@ class _HelperRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (isError) ...[
-          Icon(Icons.error_outline_rounded, size: 13, color: AppColors.error),
+          Icon(Icons.error_outline_rounded, size: 13, color: colorScheme.error),
           const SizedBox(width: 4),
         ],
         Expanded(
           child: Text(
             text,
             style: AppTextStyles.captionSmall.copyWith(
-              color: isError ? AppColors.error : AppColors.textSecondary,
+              color: isError ? colorScheme.error : colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -602,6 +617,7 @@ class _CharacterCounterState extends State<_CharacterCounter> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final count = widget.controller.text.length;
     final isNearLimit = count >= widget.maxLength * 0.85;
     return Padding(
@@ -611,7 +627,7 @@ class _CharacterCounterState extends State<_CharacterCounter> {
         child: Text(
           '$count / ${widget.maxLength}',
           style: AppTextStyles.captionSmall.copyWith(
-            color: isNearLimit ? AppColors.error : AppColors.textHint,
+            color: isNearLimit ? colorScheme.error : colorScheme.outline,
           ),
         ),
       ),
@@ -651,6 +667,7 @@ class _MultilineCounterFooterState extends State<_MultilineCounterFooter> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final count = widget.controller.text.length;
     final isNearLimit = count >= widget.maxLength * 0.85;
     return Container(
@@ -659,14 +676,14 @@ class _MultilineCounterFooterState extends State<_MultilineCounterFooter> {
         vertical: 6,
       ),
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: AppColors.divider, width: 0.5)),
+        border: Border(top: BorderSide(color: colorScheme.outline, width: 0.5)),
       ),
       child: Align(
         alignment: Alignment.centerRight,
         child: Text(
           '$count / ${widget.maxLength}',
           style: AppTextStyles.captionSmall.copyWith(
-            color: isNearLimit ? AppColors.error : AppColors.textHint,
+            color: isNearLimit ? colorScheme.error : colorScheme.outline,
           ),
         ),
       ),
@@ -703,6 +720,8 @@ class _SuffixButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -711,13 +730,13 @@ class _SuffixButton extends StatelessWidget {
         decoration: hasDivider
             ? BoxDecoration(
                 border: Border(
-                  left: BorderSide(color: AppColors.divider, width: 0.5),
+                  left: BorderSide(color: colorScheme.outline, width: 0.5),
                 ),
               )
             : null,
         child: Center(
           child: IconTheme(
-            data: const IconThemeData(color: AppColors.textSecondary),
+            data: IconThemeData(color: colorScheme.onSurfaceVariant),
             child: child,
           ),
         ),

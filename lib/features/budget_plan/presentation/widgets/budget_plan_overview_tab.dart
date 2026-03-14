@@ -8,7 +8,6 @@ import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_d
 import 'package:wise_spends/shared/components/section_header.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 import 'budget_plan_milestone_card.dart';
 import 'budget_plan_linked_account_card.dart';
 import 'budget_plan_empty_section.dart';
@@ -44,7 +43,7 @@ class BudgetPlanOverviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final healthColor = _healthColor(plan.healthStatus);
+    final healthColor = _healthColor(context, plan.healthStatus);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -140,7 +139,7 @@ class BudgetPlanOverviewTab extends StatelessWidget {
         Text(
           'budget_plans.linked_accounts_desc'.tr,
           style: AppTextStyles.bodySmall.copyWith(
-            color: WiseSpendsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -189,17 +188,17 @@ class BudgetPlanOverviewTab extends StatelessWidget {
     return '${fmt.format(plan.currentAmount)} / ${fmt.format(plan.targetAmount)} · $days ${'general.days'.tr} ${'general.remaining'.tr}';
   }
 
-  Color _healthColor(BudgetHealthStatus status) {
+  Color _healthColor(BuildContext context, BudgetHealthStatus status) {
     switch (status) {
       case BudgetHealthStatus.onTrack:
-        return WiseSpendsColors.success;
+        return Theme.of(context).colorScheme.primary;
       case BudgetHealthStatus.slightlyBehind:
-        return WiseSpendsColors.warning;
+        return Theme.of(context).colorScheme.tertiary;
       case BudgetHealthStatus.atRisk:
       case BudgetHealthStatus.overBudget:
-        return WiseSpendsColors.secondary;
+        return Theme.of(context).colorScheme.secondary;
       case BudgetHealthStatus.completed:
-        return WiseSpendsColors.primary;
+        return Theme.of(context).colorScheme.primary;
     }
   }
 }
@@ -233,7 +232,7 @@ class _QuickActionsSection extends StatelessWidget {
                   icon: Icons.add_circle_outline,
                   label: 'budget_plans.add_deposit'.tr,
                   sublabel: 'budget_plans.add_deposit_desc'.tr,
-                  color: WiseSpendsColors.success,
+                  color: Theme.of(context).colorScheme.primary,
                   onTap: onAddDeposit,
                 ),
               ),
@@ -243,7 +242,7 @@ class _QuickActionsSection extends StatelessWidget {
                   icon: Icons.money_off_csred,
                   label: 'budget_plans.add_spending'.tr,
                   sublabel: 'budget_plans.add_spending_desc'.tr,
-                  color: WiseSpendsColors.secondary,
+                  color: Theme.of(context).colorScheme.secondary,
                   onTap: onAddSpending,
                 ),
               ),
@@ -299,7 +298,7 @@ class _ActionCard extends StatelessWidget {
             Text(
               sublabel,
               style: AppTextStyles.bodySmall.copyWith(
-                color: WiseSpendsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,

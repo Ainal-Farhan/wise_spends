@@ -11,7 +11,6 @@ import 'package:wise_spends/features/budget_plan/presentation/bloc/edit_budget_p
 import 'package:wise_spends/features/budget_plan/presentation/bloc/edit_budget_plan_form_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -20,13 +19,15 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _AccentColors {
-  static final List<int> argbValues = [
-    AppColors.primary.toARGB32(),
-    AppColors.secondary.toARGB32(),
-    AppColors.tertiary.toARGB32(),
-    AppColors.warning.toARGB32(),
-    AppColors.info.toARGB32(),
-  ];
+  static List<int> getArgbValues(BuildContext context) {
+    return [
+      Theme.of(context).colorScheme.primary.toARGB32(),
+      Theme.of(context).colorScheme.secondary.toARGB32(),
+      Theme.of(context).colorScheme.tertiary.toARGB32(),
+      Theme.of(context).colorScheme.tertiary.toARGB32(),
+      Theme.of(context).colorScheme.primary.toARGB32(),
+    ];
+  }
 }
 
 /// Immutable snapshot of the common form fields used by every step widget.
@@ -69,19 +70,21 @@ class BudgetPlanFormData {
         isLoading: s.isLoading,
       );
 
-  factory BudgetPlanFormData.fromEdit(EditBudgetPlanFormReady s) =>
-      BudgetPlanFormData(
-        name: s.name,
-        description: s.description,
-        category: s.category,
-        targetAmount: s.targetAmount,
-        startDate: s.startDate,
-        endDate: s.endDate,
-        accentColorValue: AppColors.primary.toARGB32(),
-        milestones: const [],
-        currentStep: s.currentStep,
-        isLoading: s.isLoading,
-      );
+  factory BudgetPlanFormData.fromEdit(
+    BuildContext context,
+    EditBudgetPlanFormReady s,
+  ) => BudgetPlanFormData(
+    name: s.name,
+    description: s.description,
+    category: s.category,
+    targetAmount: s.targetAmount,
+    startDate: s.startDate,
+    endDate: s.endDate,
+    accentColorValue: Theme.of(context).colorScheme.primary.toARGB32(),
+    milestones: const [],
+    currentStep: s.currentStep,
+    isLoading: s.isLoading,
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -158,11 +161,11 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
         title: Text('budget_plans.create'.tr),
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -176,7 +179,7 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('budget_plans.created'.tr),
-                backgroundColor: AppColors.success,
+                backgroundColor: Theme.of(context).colorScheme.primary,
               ),
             );
             Navigator.pop(context);
@@ -184,7 +187,7 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -292,7 +295,7 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
     final bloc = context.read<CreateBudgetPlanFormBloc>();
     return BudgetPlanFormCallbacks(
       onNameChanged: (v) => bloc.add(ChangePlanName(v)),
-      onDescriptionChanged: (v) {},  // Description not tracked in create
+      onDescriptionChanged: (v) {}, // Description not tracked in create
       onCategoryChanged: (c) => bloc.add(SelectBudgetPlanCategory(c)),
       onAccentColorChanged: (v) => bloc.add(ChangeAccentColor(v)),
       onTargetAmountChanged: (v) => bloc.add(ChangeTargetAmount(v)),
@@ -341,7 +344,7 @@ class _CreateBudgetPlanContentState extends State<_CreateBudgetPlanContent> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: AppColors.error,
+        backgroundColor: Theme.of(context).colorScheme.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -400,11 +403,11 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: AppBar(
         title: Text('budget_plans.edit'.tr),
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -426,7 +429,7 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.success,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -440,7 +443,7 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -451,7 +454,7 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is EditBudgetPlanFormReady) {
-            final data = BudgetPlanFormData.fromEdit(state);
+            final data = BudgetPlanFormData.fromEdit(context, state);
             final callbacks = _buildCallbacks(context);
 
             return Column(
@@ -459,7 +462,7 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
                 WizardStepBar(
                   currentStep: state.currentStep,
                   totalSteps: _totalSteps,
-                  accentColor: AppColors.primary,
+                  accentColor: Theme.of(context).colorScheme.primary,
                   stepLabels: _stepLabels,
                 ),
                 Expanded(
@@ -494,7 +497,7 @@ class _EditBudgetPlanContentState extends State<_EditBudgetPlanContent> {
                   currentStep: state.currentStep,
                   totalSteps: _totalSteps,
                   isLoading: state.isLoading,
-                  accentColor: AppColors.primary,
+                  accentColor: Theme.of(context).colorScheme.primary,
                   onBack: () => context.read<EditBudgetPlanFormBloc>().add(
                     EditChangeStep(state.currentStep - 1),
                   ),
@@ -639,7 +642,7 @@ class StepBasics extends StatelessWidget {
                 selectedColor: Color(
                   data.accentColorValue,
                 ).withValues(alpha: 0.2),
-                checkmarkColor: AppColors.primary,
+                checkmarkColor: Theme.of(context).colorScheme.primary,
               );
             }).toList(),
           ),
@@ -648,7 +651,7 @@ class StepBasics extends StatelessWidget {
             _FormSectionLabel(label: 'budget_plans.accent_color'.tr),
             const SizedBox(height: AppSpacing.sm),
             Row(
-              children: _AccentColors.argbValues.map((colorValue) {
+              children: _AccentColors.getArgbValues(context).map((colorValue) {
                 return Padding(
                   padding: const EdgeInsets.only(right: AppSpacing.sm),
                   child: _ColorSwatch(
@@ -839,18 +842,25 @@ class _EmptyMilestonesPlaceholder extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider, style: BorderStyle.solid),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          style: BorderStyle.solid,
+        ),
       ),
       child: Column(
         children: [
-          Icon(Icons.flag_outlined, size: 40, color: AppColors.textHint),
+          Icon(
+            Icons.flag_outlined,
+            size: 40,
+            color: Theme.of(context).colorScheme.outline,
+          ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             'budget_plans.no_milestones_yet'.tr,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -879,21 +889,28 @@ class _MilestoneTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.primary.withValues(alpha: 0.1),
           child: Text(
             '${index + 1}',
-            style: AppTextStyles.caption.copyWith(color: AppColors.primary),
+            style: AppTextStyles.caption.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
         title: Text(title, style: AppTextStyles.bodySemiBold),
         subtitle: Text(
           'RM ${amount.toStringAsFixed(2)}',
           style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         trailing: IconButton(
-          icon: const Icon(Icons.delete_outline, color: AppColors.error),
+          icon: Icon(
+            Icons.delete_outline,
+            color: Theme.of(context).colorScheme.error,
+          ),
           onPressed: onDelete,
         ),
       ),
@@ -1017,7 +1034,7 @@ class StepReview extends StatelessWidget {
             Text(
               'budget_plans.no_milestones_review'.tr,
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -1049,14 +1066,18 @@ class _ReviewRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, size: AppIconSize.sm, color: AppColors.textSecondary),
+          Icon(
+            icon,
+            size: AppIconSize.sm,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: AppSpacing.md),
           Expanded(child: Text(label, style: AppTextStyles.caption)),
           Text(
             value,
             style: highlight
                 ? AppTextStyles.bodySemiBold.copyWith(
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 16,
                   )
                 : AppTextStyles.bodySemiBold,
@@ -1080,9 +1101,9 @@ class _CategoryBadge extends StatelessWidget {
         vertical: 2,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1201,7 +1222,7 @@ class _FullStepBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.background,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.md,
         AppSpacing.sm,
@@ -1246,8 +1267,8 @@ class _FullStepBar extends StatelessWidget {
                   stepLabels[stepIndex].tr,
                   style: AppTextStyles.caption.copyWith(
                     color: (active || done)
-                        ? AppColors.textPrimary
-                        : AppColors.textHint,
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Theme.of(context).colorScheme.outline,
                     fontWeight: active ? FontWeight.w600 : FontWeight.normal,
                   ),
                   textAlign: TextAlign.center,
@@ -1283,7 +1304,7 @@ class _StepCircle extends StatelessWidget {
 
     if (done) {
       bg = accentColor;
-      child = const Icon(Icons.check, color: Colors.white, size: 14);
+      child = Icon(Icons.check, color: Colors.white, size: 14);
     } else if (active) {
       bg = accentColor;
       child = Text(
@@ -1295,11 +1316,11 @@ class _StepCircle extends StatelessWidget {
         ),
       );
     } else {
-      bg = AppColors.divider;
+      bg = Theme.of(context).colorScheme.outline;
       child = Text(
         '${index + 1}',
         style: TextStyle(
-          color: AppColors.textHint,
+          color: Theme.of(context).colorScheme.outline,
           fontWeight: FontWeight.bold,
           fontSize: 13,
         ),
@@ -1342,7 +1363,7 @@ class _AnimatedConnector extends StatelessWidget {
       curve: Curves.easeInOut,
       height: 2,
       margin: const EdgeInsets.symmetric(horizontal: 2),
-      color: filled ? accentColor : AppColors.divider,
+      color: filled ? accentColor : Theme.of(context).colorScheme.outline,
     );
   }
 }
@@ -1364,7 +1385,7 @@ class _CompactStepBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.background,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.md,
@@ -1383,7 +1404,9 @@ class _CompactStepBar extends StatelessWidget {
                 width: active ? 22 : 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: (active || done) ? accentColor : AppColors.divider,
+                  color: (active || done)
+                      ? accentColor
+                      : Theme.of(context).colorScheme.outline,
                   borderRadius: BorderRadius.circular(4),
                 ),
               );
@@ -1395,7 +1418,7 @@ class _CompactStepBar extends StatelessWidget {
             child: Text(
               stepLabels[currentStep].tr,
               style: AppTextStyles.caption.copyWith(
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
               // Let it wrap to show full text on narrow screens
@@ -1407,7 +1430,7 @@ class _CompactStepBar extends StatelessWidget {
           Text(
             '${currentStep + 1}/$totalSteps',
             style: AppTextStyles.caption.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -1494,10 +1517,14 @@ class _StepHeader extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: Icon(icon, size: 20, color: AppColors.primary),
+          child: Icon(
+            icon,
+            size: 20,
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
@@ -1509,7 +1536,7 @@ class _StepHeader extends StatelessWidget {
               Text(
                 subtitle,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -1546,16 +1573,16 @@ class _AmountField extends StatelessWidget {
         vertical: AppSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
           Text(
             'RM',
             style: AppTextStyles.amountMedium.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -1616,15 +1643,15 @@ class _DateField extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: AppColors.divider),
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.calendar_today,
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   size: AppIconSize.md,
                 ),
                 const SizedBox(width: AppSpacing.lg),
@@ -1678,7 +1705,7 @@ class _ColorSwatch extends StatelessWidget {
               : null,
         ),
         child: isSelected
-            ? const Icon(Icons.check, color: Colors.white, size: 20)
+            ? Icon(Icons.check, color: Colors.white, size: 20)
             : null,
       ),
     );
@@ -1695,7 +1722,7 @@ class _BottomNavBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -1723,7 +1750,11 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Theme.of(context).colorScheme.error,
+            ),
             const SizedBox(height: AppSpacing.lg),
             Text(
               message,

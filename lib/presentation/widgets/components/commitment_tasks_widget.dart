@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/features/commitment/presentation/screens/commitment_task_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_task_bloc.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_task_event.dart';
@@ -63,15 +62,19 @@ class _CommitmentTasksWidgetContent extends StatelessWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         color: pendingCount > 0
-                            ? AppColors.warning.withValues(alpha: 0.2)
-                            : AppColors.success.withValues(alpha: 0.2),
+                            ? Theme.of(
+                                context,
+                              ).colorScheme.tertiary.withValues(alpha: 0.2)
+                            : Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
                         pendingCount > 0 ? Icons.schedule : Icons.check_circle,
                         color: pendingCount > 0
-                            ? AppColors.warning
-                            : AppColors.success,
+                            ? Theme.of(context).colorScheme.tertiary
+                            : Theme.of(context).colorScheme.primary,
                         size: 20,
                       ),
                     ),
@@ -91,8 +94,8 @@ class _CommitmentTasksWidgetContent extends StatelessWidget {
                                 : 'All caught up!',
                             style: AppTextStyles.caption.copyWith(
                               color: pendingCount > 0
-                                  ? AppColors.warning
-                                  : AppColors.success,
+                                  ? Theme.of(context).colorScheme.tertiary
+                                  : Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -105,7 +108,7 @@ class _CommitmentTasksWidgetContent extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.warning,
+                          color: Theme.of(context).colorScheme.tertiary,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -117,9 +120,9 @@ class _CommitmentTasksWidgetContent extends StatelessWidget {
                           ),
                         ),
                       ),
-                    const Icon(
+                    Icon(
                       Icons.chevron_right,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ],
                 ),
@@ -137,7 +140,7 @@ class _CommitmentTasksWidgetContent extends StatelessWidget {
                   Text(
                     'RM ${(pendingTasks.first.amount ?? 0.0).toStringAsFixed(2)}',
                     style: AppTextStyles.amountSmall.copyWith(
-                      color: AppColors.tertiary,
+                      color: Theme.of(context).colorScheme.tertiary,
                       fontSize: 14,
                     ),
                   ),

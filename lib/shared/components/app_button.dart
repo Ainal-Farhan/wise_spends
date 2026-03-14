@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -282,41 +281,41 @@ class AppButton extends StatelessWidget {
     if (isFullWidth) {
       return SizedBox(
         width: double.infinity,
-        child: _buildButtonContent(height, borderRadius),
+        child: _buildButtonContent(context, height, borderRadius),
       );
     }
 
     if (width != null) {
       return SizedBox(
         width: width,
-        child: _buildButtonContent(height, borderRadius),
+        child: _buildButtonContent(context, height, borderRadius),
       );
     }
 
-    return _buildButtonContent(height, borderRadius);
+    return _buildButtonContent(context, height, borderRadius);
   }
 
-  Widget _buildButtonContent(double height, double borderRadius) {
+  Widget _buildButtonContent(BuildContext context, double height, double borderRadius) {
     final isEnabled = onPressed != null && !isLoading;
 
     return Material(
-      color: _getBackgroundColor(),
+      color: _getBackgroundColor(context),
       borderRadius: BorderRadius.circular(borderRadius),
       child: InkWell(
         onTap: isEnabled ? onPressed : null,
         borderRadius: BorderRadius.circular(borderRadius),
-        splashColor: _getSplashColor(),
-        highlightColor: _getHighlightColor(),
+        splashColor: _getSplashColor(context),
+        highlightColor: _getHighlightColor(context),
         child: Container(
           height: height,
           padding: _getPadding(),
-          child: _buildButtonChild(),
+          child: _buildButtonChild(context),
         ),
       ),
     );
   }
 
-  Widget _buildButtonChild() {
+  Widget _buildButtonChild(BuildContext context) {
     if (isLoading) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -327,14 +326,14 @@ class AppButton extends StatelessWidget {
             height: AppIconSize.sm,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(_getLoadingColor()),
+              valueColor: AlwaysStoppedAnimation<Color>(_getLoadingColor(context)),
             ),
           ),
           if (label.isNotEmpty) ...[
             const SizedBox(width: AppSpacing.sm),
             Text(
               label,
-              style: _getTextStyle().copyWith(color: _getTextColor()),
+              style: _getTextStyle().copyWith(color: _getTextColor(context)),
             ),
           ],
         ],
@@ -346,11 +345,11 @@ class AppButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: AppIconSize.md, color: _getIconColor()),
+          Icon(icon, size: AppIconSize.md, color: _getIconColor(context)),
           const SizedBox(width: AppSpacing.sm),
-          Text(label, style: _getTextStyle().copyWith(color: _getTextColor())),
+          Text(label, style: _getTextStyle().copyWith(color: _getTextColor(context))),
           const SizedBox(width: AppSpacing.sm),
-          Icon(trailingIcon, size: AppIconSize.md, color: _getIconColor()),
+          Icon(trailingIcon, size: AppIconSize.md, color: _getIconColor(context)),
         ],
       );
     }
@@ -360,9 +359,9 @@ class AppButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: AppIconSize.md, color: _getIconColor()),
+          Icon(icon, size: AppIconSize.md, color: _getIconColor(context)),
           const SizedBox(width: AppSpacing.sm),
-          Text(label, style: _getTextStyle().copyWith(color: _getTextColor())),
+          Text(label, style: _getTextStyle().copyWith(color: _getTextColor(context))),
         ],
       );
     }
@@ -372,9 +371,9 @@ class AppButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label, style: _getTextStyle().copyWith(color: _getTextColor())),
+          Text(label, style: _getTextStyle().copyWith(color: _getTextColor(context))),
           const SizedBox(width: AppSpacing.sm),
-          Icon(trailingIcon, size: AppIconSize.md, color: _getIconColor()),
+          Icon(trailingIcon, size: AppIconSize.md, color: _getIconColor(context)),
         ],
       );
     }
@@ -382,7 +381,7 @@ class AppButton extends StatelessWidget {
     return Center(
       child: Text(
         label,
-        style: _getTextStyle().copyWith(color: _getTextColor()),
+        style: _getTextStyle().copyWith(color: _getTextColor(context)),
       ),
     );
   }
@@ -417,16 +416,18 @@ class AppButton extends StatelessWidget {
     return EdgeInsets.symmetric(horizontal: horizontalPadding);
   }
 
-  Color _getBackgroundColor() {
+  Color _getBackgroundColor(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     switch (variant) {
       case AppButtonVariant.primary:
-        return AppColors.primary;
+        return colorScheme.primary;
       case AppButtonVariant.secondary:
         return Colors.transparent;
       case AppButtonVariant.destructive:
-        return AppColors.secondary;
+        return colorScheme.secondary;
       case AppButtonVariant.tonal:
-        return AppColors.primaryContainer;
+        return colorScheme.primaryContainer;
       case AppButtonVariant.text:
         return Colors.transparent;
       case AppButtonVariant.ghost:
@@ -434,82 +435,89 @@ class AppButton extends StatelessWidget {
     }
   }
 
-  Color _getSplashColor() {
+  Color _getSplashColor(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     switch (variant) {
       case AppButtonVariant.primary:
-        return AppColors.primaryDark.withValues(alpha: 0.2);
+        return colorScheme.primaryContainer;
       case AppButtonVariant.secondary:
-        return AppColors.primary.withValues(alpha: 0.1);
+        return colorScheme.primary.withValues(alpha: 0.1);
       case AppButtonVariant.destructive:
-        return AppColors.secondaryDark.withValues(alpha: 0.2);
+        return colorScheme.secondary.withValues(alpha: 0.2);
       case AppButtonVariant.tonal:
-        return AppColors.primary.withValues(alpha: 0.1);
+        return colorScheme.primary.withValues(alpha: 0.1);
       case AppButtonVariant.text:
-        return AppColors.primary.withValues(alpha: 0.1);
+        return colorScheme.primary.withValues(alpha: 0.1);
       case AppButtonVariant.ghost:
-        return AppColors.primary.withValues(alpha: 0.1);
+        return colorScheme.primary.withValues(alpha: 0.1);
     }
   }
 
-  Color _getHighlightColor() {
+  Color _getHighlightColor(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     switch (variant) {
       case AppButtonVariant.primary:
-        return AppColors.primaryDark.withValues(alpha: 0.1);
+        return colorScheme.primaryContainer;
       case AppButtonVariant.secondary:
-        return AppColors.primary.withValues(alpha: 0.05);
+        return colorScheme.primary.withValues(alpha: 0.05);
       case AppButtonVariant.destructive:
-        return AppColors.secondaryDark.withValues(alpha: 0.1);
+        return colorScheme.secondary.withValues(alpha: 0.1);
       case AppButtonVariant.tonal:
-        return AppColors.primary.withValues(alpha: 0.05);
+        return colorScheme.primary.withValues(alpha: 0.05);
       case AppButtonVariant.text:
-        return AppColors.primary.withValues(alpha: 0.05);
+        return colorScheme.primary.withValues(alpha: 0.05);
       case AppButtonVariant.ghost:
-        return AppColors.primary.withValues(alpha: 0.05);
+        return colorScheme.primary.withValues(alpha: 0.05);
     }
   }
 
-  Color _getTextColor() {
+  Color _getTextColor(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final isEnabled = onPressed != null && !isLoading;
 
     if (!isEnabled) {
-      return AppColors.textDisabled;
+      return colorScheme.onSurface.withValues(alpha: 0.38);
     }
 
     switch (variant) {
       case AppButtonVariant.primary:
-        return AppColors.onPrimary;
+        return colorScheme.onPrimary;
       case AppButtonVariant.secondary:
-        return AppColors.primary;
+        return colorScheme.primary;
       case AppButtonVariant.destructive:
-        return AppColors.onSecondary;
+        return colorScheme.onSecondary;
       case AppButtonVariant.tonal:
-        return AppColors.onPrimaryContainer;
+        return colorScheme.onPrimaryContainer;
       case AppButtonVariant.text:
-        return AppColors.primary;
+        return colorScheme.primary;
       case AppButtonVariant.ghost:
-        return AppColors.primary;
+        return colorScheme.primary;
     }
   }
 
-  Color _getLoadingColor() {
+  Color _getLoadingColor(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     switch (variant) {
       case AppButtonVariant.primary:
-        return AppColors.onPrimary;
+        return colorScheme.onPrimary;
       case AppButtonVariant.secondary:
-        return AppColors.primary;
+        return colorScheme.primary;
       case AppButtonVariant.destructive:
-        return AppColors.onSecondary;
+        return colorScheme.onSecondary;
       case AppButtonVariant.tonal:
-        return AppColors.onPrimaryContainer;
+        return colorScheme.onPrimaryContainer;
       case AppButtonVariant.text:
-        return AppColors.primary;
+        return colorScheme.primary;
       case AppButtonVariant.ghost:
-        return AppColors.primary;
+        return colorScheme.primary;
     }
   }
 
-  Color _getIconColor() {
-    return _getTextColor();
+  Color _getIconColor(BuildContext context) {
+    return _getTextColor(context);
   }
 
   TextStyle _getTextStyle() {

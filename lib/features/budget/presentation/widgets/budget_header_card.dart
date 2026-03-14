@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/features/budget/presentation/bloc/budget_state.dart';
 import 'package:wise_spends/shared/components/section_header.dart';
 import 'package:wise_spends/shared/components/shimmer_loading.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 
 /// Budget header card widget - shows summary statistics
@@ -28,10 +27,13 @@ class BudgetHeaderCard extends StatelessWidget {
     final pct = total > 0 ? (onTrack / total * 100).toInt() : 0;
 
     return SectionHeader.card(
-      gradient: const LinearGradient(
+      gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.tertiary, AppColors.tertiaryDark],
+        colors: [
+          Theme.of(context).colorScheme.tertiary,
+          Theme.of(context).colorScheme.tertiary,
+        ],
       ),
       icon: Icons.pie_chart_outline,
       label: 'budgets.title'.tr,

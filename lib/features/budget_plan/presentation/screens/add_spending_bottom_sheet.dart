@@ -14,7 +14,6 @@ import 'package:wise_spends/features/transaction/presentation/bloc/transaction_e
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Constants for budget plan spending categories
 class _BudgetPlanSpendingCategories {
@@ -61,8 +60,8 @@ class _AddDepositBottomSheetState extends State<AddDepositBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: WiseSpendsColors.background,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppRadius.xxl),
         ),
@@ -90,12 +89,14 @@ class _AddDepositBottomSheetState extends State<AddDepositBottomSheet> {
                 leading: Container(
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: WiseSpendsColors.success.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.add_circle_outline,
-                    color: WiseSpendsColors.success,
+                    color: Theme.of(context).colorScheme.primary,
                     size: AppIconSize.md,
                   ),
                 ),
@@ -106,7 +107,7 @@ class _AddDepositBottomSheetState extends State<AddDepositBottomSheet> {
               // Amount input
               _AmountInputField(
                 controller: _amountController,
-                accentColor: WiseSpendsColors.success,
+                accentColor: Theme.of(context).colorScheme.primary,
                 labelKey: 'general.amount',
               ),
               const SizedBox(height: AppSpacing.xxl),
@@ -116,7 +117,7 @@ class _AddDepositBottomSheetState extends State<AddDepositBottomSheet> {
               const SizedBox(height: AppSpacing.sm),
               _SourceChipSelector(
                 selected: _selectedSource,
-                accentColor: WiseSpendsColors.success,
+                accentColor: Theme.of(context).colorScheme.primary,
                 sources: const [
                   _SourceOption(
                     'manual',
@@ -237,8 +238,8 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: WiseSpendsColors.background,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppRadius.xxl),
         ),
@@ -265,12 +266,14 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
                 leading: Container(
                   padding: const EdgeInsets.all(AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: WiseSpendsColors.secondary.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.secondary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.remove_circle_outline,
-                    color: WiseSpendsColors.secondary,
+                    color: Theme.of(context).colorScheme.secondary,
                     size: AppIconSize.md,
                   ),
                 ),
@@ -280,7 +283,7 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
 
               _AmountInputField(
                 controller: _amountController,
-                accentColor: WiseSpendsColors.secondary,
+                accentColor: Theme.of(context).colorScheme.secondary,
                 labelKey: 'general.amount',
               ),
               const SizedBox(height: AppSpacing.xxl),
@@ -336,7 +339,7 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
               Text(
                 'budget_plans.linked_account_optional'.tr,
                 style: AppTextStyles.caption.copyWith(
-                  color: WiseSpendsColors.textHint,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -418,7 +421,7 @@ class _BottomSheetHandle extends StatelessWidget {
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: WiseSpendsColors.divider,
+          color: Theme.of(context).colorScheme.outline,
           borderRadius: BorderRadius.circular(2),
         ),
       ),
@@ -454,16 +457,16 @@ class _AmountInputField extends StatelessWidget {
             vertical: AppSpacing.sm,
           ),
           decoration: BoxDecoration(
-            color: WiseSpendsColors.surface,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: WiseSpendsColors.divider),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: Row(
             children: [
               Text(
                 'RM',
                 style: AppTextStyles.amountMedium.copyWith(
-                  color: WiseSpendsColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -582,7 +585,7 @@ class _LinkedAccountSelector extends StatelessWidget {
             child: Text(
               'budget_plans.no_linked_accounts'.tr,
               style: AppTextStyles.bodySmall.copyWith(
-                color: WiseSpendsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           );
@@ -633,15 +636,15 @@ class _DatePickerField extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
-          color: WiseSpendsColors.surface,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: WiseSpendsColors.divider),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
         child: Row(
           children: [
-            const Icon(
+            Icon(
               Icons.calendar_today_outlined,
-              color: WiseSpendsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               size: AppIconSize.md,
             ),
             const SizedBox(width: AppSpacing.lg),
@@ -652,7 +655,7 @@ class _DatePickerField extends StatelessWidget {
                   Text(
                     'general.date'.tr,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: WiseSpendsColors.textHint,
+                      color: Theme.of(context).colorScheme.outline,
                     ),
                   ),
                   Text(
@@ -664,9 +667,9 @@ class _DatePickerField extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
-              color: WiseSpendsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -754,8 +757,10 @@ class _SpendingCategoryChips extends StatelessWidget {
           ),
           selected: isSelected,
           onSelected: (s) => onChanged(s ? value : null),
-          selectedColor: WiseSpendsColors.secondary.withValues(alpha: 0.2),
-          checkmarkColor: WiseSpendsColors.secondary,
+          selectedColor: Theme.of(
+            context,
+          ).colorScheme.secondary.withValues(alpha: 0.2),
+          checkmarkColor: Theme.of(context).colorScheme.secondary,
         );
       }).toList(),
     );
@@ -784,13 +789,13 @@ class _AttachReceiptTile extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
           color: hasReceipt
-              ? WiseSpendsColors.success.withValues(alpha: 0.05)
-              : WiseSpendsColors.surface,
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.05)
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
             color: hasReceipt
-                ? WiseSpendsColors.success.withValues(alpha: 0.4)
-                : WiseSpendsColors.divider,
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
+                : Theme.of(context).colorScheme.outline,
           ),
         ),
         child: Row(
@@ -798,8 +803,8 @@ class _AttachReceiptTile extends StatelessWidget {
             Icon(
               hasReceipt ? Icons.check_circle_outline : Icons.attach_file,
               color: hasReceipt
-                  ? WiseSpendsColors.success
-                  : WiseSpendsColors.textSecondary,
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
               size: AppIconSize.md,
             ),
             const SizedBox(width: AppSpacing.lg),
@@ -810,14 +815,14 @@ class _AttachReceiptTile extends StatelessWidget {
                     : 'budget_plans.attach_receipt'.tr,
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: hasReceipt
-                      ? WiseSpendsColors.success
-                      : WiseSpendsColors.textSecondary,
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
             Icon(
               Icons.add_a_photo,
-              color: WiseSpendsColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               size: AppIconSize.md,
             ),
           ],
@@ -842,7 +847,7 @@ class _AttachReceiptTile extends StatelessWidget {
                   'name': result.files.single.name,
                 }),
               ),
-              backgroundColor: WiseSpendsColors.success,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -855,7 +860,7 @@ class _AttachReceiptTile extends StatelessWidget {
             content: Text(
               'budget_plans.receipt_failed'.trWith({'error': e.toString()}),
             ),
-            backgroundColor: WiseSpendsColors.error,
+            backgroundColor: Theme.of(context).colorScheme.error,
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -887,7 +892,7 @@ class _LinkTransactionToggle extends StatelessWidget {
               Text(
                 'budget_plans.link_to_main_subtitle'.tr,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: WiseSpendsColors.textHint,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
             ],
@@ -896,7 +901,7 @@ class _LinkTransactionToggle extends StatelessWidget {
         Switch(
           value: value,
           onChanged: onChanged,
-          activeThumbColor: WiseSpendsColors.primary,
+          activeThumbColor: Theme.of(context).colorScheme.primary,
         ),
       ],
     );

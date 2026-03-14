@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
+import 'package:wise_spends/shared/theme/ui_constants.dart';
 
 /// Shimmer loading effect for transaction list
 /// Shows skeleton loaders that match the shape of real content
@@ -15,8 +15,8 @@ class TransactionListShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: WiseSpendsColors.divider,
-      highlightColor: WiseSpendsColors.border,
+      baseColor: Theme.of(context).colorScheme.outline,
+      highlightColor: Theme.of(context).colorScheme.outline,
       child: ListView.separated(
         physics: const NeverScrollableScrollPhysics(),
         itemCount: itemCount,
@@ -34,7 +34,7 @@ class TransactionListShimmer extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-        border: Border.all(color: WiseSpendsColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
@@ -88,8 +88,8 @@ class BalanceCardShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: WiseSpendsColors.divider,
-      highlightColor: WiseSpendsColors.border,
+      baseColor: Theme.of(context).colorScheme.outline,
+      highlightColor: Theme.of(context).colorScheme.outline,
       child: Container(
         padding: const EdgeInsets.all(UIConstants.spacingXXL),
         decoration: BoxDecoration(
@@ -130,15 +130,15 @@ class BudgetCardShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: WiseSpendsColors.divider,
-      highlightColor: WiseSpendsColors.border,
+      baseColor: Theme.of(context).colorScheme.outline,
+      highlightColor: Theme.of(context).colorScheme.outline,
       child: Container(
         margin: const EdgeInsets.only(bottom: UIConstants.spacingMedium),
         padding: const EdgeInsets.all(UIConstants.spacingLarge),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-          border: Border.all(color: WiseSpendsColors.divider),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,8 +253,8 @@ class GenericCardShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: WiseSpendsColors.divider,
-      highlightColor: WiseSpendsColors.border,
+      baseColor: Theme.of(context).colorScheme.outline,
+      highlightColor: Theme.of(context).colorScheme.outline,
       child: Container(
         width: width,
         height: height,
@@ -279,8 +279,8 @@ class CategoryGridShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: WiseSpendsColors.divider,
-      highlightColor: WiseSpendsColors.border,
+      baseColor: Theme.of(context).colorScheme.outline,
+      highlightColor: Theme.of(context).colorScheme.outline,
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -296,7 +296,7 @@ class CategoryGridShimmer extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-              border: Border.all(color: WiseSpendsColors.divider),
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

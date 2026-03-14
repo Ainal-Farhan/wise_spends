@@ -4,7 +4,6 @@ import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/router/route_arguments.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -22,9 +21,11 @@ class _AddTransactionSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(AppRadius.xxl),
         ),
@@ -52,7 +53,7 @@ class _AddTransactionSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.divider,
+                color: colorScheme.outline,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -63,7 +64,7 @@ class _AddTransactionSheet extends StatelessWidget {
           Text(
             'Choose a transaction type to get started',
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
@@ -72,7 +73,7 @@ class _AddTransactionSheet extends StatelessWidget {
             title: 'Income',
             subtitle: 'Record money you received',
             icon: Icons.arrow_downward_rounded,
-            color: AppColors.income,
+            color: colorScheme.primary,
           ),
           const SizedBox(height: AppSpacing.sm),
           _TransactionTypeOption(
@@ -80,7 +81,7 @@ class _AddTransactionSheet extends StatelessWidget {
             title: 'Expense',
             subtitle: 'Record money you spent',
             icon: Icons.arrow_upward_rounded,
-            color: AppColors.expense,
+            color: colorScheme.secondary,
           ),
           const SizedBox(height: AppSpacing.sm),
           _TransactionTypeOption(
@@ -88,7 +89,7 @@ class _AddTransactionSheet extends StatelessWidget {
             title: 'Transfer',
             subtitle: 'Move between accounts',
             icon: Icons.swap_horiz_rounded,
-            color: AppColors.transfer,
+            color: colorScheme.tertiary,
           ),
         ],
       ),
@@ -113,6 +114,8 @@ class _TransactionTypeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -157,13 +160,13 @@ class _TransactionTypeOption extends StatelessWidget {
                     Text(
                       subtitle,
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary),
+              Icon(Icons.chevron_right_rounded, color: colorScheme.onSurfaceVariant),
             ],
           ),
         ),

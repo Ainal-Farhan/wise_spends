@@ -3,7 +3,6 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/budget_plan_milestone_entity.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Milestone card widget with dismissible functionality
 class MilestoneCard extends StatelessWidget {
@@ -37,7 +36,7 @@ class MilestoneCard extends StatelessWidget {
       onDismissed: (_) => onDelete(milestone.id, planId),
       background: Container(
         decoration: BoxDecoration(
-          color: WiseSpendsColors.secondary,
+          color: Theme.of(context).colorScheme.secondary,
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         alignment: Alignment.centerRight,
@@ -72,15 +71,15 @@ class MilestoneCardContent extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: milestone.isCompleted
-              ? WiseSpendsColors.success.withValues(alpha: 0.2)
-              : WiseSpendsColors.primary.withValues(alpha: 0.2),
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)
+              : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           child: Icon(
             milestone.isCompleted
                 ? Icons.check_circle
                 : Icons.radio_button_unchecked,
             color: milestone.isCompleted
-                ? WiseSpendsColors.success
-                : WiseSpendsColors.primary,
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.primary,
           ),
         ),
         title: Text(

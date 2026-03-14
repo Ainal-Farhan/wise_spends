@@ -3,7 +3,6 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/linked_account_entity.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Linked account card widget
 class LinkedAccountCard extends StatelessWidget {
@@ -26,12 +25,12 @@ class LinkedAccountCard extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
-            color: WiseSpendsColors.primary.withValues(alpha: 0.1),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.savings_outlined,
-            color: WiseSpendsColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             size: AppIconSize.md,
           ),
         ),
@@ -42,13 +41,13 @@ class LinkedAccountCard extends StatelessWidget {
         subtitle: Text(
           '${'budget_plans.allocated'.tr}: RM ${account.allocatedAmount.toStringAsFixed(2)}',
           style: AppTextStyles.caption.copyWith(
-            color: WiseSpendsColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         trailing: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.link_off,
-            color: WiseSpendsColors.textHint,
+            color: Theme.of(context).colorScheme.outline,
             size: 20,
           ),
           tooltip: 'budget_plans.unlink'.tr,

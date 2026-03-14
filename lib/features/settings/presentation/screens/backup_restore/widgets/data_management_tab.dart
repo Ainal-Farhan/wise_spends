@@ -4,7 +4,6 @@ import 'package:wise_spends/domain/models/stored_file.dart';
 import 'package:wise_spends/features/settings/presentation/bloc/backup_restore_bloc.dart';
 import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -78,14 +77,18 @@ class _FullBackupCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.1),
-            AppColors.primaryContainer.withValues(alpha: 0.3),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            Theme.of(
+              context,
+            ).colorScheme.primaryContainer.withValues(alpha: 0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,17 +100,19 @@ class _FullBackupCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.backup_rounded,
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 28,
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -117,7 +122,7 @@ class _FullBackupCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     SizedBox(height: AppSpacing.xs),
@@ -125,7 +130,7 @@ class _FullBackupCard extends StatelessWidget {
                       'Includes database AND all uploaded files',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -137,27 +142,29 @@ class _FullBackupCard extends StatelessWidget {
                   vertical: 3,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppRadius.full),
                 ),
-                child: const Text(
+                child: Text(
                   'ZIP',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          const Text(
+          Text(
             'Create a complete backup including all uploaded files, images, and '
             'database records. Ideal for migrating to a new device.',
             style: TextStyle(
               fontSize: 12,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               height: 1.5,
             ),
           ),
@@ -235,24 +242,28 @@ class _StorageOverviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final fraction = (rawBytes / _softCapBytes).clamp(0.0, 1.0);
     final barColor = fraction >= 0.9
-        ? AppColors.error
+        ? Theme.of(context).colorScheme.error
         : fraction >= 0.7
-        ? AppColors.warning
-        : AppColors.primary;
+        ? Theme.of(context).colorScheme.tertiary
+        : Theme.of(context).colorScheme.primary;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.primary.withValues(alpha: 0.08),
-            AppColors.primaryContainer.withValues(alpha: 0.25),
+            Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+            Theme.of(
+              context,
+            ).colorScheme.primaryContainer.withValues(alpha: 0.25),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,12 +273,14 @@ class _StorageOverviewCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.15),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.storage_rounded,
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 28,
                 ),
               ),
@@ -279,21 +292,21 @@ class _StorageOverviewCard extends StatelessWidget {
                     Text(
                       'Storage Used',
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       storageSize,
                       style: AppTextStyles.h2.copyWith(
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       '$fileCount file${fileCount != 1 ? 's' : ''}',
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -331,7 +344,7 @@ class _StorageOverviewCard extends StatelessWidget {
                 builder: (context, value, _) => LinearProgressIndicator(
                   value: value,
                   minHeight: 6,
-                  backgroundColor: AppColors.divider,
+                  backgroundColor: Theme.of(context).colorScheme.outline,
                   valueColor: AlwaysStoppedAnimation(barColor),
                 ),
               ),
@@ -340,7 +353,7 @@ class _StorageOverviewCard extends StatelessWidget {
             Text(
               'of ~100 MB soft cap',
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 10,
               ),
             ),
@@ -366,9 +379,9 @@ class _FilesSection extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(
+            Icon(
               Icons.folder_outlined,
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               size: 20,
             ),
             const SizedBox(width: AppSpacing.sm),
@@ -384,22 +397,22 @@ class _FilesSection extends StatelessWidget {
                   vertical: 2,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryContainer,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(AppRadius.full),
                 ),
                 child: Text(
                   '${files.length}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
             ],
             const Spacer(),
             IconButton(
-              icon: const Icon(Icons.refresh_rounded, size: 18),
+              icon: Icon(Icons.refresh_rounded, size: 18),
               onPressed: () =>
                   context.read<BackupRestoreBloc>().add(const LoadAllFiles()),
               tooltip: 'Refresh',
@@ -442,7 +455,7 @@ class _FilesSection extends StatelessWidget {
           message:
               'Are you sure you want to delete "${file.originalName}"?\nThis action cannot be undone.',
           icon: Icons.delete_outline_rounded,
-          iconColor: AppColors.error,
+          iconColor: Theme.of(context).colorScheme.error,
           buttons: [
             CustomDialogButton(
               text: 'Cancel',
@@ -472,22 +485,26 @@ class _EmptyFilesList extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.xl),
         decoration: BoxDecoration(
-          color: AppColors.surfaceVariant,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.divider.withValues(alpha: 0.5)),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+          ),
         ),
         child: Column(
           children: [
             Icon(
               Icons.folder_open_outlined,
               size: 48,
-              color: AppColors.textSecondary.withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
               'No files managed yet',
               style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -495,7 +512,7 @@ class _EmptyFilesList extends StatelessWidget {
             Text(
               'Files you upload in the app will appear here',
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
@@ -516,13 +533,13 @@ class _FileListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (iconData, accentColor) = _iconForMimeType(file.mimeType);
+    final (iconData, accentColor) = _iconForMimeType(context, file.mimeType);
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.sm),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -563,7 +580,9 @@ class _FileListTile extends StatelessWidget {
                                 Text(
                                   _formatFileSize(file.sizeBytes),
                                   style: AppTextStyles.bodySmall.copyWith(
-                                    color: AppColors.textSecondary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 const SizedBox(width: AppSpacing.sm),
@@ -578,7 +597,7 @@ class _FileListTile extends StatelessWidget {
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete_outline_rounded),
-                        color: AppColors.error,
+                        color: Theme.of(context).colorScheme.error,
                         onPressed: onDelete,
                         iconSize: 20,
                         constraints: const BoxConstraints(
@@ -604,26 +623,32 @@ class _FileListTile extends StatelessWidget {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 
-  (IconData, Color) _iconForMimeType(String mimeType) {
+  (IconData, Color) _iconForMimeType(BuildContext context, String mimeType) {
     if (mimeType.startsWith('image/')) {
-      return (Icons.image_outlined, AppColors.primary);
+      return (Icons.image_outlined, Theme.of(context).colorScheme.primary);
     }
     if (mimeType.startsWith('video/')) {
-      return (Icons.video_file_outlined, const Color(0xFFEF4444));
+      return (Icons.video_file_outlined, Theme.of(context).colorScheme.secondary);
     }
     if (mimeType.startsWith('audio/')) {
-      return (Icons.audio_file_outlined, const Color(0xFF8B5CF6));
+      return (Icons.audio_file_outlined, Theme.of(context).colorScheme.primary);
     }
     if (mimeType.contains('pdf')) {
-      return (Icons.picture_as_pdf_outlined, const Color(0xFFEF4444));
+      return (Icons.picture_as_pdf_outlined, Theme.of(context).colorScheme.secondary);
     }
     if (mimeType.contains('word') || mimeType.contains('document')) {
-      return (Icons.description_outlined, const Color(0xFF2563EB));
+      return (Icons.description_outlined, Theme.of(context).colorScheme.tertiary);
     }
     if (mimeType.startsWith('text/')) {
-      return (Icons.description_outlined, AppColors.textSecondary);
+      return (
+        Icons.description_outlined,
+        Theme.of(context).colorScheme.onSurfaceVariant,
+      );
     }
-    return (Icons.insert_drive_file_outlined, AppColors.textSecondary);
+    return (
+      Icons.insert_drive_file_outlined,
+      Theme.of(context).colorScheme.onSurfaceVariant,
+    );
   }
 }
 
@@ -661,9 +686,11 @@ class _ResetDataCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.06),
+        color: Theme.of(context).colorScheme.error.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.25)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.25),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -673,12 +700,14 @@ class _ResetDataCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.12),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.error.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.warning_amber_rounded,
-                  color: AppColors.error,
+                  color: Theme.of(context).colorScheme.error,
                   size: 20,
                 ),
               ),
@@ -687,7 +716,7 @@ class _ResetDataCard extends StatelessWidget {
                 child: Text(
                   'Danger Zone',
                   style: AppTextStyles.h3.copyWith(
-                    color: AppColors.error,
+                    color: Theme.of(context).colorScheme.error,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -699,7 +728,7 @@ class _ResetDataCard extends StatelessWidget {
             'Permanently delete all data: transactions, budgets, savings plans, '
             'uploaded files, and settings. This action cannot be undone.',
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               height: 1.5,
             ),
           ),
@@ -729,7 +758,7 @@ class _ResetDataCard extends StatelessWidget {
               '• All settings and preferences\n\n'
               'This action CANNOT be undone!',
           icon: Icons.warning_amber_rounded,
-          iconColor: AppColors.error,
+          iconColor: Theme.of(context).colorScheme.error,
           buttons: [
             CustomDialogButton(
               text: 'Cancel',

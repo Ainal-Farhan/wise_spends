@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/domain/models/stored_file.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -74,10 +73,12 @@ class _AvatarCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        _buildCircle(),
+        _buildCircle(colorScheme),
         Positioned(
           bottom: 0,
           right: 0,
@@ -87,10 +88,10 @@ class _AvatarCircle extends StatelessWidget {
     );
   }
 
-  Widget _buildCircle() {
+  Widget _buildCircle(ColorScheme colorScheme) {
     final borderColor = storedImageFile != null
-        ? AppColors.primary
-        : AppColors.divider;
+        ? colorScheme.primary
+        : colorScheme.outline;
 
     return Container(
       width: size,
@@ -98,10 +99,10 @@ class _AvatarCircle extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: borderColor, width: 3),
-        color: AppColors.primaryContainer,
+        color: colorScheme.primaryContainer,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.15),
+            color: colorScheme.primary.withValues(alpha: 0.15),
             blurRadius: 12,
             spreadRadius: 2,
             offset: const Offset(0, 4),
@@ -153,13 +154,15 @@ class _InitialText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Text(
         profile.name.isNotEmpty ? profile.name[0].toUpperCase() : 'U',
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 48,
           fontWeight: FontWeight.bold,
-          color: AppColors.primary,
+          color: colorScheme.primary,
         ),
       ),
     );
@@ -180,7 +183,7 @@ class _CameraBadge extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: Theme.of(context).colorScheme.primary,
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white, width: 2.5),
           boxShadow: [
@@ -235,22 +238,22 @@ class _ChangePhotoChip extends StatelessWidget {
           vertical: AppSpacing.xs,
         ),
         decoration: BoxDecoration(
-          color: AppColors.primaryContainer,
+          color: Theme.of(context).colorScheme.primaryContainer,
           borderRadius: BorderRadius.circular(AppRadius.full),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.camera_alt_outlined,
               size: 14,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            const SizedBox(width: AppSpacing.xs),
+            SizedBox(width: AppSpacing.xs),
             Text(
               hasImage ? 'Change photo' : 'Add photo',
               style: AppTextStyles.labelSmall.copyWith(
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 fontWeight: FontWeight.w600,
               ),
             ),

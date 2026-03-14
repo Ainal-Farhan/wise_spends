@@ -7,7 +7,6 @@ import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_d
 import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_detail_event.dart';
 import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -44,8 +43,8 @@ class _AddMilestoneBottomSheetState extends State<AddMilestoneBottomSheet> {
         top: AppSpacing.xxl,
         bottom: MediaQuery.viewInsetsOf(context).bottom + AppSpacing.xxl,
       ),
-      decoration: const BoxDecoration(
-        color: AppColors.background,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(AppRadius.xxl),
         ),
@@ -63,7 +62,7 @@ class _AddMilestoneBottomSheetState extends State<AddMilestoneBottomSheet> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.divider,
+                    color: Theme.of(context).colorScheme.outline,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -114,16 +113,20 @@ class _AddMilestoneBottomSheetState extends State<AddMilestoneBottomSheet> {
                 child: Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: AppColors.divider),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.calendar_today,
                         size: 20,
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
@@ -133,7 +136,9 @@ class _AddMilestoneBottomSheetState extends State<AddMilestoneBottomSheet> {
                             Text(
                               'budget_plans.due_date'.tr,
                               style: AppTextStyles.caption.copyWith(
-                                color: AppColors.textSecondary,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -148,8 +153,8 @@ class _AddMilestoneBottomSheetState extends State<AddMilestoneBottomSheet> {
                                     ? FontWeight.w600
                                     : FontWeight.normal,
                                 color: _dueDate != null
-                                    ? AppColors.textPrimary
-                                    : AppColors.textHint,
+                                    ? Theme.of(context).colorScheme.onSurface
+                                    : Theme.of(context).colorScheme.outline,
                               ),
                             ),
                           ],
@@ -162,21 +167,23 @@ class _AddMilestoneBottomSheetState extends State<AddMilestoneBottomSheet> {
                           },
                           child: Container(
                             padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: AppColors.divider,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.outline,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.close,
                               size: 12,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         )
                       else
-                        const Icon(
+                        Icon(
                           Icons.chevron_right,
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           size: 20,
                         ),
                     ],
@@ -238,7 +245,7 @@ class _AddMilestoneBottomSheetState extends State<AddMilestoneBottomSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('budget_plans.milestone_added'.tr),
-        backgroundColor: AppColors.success,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
       ),
     );

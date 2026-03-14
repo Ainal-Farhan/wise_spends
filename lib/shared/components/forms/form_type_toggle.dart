@@ -3,38 +3,31 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 final _logger = WiseLogger();
 
 /// Transaction type for the form
 enum FormTransactionType {
-  expense(
-    label: 'transaction.type.expense',
-    icon: Icons.trending_down_rounded,
-    color: AppColors.error,
-  ),
-  income(
-    label: 'transaction.type.income',
-    icon: Icons.trending_up_rounded,
-    color: AppColors.success,
-  ),
-  transfer(
-    label: 'transaction.type.transfer',
-    icon: Icons.swap_horiz_rounded,
-    color: AppColors.primary,
-  );
+  expense(label: 'transaction.type.expense', icon: Icons.trending_down_rounded),
+  income(label: 'transaction.type.income', icon: Icons.trending_up_rounded),
+  transfer(label: 'transaction.type.transfer', icon: Icons.swap_horiz_rounded);
 
   final String label;
   final IconData icon;
-  final Color color;
 
-  const FormTransactionType({
-    required this.label,
-    required this.icon,
-    required this.color,
-  });
+  static Color getColor(BuildContext context, FormTransactionType type) {
+    switch (type) {
+      case FormTransactionType.expense:
+        return Theme.of(context).colorScheme.error;
+      case FormTransactionType.income:
+        return Theme.of(context).colorScheme.primary;
+      case FormTransactionType.transfer:
+        return Theme.of(context).colorScheme.primary;
+    }
+  }
+
+  const FormTransactionType({required this.label, required this.icon});
 
   String get translatedLabel => label.tr;
 }
@@ -56,9 +49,9 @@ class FormTypeToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: FormTransactionType.values.map((type) {
@@ -110,7 +103,12 @@ class _TypeButton extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? type.color.withValues(alpha: 0.08) : Colors.transparent,
+          color: isSelected
+              ? FormTransactionType.getColor(
+                  context,
+                  type,
+                ).withValues(alpha: 0.08)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -118,14 +116,18 @@ class _TypeButton extends StatelessWidget {
           children: [
             Icon(
               type.icon,
-              color: isSelected ? type.color : AppColors.textSecondary,
+              color: isSelected
+                  ? FormTransactionType.getColor(context, type)
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
               size: 20,
             ),
             const SizedBox(height: 4),
             Text(
               type.translatedLabel,
               style: AppTextStyles.labelSmall.copyWith(
-                color: isSelected ? type.color : AppColors.textSecondary,
+                color: isSelected
+                    ? FormTransactionType.getColor(context, type)
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 fontSize: 11,
               ),

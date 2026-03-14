@@ -2,7 +2,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/budget_plan_analytics.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Monthly Contributions Bar Chart
 /// Shows deposits vs spending over time
@@ -19,7 +18,7 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return _buildEmptyState();
+      return _buildEmptyState(context);
     }
 
     return SizedBox(
@@ -35,8 +34,8 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
               touchTooltipData: BarTouchTooltipData(
                 getTooltipItem: (group, groupIndex, rod, rodIndex) {
                   final color = rodIndex == 0
-                      ? WiseSpendsColors.success
-                      : WiseSpendsColors.secondary;
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.secondary;
                   return BarTooltipItem(
                     'RM ${rod.toY.toStringAsFixed(0)}',
                     TextStyle(color: color, fontWeight: FontWeight.bold),
@@ -55,8 +54,10 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           data[value.toInt()].monthName,
-                          style: const TextStyle(
-                            color: WiseSpendsColors.textSecondary,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                             fontSize: 10,
                           ),
                         ),
@@ -81,7 +82,10 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
               drawVerticalLine: false,
               horizontalInterval: _calculateMaxY() / 4,
               getDrawingHorizontalLine: (value) {
-                return FlLine(color: WiseSpendsColors.divider, strokeWidth: 1);
+                return FlLine(
+                  color: Theme.of(context).colorScheme.outline,
+                  strokeWidth: 1,
+                );
               },
             ),
             borderData: FlBorderData(show: false),
@@ -92,7 +96,7 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
                     barRods: [
                       BarChartRodData(
                         toY: month.deposits,
-                        color: WiseSpendsColors.success,
+                        color: Theme.of(context).colorScheme.primary,
                         width: 10,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(4),
@@ -101,7 +105,7 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
                       ),
                       BarChartRodData(
                         toY: month.spending,
-                        color: WiseSpendsColors.secondary,
+                        color: Theme.of(context).colorScheme.secondary,
                         width: 10,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(4),
@@ -139,16 +143,22 @@ class BudgetMonthlyContributionsChart extends StatelessWidget {
         : withPadding.toDouble();
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.bar_chart, size: 48, color: WiseSpendsColors.textHint),
+          Icon(
+            Icons.bar_chart,
+            size: 48,
+            color: Theme.of(context).colorScheme.outline,
+          ),
           const SizedBox(height: 8),
           Text(
             'No data available',
-            style: TextStyle(color: WiseSpendsColors.textSecondary),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -171,7 +181,7 @@ class BudgetProgressChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (snapshots.isEmpty) {
-      return _buildEmptyState();
+      return _buildEmptyState(context);
     }
 
     final spots = snapshots
@@ -200,7 +210,7 @@ class BudgetProgressChart extends StatelessWidget {
                       'RM ${spot.y.toStringAsFixed(0)}',
                       TextStyle(
                         color: spot.barIndex == 0
-                            ? WiseSpendsColors.primary
+                            ? Theme.of(context).colorScheme.primary
                             : Colors.grey,
                         fontWeight: FontWeight.bold,
                       ),
@@ -222,8 +232,10 @@ class BudgetProgressChart extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 8),
                         child: Text(
                           DateFormat('MMM').format(date),
-                          style: const TextStyle(
-                            color: WiseSpendsColors.textSecondary,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                             fontSize: 10,
                           ),
                         ),
@@ -248,7 +260,10 @@ class BudgetProgressChart extends StatelessWidget {
               drawVerticalLine: false,
               horizontalInterval: targetAmount / 4,
               getDrawingHorizontalLine: (value) {
-                return FlLine(color: WiseSpendsColors.divider, strokeWidth: 1);
+                return FlLine(
+                  color: Theme.of(context).colorScheme.outline,
+                  strokeWidth: 1,
+                );
               },
             ),
             borderData: FlBorderData(show: false),
@@ -257,7 +272,7 @@ class BudgetProgressChart extends StatelessWidget {
               LineChartBarData(
                 spots: spots,
                 isCurved: true,
-                color: WiseSpendsColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 barWidth: 3,
                 isStrokeCapRound: true,
                 dotData: FlDotData(
@@ -265,13 +280,15 @@ class BudgetProgressChart extends StatelessWidget {
                   getDotPainter: (spot, percent, barData, index) {
                     return FlDotCirclePainter(
                       radius: 4,
-                      color: WiseSpendsColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     );
                   },
                 ),
                 belowBarData: BarAreaData(
                   show: true,
-                  color: WiseSpendsColors.primary.withValues(alpha: 0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.1),
                 ),
               ),
               // Required pace line
@@ -290,16 +307,22 @@ class BudgetProgressChart extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.trending_up, size: 48, color: WiseSpendsColors.textHint),
+          Icon(
+            Icons.trending_up,
+            size: 48,
+            color: Theme.of(context).colorScheme.outline,
+          ),
           const SizedBox(height: 8),
           Text(
             'No progress data',
-            style: TextStyle(color: WiseSpendsColors.textSecondary),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -322,16 +345,16 @@ class BudgetSpendingDonutChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (data.isEmpty) {
-      return _buildEmptyState();
+      return _buildEmptyState(context);
     }
 
     final colors = [
-      WiseSpendsColors.secondary,
-      WiseSpendsColors.primary,
-      WiseSpendsColors.tertiary,
-      WiseSpendsColors.warning,
-      WiseSpendsColors.info,
-      WiseSpendsColors.textHint,
+      Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.tertiary,
+      Theme.of(context).colorScheme.tertiary,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.outline,
     ];
 
     return SizedBox(
@@ -363,16 +386,22 @@ class BudgetSpendingDonutChart extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.pie_chart, size: 48, color: WiseSpendsColors.textHint),
+          Icon(
+            Icons.pie_chart,
+            size: 48,
+            color: Theme.of(context).colorScheme.outline,
+          ),
           const SizedBox(height: 8),
           Text(
             'No spending data',
-            style: TextStyle(color: WiseSpendsColors.textSecondary),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -389,12 +418,12 @@ class BudgetChartLegend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = [
-      WiseSpendsColors.secondary,
-      WiseSpendsColors.primary,
-      WiseSpendsColors.tertiary,
-      WiseSpendsColors.warning,
-      WiseSpendsColors.info,
-      WiseSpendsColors.textHint,
+      Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.tertiary,
+      Theme.of(context).colorScheme.tertiary,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.outline,
     ];
 
     return Wrap(

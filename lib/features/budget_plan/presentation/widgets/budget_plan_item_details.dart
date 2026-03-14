@@ -5,7 +5,6 @@ import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// BIL stepper widget for incrementing/decrementing BIL number
 class BilStepper extends StatelessWidget {
@@ -106,9 +105,9 @@ class ItemDetailsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: WiseSpendsColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: WiseSpendsColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +125,7 @@ class ItemDetailsCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          const Divider(height: 1, color: WiseSpendsColors.divider),
+          Divider(height: 1, color: Theme.of(context).colorScheme.outline),
           const SizedBox(height: AppSpacing.md),
           AppTextField(
             label: 'budget_plans.item_name'.tr,

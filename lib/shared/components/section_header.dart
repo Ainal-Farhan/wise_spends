@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -136,6 +135,8 @@ class _SectionHeaderPlain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -176,14 +177,14 @@ class _SectionHeaderPlain extends StatelessWidget {
                       Text(
                         seeAllText ?? 'general.see_all'.tr,
                         style: AppTextStyles.labelMedium.copyWith(
-                          color: AppColors.primary,
+                          color: colorScheme.primary,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.xs),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right,
                         size: AppIconSize.sm,
-                        color: AppColors.primary,
+                        color: colorScheme.primary,
                       ),
                     ],
                   ),
@@ -383,6 +384,8 @@ class SectionHeaderCompact extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -404,13 +407,13 @@ class SectionHeaderCompact extends StatelessWidget {
                 Text(
                   seeAllText ?? 'general.see_all'.tr,
                   style: AppTextStyles.labelSmall.copyWith(
-                    color: AppColors.primary,
+                    color: colorScheme.primary,
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.chevron_right,
                   size: AppIconSize.xs,
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                 ),
               ],
             ),

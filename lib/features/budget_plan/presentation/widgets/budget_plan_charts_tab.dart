@@ -9,7 +9,6 @@ import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_d
 import 'package:wise_spends/shared/components/section_header.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 /// Charts tab widget - displays budget plan analytics charts
@@ -91,17 +90,17 @@ class _ProgressChartCard extends StatelessWidget {
                         PieChartSectionData(
                           value: progress * 100,
                           title: '${(progress * 100).toStringAsFixed(1)}%',
-                          color: WiseSpendsColors.primary,
+                          color: Theme.of(context).colorScheme.primary,
                           radius: 80,
                           titleStyle: AppTextStyles.h3.copyWith(
-                            color: WiseSpendsColors.primary,
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         PieChartSectionData(
                           value: (1 - progress) * 100,
                           title: '',
-                          color: WiseSpendsColors.primary.withValues(
+                          color: Theme.of(context).colorScheme.primary.withValues(
                             alpha: 0.15,
                           ),
                           radius: 80,
@@ -117,7 +116,7 @@ class _ProgressChartCard extends StatelessWidget {
                       Text(
                         fmt.format(currentAmount),
                         style: AppTextStyles.amountMedium.copyWith(
-                          color: WiseSpendsColors.primary,
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -126,7 +125,7 @@ class _ProgressChartCard extends StatelessWidget {
                           'target': fmt.format(targetAmount),
                         }),
                         style: AppTextStyles.caption.copyWith(
-                          color: WiseSpendsColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -208,7 +207,7 @@ class _AllocationChartCard extends StatelessWidget {
                             child: Text(
                               titles[value.toInt()].tr,
                               style: AppTextStyles.captionSmall.copyWith(
-                                color: WiseSpendsColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           );
@@ -231,7 +230,7 @@ class _AllocationChartCard extends StatelessWidget {
                     horizontalInterval: 25,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: WiseSpendsColors.divider,
+                        color: Theme.of(context).colorScheme.outline,
                         strokeWidth: 1,
                       );
                     },
@@ -243,7 +242,7 @@ class _AllocationChartCard extends StatelessWidget {
                       barRods: [
                         BarChartRodData(
                           toY: depositsPct,
-                          color: WiseSpendsColors.success,
+                          color: Theme.of(context).colorScheme.primary,
                           width: 20,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(6),
@@ -257,7 +256,7 @@ class _AllocationChartCard extends StatelessWidget {
                       barRods: [
                         BarChartRodData(
                           toY: transactionsPct,
-                          color: WiseSpendsColors.error,
+                          color: Theme.of(context).colorScheme.error,
                           width: 20,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(6),
@@ -271,7 +270,7 @@ class _AllocationChartCard extends StatelessWidget {
                       barRods: [
                         BarChartRodData(
                           toY: milestonesPct,
-                          color: WiseSpendsColors.primary,
+                          color: Theme.of(context).colorScheme.primary,
                           width: 20,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(6),
@@ -325,7 +324,7 @@ class _TrendChartCard extends StatelessWidget {
                     horizontalInterval: 25,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: WiseSpendsColors.divider,
+                        color: Theme.of(context).colorScheme.outline,
                         strokeWidth: 1,
                       );
                     },
@@ -347,7 +346,7 @@ class _TrendChartCard extends StatelessWidget {
                             child: Text(
                               titles[value.toInt()].tr,
                               style: AppTextStyles.captionSmall.copyWith(
-                                color: WiseSpendsColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           );
@@ -371,13 +370,13 @@ class _TrendChartCard extends StatelessWidget {
                         return FlSpot(e.key.toDouble(), e.value.toDouble());
                       }).toList(),
                       isCurved: true,
-                      color: WiseSpendsColors.success,
+                      color: Theme.of(context).colorScheme.primary,
                       barWidth: 3,
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: WiseSpendsColors.success.withValues(alpha: 0.1),
+                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       ),
                     ),
                     LineChartBarData(
@@ -385,13 +384,13 @@ class _TrendChartCard extends StatelessWidget {
                         return FlSpot(e.key.toDouble(), e.value.toDouble());
                       }).toList(),
                       isCurved: true,
-                      color: WiseSpendsColors.error,
+                      color: Theme.of(context).colorScheme.error,
                       barWidth: 3,
                       isStrokeCapRound: true,
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: WiseSpendsColors.error.withValues(alpha: 0.1),
+                        color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
                       ),
                     ),
                   ],
@@ -408,7 +407,7 @@ class _TrendChartCard extends StatelessWidget {
                       width: 16,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: WiseSpendsColors.success,
+                        color: Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -416,7 +415,7 @@ class _TrendChartCard extends StatelessWidget {
                     Text(
                       'budget_plans.chart_deposits'.tr,
                       style: AppTextStyles.caption.copyWith(
-                        color: WiseSpendsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -428,7 +427,7 @@ class _TrendChartCard extends StatelessWidget {
                       width: 16,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: WiseSpendsColors.error,
+                        color: Theme.of(context).colorScheme.error,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -436,7 +435,7 @@ class _TrendChartCard extends StatelessWidget {
                     Text(
                       'budget_plans.chart_spendings'.tr,
                       style: AppTextStyles.caption.copyWith(
-                        color: WiseSpendsColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],

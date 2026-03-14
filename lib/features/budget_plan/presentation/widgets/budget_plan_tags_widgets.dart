@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Tag chip widget for displaying selected tags
 class BudgetPlanTagChip extends StatelessWidget {
@@ -26,10 +25,10 @@ class BudgetPlanTagChip extends StatelessWidget {
         bottom: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: WiseSpendsColors.primary.withValues(alpha: 0.1),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppRadius.full),
         border: Border.all(
-          color: WiseSpendsColors.primary.withValues(alpha: 0.25),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.25),
         ),
       ),
       child: Row(
@@ -39,7 +38,7 @@ class BudgetPlanTagChip extends StatelessWidget {
             tag,
             style: AppTextStyles.caption.copyWith(
               fontWeight: FontWeight.w600,
-              color: WiseSpendsColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(width: AppSpacing.xs),
@@ -48,13 +47,15 @@ class BudgetPlanTagChip extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                color: WiseSpendsColors.primary.withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.close,
                 size: 10,
-                color: WiseSpendsColors.primary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),
@@ -108,13 +109,15 @@ class BudgetPlanTagsSection extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: showTagPicker
-                      ? WiseSpendsColors.primary.withValues(alpha: 0.1)
-                      : WiseSpendsColors.surface,
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.1)
+                      : Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(AppRadius.full),
                   border: Border.all(
                     color: showTagPicker
-                        ? WiseSpendsColors.primary
-                        : WiseSpendsColors.divider,
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 child: Row(
@@ -124,8 +127,8 @@ class BudgetPlanTagsSection extends StatelessWidget {
                       showTagPicker ? Icons.close : Icons.add,
                       size: 12,
                       color: showTagPicker
-                          ? WiseSpendsColors.primary
-                          : WiseSpendsColors.textSecondary,
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -134,8 +137,8 @@ class BudgetPlanTagsSection extends StatelessWidget {
                           : 'budget_plans.add_tags'.tr,
                       style: AppTextStyles.caption.copyWith(
                         color: showTagPicker
-                            ? WiseSpendsColors.primary
-                            : WiseSpendsColors.textSecondary,
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

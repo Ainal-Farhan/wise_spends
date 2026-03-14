@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Linked accounts empty state widget
 class LinkedAccountsEmpty extends StatelessWidget {
@@ -16,7 +15,7 @@ class LinkedAccountsEmpty extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.xl),
         decoration: BoxDecoration(
-          color: WiseSpendsColors.surface,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
         child: Column(
@@ -24,7 +23,7 @@ class LinkedAccountsEmpty extends StatelessWidget {
             Icon(
               Icons.account_balance_outlined,
               size: 48,
-              color: WiseSpendsColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: AppSpacing.md),
             Text('budget_plans.no_linked_accounts'.tr, style: AppTextStyles.h3),
@@ -32,7 +31,7 @@ class LinkedAccountsEmpty extends StatelessWidget {
             Text(
               'budget_plans.link_account_to_allocate'.tr,
               style: AppTextStyles.bodySmall.copyWith(
-                color: WiseSpendsColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),

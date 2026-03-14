@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/features/widget/presentation/services/widget_background_service.dart';
 import 'package:wise_spends/features/widget/presentation/services/widget_service.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 /// Widget Info Screen
@@ -93,7 +92,10 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.primary, AppColors.primaryDark],
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.primary,
+          ],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
@@ -135,16 +137,20 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline, color: AppColors.primary, size: 20),
+              Icon(
+                Icons.info_outline,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text('Widget Status', style: AppTextStyles.bodySemiBold),
             ],
@@ -167,13 +173,13 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
         Text(
           label,
           style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
           value,
           style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -185,19 +191,25 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.info.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(Icons.refresh, color: AppColors.info, size: 24),
+            child: Icon(
+              Icons.refresh,
+              color: Theme.of(context).colorScheme.primary,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -208,7 +220,7 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
                 Text(
                   'Update widget every 15 minutes',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -226,7 +238,7 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
                 WidgetBackgroundService.stopPeriodicUpdates();
               }
             },
-            activeThumbColor: AppColors.primary,
+            activeThumbColor: Theme.of(context).colorScheme.primary,
           ),
         ],
       ),
@@ -238,13 +250,13 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: _installedWidgetsCount > 0
-            ? AppColors.success.withValues(alpha: 0.1)
-            : AppColors.warning.withValues(alpha: 0.1),
+            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+            : Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _installedWidgetsCount > 0
-              ? AppColors.success.withValues(alpha: 0.3)
-              : AppColors.warning.withValues(alpha: 0.3),
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+              : Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -254,8 +266,8 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
                 ? Icons.check_circle_outline
                 : Icons.warning_amber_outlined,
             color: _installedWidgetsCount > 0
-                ? AppColors.success
-                : AppColors.warning,
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.tertiary,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -269,8 +281,8 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
                       : 'No Widget Installed',
                   style: AppTextStyles.bodySemiBold.copyWith(
                     color: _installedWidgetsCount > 0
-                        ? AppColors.success
-                        : AppColors.warning,
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.tertiary,
                   ),
                 ),
                 Text(
@@ -278,7 +290,7 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
                       ? 'You have $_installedWidgetsCount widget(s) on your home screen'
                       : 'Add a widget to quickly add transactions',
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -299,7 +311,7 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
         icon: const Icon(Icons.add_home),
         label: const Text('Add Widget to Home Screen'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
@@ -319,28 +331,28 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
             await WidgetService.requestPinWidget();
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text('Widget pin request sent'),
-                  backgroundColor: AppColors.success,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
               );
             }
           } catch (e) {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text('Failed to pin widget'),
-                  backgroundColor: AppColors.error,
+                  backgroundColor: Theme.of(context).colorScheme.error,
                 ),
               );
             }
           }
         },
-        icon: const Icon(Icons.push_pin),
+        icon: Icon(Icons.push_pin),
         label: const Text('Pin Widget (Android)'),
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.primary),
+          foregroundColor: Theme.of(context).colorScheme.primary,
+          side: BorderSide(color: Theme.of(context).colorScheme.primary),
           padding: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -354,16 +366,20 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.help_outline, color: AppColors.primary, size: 20),
+              Icon(
+                Icons.help_outline,
+                color: Theme.of(context).colorScheme.primary,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text('How to Add Widget', style: AppTextStyles.bodySemiBold),
             ],
@@ -388,8 +404,8 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
         Container(
           width: 24,
           height: 24,
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -408,7 +424,7 @@ class _WidgetInfoScreenState extends State<WidgetInfoScreen> {
           child: Text(
             instruction,
             style: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ),

@@ -4,7 +4,6 @@ import 'package:wise_spends/core/services/document_service.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_form_fields.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -101,7 +100,11 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: AppIconSize.sm, color: AppColors.textSecondary),
+        Icon(
+          icon,
+          size: AppIconSize.sm,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
@@ -110,7 +113,7 @@ class _InfoRow extends StatelessWidget {
               Text(
                 label,
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 2),
@@ -139,10 +142,10 @@ class _StorageSummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(
+        Icon(
           Icons.folder_outlined,
           size: AppIconSize.sm,
-          color: AppColors.textSecondary,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
@@ -152,7 +155,7 @@ class _StorageSummaryRow extends StatelessWidget {
               Text(
                 'Storage used',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 2),
@@ -172,13 +175,13 @@ class _StorageSummaryRow extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.warning,
+                        color: Theme.of(context).colorScheme.tertiary,
                         borderRadius: BorderRadius.circular(AppRadius.full),
                       ),
                       child: Text(
                         '${stats.pendingBackupCount} unbackedup',
                         style: AppTextStyles.labelSmall.copyWith(
-                          color: AppColors.warning,
+                          color: Theme.of(context).colorScheme.tertiary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

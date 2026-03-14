@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -263,7 +262,7 @@ class AppCard extends StatelessWidget {
 
   Widget _buildCard(BuildContext context) {
     final container = Container(
-      decoration: _buildDecoration(),
+      decoration: _buildDecoration(context),
       child: _buildContent(),
     );
 
@@ -337,21 +336,23 @@ class AppCard extends StatelessWidget {
     );
   }
 
-  Decoration _buildDecoration() {
+  Decoration _buildDecoration(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     Color backgroundColor;
     double elevation;
     Border? border;
 
     switch (variant) {
       case AppCardVariant.defaultCard:
-        backgroundColor = color ?? AppColors.background;
+        backgroundColor = color ?? colorScheme.surfaceContainerHighest;
         elevation = 0;
         border = side != null
             ? Border.fromBorderSide(side!)
-            : Border.all(color: AppColors.divider);
+            : Border.all(color: colorScheme.outline);
         break;
       case AppCardVariant.elevated:
-        backgroundColor = color ?? AppColors.background;
+        backgroundColor = color ?? colorScheme.surfaceContainerHighest;
         elevation = this.elevation ?? AppElevation.sm;
         border = side != null ? Border.fromBorderSide(side!) : null;
         break;
@@ -360,10 +361,10 @@ class AppCard extends StatelessWidget {
         elevation = 0;
         border = side != null
             ? Border.fromBorderSide(side!)
-            : Border.all(color: AppColors.divider);
+            : Border.all(color: colorScheme.outline);
         break;
       case AppCardVariant.colored:
-        backgroundColor = color ?? AppColors.primaryContainer;
+        backgroundColor = color ?? colorScheme.primaryContainer;
         elevation = 0;
         border = null;
         break;
@@ -485,7 +486,8 @@ class AppStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardColor = color ?? AppColors.primary;
+    final colorScheme = Theme.of(context).colorScheme;
+    final cardColor = color ?? colorScheme.primary;
 
     return AppCard.elevated(
       onTap: onTap,
@@ -506,7 +508,7 @@ class AppStatCard extends StatelessWidget {
           Text(
             label,
             style: AppTextStyles.caption.copyWith(
-              color: AppColors.textSecondary,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
@@ -520,8 +522,8 @@ class AppStatCard extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: trend!.startsWith('+')
-                    ? AppColors.success.withValues(alpha: 0.1)
-                    : AppColors.secondary.withValues(alpha: 0.1),
+                    ? colorScheme.primary.withValues(alpha: 0.1)
+                    : colorScheme.secondary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.full),
               ),
               child: Row(
@@ -533,16 +535,16 @@ class AppStatCard extends StatelessWidget {
                         : Icons.trending_down,
                     size: AppIconSize.xs,
                     color: trend!.startsWith('+')
-                        ? AppColors.success
-                        : AppColors.secondary,
+                        ? colorScheme.primary
+                        : colorScheme.secondary,
                   ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     trend!,
                     style: AppTextStyles.labelSmall.copyWith(
                       color: trend!.startsWith('+')
-                          ? AppColors.success
-                          : AppColors.secondary,
+                          ? colorScheme.primary
+                          : colorScheme.secondary,
                     ),
                   ),
                 ],

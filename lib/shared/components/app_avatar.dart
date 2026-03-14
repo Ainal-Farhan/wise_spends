@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 
 /// Size options for AppAvatar
 enum AppAvatarSize {
@@ -36,13 +35,13 @@ enum AppAvatarSize {
 /// // Icon avatar
 /// AppAvatar(
 ///   icon: Icons.shopping_bag,
-///   backgroundColor: AppColors.primary,
+///   backgroundColor: Theme.of(context).colorScheme.primary,
 /// )
 ///
 /// // With custom size
 /// AppAvatar.large(
 ///   icon: Icons.home,
-///   backgroundColor: AppColors.secondary,
+///   backgroundColor: Theme.of(context).colorScheme.secondary,
 /// )
 ///
 /// // Image avatar
@@ -183,7 +182,7 @@ class AppAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final avatar = _buildAvatar();
+    final avatar = _buildAvatar(context);
 
     if (semanticLabel != null) {
       return Semantics(label: semanticLabel, child: avatar);
@@ -192,7 +191,8 @@ class AppAvatar extends StatelessWidget {
     return avatar;
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final sizeValue = _getSizeValue();
 
     Widget avatarContent;
@@ -205,20 +205,20 @@ class AppAvatar extends StatelessWidget {
           height: sizeValue,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stackTrace) {
-            return _buildFallbackIcon(sizeValue);
+            return _buildFallbackIcon(sizeValue, colorScheme);
           },
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
-            return _buildLoadingIndicator(sizeValue);
+            return _buildLoadingIndicator(sizeValue, colorScheme);
           },
         ),
       );
     } else if (icon != null) {
-      avatarContent = _buildFallbackIcon(sizeValue);
+      avatarContent = _buildFallbackIcon(sizeValue, colorScheme);
     } else if (label != null) {
-      avatarContent = _buildLabelAvatar(sizeValue);
+      avatarContent = _buildLabelAvatar(sizeValue, colorScheme);
     } else {
-      avatarContent = _buildFallbackIcon(sizeValue);
+      avatarContent = _buildFallbackIcon(sizeValue, colorScheme);
     }
 
     if (borderWidth != null && borderWidth! > 0) {
@@ -228,7 +228,7 @@ class AppAvatar extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: borderColor ?? AppColors.divider,
+            color: borderColor ?? colorScheme.outline,
             width: borderWidth!,
           ),
         ),
@@ -239,30 +239,30 @@ class AppAvatar extends StatelessWidget {
     return avatarContent;
   }
 
-  Widget _buildFallbackIcon(double sizeValue) {
+  Widget _buildFallbackIcon(double sizeValue, ColorScheme colorScheme) {
     final iconSize = sizeValue * 0.5;
 
     return Container(
       width: sizeValue,
       height: sizeValue,
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.primaryContainer,
+        color: backgroundColor ?? colorScheme.primaryContainer,
         shape: BoxShape.circle,
       ),
       child: Icon(
         icon ?? Icons.category,
         size: iconSize,
-        color: iconColor ?? AppColors.primary,
+        color: iconColor ?? colorScheme.primary,
       ),
     );
   }
 
-  Widget _buildLabelAvatar(double sizeValue) {
+  Widget _buildLabelAvatar(double sizeValue, ColorScheme colorScheme) {
     return Container(
       width: sizeValue,
       height: sizeValue,
       decoration: BoxDecoration(
-        color: backgroundColor ?? AppColors.primaryContainer,
+        color: backgroundColor ?? colorScheme.primaryContainer,
         shape: BoxShape.circle,
       ),
       child: Center(
@@ -271,19 +271,19 @@ class AppAvatar extends StatelessWidget {
           style: TextStyle(
             fontSize: sizeValue * 0.4,
             fontWeight: FontWeight.bold,
-            color: iconColor ?? AppColors.primary,
+            color: iconColor ?? colorScheme.primary,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildLoadingIndicator(double sizeValue) {
+  Widget _buildLoadingIndicator(double sizeValue, ColorScheme colorScheme) {
     return Container(
       width: sizeValue,
       height: sizeValue,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: colorScheme.surface,
         shape: BoxShape.circle,
       ),
       child: Center(
@@ -292,7 +292,7 @@ class AppAvatar extends StatelessWidget {
           height: sizeValue * 0.4,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+            valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
           ),
         ),
       ),
@@ -316,12 +316,13 @@ class AppAvatar extends StatelessWidget {
 
   static Color _getColorForCategory(String categoryId) {
     // Generate consistent colors based on category ID hash
+    // Using static colors for consistency across themes
     final colors = [
-      AppColors.primaryContainer,
-      AppColors.secondaryContainer,
-      AppColors.tertiaryContainer,
-      AppColors.primaryContainer,
-      AppColors.secondaryContainer,
+      const Color(0xFFC8E6C9), // primaryContainer
+      const Color(0xFFFFCDD2), // secondaryContainer
+      const Color(0xFFBBDEFB), // tertiaryContainer
+      const Color(0xFFC8E6C9), // primaryContainer
+      const Color(0xFFFFCDD2), // secondaryContainer
     ];
 
     final index = categoryId.hashCode.abs() % colors.length;
@@ -329,12 +330,14 @@ class AppAvatar extends StatelessWidget {
   }
 
   static Color _getIconColorForCategory(String categoryId) {
+    // Generate consistent colors based on category ID hash
+    // Using static colors for consistency across themes
     final colors = [
-      AppColors.primary,
-      AppColors.secondary,
-      AppColors.tertiary,
-      AppColors.primary,
-      AppColors.secondary,
+      const Color(0xFF4CAF82), // primary
+      const Color(0xFFFF6B6B), // secondary
+      const Color(0xFF42A5F5), // tertiary
+      const Color(0xFF4CAF82), // primary
+      const Color(0xFFFF6B6B), // secondary
     ];
 
     final index = categoryId.hashCode.abs() % colors.length;

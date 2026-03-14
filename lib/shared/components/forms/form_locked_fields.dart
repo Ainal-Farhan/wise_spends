@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'form_account_selector.dart';
 import 'form_category_picker.dart';
@@ -22,9 +21,11 @@ class EditModeBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.08),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+        ),
       ),
       child: Row(
         children: [
@@ -32,12 +33,14 @@ class EditModeBanner extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.15),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.edit_rounded,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               size: 16,
             ),
           ),
@@ -49,14 +52,16 @@ class EditModeBanner extends StatelessWidget {
                 Text(
                   'transaction.edit_mode.title'.tr,
                   style: AppTextStyles.bodySemiBold.copyWith(
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 13,
                   ),
                 ),
                 Text(
                   'transaction.edit_mode.subtitle'.tr,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.primary.withValues(alpha: 0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.7),
                     fontSize: 11,
                   ),
                 ),
@@ -89,7 +94,7 @@ class LockedAmountDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = transactionType.color;
+    final color = FormTransactionType.getColor(context, transactionType);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,13 +123,15 @@ class LockedAmountDisplay extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.divider.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.6),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lock_outline_rounded,
                   size: 13,
-                  color: AppColors.textHint,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
             ],
@@ -156,10 +163,16 @@ class LockedCategoryDisplay extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(category!.icon, size: 14, color: AppColors.primary),
+              child: Icon(
+                category!.icon,
+                size: 14,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
             const SizedBox(width: 10),
           ],
@@ -197,13 +210,15 @@ class LockedPayeeDisplay extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.person_rounded,
               size: 14,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(width: 10),
@@ -221,7 +236,7 @@ class LockedPayeeDisplay extends StatelessWidget {
                   Text(
                     payee!.subtitle!,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
               ],
@@ -254,13 +269,13 @@ class LockedAccountDisplay extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: account!.typeColor.withValues(alpha: 0.1),
+                color: account!.getTypeColor(context).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 account!.typeIcon,
                 size: 14,
-                color: account!.typeColor,
+                color: account!.getTypeColor(context),
               ),
             ),
             const SizedBox(width: 10),
@@ -279,7 +294,7 @@ class LockedAccountDisplay extends StatelessWidget {
                   Text(
                     account!.displayBalance,
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
               ],
@@ -317,13 +332,15 @@ class LockedDateTimeDisplay extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.schedule_rounded,
               size: 14,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(width: 10),
@@ -341,7 +358,7 @@ class LockedDateTimeDisplay extends StatelessWidget {
                   Text(
                     selectedTime!.format(context),
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
               ],
@@ -380,7 +397,7 @@ class LockedTypeDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = transactionType.color;
+    final color = FormTransactionType.getColor(context, transactionType);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,13 +435,15 @@ class LockedTypeDisplay extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.divider.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.6),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lock_outline_rounded,
                   size: 13,
-                  color: AppColors.textHint,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
             ],
@@ -456,9 +475,9 @@ class LockedField extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -468,13 +487,15 @@ class LockedField extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: AppColors.divider.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.6),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lock_outline_rounded,
                   size: 13,
-                  color: AppColors.textHint,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
             ],

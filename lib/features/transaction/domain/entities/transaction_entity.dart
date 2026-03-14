@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 
 enum TransactionType {
   income,
@@ -48,20 +47,20 @@ enum TransactionType {
   }
 
   /// Get color for transaction type
-  Color get color {
+  Color getColor(BuildContext context) {
     switch (this) {
       case income:
-        return AppColors.income;
+        return Theme.of(context).colorScheme.primary;
       case expense:
-        return AppColors.expense;
+        return Theme.of(context).colorScheme.secondary;
       case transfer:
-        return AppColors.transfer;
+        return Theme.of(context).colorScheme.tertiary;
       case commitment:
-        return AppColors.commitment;
+        return Theme.of(context).colorScheme.tertiary;
       case budgetPlanDeposit:
-        return AppColors.budgetPlan;
+        return Theme.of(context).colorScheme.primary;
       case budgetPlanExpense:
-        return AppColors.budgetPlan;
+        return Theme.of(context).colorScheme.primary;
     }
   }
 }

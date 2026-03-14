@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 final _logger = WiseLogger();
@@ -13,10 +12,7 @@ class QuickAmount {
   final double value;
   final String? label;
 
-  const QuickAmount({
-    required this.value,
-    this.label,
-  });
+  const QuickAmount({required this.value, this.label});
 
   String get displayLabel {
     if (label != null) return label!;
@@ -30,17 +26,24 @@ class QuickAmount {
 
 /// Configuration for different transaction types
 enum FormAmountFieldType {
-  expense(color: AppColors.error, quickAmounts: [10, 50, 100, 500]),
-  income(color: AppColors.success, quickAmounts: [500, 1000, 2000, 5000]),
-  transfer(color: AppColors.primary, quickAmounts: [100, 500, 1000, 2000]);
+  expense(quickAmounts: [10, 50, 100, 500]),
+  income(quickAmounts: [500, 1000, 2000, 5000]),
+  transfer(quickAmounts: [100, 500, 1000, 2000]);
 
-  final Color color;
+  Color getColor(BuildContext context) {
+    switch (this) {
+      case FormAmountFieldType.expense:
+        return Theme.of(context).colorScheme.error;
+      case FormAmountFieldType.income:
+        return Theme.of(context).colorScheme.primary;
+      case FormAmountFieldType.transfer:
+        return Theme.of(context).colorScheme.primary;
+    }
+  }
+
   final List<double> quickAmounts;
 
-  const FormAmountFieldType({
-    required this.color,
-    required this.quickAmounts,
-  });
+  const FormAmountFieldType({required this.quickAmounts});
 }
 
 class FormAmountField extends StatefulWidget {
@@ -115,7 +118,7 @@ class _FormAmountFieldState extends State<FormAmountField> {
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.fieldType.color;
+    final color = widget.fieldType.getColor(context);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),

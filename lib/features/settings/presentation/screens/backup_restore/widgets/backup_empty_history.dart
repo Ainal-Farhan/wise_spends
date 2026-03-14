@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/settings/presentation/screens/backup_restore/l10n/backup_restore_key.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -22,7 +21,7 @@ class BackupEmptyHistory extends StatelessWidget {
             Icon(
               Icons.cloud_off_outlined,
               size: 64,
-              color: AppColors.textSecondary.withValues(alpha: 0.4),
+              color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
             ),
             const SizedBox(height: AppSpacing.lg),
             Text(
@@ -35,7 +34,7 @@ class BackupEmptyHistory extends StatelessWidget {
             Text(
               BackupRestoreKeys.historyEmptySubtitle.tr,
               style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),

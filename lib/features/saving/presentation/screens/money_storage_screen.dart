@@ -9,7 +9,6 @@ import 'package:wise_spends/features/saving/presentation/bloc/money_storage_bloc
 import 'package:wise_spends/features/saving/presentation/bloc/money_storage_event.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/money_storage_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
@@ -36,7 +35,7 @@ class MoneyStorageScreen extends StatelessWidget {
                     Text(state.message),
                   ],
                 ),
-                backgroundColor: AppColors.success,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
@@ -53,7 +52,7 @@ class MoneyStorageScreen extends StatelessWidget {
                     Text(state.message),
                   ],
                 ),
-                backgroundColor: AppColors.error,
+                backgroundColor: Theme.of(context).colorScheme.error,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
@@ -155,10 +154,13 @@ class MoneyStorageScreen extends StatelessWidget {
     required int negativeCount,
   }) {
     return SectionHeader.card(
-      gradient: const LinearGradient(
+      gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.primary, AppColors.primaryDark],
+        colors: [
+          Theme.of(context).colorScheme.primary,
+          Theme.of(context).colorScheme.primary,
+        ],
       ),
       icon: Icons.account_balance,
       label: 'general.your_accounts'.tr,
@@ -195,11 +197,14 @@ class MoneyStorageScreen extends StatelessWidget {
           Container(
             width: AppTouchTarget.min,
             height: AppTouchTarget.min,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [AppColors.primary, AppColors.primaryDark],
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.primary,
+                ],
               ),
               shape: BoxShape.circle,
             ),
@@ -224,7 +229,7 @@ class MoneyStorageScreen extends StatelessWidget {
                 Text(
                   storage.moneyStorage.longName,
                   style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -239,7 +244,9 @@ class MoneyStorageScreen extends StatelessWidget {
                   decimalDigits: 2,
                 ).format(storage.amount.abs()),
                 style: AppTextStyles.amountSmall.copyWith(
-                  color: isMinus ? AppColors.secondary : AppColors.textPrimary,
+                  color: isMinus
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -251,20 +258,25 @@ class MoneyStorageScreen extends StatelessWidget {
                     vertical: AppSpacing.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.secondary.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.secondary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppRadius.full),
                   ),
                   child: Text(
                     'Negative',
                     style: AppTextStyles.caption.copyWith(
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
                 ),
             ],
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
+            icon: Icon(
+              Icons.more_vert,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             onSelected: (result) async {
               if (result == 'edit') {
                 context.read<MoneyStorageBloc>().add(
@@ -302,12 +314,14 @@ class MoneyStorageScreen extends StatelessWidget {
                     Icon(
                       Icons.delete,
                       size: AppIconSize.sm,
-                      color: AppColors.secondary,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
                     SizedBox(width: AppSpacing.sm),
                     Text(
                       'general.delete'.tr,
-                      style: const TextStyle(color: AppColors.secondary),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                     ),
                   ],
                 ),
@@ -375,12 +389,14 @@ class MoneyStorageScreen extends StatelessWidget {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: AppColors.tertiary.withValues(alpha: 0.2),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.tertiary.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.info_outline,
-                            color: AppColors.tertiary,
+                            color: Theme.of(context).colorScheme.tertiary,
                             size: 20,
                           ),
                         ),
@@ -397,7 +413,9 @@ class MoneyStorageScreen extends StatelessWidget {
                               Text(
                                 'Total will be calculated automatically.',
                                 style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.textSecondary,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -495,7 +513,7 @@ class NoMoneyStorageEmptyState extends StatelessWidget {
           onAdd ??
           () =>
               context.read<MoneyStorageBloc>().add(LoadAddMoneyStorageEvent()),
-      iconColor: AppColors.tertiary,
+      iconColor: Theme.of(context).colorScheme.tertiary,
     );
   }
 }

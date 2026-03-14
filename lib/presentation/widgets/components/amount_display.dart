@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 
 /// Widget to display formatted amount with color coding based on transaction type
 class AmountDisplay extends StatelessWidget {
@@ -26,7 +25,8 @@ class AmountDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _getColorForType();
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = _getColorForType(colorScheme);
     final prefix = _getPrefixForType();
 
     // Format amount - show negative for budget plan spending
@@ -63,19 +63,19 @@ class AmountDisplay extends StatelessWidget {
     );
   }
 
-  Color _getColorForType() {
+  Color _getColorForType(ColorScheme colorScheme) {
     switch (type) {
       case TransactionType.income:
-        return AppColors.income;
+        return colorScheme.primary;
       case TransactionType.expense:
-        return AppColors.expense;
+        return colorScheme.secondary;
       case TransactionType.transfer:
-        return AppColors.transfer;
+        return colorScheme.tertiary;
       case TransactionType.commitment:
-        return AppColors.commitment;
+        return colorScheme.tertiary;
       case TransactionType.budgetPlanDeposit:
       case TransactionType.budgetPlanExpense:
-        return AppColors.budgetPlan;
+        return colorScheme.primary;
     }
   }
 

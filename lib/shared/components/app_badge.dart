@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -97,7 +96,8 @@ class AppBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _getColor();
+    final colorScheme = Theme.of(context).colorScheme;
+    final color = _getColor(colorScheme);
     final backgroundColor = _getBackgroundColor(color);
     final textColor = _getTextColor(color);
 
@@ -135,24 +135,24 @@ class AppBadge extends StatelessWidget {
     );
   }
 
-  Color _getColor() {
+  Color _getColor(ColorScheme colorScheme) {
     if (status == AppBadgeStatus.custom && customColor != null) {
       return customColor!;
     }
 
     switch (status) {
       case AppBadgeStatus.success:
-        return AppColors.success;
+        return colorScheme.primary;
       case AppBadgeStatus.warning:
-        return AppColors.warning;
+        return colorScheme.tertiary;
       case AppBadgeStatus.error:
-        return AppColors.secondary;
+        return colorScheme.secondary;
       case AppBadgeStatus.info:
-        return AppColors.info;
+        return colorScheme.primary;
       case AppBadgeStatus.completed:
-        return AppColors.completed;
+        return colorScheme.outline;
       case AppBadgeStatus.custom:
-        return customColor ?? AppColors.info;
+        return customColor ?? colorScheme.primary;
     }
   }
 

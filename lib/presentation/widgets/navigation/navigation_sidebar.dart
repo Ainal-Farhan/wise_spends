@@ -10,7 +10,6 @@ import 'package:wise_spends/domain/models/user_profile.dart';
 import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/resources/ui/snack_bar/message.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -80,7 +79,7 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
       child: Container(
         width: 300,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.15),
@@ -216,7 +215,7 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
       confirmText: 'Sign Out',
       cancelText: 'Cancel',
       icon: Icons.logout,
-      iconColor: AppColors.tertiary,
+      iconColor: Theme.of(context).colorScheme.tertiary,
       onConfirm: () {
         if (context.mounted) {
           showSnackBarMessage(
@@ -243,7 +242,7 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
             ),
           ],
         ),
-        backgroundColor: AppColors.tertiary,
+        backgroundColor: Theme.of(context).colorScheme.tertiary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -275,9 +274,12 @@ class _SidebarHeader extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
+          colors: [
+            Theme.of(context).colorScheme.primary,
+            Theme.of(context).colorScheme.primary,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -488,7 +490,7 @@ class _NavSection extends StatelessWidget {
           child: Text(
             title.toUpperCase(),
             style: AppTextStyles.labelSmall.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.8,
             ),
@@ -525,7 +527,9 @@ class _NavItem extends StatelessWidget {
         vertical: 1,
       ),
       decoration: BoxDecoration(
-        color: isActive ? AppColors.primaryContainer : Colors.transparent,
+        color: isActive
+            ? Theme.of(context).colorScheme.primaryContainer
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: ListTile(
@@ -539,20 +543,24 @@ class _NavItem extends StatelessWidget {
           height: 36,
           decoration: BoxDecoration(
             color: isActive
-                ? AppColors.primary.withValues(alpha: 0.15)
-                : AppColors.primaryContainer,
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
+                : Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Icon(
             data.icon,
-            color: isActive ? AppColors.primary : AppColors.textSecondary,
+            color: isActive
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurfaceVariant,
             size: AppIconSize.sm,
           ),
         ),
         title: Text(
           data.label,
           style: AppTextStyles.bodyMedium.copyWith(
-            color: isActive ? AppColors.primary : AppColors.textPrimary,
+            color: isActive
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface,
             fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
@@ -560,14 +568,14 @@ class _NavItem extends StatelessWidget {
             ? Container(
                 width: 6,
                 height: 6,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
               )
-            : const Icon(
+            : Icon(
                 Icons.chevron_right,
-                color: AppColors.textSecondary,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 18,
               ),
         onTap: () {
@@ -600,8 +608,12 @@ class _SignOutButton extends StatelessWidget {
             icon: const Icon(Icons.logout, size: 18),
             label: const Text('Sign Out'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.error,
-              side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
+              foregroundColor: Theme.of(context).colorScheme.error,
+              side: BorderSide(
+                color: Theme.of(
+                  context,
+                ).colorScheme.error.withValues(alpha: 0.5),
+              ),
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),

@@ -12,7 +12,6 @@ import 'package:wise_spends/features/transaction/presentation/bloc/transaction_s
 import 'package:wise_spends/features/transaction/presentation/screens/transaction_form_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -45,7 +44,7 @@ class TransactionDetailScreen extends StatelessWidget {
                     Text('transaction.detail.deleted'.tr),
                   ],
                 ),
-                backgroundColor: AppColors.success,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 behavior: SnackBarBehavior.floating,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -109,10 +108,10 @@ class _TransactionDetailScreenContent extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: AppColors.error,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Text(
@@ -144,9 +143,9 @@ class _TransactionDetailScreenContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildAmountCard(tx),
+          _buildAmountCard(context, tx),
           const SizedBox(height: AppSpacing.lg),
-          _buildInfoCard(state),
+          _buildInfoCard(context, state),
           const SizedBox(height: AppSpacing.lg),
           _buildDetailsCard(context, state),
           const SizedBox(height: AppSpacing.xxl),
@@ -160,19 +159,22 @@ class _TransactionDetailScreenContent extends StatelessWidget {
   // Amount hero card
   // ---------------------------------------------------------------------------
 
-  Widget _buildAmountCard(TransactionEntity tx) {
+  Widget _buildAmountCard(BuildContext context, TransactionEntity tx) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [tx.type.color, tx.type.color.withValues(alpha: 0.7)],
+          colors: [
+            tx.type.getColor(context),
+            tx.type.getColor(context).withValues(alpha: 0.7),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: [
           BoxShadow(
-            color: tx.type.color.withValues(alpha: 0.3),
+            color: tx.type.getColor(context).withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -219,15 +221,15 @@ class _TransactionDetailScreenContent extends StatelessWidget {
   // Info card — title + resolved category name + icon
   // ---------------------------------------------------------------------------
 
-  Widget _buildInfoCard(TransactionDetailLoaded state) {
+  Widget _buildInfoCard(BuildContext context, TransactionDetailLoaded state) {
     final tx = state.transaction;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Row(
         children: [
@@ -235,10 +237,14 @@ class _TransactionDetailScreenContent extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: tx.type.color.withValues(alpha: 0.1),
+              color: tx.type.getColor(context).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
-            child: Icon(state.categoryIcon, color: tx.type.color, size: 28),
+            child: Icon(
+              state.categoryIcon,
+              color: tx.type.getColor(context),
+              size: 28,
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -257,14 +263,14 @@ class _TransactionDetailScreenContent extends StatelessWidget {
                     Icon(
                       Icons.label_outline,
                       size: 14,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         state.categoryName,
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -295,9 +301,9 @@ class _TransactionDetailScreenContent extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,6 +316,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
 
           // Date AND time
           _buildDetailRow(
+            context,
             icon: Icons.calendar_today_rounded,
             label: 'transaction.add.date_time'.tr,
             value: _formatDateTime(tx.date),
@@ -317,6 +324,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
 
           // Account — resolved saving name, not UUID
           _buildDetailRow(
+            context,
             icon: Icons.account_balance_rounded,
             label: isTransfer
                 ? 'transaction.field.source_account'.tr
@@ -327,6 +335,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           // Transfer: target account name
           if ((isTransfer || isCommitment) && state.targetAccountName != null)
             _buildDetailRow(
+              context,
               icon: Icons.account_balance_outlined,
               label: 'transaction.field.destination_account'.tr,
               value: state.targetAccountName!,
@@ -335,18 +344,21 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           // Payee info — only for third-party commitment payments
           if (state.payeeVO?.name != null)
             _buildDetailRow(
+              context,
               icon: Icons.person_outline,
               label: 'transaction.add.payee'.tr,
               value: state.payeeVO!.name!,
             ),
           if (state.payeeVO?.bankName != null)
             _buildDetailRow(
+              context,
               icon: Icons.account_balance_wallet_outlined,
               label: 'transaction.field.bank'.tr,
               value: state.payeeVO!.bankName!,
             ),
           if (state.payeeVO?.accountNumber != null)
             _buildDetailRow(
+              context,
               icon: Icons.credit_card_outlined,
               label: 'transaction.field.account_number'.tr,
               value: state.payeeVO!.accountNumber!,
@@ -355,6 +367,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           // Commitment task reference
           if (state.commitmentTaskName != null)
             _buildDetailRow(
+              context,
               icon: Icons.task_alt,
               label: 'commitment.task'.tr,
               value: state.commitmentTaskName!,
@@ -362,22 +375,24 @@ class _TransactionDetailScreenContent extends StatelessWidget {
 
           if (tx.note != null && tx.note!.isNotEmpty)
             _buildDetailRow(
+              context,
               icon: Icons.note_rounded,
               label: 'transaction.add.note'.tr,
               value: tx.note!,
               isMultiline: true,
             ),
 
-          Divider(color: AppColors.divider),
+          Divider(color: Theme.of(context).colorScheme.outline),
           const SizedBox(height: AppSpacing.sm),
 
           // Transaction ID — small, secondary
           _buildDetailRow(
+            context,
             icon: Icons.tag,
             label: 'transaction.field.transaction_id'.tr,
             value: tx.id,
             valueStyle: AppTextStyles.caption.copyWith(
-              color: AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontFamily: 'monospace',
             ),
           ),
@@ -386,7 +401,8 @@ class _TransactionDetailScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow({
+  Widget _buildDetailRow(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
@@ -402,10 +418,14 @@ class _TransactionDetailScreenContent extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.primaryContainer,
+              color: Theme.of(context).colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
-            child: Icon(icon, size: 20, color: AppColors.primary),
+            child: Icon(
+              icon,
+              size: 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -415,7 +435,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
                 Text(
                   label,
                   style: AppTextStyles.caption.copyWith(
-                    color: AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.xs),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/shared/theme/wise_spends_theme.dart';
 
 /// Centered pill shown at the top of every bottom sheet to signal draggability.
 class SheetDragHandle extends StatelessWidget {
@@ -12,7 +11,7 @@ class SheetDragHandle extends StatelessWidget {
         width: 40,
         height: 4,
         decoration: BoxDecoration(
-          color: WiseSpendsColors.divider,
+          color: Theme.of(context).colorScheme.outline,
           borderRadius: BorderRadius.circular(2),
         ),
       ),

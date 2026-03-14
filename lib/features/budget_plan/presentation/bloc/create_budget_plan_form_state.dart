@@ -1,6 +1,7 @@
+import 'dart:ui';
+
 import 'package:equatable/equatable.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/budget_plan_enums.dart';
-import 'package:wise_spends/shared/theme/app_colors.dart';
 
 abstract class CreateBudgetPlanFormState extends Equatable {
   const CreateBudgetPlanFormState();
@@ -40,7 +41,7 @@ class CreateBudgetPlanFormReady extends CreateBudgetPlanFormState {
     this.isLoading = false,
   }) : startDate = startDate ?? DateTime.now(),
        endDate = endDate ?? DateTime.now().add(const Duration(days: 365)),
-       accentColorValue = accentColorValue ?? AppColors.primary.toARGB32();
+       accentColorValue = accentColorValue ?? const Color(0xFF4CAF82).toARGB32();
 
   CreateBudgetPlanFormReady copyWith({
     String? name,
