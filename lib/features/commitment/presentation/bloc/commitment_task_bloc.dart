@@ -4,6 +4,8 @@ import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/features/commitment/data/repositories/i_commitment_task_repository.dart';
+import 'package:wise_spends/features/commitment/domain/entities/commitment_task_vo.dart';
+import 'package:wise_spends/features/commitment/domain/utils/task_grouper.dart';
 import 'package:wise_spends/features/payee/domain/entities/payee_vo.dart';
 import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
 import 'commitment_task_event.dart';
@@ -18,6 +20,9 @@ class CommitmentTaskBloc
   CommitmentTaskBloc(this._repository) : super(CommitmentTaskInitial()) {
     on<LoadCommitmentTasksEvent>(_onLoadCommitmentTasks);
     on<UpdateStatusCommitmentTaskEvent>(_onUpdateStatusCommitmentTask);
+    on<UpdateStatusCommitmentTaskListEvent>(
+      _onUpdateStatusCommitmentTaskListEvent,
+    );
     on<FilterCommitmentTasksEvent>(_onFilterCommitmentTasks);
     on<AddCommitmentTaskEvent>(_onAddCommitmentTask);
     on<EditCommitmentTaskEvent>(_onEditCommitmentTask);
@@ -28,6 +33,11 @@ class CommitmentTaskBloc
     LoadCommitmentTasksEvent event,
     Emitter<CommitmentTaskState> emit,
   ) async {
+    String filterStatus = 'pending';
+    if (state is CommitmentTaskLoaded) {
+      filterStatus = (state as CommitmentTaskLoaded).filterStatus;
+    }
+
     emit(CommitmentTaskLoading());
     try {
       final incompleteTasks = await _repository.getCommitmentTasks(false);
@@ -47,15 +57,58 @@ class CommitmentTaskBloc
           .map((p) => PayeeVO.fromExpnsPayee(p))
           .toList();
 
+      // Group incomplete tasks by source saving + money storage
+      final allTasks = [...incompleteTasks, ...completedTasks];
+      final groupedTasks = TaskGrouper.groupTasks(
+        incompleteTasks,
+        savingVOList,
+      );
+      final ungroupedTasks = TaskGrouper.getUngroupedTasks(
+        incompleteTasks,
+        savingVOList,
+      );
+
       emit(
         CommitmentTaskLoaded(
-          [...incompleteTasks, ...completedTasks],
+          allTasks,
           savingVOList,
           payeeVOList,
+          filterStatus: filterStatus,
+          groupedTasks: groupedTasks,
+          ungroupedTasks: ungroupedTasks,
         ),
       );
     } catch (e) {
       emit(CommitmentTaskError(e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateStatusCommitmentTaskListEvent(
+    UpdateStatusCommitmentTaskListEvent event,
+    Emitter<CommitmentTaskState> emit,
+  ) async {
+    emit(CommitmentTaskLoading());
+    try {
+      await _updateStatusCommitmentTaskList(event.taskVOList, event.isDone);
+
+      if (updateAppBar != null) {
+        updateAppBar!();
+      }
+
+      emit(CommitmentTaskUpdated('Successfully updated task status'));
+      // Reload the tasks after update
+      add(LoadCommitmentTasksEvent());
+    } catch (e) {
+      emit(CommitmentTaskError(e.toString()));
+    }
+  }
+
+  Future<void> _updateStatusCommitmentTaskList(
+    List<CommitmentTaskVO> taskVOList,
+    bool isDone,
+  ) async {
+    for (var taskVO in taskVOList) {
+      await _repository.updateTaskStatus(isDone, taskVO);
     }
   }
 
@@ -65,7 +118,7 @@ class CommitmentTaskBloc
   ) async {
     emit(CommitmentTaskLoading());
     try {
-      await _repository.updateTaskStatus(event.isDone, event.taskVO);
+      await _updateStatusCommitmentTaskList([event.taskVO], event.isDone);
 
       if (updateAppBar != null) {
         updateAppBar!();

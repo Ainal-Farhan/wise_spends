@@ -550,21 +550,21 @@ class CommitmentManager extends ICommitmentManager {
         case null:
           break;
       }
+
+      ExpnsCommitmentTask expnsCommitmentTask =
+          (await SingletonUtil.getSingleton<IRepositoryLocator>()!
+              .getCommitmentTaskRepository()
+              .findById(id: taskVO.commitmentTaskId!))!;
+
+      expnsCommitmentTask = expnsCommitmentTask.copyWith(
+        dateUpdated: DateTime.now(),
+        isDone: true,
+      );
+
+      await SingletonUtil.getSingleton<IRepositoryLocator>()!
+          .getCommitmentTaskRepository()
+          .update(expnsCommitmentTask);
     }
-
-    ExpnsCommitmentTask expnsCommitmentTask =
-        (await SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .getCommitmentTaskRepository()
-            .findById(id: taskVO.commitmentTaskId!))!;
-
-    expnsCommitmentTask = expnsCommitmentTask.copyWith(
-      dateUpdated: DateTime.now(),
-      isDone: true,
-    );
-
-    await SingletonUtil.getSingleton<IRepositoryLocator>()!
-        .getCommitmentTaskRepository()
-        .update(expnsCommitmentTask);
   }
 
   // ---------------------------------------------------------------------------

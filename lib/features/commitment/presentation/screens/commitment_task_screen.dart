@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/features/commitment/domain/entities/commitment_task_vo.dart';
+import 'package:wise_spends/features/commitment/domain/entities/task_group_vo.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_task_bloc.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_task_event.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_task_state.dart';
 import 'package:wise_spends/features/commitment/presentation/widgets/task/task_detail_sheet.dart';
+import 'package:wise_spends/features/commitment/presentation/widgets/task/task_group_detail_sheet.dart';
 import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
 import 'package:wise_spends/features/payee/domain/entities/payee_vo.dart';
 import 'package:wise_spends/shared/components/components.dart';
@@ -16,6 +18,7 @@ import '../widgets/shared/commitment_snack_bar.dart';
 import '../widgets/task/task_card.dart';
 import '../widgets/task/task_filter_bar.dart';
 import '../widgets/task/task_bottom_sheet.dart';
+import '../widgets/task/task_group_card.dart';
 
 class CommitmentTaskScreen extends StatelessWidget {
   final CommitmentTaskBloc bloc;
@@ -62,6 +65,14 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
     }
   }
 
+  void _showGroupDetailSheet(BuildContext context, TaskGroupVO group) {
+    showTaskGroupDetailSheet(
+      context: context,
+      group: group,
+      onEditTask: (task) => _showEditSheet(context, task),
+    );
+  }
+
   // ---------------------------------------------------------------------------
   // Sheet launchers
   // ---------------------------------------------------------------------------
@@ -87,9 +98,14 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
       savings: _savings(context),
       payees: _payees(context),
       initial: task,
-      onConfirm: (updated) => context.read<CommitmentTaskBloc>().add(
-        EditCommitmentTaskEvent(updated),
-      ),
+      onConfirm: (updated) {
+        context.read<CommitmentTaskBloc>().add(
+          EditCommitmentTaskEvent(updated),
+        );
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
+      },
       onError: (msg) => _showError(context, msg),
     );
   }
@@ -183,6 +199,11 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
 
           if (state is CommitmentTaskLoaded) {
             final filtered = _filterTasks(state.tasks, state.filterStatus);
+            final showGrouped = state.filterStatus == 'pending';
+            
+            // Filter ungrouped tasks based on filter status
+            final filteredUngrouped = _filterTasks(state.ungroupedTasks, state.filterStatus);
+
             return RefreshIndicator(
               onRefresh: () async => context.read<CommitmentTaskBloc>().add(
                 LoadCommitmentTasksEvent(),
@@ -191,25 +212,92 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
                 children: [
                   const TaskFilterBar(),
                   Expanded(
-                    child: filtered.isEmpty
+                    child: filtered.isEmpty && state.groupedTasks.isEmpty && filteredUngrouped.isEmpty
                         ? _EmptyTaskState(filterStatus: state.filterStatus)
-                        : ListView.separated(
+                        : ListView(
                             padding: const EdgeInsets.all(16),
-                            itemCount: filtered.length,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final task = filtered[index];
-                              return CommitmentTaskCard(
-                                task: task,
-                                onTap: () => showTaskDetailSheet(
-                                  context: context,
-                                  task: task,
+                            children: [
+                              // Show grouped tasks only for pending filter
+                              if (showGrouped &&
+                                  state.groupedTasks.isNotEmpty) ...[
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Text(
+                                    'Grouped Tasks',
+                                    style: AppTextStyles.bodySemiBold.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                  ),
                                 ),
-                                onEdit: () => _showEditSheet(context, task),
-                                onDelete: () => _confirmDelete(context, task),
-                              );
-                            },
+                                ...state.groupedTasks.map((group) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: TaskGroupCard(
+                                      group: group,
+                                      onTap: () =>
+                                          _showGroupDetailSheet(context, group),
+                                      onExpand: () =>
+                                          _showGroupDetailSheet(context, group),
+                                    ),
+                                  );
+                                }),
+                                if (filteredUngrouped.isNotEmpty) ...[
+                                  const SizedBox(height: 24),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Text(
+                                      'Other Tasks',
+                                      style: AppTextStyles.bodySemiBold
+                                          .copyWith(
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+
+                              // Show ungrouped tasks (cash tasks or tasks without source)
+                              // Only show when filtered (respects filter status)
+                              ...filteredUngrouped.map((task) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: CommitmentTaskCard(
+                                    task: task,
+                                    onTap: () => showTaskDetailSheet(
+                                      context: context,
+                                      task: task,
+                                    ),
+                                    onEdit: () => _showEditSheet(context, task),
+                                    onDelete: () =>
+                                        _confirmDelete(context, task),
+                                  ),
+                                );
+                              }),
+
+                              // For non-pending filters, show all tasks normally
+                              if (!showGrouped) ...[
+                                ...filtered.map((task) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: CommitmentTaskCard(
+                                      task: task,
+                                      onTap: () => showTaskDetailSheet(
+                                        context: context,
+                                        task: task,
+                                      ),
+                                      onEdit: () =>
+                                          _showEditSheet(context, task),
+                                      onDelete: () =>
+                                          _confirmDelete(context, task),
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ],
                           ),
                   ),
                 ],
