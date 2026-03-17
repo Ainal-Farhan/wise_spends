@@ -1,17 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/category/data/constants/category_enum.dart';
 import 'package:wise_spends/features/category/data/repositories/i_category_repository.dart';
-import 'package:wise_spends/features/category/presentation/bloc/category_bloc.dart';
-import 'package:wise_spends/features/category/presentation/bloc/category_event.dart';
-import 'package:wise_spends/features/category/presentation/bloc/category_state.dart';
 import 'package:wise_spends/features/category/presentation/bloc/add_category_form_bloc.dart';
 import 'package:wise_spends/features/category/presentation/bloc/add_category_form_event.dart';
 import 'package:wise_spends/features/category/presentation/bloc/add_category_form_state.dart';
+import 'package:wise_spends/features/category/presentation/bloc/category_bloc.dart';
+import 'package:wise_spends/features/category/presentation/bloc/category_event.dart';
+import 'package:wise_spends/features/category/presentation/bloc/category_state.dart';
+import 'package:wise_spends/features/category/presentation/screens/icon_picker_screen.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
+/// Enhanced Add Category Screen with improved UX
+/// Features:
+/// - Clean, modern UI with visual hierarchy
+/// - Integrated icon picker with preview
+/// - Real-time validation and feedback
+/// - Smooth animations and transitions
 class AddCategoryScreen extends StatelessWidget {
   const AddCategoryScreen({super.key});
 
@@ -29,8 +38,6 @@ class AddCategoryScreen extends StatelessWidget {
   }
 }
 
-// StatefulWidget kept only for _formKey and _nameController.
-// All selection state (type, icon) lives in AddCategoryFormBloc.
 class _AddCategoryScreenContent extends StatefulWidget {
   const _AddCategoryScreenContent();
 
@@ -42,6 +49,16 @@ class _AddCategoryScreenContent extends StatefulWidget {
 class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  bool _showTypeSelection = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-show type selection on load
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) setState(() => _showTypeSelection = true);
+    });
+  }
 
   @override
   void dispose() {
@@ -51,261 +68,289 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocListener<CategoryBloc, CategoryState>(
       listener: (context, state) {
         if (state is CategoryCreated) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('categories.added'.tr),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
+          _showSuccessSnackBar(theme);
           Navigator.pop(context);
         } else if (state is CategoryError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          _showErrorSnackBar(state.message, theme);
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('categories.add'.tr)),
+        appBar: AppBar(
+          title: Text('categories.add'.tr),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
+              tooltip: 'general.cancel'.tr,
+            ),
+          ],
+        ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppTextField(
-                  label: 'Category Name',
-                  controller: _nameController,
-                  hint: 'e.g., Food, Transport, Shopping',
-                  prefixIcon: Icons.category_outlined,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a category name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
+                // Icon Selection Card
+                _buildIconSelectionCard(theme),
+                
+                const SizedBox(height: AppSpacing.lg),
 
-                // Category Type — driven by AddCategoryFormBloc, no setState
-                Text('categories.type'.tr, style: AppTextStyles.bodySemiBold),
-                const SizedBox(height: 12),
+                // Category Name Input
+                _buildNameInputCard(theme),
+                
+                const SizedBox(height: AppSpacing.lg),
+
+                // Category Type Selection
+                _buildTypeSelectionCard(theme),
+                
+                const SizedBox(height: AppSpacing.xl + AppSpacing.md),
+
+                // Create Button
+                _buildCreateButton(theme),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Icon Selection Card
+  // ---------------------------------------------------------------------------
+
+  Widget _buildIconSelectionCard(ThemeData theme) {
+    return BlocBuilder<AddCategoryFormBloc, AddCategoryFormState>(
+      builder: (context, formState) {
+        final selectedCodePoint = formState is AddCategoryFormReady
+            ? formState.iconCodePoint
+            : Icons.category.codePoint;
+
+        final selectedIcon = IconData(
+          selectedCodePoint,
+          fontFamily: 'MaterialIcons',
+        );
+
+        return AppCard(
+          child: InkWell(
+            onTap: () => _openIconPicker(selectedCodePoint),
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Row(
+                children: [
+                  // Icon Preview
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          theme.colorScheme.primary,
+                          theme.colorScheme.primaryContainer,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      selectedIcon,
+                      color: theme.colorScheme.onPrimary,
+                      size: 40,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.lg),
+                  
+                  // Label and Hint
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'categories.select_icon'.tr,
+                          style: AppTextStyles.bodySemiBold.copyWith(
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          'categories.tap_to_change_icon'.tr,
+                          style: AppTextStyles.caption.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // Edit Icon
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                    child: Icon(
+                      Icons.edit,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Name Input Card
+  // ---------------------------------------------------------------------------
+
+  Widget _buildNameInputCard(ThemeData theme) {
+    return AppCard(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: Icon(
+                    Icons.label_outline,
+                    color: theme.colorScheme.secondary,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Text(
+                  'general.name'.tr,
+                  style: AppTextStyles.bodySemiBold,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            AppTextField(
+              controller: _nameController,
+              label: 'categories.category_name'.tr,
+              hint: 'categories.name_hint'.tr,
+              prefixIcon: Icons.category_outlined,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'categories.enter_name'.tr;
+                }
+                if (value.trim().length < 2) {
+                  return 'categories.name_too_short'.tr;
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Type Selection Card
+  // ---------------------------------------------------------------------------
+
+  Widget _buildTypeSelectionCard(ThemeData theme) {
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: _showTypeSelection ? 1.0 : 0.0,
+      child: AnimatedSlide(
+        duration: const Duration(milliseconds: 300),
+        offset: _showTypeSelection ? Offset.zero : const Offset(0, 0.2),
+        child: AppCard(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.tertiaryContainer,
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                      child: Icon(
+                        Icons.swap_horiz,
+                        color: theme.colorScheme.tertiary,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Text(
+                      'categories.type'.tr,
+                      style: AppTextStyles.bodySemiBold,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
                 BlocBuilder<AddCategoryFormBloc, AddCategoryFormState>(
                   builder: (context, formState) {
                     final selectedType = formState is AddCategoryFormReady
                         ? formState.type
                         : CategoryType.expense;
 
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Theme.of(context).colorScheme.outline),
-                      ),
-                      // RadioGroup is valid in latest stable Flutter
-                      child: RadioGroup<CategoryType>(
-                        groupValue: selectedType,
-                        onChanged: (value) {
-                          if (value != null) {
-                            context.read<AddCategoryFormBloc>().add(
-                              AddCategoryChangeType(value),
-                            );
-                          }
-                        },
-                        child: Column(
-                          children: [
-                            RadioListTile<CategoryType>(
-                              title: Row(
-                                children: [
-                                  Icon(
-                                    Icons.arrow_downward,
-                                    color: Theme.of(context).colorScheme.primary,
-                                    size: 20,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text('categories.income'.tr),
-                                ],
-                              ),
-                              subtitle: Text('categories.for_money_received'.tr),
-                              value: CategoryType.income,
-                            ),
-                            const Divider(height: 1),
-                            RadioListTile<CategoryType>(
-                              title: Row(
-                                children: [
-                                  Icon(
-                                    Icons.arrow_downward,
-                                    color: Theme.of(context).colorScheme.secondary,
-                                    size: 20,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text('categories.expense'.tr),
-                                ],
-                              ),
-                              subtitle: Text('categories.for_money_spent'.tr),
-                              value: CategoryType.expense,
-                            ),
-                            const Divider(height: 1),
-                            RadioListTile<CategoryType>(
-                              title: Row(
-                                children: [
-                                  Icon(
-                                    Icons.swap_horiz,
-                                    color: Theme.of(context).colorScheme.tertiary,
-                                    size: 20,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text('categories.both'.tr),
-                                ],
-                              ),
-                              subtitle: Text(
-                                'categories.for_both'.tr,
-                              ),
-                              value: CategoryType.both,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Icon Selection — driven by AddCategoryFormBloc, no setState
-                Text('categories.select_icon'.tr, style: AppTextStyles.bodySemiBold),
-                const SizedBox(height: 12),
-                BlocBuilder<AddCategoryFormBloc, AddCategoryFormState>(
-                  builder: (context, formState) {
-                    final selectedCodePoint = formState is AddCategoryFormReady
-                        ? formState.iconCodePoint
-                        : 0xE8B0;
-
-                    return Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
+                    return Column(
                       children: [
-                        _buildIconOption(
+                        _buildTypeOption(
                           context,
-                          Icons.restaurant,
-                          'Food',
-                          selectedCodePoint,
+                          type: CategoryType.income,
+                          icon: Icons.arrow_downward_rounded,
+                          title: 'categories.income'.tr,
+                          subtitle: 'categories.for_money_received'.tr,
+                          isSelected: selectedType == CategoryType.income,
+                          color: theme.colorScheme.primary,
                         ),
-                        _buildIconOption(
+                        const SizedBox(height: AppSpacing.sm),
+                        _buildTypeOption(
                           context,
-                          Icons.directions_car,
-                          'Transport',
-                          selectedCodePoint,
+                          type: CategoryType.expense,
+                          icon: Icons.arrow_upward_rounded,
+                          title: 'categories.expense'.tr,
+                          subtitle: 'categories.for_money_spent'.tr,
+                          isSelected: selectedType == CategoryType.expense,
+                          color: theme.colorScheme.secondary,
                         ),
-                        _buildIconOption(
+                        const SizedBox(height: AppSpacing.sm),
+                        _buildTypeOption(
                           context,
-                          Icons.shopping_bag,
-                          'Shopping',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.home,
-                          'Housing',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.medical_services,
-                          'Healthcare',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.school,
-                          'Education',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.flight,
-                          'Travel',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.sports_gymnastics,
-                          'Sports',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.movie,
-                          'Entertainment',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.credit_card,
-                          'Finance',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.phone_android,
-                          'Electronics',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.pets,
-                          'Pets',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.child_care,
-                          'Childcare',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.cleaning_services,
-                          'Services',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.local_gas_station,
-                          'Fuel',
-                          selectedCodePoint,
-                        ),
-                        _buildIconOption(
-                          context,
-                          Icons.checkroom,
-                          'Clothing',
-                          selectedCodePoint,
+                          type: CategoryType.both,
+                          icon: Icons.swap_horiz_rounded,
+                          title: 'categories.both'.tr,
+                          subtitle: 'categories.for_both'.tr,
+                          isSelected: selectedType == CategoryType.both,
+                          color: theme.colorScheme.tertiary,
                         ),
                       ],
-                    );
-                  },
-                ),
-                const SizedBox(height: 32),
-
-                // Save Button
-                BlocBuilder<CategoryBloc, CategoryState>(
-                  builder: (context, state) {
-                    final isLoading = state is CategoryLoading;
-                    return SizedBox(
-                      width: double.infinity,
-                      child: AppButton.primary(
-                        label: isLoading ? 'Adding...' : 'Add Category',
-                        icon: Icons.add,
-                        onPressed: isLoading
-                            ? null
-                            : () => _submitForm(context),
-                        size: AppButtonSize.large,
-                      ),
                     );
                   },
                 ),
@@ -317,51 +362,91 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
     );
   }
 
-  Widget _buildIconOption(
-    BuildContext context,
-    IconData icon,
-    String label,
-    int selectedCodePoint,
-  ) {
-    final isSelected = icon.codePoint == selectedCodePoint;
-
-    return GestureDetector(
+  Widget _buildTypeOption(
+    BuildContext context, {
+    required CategoryType type,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required Color color,
+  }) {
+    final theme = Theme.of(context);
+    
+    return InkWell(
       onTap: () {
-        context.read<AddCategoryFormBloc>().add(
-          AddCategorySelectIcon(icon.codePoint),
-        );
+        context.read<AddCategoryFormBloc>().add(AddCategoryChangeType(type));
+        HapticFeedback.selectionClick();
       },
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Container(
-        width: 80,
-        height: 90,
+        padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-              : Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
+              ? color.withValues(alpha: 0.08)
+              : theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           border: Border.all(
-            color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
-            width: isSelected ? 2 : 1,
+            color: isSelected ? color : Colors.transparent,
+            width: 2,
           ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
           children: [
-            Icon(
-              icon,
-              color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
-              size: 32,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: AppTextStyles.caption.copyWith(
-                fontSize: 10,
-                color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+            // Radio Button
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? color : theme.colorScheme.outline,
+                  width: 2,
+                ),
+                color: isSelected ? color : Colors.transparent,
               ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              child: isSelected
+                  ? const Icon(Icons.check, color: Colors.white, size: 16)
+                  : null,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            
+            // Icon
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            
+            // Text
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      color: isSelected
+                          ? color
+                          : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.caption.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -369,8 +454,56 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Create Button
+  // ---------------------------------------------------------------------------
+
+  Widget _buildCreateButton(ThemeData theme) {
+    return BlocBuilder<CategoryBloc, CategoryState>(
+      builder: (context, state) {
+        final isLoading = state is CategoryLoading;
+        
+        return SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: AppButton.primary(
+            label: isLoading ? 'categories.creating'.tr : 'categories.create'.tr,
+            icon: isLoading ? Icons.hourglass_empty : Icons.add_circle_outline,
+            onPressed: isLoading ? null : () => _submitForm(context),
+            size: AppButtonSize.large,
+          ),
+        );
+      },
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Helper Methods
+  // ---------------------------------------------------------------------------
+
+  void _openIconPicker(int selectedCodePoint) {
+    Navigator.push<int>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => IconPickerScreen(
+          selectedIconCodePoint: selectedCodePoint,
+          onIconSelected: (codePoint) {
+            context.read<AddCategoryFormBloc>().add(
+              AddCategorySelectIcon(codePoint),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   void _submitForm(BuildContext context) {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) {
+      HapticFeedback.heavyImpact();
+      return;
+    }
+
+    HapticFeedback.mediumImpact();
 
     final formState = context.read<AddCategoryFormBloc>().state;
     final categoryType = formState is AddCategoryFormReady
@@ -394,6 +527,49 @@ class _AddCategoryScreenContentState extends State<_AddCategoryScreenContent> {
         isExpense: isExpense,
         iconCodePoint: iconCodePoint.toString(),
         iconFontFamily: 'MaterialIcons',
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(ThemeData theme) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.xs),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Text('categories.added'.tr),
+          ],
+        ),
+        backgroundColor: theme.colorScheme.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+        margin: const EdgeInsets.all(AppSpacing.md),
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(String message, ThemeData theme) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline, color: Colors.white, size: 20),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: theme.colorScheme.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
+        margin: const EdgeInsets.all(AppSpacing.md),
       ),
     );
   }
