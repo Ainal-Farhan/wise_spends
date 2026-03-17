@@ -326,7 +326,7 @@ class _TransactionHistoryScreenContentState
                 type: transaction.type,
                 icon: transaction.categoryId != null
                     ? CategoryIconMapper.getIconForCategory(
-                        transaction.categoryId ?? '',
+                        transaction.category?.iconCodePoint ?? '',
                       )
                     : transaction.type.icon,
                 date: transaction.date,

@@ -65,7 +65,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       String categoryName = 'Uncategorized';
       CategoryEntity? categoryEntity;
       IconData categoryIcon = CategoryIconMapper.getIconForCategory(
-        tx.categoryId ?? '',
+        tx.category?.iconCodePoint ?? '',
       );
 
       if (tx.categoryId != null && tx.categoryId!.isNotEmpty) {
@@ -76,7 +76,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           if (category != null) {
             categoryEntity = CategoryEntity.from(category);
             categoryName = category.name;
-            categoryIcon = CategoryIconMapper.getIconForCategory(category.name);
+            categoryIcon = CategoryIconMapper.getIconForCategory(
+              category.iconCodePoint,
+            );
           }
         } catch (e, stackTrace) {
           WiseLogger().debug(

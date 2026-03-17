@@ -4,9 +4,18 @@ import 'package:wise_spends/features/category/domain/entities/category_entity.da
 /// Icon mapping utility for categories
 /// Maps category IDs to Material Icons
 class CategoryIconMapper {
-  /// Get icon for a category ID
-  static IconData getIconForCategory(String categoryId) {
-    switch (categoryId.toLowerCase()) {
+  /// Get icon for a category ID or icon code point
+  static IconData getIconForCategory(String codePoint) {
+    // First, try to parse as icon code point (stored as string number)
+    try {
+      final intCodePoint = int.parse(codePoint);
+      return IconData(intCodePoint, fontFamily: 'MaterialIcons');
+    } catch (e) {
+      // Not a code point, treat as category ID
+    }
+
+    // Match against predefined category IDs
+    switch (codePoint.toLowerCase()) {
       // Food & Dining
       case PredefinedCategories.food:
         return Icons.restaurant_rounded;

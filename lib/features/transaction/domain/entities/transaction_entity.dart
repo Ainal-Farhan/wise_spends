@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 
 enum TransactionType {
   income,
@@ -77,6 +78,7 @@ class TransactionEntity extends Equatable {
 
   // -- Relations -------------------------------------------------------------
   final String? categoryId;
+  final CategoryEntity? category;
   final String? commitmentTaskId;
   final String? payeeId;
 
@@ -94,6 +96,7 @@ class TransactionEntity extends Equatable {
     required this.savingId,
     this.destinationSavingId,
     this.categoryId,
+    this.category,
     this.commitmentTaskId,
     this.payeeId,
     required this.date,
@@ -114,6 +117,7 @@ class TransactionEntity extends Equatable {
     savingId,
     destinationSavingId,
     categoryId,
+    category,
     commitmentTaskId,
     payeeId,
     date,
@@ -130,6 +134,7 @@ class TransactionEntity extends Equatable {
     String? savingId,
     String? destinationSavingId,
     String? categoryId,
+    CategoryEntity? category,
     String? commitmentTaskId,
     String? payeeId,
     DateTime? date,
@@ -145,6 +150,7 @@ class TransactionEntity extends Equatable {
       savingId: savingId ?? this.savingId,
       destinationSavingId: destinationSavingId ?? this.destinationSavingId,
       categoryId: categoryId ?? this.categoryId,
+      category: category ?? this.category,
       commitmentTaskId: commitmentTaskId ?? this.commitmentTaskId,
       payeeId: payeeId ?? this.payeeId,
       date: date ?? this.date,

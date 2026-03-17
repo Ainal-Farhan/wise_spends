@@ -3,6 +3,7 @@ import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/db/domain/transaction/transaction_table.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 import 'package:wise_spends/features/widget/presentation/services/widget_service.dart';
 
 class TransactionRepository extends ITransactionRepository {
@@ -48,20 +49,31 @@ class TransactionRepository extends ITransactionRepository {
 
   @override
   Future<List<TransactionEntity>> fetchAll() async {
-    final rows = await (db.select(
-      db.transactionTable,
-    )..orderBy(_defaultOrder)).get();
-    return rows.map(_toEntity).toList();
+    final query = db.select(db.transactionTable).join([
+      leftOuterJoin(
+        db.categoryTable,
+        db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+      ),
+    ])..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList());
+
+    final rows = await query.get();
+    return rows.map((row) => _mapToEntityWithCategory(row)).toList();
   }
 
   @override
   Future<List<TransactionEntity>> fetchRecent({int limit = 10}) async {
-    final rows =
-        await (db.select(db.transactionTable)
-              ..orderBy(_defaultOrder)
-              ..limit(limit))
-            .get();
-    return rows.map(_toEntity).toList();
+    final query =
+        db.select(db.transactionTable).join([
+            leftOuterJoin(
+              db.categoryTable,
+              db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+          ])
+          ..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList())
+          ..limit(limit);
+
+    final rows = await query.get();
+    return rows.map((row) => _mapToEntityWithCategory(row)).toList();
   }
 
   // ---------------------------------------------------------------------------
@@ -73,43 +85,63 @@ class TransactionRepository extends ITransactionRepository {
     required DateTime from,
     required DateTime to,
   }) async {
-    final rows =
-        await (db.select(db.transactionTable)
-              ..where(
-                (tbl) =>
-                    // Filter on transactionDateTime when present, fall back to
-                    // dateCreated for rows where the user didn't set a date.
-                    (tbl.transactionDateTime.isBiggerOrEqualValue(from) |
-                            tbl.transactionDateTime.isNull()) &
-                        (tbl.transactionDateTime.isSmallerOrEqualValue(to) |
-                            tbl.transactionDateTime.isNull()) |
-                    (tbl.transactionDateTime.isNull() &
-                        tbl.dateCreated.isBiggerOrEqualValue(from) &
-                        tbl.dateCreated.isSmallerOrEqualValue(to)),
-              )
-              ..orderBy(_defaultOrder))
-            .get();
-    return rows.map(_toEntity).toList();
+    final query =
+        db.select(db.transactionTable).join([
+            leftOuterJoin(
+              db.categoryTable,
+              db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+          ])
+          ..where(
+            // Filter on transactionDateTime when present, fall back to
+            // dateCreated for rows where the user didn't set a date.
+            (db.transactionTable.transactionDateTime.isBiggerOrEqualValue(
+                          from,
+                        ) |
+                        db.transactionTable.transactionDateTime.isNull()) &
+                    (db.transactionTable.transactionDateTime
+                            .isSmallerOrEqualValue(to) |
+                        db.transactionTable.transactionDateTime.isNull()) |
+                (db.transactionTable.transactionDateTime.isNull() &
+                    db.transactionTable.dateCreated.isBiggerOrEqualValue(from) &
+                    db.transactionTable.dateCreated.isSmallerOrEqualValue(to)),
+          )
+          ..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList());
+
+    final rows = await query.get();
+    return rows.map((row) => _mapToEntityWithCategory(row)).toList();
   }
 
   @override
   Future<List<TransactionEntity>> fetchByType(TransactionType type) async {
-    final rows =
-        await (db.select(db.transactionTable)
-              ..where((tbl) => tbl.type.equals(type.name))
-              ..orderBy(_defaultOrder))
-            .get();
-    return rows.map(_toEntity).toList();
+    final query =
+        db.select(db.transactionTable).join([
+            leftOuterJoin(
+              db.categoryTable,
+              db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+          ])
+          ..where(db.transactionTable.type.equals(type.name))
+          ..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList());
+
+    final rows = await query.get();
+    return rows.map((row) => _mapToEntityWithCategory(row)).toList();
   }
 
   @override
   Future<List<TransactionEntity>> fetchByCategory(String categoryId) async {
-    final rows =
-        await (db.select(db.transactionTable)
-              ..where((tbl) => tbl.categoryId.equals(categoryId))
-              ..orderBy(_defaultOrder))
-            .get();
-    return rows.map(_toEntity).toList();
+    final query =
+        db.select(db.transactionTable).join([
+            leftOuterJoin(
+              db.categoryTable,
+              db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+          ])
+          ..where(db.transactionTable.categoryId.equals(categoryId))
+          ..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList());
+
+    final rows = await query.get();
+    return rows.map((row) => _mapToEntityWithCategory(row)).toList();
   }
 
   // ---------------------------------------------------------------------------
@@ -118,12 +150,19 @@ class TransactionRepository extends ITransactionRepository {
 
   @override
   Future<TransactionEntity?> fetchById(String transactionId) async {
-    final row =
-        await (db.select(db.transactionTable)
-              ..where((tbl) => tbl.id.equals(transactionId))
-              ..limit(1))
-            .getSingleOrNull();
-    return row != null ? _toEntity(row) : null;
+    final query =
+        db.select(db.transactionTable).join([
+            leftOuterJoin(
+              db.categoryTable,
+              db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+          ])
+          ..where(db.transactionTable.id.equals(transactionId))
+          ..limit(1);
+
+    final rows = await query.get();
+    if (rows.isEmpty) return null;
+    return _mapToEntityWithCategory(rows.first);
   }
 
   // ---------------------------------------------------------------------------
@@ -234,16 +273,21 @@ class TransactionRepository extends ITransactionRepository {
   @override
   Future<List<TransactionEntity>> searchByKeyword(String keyword) async {
     final lower = keyword.toLowerCase();
-    final rows = await (db.select(
-      db.transactionTable,
-    )..orderBy(_defaultOrder)).get();
+    final query = db.select(db.transactionTable).join([
+      leftOuterJoin(
+        db.categoryTable,
+        db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+      ),
+    ])..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList());
+
+    final rows = await query.get();
     return rows
-        .where(
-          (row) =>
-              row.description.toLowerCase().contains(lower) ||
-              (row.note?.toLowerCase().contains(lower) ?? false),
-        )
-        .map(_toEntity)
+        .where((row) {
+          final transaction = row.readTable(db.transactionTable);
+          return transaction.description.toLowerCase().contains(lower) ||
+              (transaction.note?.toLowerCase().contains(lower) ?? false);
+        })
+        .map((row) => _mapToEntityWithCategory(row))
         .toList();
   }
 
@@ -251,21 +295,40 @@ class TransactionRepository extends ITransactionRepository {
   // Private mapper
   // ---------------------------------------------------------------------------
 
-  TransactionEntity _toEntity(TrnsctnTransaction row) {
+  TransactionEntity _mapToEntityWithCategory(dynamic row) {
+    final transaction = row.readTable(db.transactionTable);
+    final categoryRow = row.readTableOrNull(db.categoryTable);
+
+    CategoryEntity? category;
+    if (categoryRow != null) {
+      category = CategoryEntity(
+        id: categoryRow.id,
+        name: categoryRow.name,
+        iconCodePoint: categoryRow.iconCodePoint,
+        iconFontFamily: categoryRow.iconFontFamily,
+        isIncome: categoryRow.isIncome,
+        isExpense: categoryRow.isExpense,
+        orderIndex: categoryRow.orderIndex,
+        isActive: categoryRow.isActive,
+        createdAt: categoryRow.createdAt,
+      );
+    }
+
     return TransactionEntity(
-      id: row.id,
-      title: row.description,
-      amount: row.amount,
-      type: row.type,
-      savingId: row.savingId,
-      destinationSavingId: row.destinationSavingId,
-      categoryId: row.categoryId,
-      commitmentTaskId: row.commitmentTaskId,
-      payeeId: row.payeeId,
-      date: row.transactionDateTime ?? row.dateCreated,
-      note: row.note,
-      createdAt: row.dateCreated,
-      updatedAt: row.dateUpdated,
+      id: transaction.id,
+      title: transaction.description,
+      amount: transaction.amount,
+      type: transaction.type,
+      savingId: transaction.savingId,
+      destinationSavingId: transaction.destinationSavingId,
+      categoryId: transaction.categoryId,
+      category: category,
+      commitmentTaskId: transaction.commitmentTaskId,
+      payeeId: transaction.payeeId,
+      date: transaction.transactionDateTime ?? transaction.dateCreated,
+      note: transaction.note,
+      createdAt: transaction.dateCreated,
+      updatedAt: transaction.dateUpdated,
     );
   }
 

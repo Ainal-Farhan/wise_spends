@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_bloc.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_event.dart';
@@ -84,7 +85,7 @@ class _TransactionList extends StatelessWidget {
           title: transaction.title,
           amount: transaction.amount,
           type: transaction.type,
-          icon: _getCategoryIcon(transaction.categoryId),
+          icon: _getCategoryIcon(transaction.category),
           date: transaction.date,
           note: transaction.note,
           onTap: () {
@@ -99,9 +100,9 @@ class _TransactionList extends StatelessWidget {
     );
   }
 
-  IconData _getCategoryIcon(String? categoryId) {
-    if (categoryId == null) return Icons.category_rounded;
-    return CategoryIconMapper.getIconForCategory(categoryId);
+  IconData _getCategoryIcon(CategoryEntity? category) {
+    if (category == null) return Icons.category_rounded;
+    return CategoryIconMapper.getIconForCategory(category.iconCodePoint);
   }
 }
 
@@ -124,7 +125,7 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.xxxl),
       child: Column(
