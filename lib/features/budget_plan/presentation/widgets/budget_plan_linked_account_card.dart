@@ -9,12 +9,14 @@ class LinkedAccountCard extends StatelessWidget {
   final LinkedAccountSummaryEntity account;
   final String planId;
   final void Function(String accountId, String planId) onUnlink;
+  final void Function(String accountId, String planId, double newAmount) onEditAllocation;
 
   const LinkedAccountCard({
     super.key,
     required this.account,
     required this.planId,
     required this.onUnlink,
+    required this.onEditAllocation,
   });
 
   @override
@@ -44,14 +46,32 @@ class LinkedAccountCard extends StatelessWidget {
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
-        trailing: IconButton(
-          icon: Icon(
-            Icons.link_off,
-            color: Theme.of(context).colorScheme.outline,
-            size: 20,
-          ),
-          tooltip: 'budget_plans.unlink'.tr,
-          onPressed: () => onUnlink(account.accountId, planId),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.edit,
+                color: Theme.of(context).colorScheme.tertiary,
+                size: 20,
+              ),
+              tooltip: 'budget_plans.edit_allocation'.tr,
+              onPressed: () => onEditAllocation(
+                account.accountId,
+                planId,
+                account.allocatedAmount,
+              ),
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.link_off,
+                color: Theme.of(context).colorScheme.outline,
+                size: 20,
+              ),
+              tooltip: 'budget_plans.unlink'.tr,
+              onPressed: () => onUnlink(account.accountId, planId),
+            ),
+          ],
         ),
       ),
     );

@@ -18,6 +18,8 @@ class MalayStrings {
     'general.next': 'Seterusnya',
     'general.done': 'Selesai',
     'general.close': 'Tutup',
+    'general.expand': 'Kembangkan',
+    'general.collapse': 'Runtuhkan',
     'general.ok': 'OK',
     'general.yes': 'Ya',
     'general.no': 'Tidak',
@@ -111,6 +113,7 @@ class MalayStrings {
     'budget_plans.week_3': 'Minggu 3',
     'budget_plans.week_4': 'Minggu 4',
     'budget_plans.of_target': 'daripada sasaran',
+    'budget_plans.of_remaining_target': 'daripada sasaran tinggal',
     // Transaction/Deposit cards
     'budget_plans.deposit': 'Deposit',
     'budget_plans.transaction': 'Transaksi',
@@ -319,6 +322,7 @@ class MalayStrings {
     'budget_plans.available': 'Tersedia',
     'budget_plans.spent': 'dibelanjakan',
     'budget_plans.deposited': 'Deposit',
+    'budget_plans.financial_breakdown': 'Rincian Kewangan',
     'budget_plans.item_payments': 'Bayaran Item',
     'budget_plans.link_account': 'Paut Akaun',
     'budget_plans.linked_accounts_desc':
@@ -376,6 +380,22 @@ class MalayStrings {
     'budget_plans.status_completed': 'Selesai',
     'budget_plans.status_paused': 'Dijeda',
     'budget_plans.status_cancelled': 'Dibatalkan',
+    'budget_plans.end_plan': 'Tamatkan Pelan Belanjawan',
+    'budget_plans.end_plan_subtitle':
+        'Tanda sebagai selesai, dijeda, atau dibatalkan',
+    'budget_plans.end_plan_description':
+        'Pilih status untuk mengemaskini pelan belanjawan ini. Ini akan membantu anda mengesan keadaan akhir matlamat kewangan anda.',
+    'budget_plans.select_status': 'Pilih Status',
+    'budget_plans.select_account': 'Pilih Akaun',
+    'budget_plans.select_account_hint': 'Ketik untuk memilih akaun simpanan',
+    'budget_plans.edit_allocation': 'Suntikan Peruntukan',
+    'budget_plans.edit_allocation_desc':
+        'Laraskan jumlah yang diperuntukkan dari akaun simpanan ini',
+    'budget_plans.current_allocation': 'Peruntukan Semasa',
+    'budget_plans.manual_input': 'Input Manual',
+    'budget_plans.update_allocation': 'Kemaskini Peruntukan',
+    'budget_plans.error.amount_exceeds_max':
+        'Jumlah tidak boleh melebihi RM {max}',
 
     // Reports/Analytics
     'reports.title': 'Laporan',
@@ -900,7 +920,6 @@ class MalayStrings {
     'budget_plans.source_salary': 'Gaji',
     'budget_plans.source_bonus': 'Bonus',
     'budget_plans.source_other': 'Lain-lain',
-    'budget_plans.select_account': 'Pilih Akaun',
     'budget_plans.note_hint': 'Tambah butiran tambahan (pilihan)',
     'budget_plans.cat_venue': 'Tempat',
     'budget_plans.cat_catering': 'Katering',

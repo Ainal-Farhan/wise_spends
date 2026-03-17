@@ -161,3 +161,17 @@ class LinkAccountEvent extends BudgetPlanDetailEvent {
     required this.allocatedAmount,
   });
 }
+
+/// Update allocation amount for a linked account
+class UpdateAllocationEvent extends BudgetPlanDetailEvent {
+  final String accountId;
+  final double allocatedAmount;
+
+  const UpdateAllocationEvent({
+    required this.accountId,
+    required this.allocatedAmount,
+  });
+
+  @override
+  List<Object> get props => [accountId, allocatedAmount];
+}

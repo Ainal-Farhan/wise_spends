@@ -17,6 +17,8 @@ class EnglishStrings {
     'general.next': 'Next',
     'general.done': 'Done',
     'general.close': 'Close',
+    'general.expand': 'Expand',
+    'general.collapse': 'Collapse',
     'general.ok': 'OK',
     'general.yes': 'Yes',
     'general.no': 'No',
@@ -112,6 +114,7 @@ class EnglishStrings {
     'budget_plans.week_3': 'Week 3',
     'budget_plans.week_4': 'Week 4',
     'budget_plans.of_target': 'of target',
+    'budget_plans.of_remaining_target': 'of remaining target',
     // Transaction/Deposit cards
     'budget_plans.transaction': 'Transaction',
     'budget_plans.due_today': 'Due today',
@@ -346,6 +349,7 @@ class EnglishStrings {
     'budget_plans.available': 'Available',
     'budget_plans.spent': 'spent',
     'budget_plans.deposited': 'Deposited',
+    'budget_plans.financial_breakdown': 'Financial Breakdown',
     'budget_plans.item_payments': 'Item Payments',
     'budget_plans.link_account': 'Link Account',
     'budget_plans.linked_accounts_desc':
@@ -401,6 +405,20 @@ class EnglishStrings {
     'budget_plans.status_completed': 'Completed',
     'budget_plans.status_paused': 'Paused',
     'budget_plans.status_cancelled': 'Cancelled',
+    'budget_plans.end_plan': 'End Budget Plan',
+    'budget_plans.end_plan_subtitle': 'Mark as completed, paused, or cancelled',
+    'budget_plans.end_plan_description':
+        'Choose a status to update this budget plan. This will help you track the final state of your financial goal.',
+    'budget_plans.select_status': 'Select Status',
+    'budget_plans.select_account': 'Select Account',
+    'budget_plans.select_account_hint': 'Tap to choose a savings account',
+    'budget_plans.edit_allocation': 'Edit Allocation',
+    'budget_plans.edit_allocation_desc':
+        'Adjust the amount allocated from this savings account',
+    'budget_plans.current_allocation': 'Current Allocation',
+    'budget_plans.manual_input': 'Manual Input',
+    'budget_plans.update_allocation': 'Update Allocation',
+    'budget_plans.error.amount_exceeds_max': 'Amount cannot exceed RM {max}',
 
     // Reports/Analytics
     'reports.title': 'Reports',
@@ -910,7 +928,6 @@ class EnglishStrings {
     'budget_plans.source_salary': 'Salary',
     'budget_plans.source_bonus': 'Bonus',
     'budget_plans.source_other': 'Other',
-    'budget_plans.select_account': 'Select Account',
     'budget_plans.note_hint': 'Add any additional details (optional)',
     'budget_plans.cat_venue': 'Venue',
     'budget_plans.cat_catering': 'Catering',

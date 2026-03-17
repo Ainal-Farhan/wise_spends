@@ -38,3 +38,17 @@ class RefreshBudgetPlans extends BudgetPlanListEvent {}
 
 /// Recalculate budget plans amounts
 class RecalculateBudgetPlans extends BudgetPlanListEvent {}
+
+/// Update budget plan status
+class UpdateBudgetPlanStatus extends BudgetPlanListEvent {
+  final String uuid;
+  final BudgetPlanStatus status;
+
+  const UpdateBudgetPlanStatus({
+    required this.uuid,
+    required this.status,
+  });
+
+  @override
+  List<Object> get props => [uuid, status];
+}

@@ -27,6 +27,8 @@ class BudgetPlanOverviewTab extends StatelessWidget {
   final void Function(String milestoneId, String planId) onCompleteMilestone;
   final void Function(String milestoneId, String planId) onDeleteMilestone;
   final void Function(String accountId, String planId) onUnlinkAccount;
+  final void Function(String accountId, String planId, double currentAmount)
+  onEditAllocation;
 
   const BudgetPlanOverviewTab({
     super.key,
@@ -39,6 +41,7 @@ class BudgetPlanOverviewTab extends StatelessWidget {
     required this.onCompleteMilestone,
     required this.onDeleteMilestone,
     required this.onUnlinkAccount,
+    required this.onEditAllocation,
   });
 
   @override
@@ -151,6 +154,8 @@ class BudgetPlanOverviewTab extends StatelessWidget {
               LinkedAccountsTotalBanner(
                 accounts: linkedAccounts.cast(),
                 planTarget: plan.targetAmount,
+                totalSpent: plan.totalSpent,
+                totalItemDepositPaid: plan.totalItemDepositPaid,
               ),
               const SizedBox(height: AppSpacing.md),
               ListView.separated(
@@ -163,6 +168,7 @@ class BudgetPlanOverviewTab extends StatelessWidget {
                   account: linkedAccounts[i],
                   planId: plan.id,
                   onUnlink: onUnlinkAccount,
+                  onEditAllocation: onEditAllocation,
                 ),
               ),
             ],

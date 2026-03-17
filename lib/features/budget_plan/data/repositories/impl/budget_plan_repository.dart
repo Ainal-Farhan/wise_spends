@@ -75,7 +75,7 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
     final plan = _mapPlanToEntity(rows.first);
 
     // Calculate totalDeposited and totalSpent asynchronously
-    return _enrichPlanWithCalculatedValues(plan);
+    return await _enrichPlanWithCalculatedValues(plan);
   }
 
   /// Enrich plan with calculated totalDeposited and totalSpent values.
@@ -137,10 +137,11 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       // totalItemOutstanding: Sum of outstanding amounts across all items
       final totalItemOutstanding = items.fold<double>(
         0.0,
-        (sum, i) {
-          final outstanding = (i.totalCost - i.depositPaid - i.amountPaid).clamp(0.0, double.infinity);
-          return outstanding;
-        },
+        (sum, i) =>
+            sum +
+            (i.totalCost - i.depositPaid - i.amountPaid)
+                .clamp(double.negativeInfinity, double.infinity)
+                .abs(),
       );
 
       // totalDeposited = manual deposits + item deposits (depositPaid)
@@ -680,10 +681,9 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       final transactionId = transaction.transactionId;
       if (transactionId != null) {
         // Find the linked account for this spending by looking up the main transaction
-        final mainTransaction =
-            await (db.select(db.transactionTable)
-                  ..where((tbl) => tbl.id.equals(transactionId)))
-                .getSingleOrNull();
+        final mainTransaction = await (db.select(
+          db.transactionTable,
+        )..where((tbl) => tbl.id.equals(transactionId))).getSingleOrNull();
 
         if (mainTransaction != null) {
           await _reverseLinkedSpendingEffect(

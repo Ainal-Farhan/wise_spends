@@ -46,6 +46,7 @@ class BudgetPlanListLoaded extends BudgetPlanListState {
     List<BudgetPlanEntity>? plans,
     List<BudgetPlanEntity>? filteredPlans,
     BudgetPlanSummary? summary,
+    bool isClear = false,
     BudgetPlanStatus? filterStatus,
     BudgetPlanCategory? filterCategory,
   }) {
@@ -53,7 +54,7 @@ class BudgetPlanListLoaded extends BudgetPlanListState {
       plans: plans ?? this.plans,
       filteredPlans: filteredPlans ?? this.filteredPlans,
       summary: summary ?? this.summary,
-      filterStatus: filterStatus ?? this.filterStatus,
+      filterStatus: isClear ? filterStatus : filterStatus ?? this.filterStatus,
       filterCategory: filterCategory ?? this.filterCategory,
     );
   }

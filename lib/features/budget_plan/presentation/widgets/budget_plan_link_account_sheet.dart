@@ -5,6 +5,7 @@ import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_detail_bloc.dart';
 import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_detail_event.dart';
+import 'package:wise_spends/features/budget_plan/presentation/widgets/allocation_input.dart';
 import 'package:wise_spends/features/saving/domain/entities/saving_vo.dart';
 import 'package:wise_spends/shared/components/app_button.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
@@ -22,11 +23,13 @@ class LinkAccountSheet extends StatefulWidget {
 }
 
 class _LinkAccountSheetState extends State<LinkAccountSheet> {
-  final _amountCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final _accountCtrl = TextEditingController();
   String? _selectedAccountId;
   bool _isLoading = true;
   List<SavingVO> _accounts = [];
+  double _allocatedAmount = 0;
+  double _maxAmount = 0;
 
   @override
   void initState() {
@@ -45,15 +48,49 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
       setState(() {
         _accounts = accounts;
         _isLoading = false;
+        // Set default max to a reasonable value if no account selected yet
+        _maxAmount = 1000;
       });
     } catch (e) {
       setState(() => _isLoading = false);
     }
   }
 
+  void _onAccountSelected(SavingVO account) {
+    setState(() {
+      _selectedAccountId = account.savingId;
+      _accountCtrl.text = account.savingName ?? 'Unnamed Account';
+      // Update max amount based on selected account's balance
+      _maxAmount = account.currentAmount ?? 0;
+      _allocatedAmount = 0;
+    });
+  }
+
+  void _showAccountPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _AccountPickerSheet(
+        accounts: _accounts,
+        selectedId: _selectedAccountId,
+        onSelected: (account) {
+          _onAccountSelected(account);
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  void _onAmountChanged(double value) {
+    setState(() {
+      _allocatedAmount = value;
+    });
+  }
+
   @override
   void dispose() {
-    _amountCtrl.dispose();
+    _accountCtrl.dispose();
     super.dispose();
   }
 
@@ -109,26 +146,29 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
-                  Text('budget_plans.link_account'.tr, style: AppTextStyles.h2),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'budget_plans.link_account'.tr,
+                          style: AppTextStyles.h2,
+                        ),
+                        Text(
+                          'budget_plans.link_account_desc'.tr,
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                'budget_plans.link_account_desc'.tr,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
               ),
               const SizedBox(height: AppSpacing.xxl),
 
-              // Account picker
-              Text(
-                'budget_plans.select_savings_account'.tr,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.sm),
               if (_isLoading)
                 const Center(child: CircularProgressIndicator())
               else if (_accounts.isEmpty)
@@ -164,101 +204,47 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
                     ],
                   ),
                 )
-              else
-                Column(
-                  children: _accounts.map((account) {
-                    final isSelected = _selectedAccountId == account.savingId;
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: InkWell(
-                        onTap: () => setState(
-                          () => _selectedAccountId = account.savingId,
-                        ),
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        child: Container(
-                          padding: const EdgeInsets.all(AppSpacing.lg),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withValues(alpha: 0.08)
-                                : Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(AppRadius.md),
-                            border: Border.all(
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.outline,
-                              width: isSelected ? 2 : 1,
+              else ...[
+                // Account picker field
+                AppTextField(
+                  controller: _accountCtrl,
+                  label: 'budget_plans.select_savings_account'.tr,
+                  hint: 'budget_plans.select_account_hint'.tr,
+                  readOnly: true,
+                  suffixIcon: Icons.keyboard_arrow_down_rounded,
+                  prefixWidget: _selectedAccountId != null
+                      ? Padding(
+                          padding: const EdgeInsets.only(left: 12),
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.savings_rounded,
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 14,
                             ),
                           ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                isSelected
-                                    ? Icons.check_circle
-                                    : Icons.radio_button_unchecked,
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      account.savingName ?? 'Unnamed Account',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: isSelected
-                                            ? Theme.of(
-                                                context,
-                                              ).colorScheme.primary
-                                            : null,
-                                      ),
-                                    ),
-                                    Text(
-                                      'RM ${account.currentAmount ?? 0}',
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                        )
+                      : null,
+                  onTap: _showAccountPicker,
                 ),
-              const SizedBox(height: AppSpacing.xxl),
+                const SizedBox(height: AppSpacing.xxl),
 
-              // Amount field
-              AppTextField(
-                controller: _amountCtrl,
-                label: 'budget_plans.allocated_amount'.tr,
-                hint: '0.00',
-                keyboardType: AppTextFieldKeyboardType.decimal,
-                prefixText: 'RM ',
-                validator: (v) {
-                  if (v == null || v.isEmpty) {
-                    return 'error.validation.required'.tr;
-                  }
-                  final amount = double.tryParse(v);
-                  if (amount == null || amount <= 0) {
-                    return 'budget_plans.error.valid_amount'.tr;
-                  }
-                  return null;
-                },
-              ),
+                // Allocation amount input with slider
+                AllocationInput(
+                  initialValue: 0,
+                  maxAmount: _maxAmount,
+                  label: 'budget_plans.allocated_amount'.tr,
+                  onChanged: _onAmountChanged,
+                  isLoading: false,
+                ),
+              ],
               const SizedBox(height: AppSpacing.xxl),
 
               // Action buttons
@@ -292,10 +278,181 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
   void _linkAccount() {
     if (!_formKey.currentState!.validate()) return;
 
-    final amount = double.tryParse(_amountCtrl.text) ?? 0;
     BlocProvider.of<BudgetPlanDetailBloc>(context).add(
-      LinkAccountEvent(accountId: _selectedAccountId!, allocatedAmount: amount),
+      LinkAccountEvent(
+        accountId: _selectedAccountId!,
+        allocatedAmount: _allocatedAmount,
+      ),
     );
     Navigator.pop(context);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bottom sheet picker for accounts
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _AccountPickerSheet extends StatelessWidget {
+  final List<SavingVO> accounts;
+  final String? selectedId;
+  final ValueChanged<SavingVO> onSelected;
+
+  const _AccountPickerSheet({
+    required this.accounts,
+    required this.selectedId,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Handle
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.outline,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+
+          // Title
+          Text(
+            'budget_plans.select_savings_account'.tr,
+            style: AppTextStyles.h3,
+          ),
+          const SizedBox(height: 16),
+
+          // Account tiles
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+            ),
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: accounts.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final account = accounts[index];
+                final isSelected = account.savingId == selectedId;
+                return _AccountTile(
+                  account: account,
+                  isSelected: isSelected,
+                  onTap: () => onSelected(account),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AccountTile extends StatelessWidget {
+  final SavingVO account;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _AccountTile({
+    required this.account,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.06)
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
+                : Theme.of(context).colorScheme.outline,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.savings_rounded,
+                color: Theme.of(context).colorScheme.primary,
+                size: 16,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                account.savingName ?? 'Unnamed Account',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'RM ${account.currentAmount?.toStringAsFixed(2) ?? '0.00'}',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: isSelected
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.7)
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+            const SizedBox(width: 10),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              child: isSelected
+                  ? Icon(
+                      Icons.check_circle_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 18,
+                      key: ValueKey('check'),
+                    )
+                  : Icon(
+                      Icons.circle_outlined,
+                      color: Theme.of(context).colorScheme.outline,
+                      size: 18,
+                      key: ValueKey('empty'),
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

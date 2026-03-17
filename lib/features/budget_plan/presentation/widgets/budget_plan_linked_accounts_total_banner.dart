@@ -9,11 +9,15 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 class LinkedAccountsTotalBanner extends StatelessWidget {
   final List<LinkedAccountSummaryEntity> accounts;
   final double planTarget;
+  final double totalSpent;
+  final double totalItemDepositPaid;
 
   const LinkedAccountsTotalBanner({
     super.key,
     required this.accounts,
     required this.planTarget,
+    required this.totalSpent,
+    required this.totalItemDepositPaid,
   });
 
   @override
@@ -22,9 +26,15 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
       0.0,
       (s, a) => s + a.allocatedAmount,
     );
-    final progress = planTarget > 0
-        ? (totalAllocated / planTarget).clamp(0.0, 1.0)
-        : 0.0;
+
+    // Calculate remaining target: target - spent - items(paidAmount + paidDeposit)
+    final remainingTarget = planTarget - totalSpent - totalItemDepositPaid;
+
+    // Progress is based on how much of the remaining target is covered by allocations
+    final progress = remainingTarget > 0
+        ? (totalAllocated / remainingTarget).clamp(0.0, 1.0)
+        : (remainingTarget == 0 ? 1.0 : 0.0);
+
     final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 2);
 
     return Container(
@@ -70,6 +80,14 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
+          const SizedBox(height: AppSpacing.xs),
+          // Remaining target info
+          Text(
+            '${'budget_plans.of_remaining_target'.tr} ${fmt.format(remainingTarget < 0 ? 0 : remainingTarget)}',
+            style: AppTextStyles.caption.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
           const SizedBox(height: AppSpacing.sm),
           ClipRRect(
             borderRadius: BorderRadius.circular(AppRadius.full),
@@ -86,7 +104,7 @@ class LinkedAccountsTotalBanner extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '${(progress * 100).toStringAsFixed(1)}% ${'budget_plans.of_target'.tr}',
+            '${(progress * 100).toStringAsFixed(1)}% ${'budget_plans.of_remaining_target'.tr}',
             style: AppTextStyles.caption.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

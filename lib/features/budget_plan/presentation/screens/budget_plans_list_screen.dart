@@ -569,10 +569,10 @@ class _PlanCard extends StatelessWidget {
 }
 
 // =============================================================================
-// Amounts Grid - Shows detailed financial breakdown
+// Amounts Grid - Shows detailed financial breakdown (collapsible)
 // =============================================================================
 
-class _AmountsGrid extends StatelessWidget {
+class _AmountsGrid extends StatefulWidget {
   final double currentAmount;
   final double totalSpent;
   final double totalDeposited;
@@ -594,6 +594,13 @@ class _AmountsGrid extends StatelessWidget {
   });
 
   @override
+  State<_AmountsGrid> createState() => _AmountsGridState();
+}
+
+class _AmountsGridState extends State<_AmountsGrid> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -605,42 +612,160 @@ class _AmountsGrid extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row 1: Current Available, Total Spent, Total Deposited
-          Row(
-            children: [
-              _AmountCell(
-                label: 'budget_plans.available'.tr,
-                value: fmt.format(currentAmount),
-                icon: Icons.account_balance_wallet_outlined,
-                color: Theme.of(context).colorScheme.primary,
-                isLarge: true,
-                flex: 5,
+          // Collapsible header
+          InkWell(
+            onTap: () => setState(() => _isExpanded = !_isExpanded),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'budget_plans.financial_breakdown'.tr,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _isExpanded
+                            ? 'general.collapse'.tr
+                            : 'general.expand'.tr,
+                        style: AppTextStyles.captionSmall.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        _isExpanded
+                            ? Icons.keyboard_arrow_up
+                            : Icons.keyboard_arrow_down,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              _GridDivider(),
-              _AmountCell(
-                label: 'budget_plans.spent'.tr,
-                value: fmt.format(totalSpent),
-                icon: Icons.north_outlined,
-                color: Theme.of(context).colorScheme.secondary,
-                flex: 1,
-              ),
-              _GridDivider(),
-              _AmountCell(
-                label: 'budget_plans.deposited'.tr,
-                value: fmt.format(totalDeposited),
-                icon: Icons.south_outlined,
-                color: Theme.of(context).colorScheme.primary,
-                flex: 1,
-              ),
-            ],
+            ),
           ),
-          // Row 2: Item payments (if has items)
-          if (hasItems) ...[
+          AnimatedCrossFade(
+            firstChild: _buildCollapsedView(context),
+            secondChild: _buildExpandedView(context),
+            crossFadeState: _isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 200),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCollapsedView(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.sm),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildCompactAmountRow(
+            context,
+            'budget_plans.available'.tr,
+            widget.fmt.format(widget.currentAmount),
+            Theme.of(context).colorScheme.primary,
+          ),
+          _buildCompactAmountRow(
+            context,
+            'budget_plans.spent'.tr,
+            widget.fmt.format(widget.totalSpent),
+            Theme.of(context).colorScheme.secondary,
+          ),
+          _buildCompactAmountRow(
+            context,
+            'budget_plans.deposited'.tr,
+            widget.fmt.format(widget.totalDeposited),
+            Theme.of(context).colorScheme.primary,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactAmountRow(
+    BuildContext context,
+    String label,
+    String value,
+    Color color,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.captionSmall.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExpandedView(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.md),
+      child: Column(
+        children: [
+          // Available Amount
+          _buildAmountRow(
+            context,
+            'budget_plans.available'.tr,
+            widget.fmt.format(widget.currentAmount),
+            Theme.of(context).colorScheme.primary,
+            Icons.account_balance_wallet_outlined,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // Spent Amount
+          _buildAmountRow(
+            context,
+            'budget_plans.spent'.tr,
+            widget.fmt.format(widget.totalSpent),
+            Theme.of(context).colorScheme.secondary,
+            Icons.north_outlined,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // Deposited Amount
+          _buildAmountRow(
+            context,
+            'budget_plans.deposited'.tr,
+            widget.fmt.format(widget.totalDeposited),
+            Theme.of(context).colorScheme.primary,
+            Icons.south_outlined,
+          ),
+          // Item payments (if has items)
+          if (widget.hasItems) ...[
             const SizedBox(height: AppSpacing.md),
             const Divider(height: 1),
             const SizedBox(height: AppSpacing.md),
             // Item payment summary
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   flex: 2,
@@ -650,20 +775,16 @@ class _AmountsGrid extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Expanded(
                   child: Text(
-                    fmt.format(itemPaidTotal),
+                    widget.fmt.format(widget.itemPaidTotal),
                     style: AppTextStyles.bodySmall.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     textAlign: TextAlign.right,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -673,7 +794,7 @@ class _AmountsGrid extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.full),
               child: LinearProgressIndicator(
-                value: itemProgress,
+                value: widget.itemProgress,
                 backgroundColor: Theme.of(
                   context,
                 ).colorScheme.primary.withValues(alpha: 0.1),
@@ -688,21 +809,17 @@ class _AmountsGrid extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    'budget_plans.outstanding'.tr,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                Text(
+                  'budget_plans.outstanding'.tr,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Text(
-                  fmt.format(itemOutstanding),
+                  widget.fmt.format(widget.itemOutstanding),
                   style: AppTextStyles.bodySmall.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: itemOutstanding > 0
+                    color: widget.itemOutstanding > 0
                         ? Theme.of(context).colorScheme.error
                         : Theme.of(context).colorScheme.primary,
                   ),
@@ -714,86 +831,48 @@ class _AmountsGrid extends StatelessWidget {
       ),
     );
   }
-}
 
-// =============================================================================
-// Amount Cell - Individual amount display in grid
-// =============================================================================
-
-class _AmountCell extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-  final Color color;
-  final bool isLarge;
-  final int flex;
-
-  const _AmountCell({
-    required this.label,
-    required this.value,
-    required this.icon,
-    required this.color,
-    this.isLarge = false,
-    this.flex = 1,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: flex,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+  Widget _buildAmountRow(
+    BuildContext context,
+    String label,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: isLarge ? 14 : 11, color: color),
-              const SizedBox(width: 3),
-              Expanded(
-                child: Text(
-                  label,
-                  style:
-                      (isLarge
-                              ? AppTextStyles.caption
-                              : AppTextStyles.captionSmall)
-                          .copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                            fontWeight: isLarge
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                          ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+              Icon(icon, size: 16, color: color),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                label,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               value,
-              style:
-                  (isLarge ? AppTextStyles.bodyLarge : AppTextStyles.bodyMedium)
-                      .copyWith(color: color, fontWeight: FontWeight.w600),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: color,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _GridDivider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 32,
-      color: Theme.of(context).colorScheme.outline,
-      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
     );
   }
 }
@@ -823,6 +902,23 @@ class _PlanOptionsSheet extends StatelessWidget {
                 AppRoutes.editBudgetPlan,
                 arguments: plan.id,
               );
+            },
+          ),
+          ListTile(
+            leading: Icon(
+              Icons.flag_outlined,
+              color: plan.status == BudgetPlanStatus.completed
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.tertiary,
+            ),
+            title: Text('budget_plans.end_plan'.tr),
+            subtitle: Text(
+              'budget_plans.end_plan_subtitle'.tr,
+              style: AppTextStyles.captionSmall,
+            ),
+            onTap: () {
+              Navigator.pop(context);
+              _showEndPlanDialog(context);
             },
           ),
           ListTile(
@@ -929,6 +1025,156 @@ class _PlanOptionsSheet extends StatelessWidget {
       },
     );
   }
+
+  void _showEndPlanDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => BlocProvider.value(
+        value: context.read<BudgetPlanListBloc>(),
+        child: _EndPlanDialog(plan: plan),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// End Plan Dialog - allows changing plan status
+// =============================================================================
+
+class _EndPlanDialog extends StatefulWidget {
+  final BudgetPlanEntity plan;
+
+  const _EndPlanDialog({required this.plan});
+
+  @override
+  State<_EndPlanDialog> createState() => _EndPlanDialogState();
+}
+
+class _EndPlanDialogState extends State<_EndPlanDialog> {
+  BudgetPlanStatus? _selectedStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedStatus = widget.plan.status;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomDialog(
+      config: CustomDialogConfig(
+        title: 'budget_plans.end_plan'.tr,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'budget_plans.end_plan_description'.tr,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              'budget_plans.select_status'.tr,
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Column(
+              children: [
+                _statusRadio(
+                  context,
+                  BudgetPlanStatus.completed,
+                  'budget_plans.status_completed'.tr,
+                  Icons.check_circle,
+                  Theme.of(context).colorScheme.primary,
+                ),
+                _statusRadio(
+                  context,
+                  BudgetPlanStatus.paused,
+                  'budget_plans.status_paused'.tr,
+                  Icons.pause_circle,
+                  Theme.of(context).colorScheme.tertiary,
+                ),
+                _statusRadio(
+                  context,
+                  BudgetPlanStatus.cancelled,
+                  'budget_plans.status_cancelled'.tr,
+                  Icons.cancel,
+                  Theme.of(context).colorScheme.secondary,
+                ),
+              ],
+            ),
+          ],
+        ),
+        buttons: [
+          CustomDialogButton(
+            text: 'general.cancel'.tr,
+            onPressed: () => Navigator.pop(context),
+          ),
+          CustomDialogButton(
+            text: 'general.confirm'.tr,
+            isDefault: true,
+            onPressed:
+                _selectedStatus != null && _selectedStatus != widget.plan.status
+                ? () {
+                    context.read<BudgetPlanListBloc>().add(
+                      UpdateBudgetPlanStatus(
+                        uuid: widget.plan.id,
+                        status: _selectedStatus!,
+                      ),
+                    );
+                    Navigator.pop(context);
+                  }
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statusRadio(
+    BuildContext context,
+    BudgetPlanStatus status,
+    String label,
+    IconData icon,
+    Color color,
+  ) {
+    final isSelected = _selectedStatus == status;
+    return InkWell(
+      onTap: () => setState(() => _selectedStatus = status),
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.sm,
+          horizontal: AppSpacing.md,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: isSelected
+                      ? color
+                      : Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ),
+            RadioGroup<BudgetPlanStatus>(
+              groupValue: _selectedStatus,
+              onChanged: (value) => setState(() => _selectedStatus = value),
+              child: Radio<BudgetPlanStatus>(value: status),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 // =============================================================================
@@ -946,17 +1192,17 @@ class _FilterDialog extends StatelessWidget {
             ? state.filterStatus
             : null;
 
-        void select(BudgetPlanStatus? v) {
-          context.read<BudgetPlanListBloc>().add(FilterBudgetPlans(status: v));
-          Navigator.pop(context);
-        }
-
         return CustomDialog(
           config: CustomDialogConfig(
             title: 'general.filter'.tr,
             content: RadioGroup<BudgetPlanStatus?>(
               groupValue: current,
-              onChanged: select,
+              onChanged: (BudgetPlanStatus? v) {
+                context.read<BudgetPlanListBloc>().add(
+                  FilterBudgetPlans(status: v),
+                );
+                Navigator.pop(context);
+              },
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

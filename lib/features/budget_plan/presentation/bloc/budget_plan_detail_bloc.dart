@@ -24,6 +24,7 @@ class BudgetPlanDetailBloc
     on<DeleteDeposit>(_onDeleteDeposit);
     on<DeleteSpending>(_onDeleteSpending);
     on<LinkAccountEvent>(_onLinkAccount);
+    on<UpdateAllocationEvent>(_onUpdateAllocation);
   }
 
   /// Load plan detail with all related data
@@ -313,6 +314,33 @@ class BudgetPlanDetailBloc
       add(LoadPlanDetail(current.plan.id));
     } catch (e) {
       emit(BudgetPlanDetailError('Failed to link account: ${e.toString()}'));
+      emit(current);
+    }
+  }
+
+  /// Update allocation amount for a linked account
+  Future<void> _onUpdateAllocation(
+    UpdateAllocationEvent event,
+    Emitter<BudgetPlanDetailState> emit,
+  ) async {
+    if (state is! BudgetPlanDetailLoaded) return;
+    final current = state as BudgetPlanDetailLoaded;
+    try {
+      // Get current allocation to calculate delta
+      final currentAllocation = await _repository.getAllocation(
+        current.plan.id,
+        event.accountId,
+      );
+      final deltaAmount = event.allocatedAmount - currentAllocation;
+      
+      await _repository.updateAllocation(
+        current.plan.id,
+        event.accountId,
+        deltaAmount,
+      );
+      add(LoadPlanDetail(current.plan.id));
+    } catch (e) {
+      emit(BudgetPlanDetailError('Failed to update allocation: ${e.toString()}'));
       emit(current);
     }
   }

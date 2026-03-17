@@ -15,6 +15,7 @@ class BudgetPlanListBloc
     on<DeleteBudgetPlan>(_onDeleteBudgetPlan);
     on<RefreshBudgetPlans>(_onRefreshBudgetPlans);
     on<RecalculateBudgetPlans>(_onRecalculateBudgetPlans);
+    on<UpdateBudgetPlanStatus>(_onUpdateBudgetPlanStatus);
   }
 
   // ---------------------------------------------------------------------------
@@ -41,7 +42,7 @@ class BudgetPlanListBloc
         // (show all) when there is no prior state to read from.
         final currentFilter = state is BudgetPlanListLoaded
             ? (state as BudgetPlanListLoaded).filterStatus
-            : null;
+            : BudgetPlanStatus.active;
         final currentCategory = state is BudgetPlanListLoaded
             ? (state as BudgetPlanListLoaded).filterCategory
             : null;
@@ -80,6 +81,7 @@ class BudgetPlanListBloc
       emit(
         current.copyWith(
           filteredPlans: filtered,
+          isClear: true,
           filterStatus: event.status,
           filterCategory: event.category,
         ),
@@ -254,6 +256,58 @@ class BudgetPlanListBloc
           previousState: snapshot,
         ),
       );
+
+      // If we had a list, put it back as the active state.
+      if (snapshot != null) emit(snapshot);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Update Status — update plan status without Loading flicker
+  // ---------------------------------------------------------------------------
+
+  Future<void> _onUpdateBudgetPlanStatus(
+    UpdateBudgetPlanStatus event,
+    Emitter<BudgetPlanListState> emit,
+  ) async {
+    // Snapshot the current loaded state so we can restore it on failure.
+    final snapshot = state is BudgetPlanListLoaded
+        ? state as BudgetPlanListLoaded
+        : null;
+
+    try {
+      // Update the plan status
+      await _repository.updatePlanStatus(event.uuid, event.status);
+
+      // After update, reload the data to show updated status
+      final plans = await _repository.getAllPlans();
+      final summary = await _repository.getOverallSummary();
+
+      if (plans.isEmpty) {
+        emit(
+          const BudgetPlanListEmpty(
+            'No budget plans yet. Create your first financial goal!',
+          ),
+        );
+        return;
+      }
+
+      final currentFilter = snapshot?.filterStatus;
+      final currentCategory = snapshot?.filterCategory;
+
+      final filtered = _applyFilters(plans, currentFilter, currentCategory);
+      emit(
+        BudgetPlanListLoaded(
+          plans: plans,
+          filteredPlans: filtered,
+          summary: summary,
+          filterStatus: currentFilter,
+          filterCategory: currentCategory,
+        ),
+      );
+    } catch (e) {
+      // Emit error state for UI to show error message
+      emit(BudgetPlanListError('Failed to update status: ${e.toString()}'));
 
       // If we had a list, put it back as the active state.
       if (snapshot != null) emit(snapshot);

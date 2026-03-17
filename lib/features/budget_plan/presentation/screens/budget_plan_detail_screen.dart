@@ -13,6 +13,7 @@ import 'package:wise_spends/features/budget_plan/presentation/screens/budget_pla
 import 'package:wise_spends/features/budget_plan/presentation/widgets/budget_plan_overview_tab.dart';
 import 'package:wise_spends/features/budget_plan/presentation/widgets/budget_plan_charts_tab.dart';
 import 'package:wise_spends/features/budget_plan/presentation/widgets/budget_plan_transactions_tab.dart';
+import 'package:wise_spends/features/budget_plan/presentation/widgets/budget_plan_edit_allocation_sheet.dart';
 import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
 import 'package:wise_spends/shared/components/speed_dial_fab.dart';
 import 'package:wise_spends/shared/components/empty_state_widget.dart';
@@ -172,6 +173,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
           onCompleteMilestone: _confirmCompleteMilestone,
           onDeleteMilestone: _confirmDeleteMilestone,
           onUnlinkAccount: _confirmUnlinkAccount,
+          onEditAllocation: _showEditAllocationSheet,
         ),
         BudgetPlanItemsListScreen(planId: widget.planUuid),
         BudgetPlanTransactionsTab(state: state),
@@ -328,6 +330,26 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
       onConfirm: () {
         context.read<BudgetPlanDetailBloc>().add(UnlinkAccountEvent(accountId));
       },
+    );
+  }
+
+  void _showEditAllocationSheet(
+    String accountId,
+    String planId,
+    double currentAmount,
+  ) {
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => BlocProvider.value(
+        value: context.read<BudgetPlanDetailBloc>(),
+        child: EditAllocationSheet(
+          planId: planId,
+          accountId: accountId,
+          currentAmount: currentAmount,
+        ),
+      ),
     );
   }
 }

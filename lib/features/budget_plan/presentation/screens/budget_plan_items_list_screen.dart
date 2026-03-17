@@ -517,7 +517,7 @@ class _SummaryCard extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: [
                 Theme.of(context).colorScheme.primary,
-                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.onPrimaryContainer,
               ],
             ),
             icon: Icons.format_list_bulleted,
