@@ -10895,10 +10895,6 @@ class $CommitmentTaskTableTable extends CommitmentTaskTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  List<Set<GeneratedColumn>> get uniqueKeys => [
-    {commitmentDetailId, name},
-  ];
-  @override
   ExpnsCommitmentTask map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ExpnsCommitmentTask(

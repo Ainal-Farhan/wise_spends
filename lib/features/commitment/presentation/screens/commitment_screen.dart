@@ -2,34 +2,190 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
-import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/theme/app_text_styles.dart';
-import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
-import 'package:wise_spends/features/commitment/presentation/bloc/commitment_bloc.dart';
 import 'package:wise_spends/features/commitment/domain/entities/commitment_vo.dart';
+import 'package:wise_spends/features/commitment/presentation/bloc/commitment_bloc.dart';
+import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
+import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import '../widgets/commitment/commitment_card.dart';
+import '../widgets/shared/commitment_snack_bar.dart';
 import 'commitment_detail_screen.dart';
 import 'add_commitment_screen.dart';
 import 'edit_commitment_screen.dart';
 
-/// Combined Commitment Screen — header + list in a single layer.
 class CommitmentScreen extends StatelessWidget {
   const CommitmentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CommitmentBloc()..add(const LoadCommitmentsEvent()),
+      create: (_) => CommitmentBloc()..add(const LoadCommitmentsEvent()),
       child: const _CommitmentScreenContent(),
     );
   }
 }
 
-// =============================================================================
-// Content
-// =============================================================================
-
 class _CommitmentScreenContent extends StatelessWidget {
   const _CommitmentScreenContent();
+
+  // ---------------------------------------------------------------------------
+  // Navigation
+  // ---------------------------------------------------------------------------
+
+  void _goToAdd(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AddCommitmentScreen()),
+    ).then(
+      (_) => context.read<CommitmentBloc>().add(const LoadCommitmentsEvent()),
+    );
+  }
+
+  void _goToEdit(BuildContext context, CommitmentVO commitment) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditCommitmentScreen(commitment: commitment),
+      ),
+    ).then(
+      (_) => context.read<CommitmentBloc>().add(const LoadCommitmentsEvent()),
+    );
+  }
+
+  void _goToDetails(BuildContext context, CommitmentVO commitment) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CommitmentDetailScreen(
+          commitmentId: commitment.commitmentId!,
+          commitmentName: commitment.name ?? 'commitments.unnamed'.tr,
+        ),
+      ),
+    ).then(
+      (_) => context.read<CommitmentBloc>().add(const LoadCommitmentsEvent()),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Dialogs
+  // ---------------------------------------------------------------------------
+
+  void _confirmDistribute(BuildContext context, CommitmentVO commitment) {
+    final detailCount = commitment.commitmentDetailVOList.length;
+    final totalAmount = commitment.totalAmount ?? 0.0;
+    final name = commitment.name ?? 'commitments.this_commitment'.tr;
+
+    showConfirmDialog(
+      context: context,
+      title: 'commitments.distribute_commitment'.tr,
+      message: 'commitments.distribute_msg'.trWith({
+        'count': '$detailCount',
+        'plural': detailCount == 1 ? '' : 's',
+        'name': name,
+      }),
+      confirmText: 'commitments.distribute'.tr,
+      cancelText: 'general.cancel'.tr,
+      icon: Icons.send_and_archive_rounded,
+      iconColor: Colors.green,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'commitments.total_to_distribute'.tr,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                Text(
+                  NumberFormat.currency(
+                    symbol: '${'general.currency'.tr} ',
+                    decimalDigits: 2,
+                  ).format(totalAmount),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'commitments.distribute_task_msg'.tr,
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+      onConfirm: () => context.read<CommitmentBloc>().add(
+        StartDistributeCommitmentEvent(commitment),
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, CommitmentVO commitment) {
+    showDeleteDialog(
+      context: context,
+      title: 'commitments.delete'.tr,
+      message: 'commitments.delete_msg'.tr,
+      deleteText: 'general.delete'.tr,
+      cancelText: 'general.cancel'.tr,
+      onDelete: () => context.read<CommitmentBloc>().add(
+        DeleteCommitmentEvent(commitment.commitmentId!),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // BLoC listener
+  // ---------------------------------------------------------------------------
+
+  void _handleState(BuildContext context, CommitmentState state) {
+    if (state is CommitmentStateSuccess) {
+      showCommitmentSnackBar(
+        context,
+        message: state.message,
+        icon: Icons.check_circle,
+        color: Theme.of(context).colorScheme.primary,
+      );
+      context.read<CommitmentBloc>().add(state.nextEvent);
+    } else if (state is CommitmentStateDistributionSuccess) {
+      showCommitmentSnackBar(
+        context,
+        message: state.message,
+        icon: Icons.send_and_archive_rounded,
+        color: Colors.green,
+        duration: const Duration(seconds: 4),
+      );
+      context.read<CommitmentBloc>().add(const LoadCommitmentsEvent());
+    } else if (state is CommitmentStateError) {
+      showCommitmentSnackBar(
+        context,
+        message: state.message,
+        icon: Icons.error_outline,
+        color: Theme.of(context).colorScheme.error,
+      );
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Build
+  // ---------------------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +195,13 @@ class _CommitmentScreenContent extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _navigateToAddCommitment(context),
+            onPressed: () => _goToAdd(context),
             tooltip: 'commitments.add'.tr,
           ),
         ],
       ),
       body: BlocConsumer<CommitmentBloc, CommitmentState>(
-        listener: _handleStateListener,
+        listener: _handleState,
         builder: (context, state) {
           if (state is CommitmentStateLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -53,7 +209,6 @@ class _CommitmentScreenContent extends StatelessWidget {
 
           if (state is CommitmentStateCommitmentsLoaded) {
             final commitments = state.commitments;
-
             return RefreshIndicator(
               onRefresh: () async => context.read<CommitmentBloc>().add(
                 const LoadCommitmentsEvent(),
@@ -64,7 +219,14 @@ class _CommitmentScreenContent extends StatelessWidget {
                 itemBuilder: (context, index) {
                   if (index == 0) return _buildHeaderCard();
                   if (commitments.isEmpty) return _buildEmptyState(context);
-                  return _buildCommitmentCard(context, commitments[index - 1]);
+                  final commitment = commitments[index - 1];
+                  return CommitmentCard(
+                    commitment: commitment,
+                    onDetails: () => _goToDetails(context, commitment),
+                    onDistribute: () => _confirmDistribute(context, commitment),
+                    onEdit: () => _goToEdit(context, commitment),
+                    onDelete: () => _confirmDelete(context, commitment),
+                  );
                 },
               ),
             );
@@ -84,70 +246,6 @@ class _CommitmentScreenContent extends StatelessWidget {
       ),
     );
   }
-
-  // ---------------------------------------------------------------------------
-  // BLoC listener
-  // ---------------------------------------------------------------------------
-
-  void _handleStateListener(BuildContext context, CommitmentState state) {
-    if (state is CommitmentStateSuccess) {
-      _showSnackBar(
-        context,
-        message: state.message,
-        icon: Icons.check_circle,
-        color: Theme.of(context).colorScheme.primary,
-      );
-      context.read<CommitmentBloc>().add(state.nextEvent);
-    } else if (state is CommitmentStateDistributionSuccess) {
-      _showSnackBar(
-        context,
-        message: state.message,
-        icon: Icons.send_and_archive_rounded,
-        color: Colors.green,
-        duration: const Duration(seconds: 4),
-      );
-      context.read<CommitmentBloc>().add(const LoadCommitmentsEvent());
-    } else if (state is CommitmentStateError) {
-      _showSnackBar(
-        context,
-        message: state.message,
-        icon: Icons.error_outline,
-        color: Theme.of(context).colorScheme.error,
-      );
-    }
-  }
-
-  void _showSnackBar(
-    BuildContext context, {
-    required String message,
-    required IconData icon,
-    required Color color,
-    Duration duration = const Duration(seconds: 3),
-  }) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              Icon(icon, color: Colors.white),
-              const SizedBox(width: 8),
-              Expanded(child: Text(message)),
-            ],
-          ),
-          backgroundColor: color,
-          behavior: SnackBarBehavior.floating,
-          duration: duration,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Header card — uses reusable SectionHeader
-  // ---------------------------------------------------------------------------
 
   Widget _buildHeaderCard() {
     return SectionHeader.card(
@@ -189,10 +287,6 @@ class _CommitmentScreenContent extends StatelessWidget {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Empty state
-  // ---------------------------------------------------------------------------
-
   Widget _buildEmptyState(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),
@@ -220,369 +314,11 @@ class _CommitmentScreenContent extends StatelessWidget {
             child: AppButton.primary(
               label: 'commitments.add'.tr,
               icon: Icons.add,
-              onPressed: () => _navigateToAddCommitment(context),
+              onPressed: () => _goToAdd(context),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Commitment card
-  // ---------------------------------------------------------------------------
-
-  Widget _buildCommitmentCard(BuildContext context, CommitmentVO commitment) {
-    final totalAmount = commitment.totalAmount ?? 0.0;
-    final detailCount = commitment.commitmentDetailVOList.length;
-    final hasDetails = detailCount > 0;
-    final detailLabel = '$detailCount ${'general.details'.tr}';
-
-    return AppCard(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Top row: icon + name + overflow menu ──────────────────────────
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.calendar_month,
-                  color: Color(0xFF42A5F5),
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      commitment.name ?? 'commitments.unnamed'.tr,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (commitment.description != null &&
-                        commitment.description!.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        commitment.description!,
-                        style: AppTextStyles.caption,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert, color: Color(0xFF666666)),
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    _navigateToEditCommitment(context, commitment);
-                  } else if (value == 'delete') {
-                    _confirmDeleteCommitment(context, commitment);
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.edit, size: 18),
-                        const SizedBox(width: 8),
-                        Text('commitments.edit'.tr),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.delete,
-                          size: 18,
-                          color: Color(0xFFFF6B6B),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'general.delete'.tr,
-                          style: const TextStyle(color: Color(0xFFFF6B6B)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-
-          // ── Amount + detail count ──────────────────────────────────────────
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'commitments.total_amount'.tr,
-                    style: AppTextStyles.caption,
-                  ),
-                  Text(
-                    NumberFormat.currency(
-                      symbol: '${'general.currency'.tr} ',
-                      decimalDigits: 2,
-                    ).format(totalAmount),
-                    style: AppTextStyles.amountSmall.copyWith(
-                      color: Theme.of(context).colorScheme.tertiary,
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(detailLabel, style: AppTextStyles.caption),
-                  if (hasDetails)
-                    Text(
-                      'general.tap_to_manage'.tr,
-                      style: AppTextStyles.captionSmall.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // ── Action buttons ─────────────────────────────────────────────────
-          const Divider(height: 1),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () =>
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CommitmentDetailScreen(
-                            commitmentId: commitment.commitmentId!,
-                            commitmentName:
-                                commitment.name ?? 'commitments.unnamed'.tr,
-                          ),
-                        ),
-                      ).then(
-                        (_) => context.read<CommitmentBloc>().add(
-                          const LoadCommitmentsEvent(),
-                        ),
-                      ),
-                  icon: const Icon(Icons.list_alt_rounded, size: 16),
-                  label: Text('commitments.details'.tr),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.primary,
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    textStyle: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: hasDetails
-                      ? () => _confirmDistribute(context, commitment)
-                      : null,
-                  icon: const Icon(Icons.send_and_archive_rounded, size: 16),
-                  label: Text('commitments.distribute'.tr),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    disabledBackgroundColor: Colors.grey.shade200,
-                    disabledForegroundColor: Colors.grey.shade400,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    textStyle: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Distribute confirmation dialog
-  // ---------------------------------------------------------------------------
-
-  void _confirmDistribute(BuildContext context, CommitmentVO commitment) {
-    final detailCount = commitment.commitmentDetailVOList.length;
-    final totalAmount = commitment.totalAmount ?? 0.0;
-    final name = commitment.name ?? 'commitments.this_commitment'.tr;
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => CustomDialog(
-        config: CustomDialogConfig(
-          title: 'commitments.distribute_commitment'.tr,
-          message: 'commitments.distribute_msg'.trWith({
-            'count': '$detailCount',
-            'plural': detailCount == 1 ? '' : 's',
-            'name': name,
-          }),
-          icon: Icons.send_and_archive_rounded,
-          iconColor: Theme.of(context).colorScheme.primary,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Colors.green.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'commitments.total_to_distribute'.tr,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF666666),
-                      ),
-                    ),
-                    Text(
-                      NumberFormat.currency(
-                        symbol: '${'general.currency'.tr} ',
-                        decimalDigits: 2,
-                      ).format(totalAmount),
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'commitments.distribute_task_msg'.tr,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF666666)),
-              ),
-            ],
-          ),
-          buttons: [
-            CustomDialogButton(
-              text: 'general.cancel'.tr,
-              onPressed: () => Navigator.pop(dialogContext),
-            ),
-            CustomDialogButton(
-              text: 'commitments.distribute'.tr,
-              isDefault: true,
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                context.read<CommitmentBloc>().add(
-                  StartDistributeCommitmentEvent(commitment),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Delete confirmation dialog
-  // ---------------------------------------------------------------------------
-
-  void _confirmDeleteCommitment(BuildContext context, CommitmentVO commitment) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => CustomDialog(
-        config: CustomDialogConfig(
-          title: 'commitments.delete'.tr,
-          message: 'commitments.delete_msg'.tr,
-          icon: Icons.delete_outline,
-          iconColor: Theme.of(context).colorScheme.secondary,
-          buttons: [
-            CustomDialogButton(
-              text: 'general.cancel'.tr,
-              onPressed: () => Navigator.pop(dialogContext),
-            ),
-            CustomDialogButton(
-              text: 'general.delete'.tr,
-              isDestructive: true,
-              onPressed: () {
-                Navigator.pop(dialogContext);
-                context.read<CommitmentBloc>().add(
-                  DeleteCommitmentEvent(commitment.commitmentId!),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Navigation helpers
-  // ---------------------------------------------------------------------------
-
-  void _navigateToAddCommitment(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const AddCommitmentScreen()),
-    ).then(
-      (_) => context.read<CommitmentBloc>().add(const LoadCommitmentsEvent()),
-    );
-  }
-
-  void _navigateToEditCommitment(
-    BuildContext context,
-    CommitmentVO commitment,
-  ) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => EditCommitmentScreen(commitment: commitment),
-      ),
-    ).then(
-      (_) => context.read<CommitmentBloc>().add(const LoadCommitmentsEvent()),
     );
   }
 }

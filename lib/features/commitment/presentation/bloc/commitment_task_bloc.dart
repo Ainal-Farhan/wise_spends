@@ -30,7 +30,8 @@ class CommitmentTaskBloc
   ) async {
     emit(CommitmentTaskLoading());
     try {
-      final tasks = await _repository.getCommitmentTasks();
+      final incompleteTasks = await _repository.getCommitmentTasks(false);
+      final completedTasks = await _repository.getCommitmentTasks(true);
 
       // Fetch savings for dropdown pickers
       final savingManager = SingletonUtil.getSingleton<IManagerLocator>()!
@@ -46,7 +47,13 @@ class CommitmentTaskBloc
           .map((p) => PayeeVO.fromExpnsPayee(p))
           .toList();
 
-      emit(CommitmentTaskLoaded(tasks, savingVOList, payeeVOList));
+      emit(
+        CommitmentTaskLoaded(
+          [...incompleteTasks, ...completedTasks],
+          savingVOList,
+          payeeVOList,
+        ),
+      );
     } catch (e) {
       emit(CommitmentTaskError(e.toString()));
     }

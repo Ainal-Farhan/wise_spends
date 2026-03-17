@@ -15,7 +15,7 @@ abstract class ICommitmentTaskRepository
 
   Stream<List<ExpnsCommitmentTask>> watchAll(bool isDone);
 
-  Future<List<CommitmentTaskVO>> getCommitmentTasks();
+  Future<List<CommitmentTaskVO>> getCommitmentTasks(bool isDone);
 
   Future<void> updateTaskStatus(bool isDone, CommitmentTaskVO taskVO);
 

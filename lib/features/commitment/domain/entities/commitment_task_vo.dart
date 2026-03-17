@@ -69,6 +69,8 @@ class CommitmentTaskVO extends IVO {
   /// FK to the Transaction record created when [isDone] becomes true.
   String? transactionId;
 
+  DateTime? updatedDate;
+
   // ---------------------------------------------------------------------------
   // Constructors
   // ---------------------------------------------------------------------------
@@ -88,6 +90,7 @@ class CommitmentTaskVO extends IVO {
     name = task.name;
     amount = task.amount;
     isDone = task.isDone;
+    updatedDate = task.dateUpdated;
     commitmentId = task.commitmentId;
     commitmentDetailId = task.commitmentDetailId;
     type = task.type;
@@ -114,6 +117,7 @@ class CommitmentTaskVO extends IVO {
     name = json['name'] as String?;
     amount = json['amount'] as double?;
     isDone = json['isDone'] as bool?;
+    updatedDate = json['updatedDate'] as DateTime?;
     commitmentId = json['commitmentId'] as String?;
     commitmentDetailId = json['commitmentDetailId'] as String?;
 
@@ -149,6 +153,7 @@ class CommitmentTaskVO extends IVO {
     'name': name,
     'amount': amount,
     'isDone': isDone,
+    'updatedDate': updatedDate,
     'commitmentId': commitmentId,
     'commitmentDetailId': commitmentDetailId,
     'type': type?.name,

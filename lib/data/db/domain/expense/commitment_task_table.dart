@@ -72,14 +72,6 @@ class CommitmentTaskTable extends BaseEntityTable {
   /// Null until the task is completed.
   TextColumn get transactionId => text().nullable()();
 
-  // -- Constraints -----------------------------------------------------------
-
-  @override
-  List<Set<Column>> get uniqueKeys => [
-    // Prevent the same task name being added twice to the same detail.
-    {commitmentDetailId, name},
-  ];
-
   @override
   Map<String, dynamic> toMapFromSubClass() => {
     'name': name.name,
