@@ -20,11 +20,15 @@ class CommitmentTaskRepository extends ICommitmentTaskRepository {
   }
 
   @override
-  Future<List<CommitmentTaskVO>> getCommitmentTasks(bool isDone) async {
+  Future<List<CommitmentTaskVO>> getCommitmentTasks(
+    bool isDone, {
+    int? limit,
+    int? offset,
+  }) async {
     try {
       return await SingletonUtil.getSingleton<IManagerLocator>()!
           .getCommitmentManager()
-          .retrieveListOfCommitmentTask(isDone);
+          .retrieveListOfCommitmentTask(isDone, limit: limit, offset: offset);
     } catch (e) {
       throw Exception('Failed to load commitment tasks: $e');
     }

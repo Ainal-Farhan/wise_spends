@@ -25,7 +25,11 @@ abstract class ICommitmentManager extends IManager {
 
   Future<String> startDistributeCommitment(CommitmentVO vo);
 
-  Future<List<CommitmentTaskVO>> retrieveListOfCommitmentTask(bool isDone);
+  Future<List<CommitmentTaskVO>> retrieveListOfCommitmentTask(
+    bool isDone, {
+    int? limit,
+    int? offset,
+  });
 
   Future<void> updateStatusCommitmentTask(bool isDone, CommitmentTaskVO taskVO);
 

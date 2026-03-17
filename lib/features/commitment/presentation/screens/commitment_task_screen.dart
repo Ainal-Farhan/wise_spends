@@ -51,25 +51,12 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
     return s is CommitmentTaskLoaded ? s.payeeVOList : [];
   }
 
-  List<CommitmentTaskVO> _filterTasks(
-    List<CommitmentTaskVO> tasks,
-    String status,
-  ) {
-    switch (status) {
-      case 'pending':
-        return tasks.where((t) => t.isDone != true).toList();
-      case 'completed':
-        return tasks.where((t) => t.isDone == true).toList();
-      default:
-        return tasks;
-    }
-  }
-
   void _showGroupDetailSheet(BuildContext context, TaskGroupVO group) {
     showTaskGroupDetailSheet(
       context: context,
       group: group,
       onEditTask: (task) => _showEditSheet(context, task),
+      onDeleteTask: (task) => _confirmDelete(context, task),
     );
   }
 
@@ -102,8 +89,8 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
         context.read<CommitmentTaskBloc>().add(
           EditCommitmentTaskEvent(updated),
         );
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
         }
       },
       onError: (msg) => _showError(context, msg),
@@ -122,9 +109,12 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
           'Are you sure you want to delete this task? This cannot be undone.',
       deleteText: 'general.delete'.tr,
       cancelText: 'general.cancel'.tr,
-      onDelete: () => context.read<CommitmentTaskBloc>().add(
-        DeleteCommitmentTaskEvent(task),
-      ),
+      onDelete: () {
+        context.read<CommitmentTaskBloc>().add(DeleteCommitmentTaskEvent(task));
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
+      },
     );
   }
 
@@ -198,11 +188,16 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
           }
 
           if (state is CommitmentTaskLoaded) {
-            final filtered = _filterTasks(state.tasks, state.filterStatus);
             final showGrouped = state.filterStatus == 'pending';
-            
-            // Filter ungrouped tasks based on filter status
-            final filteredUngrouped = _filterTasks(state.ungroupedTasks, state.filterStatus);
+
+            // Tasks are already filtered by the BLoC based on filterStatus
+            final tasks = state.tasks;
+            final groupedTasks = state.groupedTasks;
+            final ungroupedTasks = state.ungroupedTasks;
+
+            // Only enable lazy loading for completed tasks
+            final canLoadMore =
+                state.filterStatus == 'completed' && state.hasMore;
 
             return RefreshIndicator(
               onRefresh: () async => context.read<CommitmentTaskBloc>().add(
@@ -212,75 +207,84 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
                 children: [
                   const TaskFilterBar(),
                   Expanded(
-                    child: filtered.isEmpty && state.groupedTasks.isEmpty && filteredUngrouped.isEmpty
+                    child:
+                        tasks.isEmpty &&
+                            groupedTasks.isEmpty &&
+                            ungroupedTasks.isEmpty
                         ? _EmptyTaskState(filterStatus: state.filterStatus)
-                        : ListView(
-                            padding: const EdgeInsets.all(16),
-                            children: [
-                              // Show grouped tasks only for pending filter
-                              if (showGrouped &&
-                                  state.groupedTasks.isNotEmpty) ...[
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: Text(
-                                    'Grouped Tasks',
-                                    style: AppTextStyles.bodySemiBold.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-                                  ),
-                                ),
-                                ...state.groupedTasks.map((group) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    child: TaskGroupCard(
-                                      group: group,
-                                      onTap: () =>
-                                          _showGroupDetailSheet(context, group),
-                                      onExpand: () =>
-                                          _showGroupDetailSheet(context, group),
-                                    ),
-                                  );
-                                }),
-                                if (filteredUngrouped.isNotEmpty) ...[
-                                  const SizedBox(height: 24),
+                        : NotificationListener<ScrollNotification>(
+                            onNotification: (notification) {
+                              // Load more when scrolling near the end (only for completed)
+                              if (canLoadMore &&
+                                  !state.isLoadingMore &&
+                                  notification is ScrollEndNotification &&
+                                  notification.metrics.pixels >=
+                                      notification.metrics.maxScrollExtent -
+                                          200) {
+                                context.read<CommitmentTaskBloc>().add(
+                                  LoadMoreCommitmentTasksEvent(true),
+                                );
+                              }
+                              return false;
+                            },
+                            child: ListView(
+                              padding: const EdgeInsets.all(16),
+                              children: [
+                                // Show grouped tasks only for pending filter
+                                if (showGrouped &&
+                                    state.groupedTasks.isNotEmpty) ...[
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 16),
                                     child: Text(
-                                      'Other Tasks',
+                                      'Grouped Tasks',
                                       style: AppTextStyles.bodySemiBold
                                           .copyWith(
                                             color: Theme.of(
                                               context,
-                                            ).colorScheme.onSurfaceVariant,
+                                            ).colorScheme.primary,
                                           ),
                                     ),
                                   ),
-                                ],
-                              ],
-
-                              // Show ungrouped tasks (cash tasks or tasks without source)
-                              // Only show when filtered (respects filter status)
-                              ...filteredUngrouped.map((task) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: CommitmentTaskCard(
-                                    task: task,
-                                    onTap: () => showTaskDetailSheet(
-                                      context: context,
-                                      task: task,
+                                  ...state.groupedTasks.map((group) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 12,
+                                      ),
+                                      child: TaskGroupCard(
+                                        group: group,
+                                        onTap: () => _showGroupDetailSheet(
+                                          context,
+                                          group,
+                                        ),
+                                        onExpand: () => _showGroupDetailSheet(
+                                          context,
+                                          group,
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                  if (ungroupedTasks.isNotEmpty) ...[
+                                    const SizedBox(height: 24),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 16,
+                                      ),
+                                      child: Text(
+                                        'Other Tasks',
+                                        style: AppTextStyles.bodySemiBold
+                                            .copyWith(
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
+                                            ),
+                                      ),
                                     ),
-                                    onEdit: () => _showEditSheet(context, task),
-                                    onDelete: () =>
-                                        _confirmDelete(context, task),
-                                  ),
-                                );
-                              }),
+                                  ],
+                                ],
 
-                              // For non-pending filters, show all tasks normally
-                              if (!showGrouped) ...[
-                                ...filtered.map((task) {
+                                // Show ungrouped tasks (cash tasks or tasks without source)
+                                // Only show when filtered (respects filter status)
+                                ...ungroupedTasks.map((task) {
                                   return Padding(
                                     padding: const EdgeInsets.only(bottom: 12),
                                     child: CommitmentTaskCard(
@@ -296,8 +300,42 @@ class _CommitmentTaskScreenContent extends StatelessWidget {
                                     ),
                                   );
                                 }),
+
+                                // For completed filter, show all tasks normally
+                                if (!showGrouped) ...[
+                                  ...tasks.map((task) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 12,
+                                      ),
+                                      child: CommitmentTaskCard(
+                                        task: task,
+                                        onTap: () => showTaskDetailSheet(
+                                          context: context,
+                                          task: task,
+                                        ),
+                                        onEdit: () =>
+                                            _showEditSheet(context, task),
+                                        onDelete: () =>
+                                            _confirmDelete(context, task),
+                                      ),
+                                    );
+                                  }),
+                                ],
+
+                                // Loading indicator for lazy load (completed tasks only)
+                                if (state.isLoadingMore &&
+                                    state.filterStatus == 'completed')
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 16),
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ),
                               ],
-                            ],
+                            ),
                           ),
                   ),
                 ],

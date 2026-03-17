@@ -319,16 +319,30 @@ class CommitmentManager extends ICommitmentManager {
 
   @override
   Future<List<CommitmentTaskVO>> retrieveListOfCommitmentTask(
-    bool isDone,
-  ) async {
+    bool isDone, {
+    int? limit,
+    int? offset,
+  }) async {
     final commitmentTaskRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
         .getCommitmentTaskRepository();
     final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
         .getSavingService();
 
-    final List<ExpnsCommitmentTask> tasks = await commitmentTaskRepo
-        .watchAll(isDone)
-        .first;
+    // Get paginated tasks from repository
+    final List<ExpnsCommitmentTask> tasks;
+    if (limit != null && offset != null) {
+      // Use watchAll with pagination - need to implement in repository
+      // For now, fetch all and apply pagination in memory
+      final allTasks = await commitmentTaskRepo.watchAll(isDone).first;
+      final endIndex = offset + limit > allTasks.length 
+          ? allTasks.length 
+          : offset + limit;
+      tasks = offset >= allTasks.length 
+          ? [] 
+          : allTasks.sublist(offset, endIndex);
+    } else {
+      tasks = await commitmentTaskRepo.watchAll(isDone).first;
+    }
 
     final List<CommitmentTaskVO> result = [];
     for (final task in tasks) {

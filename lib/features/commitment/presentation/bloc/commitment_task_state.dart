@@ -22,6 +22,15 @@ class CommitmentTaskLoaded extends CommitmentTaskState {
   final String filterStatus;
   final List<TaskGroupVO> groupedTasks;
   final List<CommitmentTaskVO> ungroupedTasks;
+  
+  // Pagination fields
+  final int currentPage;
+  final int pageSize;
+  final bool hasMore;
+  final bool isLoadingMore;
+  
+  // Task counts for filter badges
+  final int pendingCount;
 
   const CommitmentTaskLoaded(
     this.tasks,
@@ -30,6 +39,11 @@ class CommitmentTaskLoaded extends CommitmentTaskState {
     required this.filterStatus,
     this.groupedTasks = const [],
     this.ungroupedTasks = const [],
+    this.currentPage = 1,
+    this.pageSize = 20,
+    this.hasMore = true,
+    this.isLoadingMore = false,
+    this.pendingCount = 0,
   });
 
   @override
@@ -40,6 +54,11 @@ class CommitmentTaskLoaded extends CommitmentTaskState {
     filterStatus,
     groupedTasks,
     ungroupedTasks,
+    currentPage,
+    pageSize,
+    hasMore,
+    isLoadingMore,
+    pendingCount,
   ];
 
   CommitmentTaskLoaded copyWith({
@@ -49,6 +68,11 @@ class CommitmentTaskLoaded extends CommitmentTaskState {
     String? filterStatus,
     List<TaskGroupVO>? groupedTasks,
     List<CommitmentTaskVO>? ungroupedTasks,
+    int? currentPage,
+    int? pageSize,
+    bool? hasMore,
+    bool? isLoadingMore,
+    int? pendingCount,
   }) {
     return CommitmentTaskLoaded(
       tasks ?? this.tasks,
@@ -57,6 +81,11 @@ class CommitmentTaskLoaded extends CommitmentTaskState {
       filterStatus: filterStatus ?? this.filterStatus,
       groupedTasks: groupedTasks ?? this.groupedTasks,
       ungroupedTasks: ungroupedTasks ?? this.ungroupedTasks,
+      currentPage: currentPage ?? this.currentPage,
+      pageSize: pageSize ?? this.pageSize,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      pendingCount: pendingCount ?? this.pendingCount,
     );
   }
 }

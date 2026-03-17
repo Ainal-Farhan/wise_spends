@@ -65,3 +65,12 @@ class DeleteCommitmentTaskEvent extends CommitmentTaskEvent {
   @override
   List<Object> get props => [taskVO];
 }
+
+class LoadMoreCommitmentTasksEvent extends CommitmentTaskEvent {
+  final bool isDone;
+
+  const LoadMoreCommitmentTasksEvent(this.isDone);
+
+  @override
+  List<Object> get props => [isDone];
+}

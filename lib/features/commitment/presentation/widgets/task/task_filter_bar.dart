@@ -11,28 +11,39 @@ class TaskFilterBar extends StatelessWidget {
   const TaskFilterBar({super.key});
 
   static const _filters = [
-    _FilterOption('All', Icons.all_inclusive, 'all'),
     _FilterOption('Pending', Icons.schedule, 'pending'),
     _FilterOption('Completed', Icons.check_circle, 'completed'),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: _filters
-              .expand(
-                (f) => [
-                  _TaskFilterChip(option: f),
-                  if (f != _filters.last) const SizedBox(width: 8),
-                ],
-              )
-              .toList(),
-        ),
-      ),
+    return BlocBuilder<CommitmentTaskBloc, CommitmentTaskState>(
+      builder: (context, state) {
+        // Get pending task count from state (always available, even on completed filter)
+        final pendingCount = state is CommitmentTaskLoaded 
+            ? state.pendingCount 
+            : 0;
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: _filters
+                  .expand(
+                    (f) => [
+                      _TaskFilterChip(
+                        option: f,
+                        pendingCount: pendingCount,
+                      ),
+                      if (f != _filters.last) const SizedBox(width: 8),
+                    ],
+                  )
+                  .toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -47,8 +58,12 @@ class _FilterOption {
 
 class _TaskFilterChip extends StatelessWidget {
   final _FilterOption option;
+  final int pendingCount;
 
-  const _TaskFilterChip({required this.option});
+  const _TaskFilterChip({
+    required this.option,
+    required this.pendingCount,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,8 +71,11 @@ class _TaskFilterChip extends StatelessWidget {
       builder: (context, state) {
         final filterStatus = state is CommitmentTaskLoaded
             ? state.filterStatus
-            : 'all';
+            : 'pending';
         final isSelected = filterStatus == option.value;
+        
+        // Show badge count only for Pending filter
+        final showBadge = option.value == 'pending' && pendingCount > 0;
 
         return FilterChip(
           label: Row(
@@ -72,6 +90,28 @@ class _TaskFilterChip extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(option.label),
+              if (showBadge) ...[
+                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? Colors.white.withValues(alpha: 0.3)
+                        : Theme.of(context).colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    '$pendingCount',
+                    style: AppTextStyles.caption.copyWith(
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : Theme.of(context).colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
           selected: isSelected,

@@ -12,12 +12,13 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 ///
 /// Usage:
 /// ```dart
-/// showTaskGroupDetailSheet(context: context, group: group, onEditTask: (task) => ...);
+/// showTaskGroupDetailSheet(context: context, group: group, onEditTask: (task) => ..., onDeleteTask: (task) => ...);
 /// ```
 void showTaskGroupDetailSheet({
   required BuildContext context,
   required TaskGroupVO group,
   void Function(dynamic task)? onEditTask,
+  void Function(dynamic task)? onDeleteTask,
 }) {
   showModalBottomSheet(
     context: context,
@@ -28,7 +29,11 @@ void showTaskGroupDetailSheet({
     ),
     builder: (_) => BlocProvider.value(
       value: context.read<CommitmentTaskBloc>(),
-      child: _TaskGroupDetailSheet(group: group, onEditTask: onEditTask),
+      child: _TaskGroupDetailSheet(
+        group: group,
+        onEditTask: onEditTask,
+        onDeleteTask: onDeleteTask,
+      ),
     ),
   );
 }
@@ -36,8 +41,13 @@ void showTaskGroupDetailSheet({
 class _TaskGroupDetailSheet extends StatefulWidget {
   final TaskGroupVO group;
   final void Function(dynamic task)? onEditTask;
+  final void Function(dynamic task)? onDeleteTask;
 
-  const _TaskGroupDetailSheet({required this.group, this.onEditTask});
+  const _TaskGroupDetailSheet({
+    required this.group,
+    this.onEditTask,
+    this.onDeleteTask,
+  });
 
   @override
   State<_TaskGroupDetailSheet> createState() => _TaskGroupDetailSheetState();
@@ -277,6 +287,9 @@ class _TaskGroupDetailSheetState extends State<_TaskGroupDetailSheet> {
                 onEdit: widget.onEditTask != null
                     ? () => widget.onEditTask!(task)
                     : null,
+                onDelete: widget.onDeleteTask != null
+                    ? () => widget.onDeleteTask!(task)
+                    : null,
               ),
               if (!isLast) const SizedBox(height: 8),
             ],
@@ -295,8 +308,9 @@ class _TaskItem extends StatelessWidget {
   final dynamic task;
   final VoidCallback onTap;
   final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  const _TaskItem({required this.task, required this.onTap, this.onEdit});
+  const _TaskItem({required this.task, required this.onTap, this.onEdit, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -374,6 +388,20 @@ class _TaskItem extends StatelessWidget {
                     ),
                     onPressed: onEdit,
                     tooltip: 'Edit task',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
+                if (onDelete != null) ...[
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete_outline,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    onPressed: onDelete,
+                    tooltip: 'Delete task',
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),

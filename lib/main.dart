@@ -155,16 +155,29 @@ class _AppRootState extends State<_AppRoot> {
                 onGenerateRoute: AppRouter.generateRoute,
                 navigatorKey: AppRouter.navigatorKey,
                 builder: (context, child) {
-                  return RunGuard(
-                    navigatorKey: AppRouter.navigatorKey,
-                    child: HiddenGestureDetector(
-                      onTriggered: () {
-                        WiseLogger().info('Hidden menu accessed', tag: 'Main');
-                        AppRouter.navigatorKey.currentState?.pushNamed(
-                          AppRoutes.hiddenUtilityMenu,
-                        );
-                      },
-                      child: SafeArea(top: false, bottom: true, child: child!),
+                  return MediaQuery(
+                    // Ensures system UI insets are respected app-wide
+                    data: MediaQuery.of(context).copyWith(
+                      textScaler: TextScaler.noScaling, // optional
+                    ),
+                    child: SafeArea(
+                      top: false,
+                      bottom: true,
+                      child: RunGuard(
+                        navigatorKey: AppRouter.navigatorKey,
+                        child: HiddenGestureDetector(
+                          onTriggered: () {
+                            WiseLogger().info(
+                              'Hidden menu accessed',
+                              tag: 'Main',
+                            );
+                            AppRouter.navigatorKey.currentState?.pushNamed(
+                              AppRoutes.hiddenUtilityMenu,
+                            );
+                          },
+                          child: child!,
+                        ),
+                      ),
                     ),
                   );
                 },

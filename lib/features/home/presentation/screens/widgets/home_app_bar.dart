@@ -17,7 +17,7 @@ class HomeAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return SliverAppBar(
       floating: true,
       snap: true,
@@ -58,7 +58,7 @@ class _AppBarTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -99,7 +99,7 @@ class _TasksBadgeButton extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.task_alt_rounded),
           onPressed: () =>
-              Navigator.pushNamed(context, AppRoutes.commitmentTask),
+              Navigator.pushReplacementNamed(context, AppRoutes.commitmentTask),
           tooltip: 'Commitment Tasks',
           constraints: const BoxConstraints(
             minWidth: AppTouchTarget.min,
@@ -124,7 +124,7 @@ class _TaskCountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.elasticOut,
