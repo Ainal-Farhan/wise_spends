@@ -748,6 +748,16 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
   }
 
   @override
+  Stream<List<SvngPlnLinkedAccount>> watchLinkedAccountsByAccountId(
+    String accountId,
+  ) {
+    final stream = _db.select(_db.savingsPlanLinkedAccountTable)
+      ..where((tbl) => tbl.accountId.equals(accountId));
+
+    return stream.watch();
+  }
+
+  @override
   Future<void> linkAccount(
     String planId,
     String accountId,

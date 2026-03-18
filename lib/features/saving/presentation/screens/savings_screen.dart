@@ -14,6 +14,7 @@ import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
+import 'package:wise_spends/features/saving/presentation/widgets/savings_reserve_info_card.dart';
 
 /// Enhanced Savings Screen - Pure BLoC
 class SavingsScreen extends StatelessWidget {
@@ -389,6 +390,25 @@ class _SavingsScreenContent extends StatelessWidget {
                 ),
             ],
           ),
+          
+          // Display reservation info if there are reservations
+          if (saving.hasReservations) ...[
+            const SizedBox(height: AppSpacing.md),
+            SavingsReserveInfoCard(
+              reserveSummary: saving.reserveSummary!,
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => ReservationDetailsSheet(
+                    reserveSummary: saving.reserveSummary!,
+                  ),
+                );
+              },
+            ),
+          ],
+          
           if (hasGoal) ...[
             const SizedBox(height: AppSpacing.md),
             ClipRRect(

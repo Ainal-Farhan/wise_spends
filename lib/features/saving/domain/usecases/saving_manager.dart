@@ -249,7 +249,7 @@ class SavingManager extends ISavingManager {
 
   @override
   Future<List<ListSavingVO>> loadListSavingVOList() async {
-    return (await _savingService
+    final savingsList = (await _savingService
             .watchAllSavingWithMoneyStorageBasedOnUserId(
               _startupManager.currentUser.id,
             )
@@ -261,5 +261,18 @@ class SavingManager extends ISavingManager {
           ),
         )
         .toList();
+
+    // Compute reservations for each saving
+    final reserveManager = SingletonUtil.getSingleton<IManagerLocator>()!
+        .getSavingsReserveManager();
+
+    for (final saving in savingsList) {
+      final reserveSummary = await reserveManager.computeReservationsForSaving(
+        saving.saving.id,
+      );
+      saving.reserveSummary = reserveSummary;
+    }
+
+    return savingsList;
   }
 }

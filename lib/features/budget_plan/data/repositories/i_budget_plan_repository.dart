@@ -123,6 +123,12 @@ abstract class IBudgetPlanRepository
   /// Get current allocation for a linked account
   Future<double> getAllocation(String planId, String accountId);
 
+  /// Watch linked accounts by account ID (stream)
+  /// Returns all budget plans that have linked this specific savings account
+  Stream<List<SvngPlnLinkedAccount>> watchLinkedAccountsByAccountId(
+    String accountId,
+  );
+
   // ============================================================================
   // Milestone Operations
   // ============================================================================

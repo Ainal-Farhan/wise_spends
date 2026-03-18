@@ -742,6 +742,19 @@ class EnglishStrings {
     'savings.tip_goal': 'Set a goal amount to track your progress',
     'savings.tip_storage': 'Link to a money storage to see its source',
     'savings.with_goal': '{total} with goal',
+    
+    // Savings Reservation
+    'savings.reserved_funds': 'Reserved Funds',
+    'savings.transferable_amount': 'Transferable Amount',
+    'savings.available_for_use': 'Available',
+    'savings.view_reservation_details': 'View Details',
+    'savings.reservation_details': 'Reservation Details',
+    'savings.reservation_details_desc': 'Funds reserved for future commitments and allocations',
+    'savings.total_reserved': 'Total Reserved',
+    'savings.reservations_breakdown': 'Reservations Breakdown',
+    'savings.commitment_tasks': 'Commitment Tasks',
+    'savings.budget_allocations': 'Budget Allocations',
+    'savings.reservations': 'Reservations',
 
     // Commitment Screen
     'commitments.title': 'Commitments',

@@ -5,6 +5,7 @@ import 'package:wise_spends/features/auth/domain/usecases/i_home_logged_in_manag
 import 'package:wise_spends/features/auth/domain/usecases/i_login_manager.dart';
 import 'package:wise_spends/features/payee/domain/usecases/i_payee_manager.dart';
 import 'package:wise_spends/features/saving/domain/usecases/i_saving_manager.dart';
+import 'package:wise_spends/features/saving/domain/usecases/i_savings_reserve_manager.dart';
 import 'package:wise_spends/domain/usecases/i_startup_manager.dart';
 import 'package:wise_spends/features/transaction/domain/usecases/i_transaction_manager.dart';
 import 'package:wise_spends/shared/theme/i_theme_manager.dart';
@@ -19,4 +20,5 @@ abstract class IManagerLocator extends ILocator {
   IThemeManager getThemeManager();
   ICommitmentManager getCommitmentManager();
   IPayeeManager getPayeeManager();
+  ISavingsReserveManager getSavingsReserveManager();
 }

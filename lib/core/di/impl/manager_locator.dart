@@ -7,6 +7,7 @@ import 'package:wise_spends/features/auth/domain/usecases/i_home_logged_in_manag
 import 'package:wise_spends/features/auth/domain/usecases/i_login_manager.dart';
 import 'package:wise_spends/features/payee/domain/usecases/i_payee_manager.dart';
 import 'package:wise_spends/features/saving/domain/usecases/i_saving_manager.dart';
+import 'package:wise_spends/features/saving/domain/usecases/i_savings_reserve_manager.dart';
 import 'package:wise_spends/domain/usecases/i_startup_manager.dart';
 import 'package:wise_spends/features/transaction/domain/usecases/i_transaction_manager.dart';
 import 'package:wise_spends/features/commitment/domain/usecases/commitment_manager.dart';
@@ -14,6 +15,7 @@ import 'package:wise_spends/features/auth/domain/usecases/home_logged_in_manager
 import 'package:wise_spends/features/auth/domain/usecases/login_manager.dart';
 import 'package:wise_spends/features/payee/domain/usecases/payee_manager.dart';
 import 'package:wise_spends/features/saving/domain/usecases/saving_manager.dart';
+import 'package:wise_spends/features/saving/domain/usecases/savings_reserve_manager.dart';
 import 'package:wise_spends/domain/usecases/impl/startup_manager.dart';
 import 'package:wise_spends/features/transaction/domain/usecases/transaction_manager.dart';
 import 'package:wise_spends/shared/theme/i_theme_manager.dart';
@@ -125,5 +127,19 @@ class ManagerLocator extends IManagerLocator {
       SingletonUtil.registerSingleton<IPayeeManager>(PayeeManager());
     }
     return SingletonUtil.getSingleton<IPayeeManager>()!;
+  }
+
+  @override
+  ISavingsReserveManager getSavingsReserveManager() {
+    ISavingsReserveManager? manager =
+        SingletonUtil.getSingleton<ISavingsReserveManager>();
+
+    if (manager == null) {
+      SingletonUtil.registerSingleton<ISavingsReserveManager>(
+        SavingsReserveManager(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ISavingsReserveManager>()!;
   }
 }
