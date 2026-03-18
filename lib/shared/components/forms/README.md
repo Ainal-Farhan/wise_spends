@@ -290,6 +290,7 @@ extension ListSavingVOExt on ListSavingVO {
       name: saving.name ?? 'Unnamed',
       type: saving.type,
       balance: saving.currentAmount,
+      reserveSummary: saving.reserveSummary,
     );
   }
 }

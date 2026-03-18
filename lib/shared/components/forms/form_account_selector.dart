@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
+import 'package:wise_spends/features/saving/domain/entities/reserve_vo.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
+import 'package:wise_spends/shared/components/reservation_info_widget.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 final _logger = WiseLogger();
@@ -16,15 +18,34 @@ class FormAccountItem {
   final double balance;
   final String? currencySymbol;
 
+  /// Optional reservation summary for savings accounts
+  final SavingsReserveSummary? reserveSummary;
+
   const FormAccountItem({
     required this.id,
     required this.name,
     required this.type,
     required this.balance,
     this.currencySymbol = 'RM',
+    this.reserveSummary,
   });
 
   String get displayBalance => '$currencySymbol ${balance.toStringAsFixed(2)}';
+
+  /// Transferable amount (balance minus reserved)
+  double get transferableAmount {
+    if (reserveSummary == null) return balance;
+    return reserveSummary!.transferableAmount;
+  }
+
+  /// Whether this account has reservations
+  bool get hasReservations => reserveSummary?.hasReservations ?? false;
+
+  /// Display balance - shows transferable amount if there are reservations
+  String get displayTransferableAmount {
+    if (!hasReservations) return displayBalance;
+    return '$currencySymbol ${transferableAmount.toStringAsFixed(2)}';
+  }
 
   IconData get typeIcon {
     return switch (type.toLowerCase()) {
@@ -85,8 +106,9 @@ class _FormAccountSelectorState extends State<FormAccountSelector> {
         orElse: () => null,
       );
 
-  String _displayText(FormAccountItem? a) =>
-      a == null ? '' : '${a.name}  ·  ${a.displayBalance}';
+  String _displayText(FormAccountItem? a) => a == null
+      ? ''
+      : '${a.name}  ·  ${a.transferableAmount.toStringAsFixed(2)}';
 
   @override
   void initState() {
@@ -152,6 +174,7 @@ class _FormAccountSelectorState extends State<FormAccountSelector> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       backgroundColor: Colors.transparent,
       builder: (_) => _AccountPickerSheet(
         accounts: available,
@@ -350,20 +373,42 @@ class _AccountTile extends StatelessWidget {
             _AccountTypeIcon(account: account),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                account.name,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                  color: isSelected
-                      ? account.getTypeColor(context)
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          account.name,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w600,
+                            color: isSelected
+                                ? account.getTypeColor(context)
+                                : Theme.of(context).colorScheme.onSurface,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      // Show reservation info icon for savings with reservations
+                      if (account.hasReservations) ...[
+                        const SizedBox(width: 8),
+                        ReservationInfoIcon(
+                          reserveSummary: account.reserveSummary!,
+                          iconSize: 14,
+                          savingName: account.name,
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
               ),
             ),
             const SizedBox(width: 8),
             Text(
-              account.displayBalance,
+              account.displayTransferableAmount,
               style: AppTextStyles.bodySmall.copyWith(
                 color: isSelected
                     ? account.getTypeColor(context).withValues(alpha: 0.7)
@@ -406,18 +451,30 @@ class _AccountTypeIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        color: account.getTypeColor(context).withValues(alpha: 0.1),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(
-        account.typeIcon,
-        color: account.getTypeColor(context),
-        size: 16,
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: account.getTypeColor(context).withValues(alpha: 0.1),
+            shape: BoxShape.circle,
+          ),
+          child: account.hasReservations
+              ? ReservationInfoIcon(
+                  iconData: account.typeIcon,
+                  reserveSummary: account.reserveSummary!,
+                  iconSize: 14,
+                  savingName: account.name,
+                )
+              : Icon(
+                  account.typeIcon,
+                  color: account.getTypeColor(context),
+                  size: 16,
+                ),
+        ),
+      ],
     );
   }
 }

@@ -746,6 +746,7 @@ class EnglishStrings {
     // Savings Reservation
     'savings.reserved_funds': 'Reserved Funds',
     'savings.transferable_amount': 'Transferable Amount',
+    'savings.current_amount': 'Current Amount',
     'savings.available_for_use': 'Available',
     'savings.view_reservation_details': 'View Details',
     'savings.reservation_details': 'Reservation Details',

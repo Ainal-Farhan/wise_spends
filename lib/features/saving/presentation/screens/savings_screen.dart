@@ -10,6 +10,7 @@ import 'package:wise_spends/features/saving/presentation/bloc/savings_bloc.dart'
 import 'package:wise_spends/features/saving/presentation/bloc/savings_event.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/savings_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/components/reservation_info_widget.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -390,7 +391,7 @@ class _SavingsScreenContent extends StatelessWidget {
                 ),
             ],
           ),
-          
+
           // Display reservation info if there are reservations
           if (saving.hasReservations) ...[
             const SizedBox(height: AppSpacing.md),
@@ -400,15 +401,17 @@ class _SavingsScreenContent extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
+                  showDragHandle: false,
                   backgroundColor: Colors.transparent,
                   builder: (_) => ReservationDetailsSheet(
                     reserveSummary: saving.reserveSummary!,
+                    savingName: saving.saving.name,
                   ),
                 );
               },
             ),
           ],
-          
+
           if (hasGoal) ...[
             const SizedBox(height: AppSpacing.md),
             ClipRRect(

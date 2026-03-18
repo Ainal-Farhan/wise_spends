@@ -48,6 +48,7 @@ extension ListSavingVOExt on ListSavingVO {
       name: saving.name ?? 'transaction.account.unnamed',
       type: saving.type,
       balance: saving.currentAmount,
+      reserveSummary: reserveSummary,
     );
   }
 }
