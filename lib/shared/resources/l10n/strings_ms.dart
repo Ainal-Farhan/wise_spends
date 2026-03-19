@@ -1244,7 +1244,7 @@ class MalayStrings {
     'transaction.add.description_hint': 'Ini untuk apa?',
     'transaction.add.date': 'Tarikh',
     'transaction.add.time': 'Masa',
-    'transaction.add.time_not_set': 'Tidak ditetapkan',
+    'transaction.add.time_not_set': 'Waktu Semasa',
     'transaction.add.note': 'Nota',
     'transaction.add.note_hint': 'Tambah butiran lain',
     'transaction.add.add_note': 'Tambah nota (pilihan)',
