@@ -16,28 +16,6 @@ bool isBudgetPlanType(TransactionType type) {
 }
 
 // ─── Transaction Card ──────────────────────────────────────────────────────
-
-/// A polished, overflow-safe transaction card.
-///
-/// Layout strategy
-/// ───────────────
-///  ┌──────────────────────────────────────────────────────────┐
-///  │  [Icon]  [Title ············ ellipsis]  [REVOKED]  [Del]│
-///  │          [Date] [Badge/Note ·· ellip]   [Amount]        │
-///  └──────────────────────────────────────────────────────────┘
-///
-/// The revoked badge sits above the amount in the trailing column so it
-/// uses the natural vertical space there without competing with the title.
-///
-/// Overflow guards
-/// ───────────────
-/// • Title: `maxLines: 1 + ellipsis` — never wraps.
-/// • Amount column: right-aligned column, badge + amount both at intrinsic
-///   width — the title [Expanded] absorbs all leftover horizontal space.
-/// • Note/Badge row: the note text is in a separate `Expanded` so long notes
-///   do not push the badge out of bounds.
-/// • Budget badge and note are mutually exclusive — badge takes priority.
-/// • Delete button has a fixed width so it cannot be squeezed to zero.
 class TransactionCard extends StatelessWidget {
   final String title;
   final double amount;
@@ -102,9 +80,6 @@ class TransactionCard extends StatelessWidget {
               const SizedBox(width: UIConstants.spacingMedium),
 
               // ── Title + meta ─────────────────────────────────────────
-              // [Expanded] here absorbs all flex space so the trailing
-              // column (revoked badge + amount) always renders at its
-              // intrinsic width.
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,7 +158,6 @@ class _IconContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bg = type.getBackgroundColor(context);
-    // Use a fixed size that matches the touch target but never exceeds it.
     const size = UIConstants.touchTargetMin;
 
     return Container(

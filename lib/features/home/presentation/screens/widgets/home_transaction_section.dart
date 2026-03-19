@@ -85,7 +85,9 @@ class _TransactionList extends StatelessWidget {
           title: transaction.title,
           amount: transaction.amount,
           type: transaction.type,
-          icon: _getCategoryIcon(transaction.category),
+          icon: transaction.category == null
+              ? transaction.type.icon
+              : _getCategoryIcon(transaction.category),
           date: transaction.date,
           note: transaction.note,
           isRevoked: transaction.isRevoked,

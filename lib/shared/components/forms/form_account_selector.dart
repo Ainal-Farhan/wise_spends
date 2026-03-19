@@ -8,6 +8,7 @@ import 'package:wise_spends/features/saving/domain/entities/reserve_vo.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
 import 'package:wise_spends/shared/components/reservation_info_widget.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
+import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 
 final _logger = WiseLogger();
 
@@ -51,6 +52,10 @@ class FormAccountItem {
   }
 
   IconData get typeIcon {
+    if (category != null) {
+      return CategoryIconMapper.getIconForCategory(category!.iconCodePoint);
+    }
+
     return switch (type.toLowerCase()) {
       'cash' => Icons.payments_rounded,
       'bank' || 'bank_account' => Icons.account_balance_rounded,

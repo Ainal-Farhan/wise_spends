@@ -1256,7 +1256,7 @@ class EnglishStrings {
     'transaction.add.description_hint': 'What was this for?',
     'transaction.add.date': 'Date',
     'transaction.add.time': 'Time',
-    'transaction.add.time_not_set': 'Current time',
+    'transaction.add.time_not_set': 'Not set (use current time)',
     'transaction.add.note': 'Note',
     'transaction.add.note_hint': 'Add any additional details',
     'transaction.add.add_note': 'Add a note (optional)',
