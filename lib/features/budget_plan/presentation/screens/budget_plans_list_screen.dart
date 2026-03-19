@@ -737,7 +737,7 @@ class _AmountsGridState extends State<_AmountsGrid> {
           // Available Amount
           _buildAmountRow(
             context,
-            'budget_plans.available'.tr,
+            'budget_plans.collected'.tr,
             widget.fmt.format(widget.currentAmount),
             Theme.of(context).colorScheme.primary,
             Icons.account_balance_wallet_outlined,

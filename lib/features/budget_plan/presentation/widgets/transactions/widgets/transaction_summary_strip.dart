@@ -24,21 +24,20 @@ class TransactionSummaryStrip extends StatelessWidget {
     required this.totalDeposited,
     required this.totalSpent,
     required this.net,
+    required this.collectedAmount,
     this.totalAvailable,
   });
 
   final double totalDeposited;
+  final double collectedAmount;
   final double totalSpent;
   final double net;
-
-  /// Total available amount from all sources (currentAmount from plan)
-  /// Includes: deposits, allocated funds, and item payments
   final double? totalAvailable;
 
   @override
   Widget build(BuildContext context) {
-    final spentRatio = totalDeposited > 0
-        ? (totalSpent / totalDeposited).clamp(0.0, 1.0)
+    final spentRatio = collectedAmount > 0
+        ? (totalSpent / collectedAmount).clamp(0.0, 1.0)
         : 0.0;
     final spentPct = (spentRatio * 100).toStringAsFixed(0);
     final remainPct = (100 - spentRatio * 100).toStringAsFixed(0);
@@ -53,7 +52,9 @@ class TransactionSummaryStrip extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline)),
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).colorScheme.outline),
+        ),
       ),
       child: Column(
         children: [
@@ -148,9 +149,9 @@ class TransactionSummaryStrip extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: spentRatio,
-                    backgroundColor: Theme.of(context).colorScheme.outline.withValues(
-                      alpha: 0.5,
-                    ),
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.5),
                     valueColor: AlwaysStoppedAnimation<Color>(barColor),
                     minHeight: 6,
                   ),
@@ -194,10 +195,16 @@ class _SummaryCell extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 label,
-                style: (isLarge ? AppTextStyles.caption : AppTextStyles.captionSmall).copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: isLarge ? FontWeight.w600 : FontWeight.normal,
-                ),
+                style:
+                    (isLarge
+                            ? AppTextStyles.caption
+                            : AppTextStyles.captionSmall)
+                        .copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: isLarge
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                        ),
               ),
             ],
           ),
@@ -206,10 +213,9 @@ class _SummaryCell extends StatelessWidget {
             amount: amount,
             type: AmountType.neutral,
             showPrefix: false,
-            style: (isLarge ? AppTextStyles.bodyLarge : AppTextStyles.bodySemiBold).copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
+            style:
+                (isLarge ? AppTextStyles.bodyLarge : AppTextStyles.bodySemiBold)
+                    .copyWith(color: color, fontWeight: FontWeight.w600),
           ),
         ],
       ),

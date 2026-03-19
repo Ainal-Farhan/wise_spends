@@ -15,6 +15,8 @@ class BudgetPlanTransactionsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final depositCount = state.deposits.length;
+    final spendingCount = state.transactions.length;
     final totalDeposited = state.deposits.fold<double>(
       0.0,
       (s, d) => s + d.amount,
@@ -23,6 +25,7 @@ class BudgetPlanTransactionsTab extends StatelessWidget {
       0.0,
       (s, t) => s + t.amount,
     );
+    final totalAvailable = state.plan.currentAmount - totalSpent;
 
     return DefaultTabController(
       length: 2,
@@ -33,18 +36,27 @@ class BudgetPlanTransactionsTab extends StatelessWidget {
             totalDeposited: totalDeposited,
             totalSpent: totalSpent,
             net: totalDeposited - totalSpent,
-            totalAvailable: state.plan.currentAmount,
+            totalAvailable: totalAvailable,
+            collectedAmount: state.plan.currentAmount,
           ),
 
           // Sub-tab bar
           TabBar(
             tabs: [
               Tab(
-                icon: const Icon(Icons.south_outlined, size: 16),
+                icon: _BadgeIcon(
+                  icon: Icons.south_outlined,
+                  count: depositCount,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 text: 'budget_plans.deposits'.tr,
               ),
               Tab(
-                icon: const Icon(Icons.north_outlined, size: 16),
+                icon: _BadgeIcon(
+                  icon: Icons.north_outlined,
+                  count: spendingCount,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 text: 'budget_plans.spending'.tr,
               ),
             ],
@@ -117,6 +129,50 @@ class _SpendingList extends StatelessWidget {
       itemCount: transactions.length,
       separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
       itemBuilder: (_, i) => SpendingCard(transaction: transactions[i]),
+    );
+  }
+}
+
+class _BadgeIcon extends StatelessWidget {
+  final IconData icon;
+  final int count;
+  final Color color;
+
+  const _BadgeIcon({
+    required this.icon,
+    required this.count,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Icon(icon, size: 16),
+        if (count > 0)
+          Positioned(
+            top: -6,
+            right: -10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+              child: Text(
+                count > 99 ? '99+' : '$count',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

@@ -9,6 +9,7 @@ class BudgetPlanTransactionEntity extends Equatable {
   final String? description;
   final String? vendor;
   final String? receiptImagePath;
+  final String? linkedAccountId;
   final DateTime transactionDate;
   final DateTime createdAt;
 
@@ -20,22 +21,24 @@ class BudgetPlanTransactionEntity extends Equatable {
     this.description,
     this.vendor,
     this.receiptImagePath,
+    this.linkedAccountId,
     required this.transactionDate,
     required this.createdAt,
   });
 
   @override
   List<Object?> get props => [
-        id,
-        planId,
-        transactionId,
-        amount,
-        description,
-        vendor,
-        receiptImagePath,
-        transactionDate,
-        createdAt,
-      ];
+    id,
+    planId,
+    transactionId,
+    amount,
+    description,
+    vendor,
+    receiptImagePath,
+    linkedAccountId,
+    transactionDate,
+    createdAt,
+  ];
 
   BudgetPlanTransactionEntity copyWith({
     String? id,

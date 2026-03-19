@@ -320,6 +320,11 @@ class MalayStrings {
     'budget_plans.recalculate_plan_confirm':
         'Kira semula jumlah pelan ini? Ini akan menyelaraskan data dengan transaksi dan deposit sebenar.',
     'budget_plans.available': 'Tersedia',
+    'budget_plans.collected': 'Terkumpul',
+    'budget_plans.spending_source': 'Sumber perbelanjaan',
+    'budget_plans.cap_exceeded': 'Jumlah melebihi baki yang tersedia',
+    'budget_plans.available_to_spend': 'Baki boleh dibelanjakan',
+    'budget_plans.cap_is': 'Had adalah {amount}',
     'budget_plans.spent': 'dibelanjakan',
     'budget_plans.deposited': 'Deposit',
     'budget_plans.financial_breakdown': 'Rincian Kewangan',

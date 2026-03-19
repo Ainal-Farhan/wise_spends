@@ -1268,61 +1268,20 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
   /// Update plan's current amount based on deposits, transactions, item payments,
   /// and allocated amounts from linked accounts.
-  ///
-  /// ## Formula:
-  /// ```
-  /// currentAmount = totalDeposits + totalItemPayments - totalSpending + totalAllocated
-  /// ```
-  ///
-  /// ## Why item payments INCREASE currentAmount:
-  /// This is intentional. Budget plans track progress toward a financial goal.
-  /// When you pay for wedding items (e.g., pelamin, makeup), that money represents
-  /// progress toward completing the wedding goal - it's money "invested" in the goal.
-  ///
-  /// Item payments include BOTH:
-  /// - [depositPaid]: Upfront deposit/commitment to vendor
-  /// - [amountPaid]: Subsequent payments toward the remaining balance
-  ///
-  /// Together these represent the total money committed/paid toward goal-related expenses,
-  /// which counts as progress toward the goal.
-  ///
-  /// ## Components:
-  /// - **totalDeposits**: Manual deposits added directly to the plan
-  /// - **totalItemPayments**: Sum of (depositPaid + amountPaid) from all budget items
-  /// - **totalSpending**: Manual spending (money withdrawn from the plan)
-  /// - **totalAllocated**: Amounts reserved in linked external savings accounts
   Future<void> _updatePlanCurrentAmount(String planId) async {
-    // Get total deposits from manual deposits
+    final plan = await getPlanByUuid(planId);
+    if (plan == null) {
+      return;
+    }
+
+    // Get total deposits from manual deposits (excluding linked account auto-deposits)
     final depositsQuery = _db.select(_db.savingsPlanDepositTable)
-      ..where((tbl) => tbl.planId.equals(planId));
+      ..where((tbl) => tbl.planId.equals(planId))
+      ..where((tbl) => tbl.source.isNotValue('linked_account'));
     final deposits = await depositsQuery.get();
     final totalDeposits = deposits.fold<double>(
       0.0,
       (sum, d) => sum + d.amount,
-    );
-
-    // Get total spending from manual spending
-    final transactionsQuery = _db.select(_db.savingsPlanSpendingTable)
-      ..where((tbl) => tbl.planId.equals(planId));
-    final transactions = await transactionsQuery.get();
-    final totalSpending = transactions.fold<double>(
-      0.0,
-      (sum, t) => sum + t.amount,
-    );
-
-    // Get total payments from budget plan items.
-    // IMPORTANT: This includes BOTH depositPaid AND amountPaid.
-    // See class-level documentation for why this is intentional:
-    // - depositPaid: Upfront commitment/deposit to vendor
-    // - amountPaid: Payments toward remaining balance (excluding deposit)
-    // Together they represent total money paid toward goal-related items,
-    // which counts as progress toward the financial goal.
-    final itemsQuery = _db.select(_db.savingsPlanItemTable)
-      ..where((tbl) => tbl.planId.equals(planId));
-    final items = await itemsQuery.get();
-    final totalItemPayments = items.fold<double>(
-      0.0,
-      (sum, i) => sum + i.amountPaid + i.depositPaid,
     );
 
     // Get total allocated amounts from linked accounts
@@ -1334,12 +1293,27 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       (sum, a) => sum + (a.allocatedAmount ?? 0.0),
     );
 
-    // Update plan: currentAmount = manual deposits + item payments - spending + allocated from linked accounts
-    final currentAmount =
-        totalDeposits + totalItemPayments - totalSpending + totalAllocated;
+    // Total collected = manual deposits + linked account allocations
+    final currentAmount = totalDeposits + totalAllocated;
+
+    // Get total cost of all items in the plan
+    final itemsQuery = _db.select(_db.savingsPlanItemTable)
+      ..where((tbl) => tbl.planId.equals(planId));
+    final items = await itemsQuery.get();
+    final totalItemCost = items.fold<double>(
+      0.0,
+      (sum, i) => sum + i.totalCost,
+    );
+
+    // Target anchored to totalItemCost, never below currentAmount, never more than 10% above totalItemCost
+    final targetAmount = totalItemCost.clamp(
+      currentAmount,
+      totalItemCost * 1.1,
+    );
 
     final updating = SavingsPlanTableCompanion(
       currentAmount: Value(currentAmount),
+      targetAmount: Value(targetAmount),
       dateUpdated: Value(DateTime.now()),
       lastModifiedBy: Value('system'),
     );

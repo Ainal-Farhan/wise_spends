@@ -249,6 +249,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       builder: (_) => BlocProvider.value(
         value: context.read<BudgetPlanDetailBloc>(),
         child: AddDepositBottomSheet(planUuid: widget.planUuid),
@@ -261,6 +262,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       builder: (_) => BlocProvider.value(
         value: context.read<BudgetPlanDetailBloc>(),
         child: AddSpendingBottomSheet(planUuid: widget.planUuid),

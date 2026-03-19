@@ -154,7 +154,8 @@ class _AddDepositBottomSheetState extends State<AddDepositBottomSheet> {
                 _LinkedAccountSelector(
                   planUuid: widget.planUuid,
                   selectedId: _selectedAccountId,
-                  onChanged: (v) => setState(() => _selectedAccountId = v),
+                  onChanged: (accountId, _) =>
+                      setState(() => _selectedAccountId = accountId),
                 ),
                 const SizedBox(height: AppSpacing.lg),
               ],
@@ -226,6 +227,61 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
   bool _linkToMainTransaction = false;
   String? _receiptPath;
   String? _selectedAccountId;
+  String _selectedSource = 'manual'; // ← add
+
+  // Cap tracking
+  double _manualCap = 0.0; // ← add
+  double _accountCap = 0.0; // ← add
+  bool _capsLoaded = false; // ← add
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController.addListener(
+      () => setState(() {}),
+    ); // ← rebuild on amount change
+    _loadCaps();
+  }
+
+  // ← add entire method
+  Future<void> _loadCaps() async {
+    final repository = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getBudgetPlanRepository();
+
+    // Manual cap: sum of non-linked deposits minus manual spendings
+    final deposits = await repository.getDeposits(widget.planUuid);
+    final manualDeposits = deposits
+        .where((d) => d.source != 'linked_account')
+        .fold(0.0, (sum, d) => sum + d.amount);
+
+    final transactions = await repository.getPlanTransactions(widget.planUuid);
+    final manualSpendings = transactions
+        .where((t) => t.linkedAccountId == null)
+        .fold(0.0, (sum, t) => sum + t.amount);
+
+    setState(() {
+      _manualCap = (manualDeposits - manualSpendings).clamp(
+        0.0,
+        double.infinity,
+      );
+      _capsLoaded = true;
+    });
+  }
+
+  // ← add
+  double get _effectiveCap {
+    if (_selectedSource == 'linked_account' && _selectedAccountId != null) {
+      return _accountCap;
+    }
+    return _manualCap;
+  }
+
+  // ← add
+  double get _enteredAmount => double.tryParse(_amountController.text) ?? 0.0;
+
+  // ← add
+  double get _remaining =>
+      (_effectiveCap - _enteredAmount).clamp(0.0, double.infinity);
 
   @override
   void dispose() {
@@ -237,6 +293,8 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final capExceeded = _capsLoaded && _enteredAmount > _effectiveCap;
+
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -259,8 +317,6 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
             children: [
               const _BottomSheetHandle(),
               const SizedBox(height: AppSpacing.xxl),
-
-              // Title using SectionHeader
               SectionHeader(
                 title: 'budget_plans.add_spending'.tr,
                 leading: Container(
@@ -281,14 +337,66 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
               ),
               const SizedBox(height: AppSpacing.xxl),
 
+              // ── Source selector ──────────────────────────────────────────
+              SectionHeaderCompact(title: 'budget_plans.spending_source'.tr),
+              const SizedBox(height: AppSpacing.sm),
+              _SourceChipSelector(
+                selected: _selectedSource,
+                accentColor: Theme.of(context).colorScheme.secondary,
+                sources: const [
+                  _SourceOption(
+                    'manual',
+                    Icons.edit,
+                    'budget_plans.source_manual',
+                  ),
+                  _SourceOption(
+                    'linked_account',
+                    Icons.account_balance,
+                    'budget_plans.source_account',
+                  ),
+                ],
+                onChanged: (v) => setState(() {
+                  _selectedSource = v;
+                  _selectedAccountId = null;
+                  _accountCap = 0.0;
+                }),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
+              // ── Account selector (only when linked_account) ──────────────
+              if (_selectedSource == 'linked_account') ...[
+                _LinkedAccountSelector(
+                  planUuid: widget.planUuid,
+                  selectedId: _selectedAccountId,
+                  onChanged: (accountId, allocatedAmount) => setState(() {
+                    _selectedAccountId = accountId;
+                    _accountCap = allocatedAmount ?? 0.0;
+                  }),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+              ],
+
+              // ── Available cap indicator ──────────────────────────────────
+              if (_capsLoaded) ...[
+                _CapIndicator(
+                  cap: _effectiveCap,
+                  remaining: _remaining,
+                  exceeded: capExceeded,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+              ],
+
+              // ── Amount ───────────────────────────────────────────────────
               _AmountInputField(
                 controller: _amountController,
-                accentColor: Theme.of(context).colorScheme.secondary,
+                accentColor: capExceeded
+                    ? Theme.of(context).colorScheme.error
+                    : Theme.of(context).colorScheme.secondary,
                 labelKey: 'general.amount',
               ),
               const SizedBox(height: AppSpacing.xxl),
 
-              // Description
+              // ── rest of fields unchanged ─────────────────────────────────
               AppTextField(
                 label: 'general.description'.tr,
                 hint: 'budget_plans.description_hint'.tr,
@@ -299,8 +407,6 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
                     : null,
               ),
               const SizedBox(height: AppSpacing.lg),
-
-              // Vendor
               AppTextField(
                 label: 'budget_plans.vendor'.tr,
                 hint: 'budget_plans.vendor_hint'.tr,
@@ -308,8 +414,6 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
                 prefixIcon: Icons.store_outlined,
               ),
               const SizedBox(height: AppSpacing.lg),
-
-              // Category
               SectionHeaderCompact(title: 'general.category'.tr),
               const SizedBox(height: AppSpacing.sm),
               _SpendingCategoryChips(
@@ -317,42 +421,17 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
                 onChanged: (v) => setState(() => _selectedCategory = v),
               ),
               const SizedBox(height: AppSpacing.lg),
-
-              // Date picker
               _DatePickerField(
                 selectedDate: _selectedDate,
                 onChanged: (d) => setState(() => _selectedDate = d),
               ),
               const SizedBox(height: AppSpacing.lg),
-
-              // Linked Account Selector (optional)
-              SectionHeaderCompact(
-                title: 'budget_plans.select_linked_account'.tr,
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              _LinkedAccountSelector(
-                planUuid: widget.planUuid,
-                selectedId: _selectedAccountId,
-                onChanged: (v) => setState(() => _selectedAccountId = v),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'budget_plans.linked_account_optional'.tr,
-                style: AppTextStyles.caption.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
-              ),
-              const SizedBox(height: AppSpacing.lg),
-
-              // Attach receipt
               _AttachReceiptTile(
                 receiptPath: _receiptPath,
                 planUuid: widget.planUuid,
                 onAttached: (path) => setState(() => _receiptPath = path),
               ),
               const SizedBox(height: AppSpacing.lg),
-
-              // Link toggle
               _LinkTransactionToggle(
                 value: _linkToMainTransaction,
                 onChanged: (v) => setState(() => _linkToMainTransaction = v),
@@ -362,7 +441,9 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
               AppButton.primary(
                 label: 'budget_plans.add_spending'.tr,
                 icon: Icons.remove_circle_outline,
-                onPressed: _submit,
+                onPressed: capExceeded
+                    ? null
+                    : _submit, // ← disable if exceeded
                 isFullWidth: true,
               ),
             ],
@@ -374,7 +455,6 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
-
     final amount = double.parse(_amountController.text);
 
     context.read<BudgetPlanDetailBloc>().add(
@@ -384,12 +464,13 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
         vendor: _vendorController.text.isEmpty ? null : _vendorController.text,
         transactionDate: _selectedDate,
         receiptPath: _receiptPath,
-        linkedAccountId: _selectedAccountId,
+        linkedAccountId: _selectedSource == 'linked_account'
+            ? _selectedAccountId
+            : null, // ← pass source
       ),
     );
 
-    if (_linkToMainTransaction && _selectedAccountId != null) {
-      // Guard: TransactionBloc may not be provided in all entry points
+    if (_linkToMainTransaction) {
       final transactionBloc = context.read<TransactionBloc?>();
       transactionBloc?.add(
         CreateTransactionEvent(
@@ -410,6 +491,75 @@ class _AddSpendingBottomSheetState extends State<AddSpendingBottomSheet> {
 // =============================================================================
 // Shared sub-widgets
 // =============================================================================
+class _CapIndicator extends StatelessWidget {
+  final double cap;
+  final double remaining;
+  final bool exceeded;
+
+  const _CapIndicator({
+    required this.cap,
+    required this.remaining,
+    required this.exceeded,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fmt = NumberFormat('#,##0.00', 'en_US');
+    final color = exceeded
+        ? Theme.of(context).colorScheme.error
+        : Theme.of(context).colorScheme.primary;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            exceeded
+                ? Icons.warning_amber_outlined
+                : Icons.account_balance_wallet_outlined,
+            color: color,
+            size: 18,
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  exceeded
+                      ? 'budget_plans.cap_exceeded'.tr
+                      : 'budget_plans.available_to_spend'.tr,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  exceeded
+                      ? 'budget_plans.cap_is'.trWith({
+                          'amount': 'RM ${fmt.format(cap)}',
+                        })
+                      : 'RM ${fmt.format(remaining)}',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: color.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _BottomSheetHandle extends StatelessWidget {
   const _BottomSheetHandle();
@@ -558,7 +708,7 @@ class _SourceChipSelector extends StatelessWidget {
 class _LinkedAccountSelector extends StatelessWidget {
   final String planUuid;
   final String? selectedId;
-  final ValueChanged<String?> onChanged;
+  final void Function(String? accountId, double? allocatedAmount) onChanged;
 
   const _LinkedAccountSelector({
     required this.planUuid,
@@ -577,7 +727,6 @@ class _LinkedAccountSelector extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const ShimmerCard(height: 56);
         }
-
         final accounts = snapshot.data ?? [];
         if (accounts.isEmpty) {
           return Padding(
@@ -607,7 +756,10 @@ class _LinkedAccountSelector extends StatelessWidget {
                 ),
               )
               .toList(),
-          onChanged: onChanged,
+          onChanged: (id) {
+            final account = accounts.firstWhere((a) => a.accountId == id);
+            onChanged(id, account.allocatedAmount); // ← pass amount back
+          },
         );
       },
     );

@@ -28,7 +28,7 @@ class BudgetPlanDepositEntity extends Equatable {
       case 'manual':
         return 'Manual';
       case 'linked_account':
-        return 'From Account';
+        return 'Linked Account';
       case 'salary':
         return 'Salary';
       case 'bonus':
@@ -42,15 +42,15 @@ class BudgetPlanDepositEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        planId,
-        amount,
-        note,
-        source,
-        depositDate,
-        linkedAccountId,
-        createdAt,
-      ];
+    id,
+    planId,
+    amount,
+    note,
+    source,
+    depositDate,
+    linkedAccountId,
+    createdAt,
+  ];
 
   BudgetPlanDepositEntity copyWith({
     String? id,
