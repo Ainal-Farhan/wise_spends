@@ -118,7 +118,11 @@ abstract class IBudgetPlanRepository
   Future<void> unlinkAccount(String planId, String accountId);
 
   /// Update allocation amount for a linked account
-  Future<void> updateAllocation(String planId, String accountId, double deltaAmount);
+  Future<void> updateAllocation(
+    String planId,
+    String accountId,
+    double deltaAmount,
+  );
 
   /// Get current allocation for a linked account
   Future<double> getAllocation(String planId, String accountId);
@@ -203,6 +207,13 @@ class BudgetPlanSummary extends Equatable {
   final double totalSavedAmount;
   final double totalRemainingAmount;
   final double overallProgressPercentage;
+  final double totalItemCost;
+  final double totalItemPaid;
+  final double totalItemOutstanding;
+  final double totalSpent;
+  final int totalItemCount;
+  final int unpaidItemCount;
+  final int partialItemCount;
 
   const BudgetPlanSummary({
     required this.totalPlans,
@@ -214,6 +225,13 @@ class BudgetPlanSummary extends Equatable {
     this.totalSavedAmount = 0,
     this.totalRemainingAmount = 0,
     this.overallProgressPercentage = 0,
+    this.totalItemCost = 0,
+    this.totalItemPaid = 0,
+    this.totalItemOutstanding = 0,
+    this.totalSpent = 0,
+    this.totalItemCount = 0,
+    this.unpaidItemCount = 0,
+    this.partialItemCount = 0,
   });
 
   @override
@@ -227,5 +245,12 @@ class BudgetPlanSummary extends Equatable {
     totalSavedAmount,
     totalRemainingAmount,
     overallProgressPercentage,
+    totalItemCost,
+    totalItemPaid,
+    totalItemOutstanding,
+    totalSpent,
+    totalItemCount,
+    unpaidItemCount,
+    partialItemCount,
   ];
 }

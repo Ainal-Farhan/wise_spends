@@ -265,12 +265,8 @@ class _SummaryCard extends StatelessWidget {
       builder: (context, state) {
         if (state is! BudgetPlanListLoaded) return const SizedBox.shrink();
 
-        final BudgetPlanSummary summary = state.summary;
-        final double progress = summary.overallProgressPercentage;
-        final NumberFormat fmt = NumberFormat.currency(
-          symbol: 'RM ',
-          decimalDigits: 0,
-        );
+        final summary = state.summary;
+        final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 0);
 
         return SectionHeader.card(
           gradient: LinearGradient(
@@ -286,7 +282,7 @@ class _SummaryCard extends StatelessWidget {
           title: fmt.format(summary.totalSavedAmount),
           subtitle:
               '${'budget_plans.of_goal'.tr} ${fmt.format(summary.totalTargetAmount)}',
-          collapsibleBody: _SummaryDetail(summary: summary, progress: progress),
+          collapsibleBody: _SummaryDetail(summary: summary),
           learnMoreLabel: 'general.details'.tr,
           learnLessLabel: 'general.less'.tr,
         );
@@ -295,18 +291,23 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-// WAS: final dynamic summary
 class _SummaryDetail extends StatelessWidget {
   final BudgetPlanSummary summary;
-  final double progress;
 
-  const _SummaryDetail({required this.summary, required this.progress});
+  const _SummaryDetail({required this.summary});
 
   @override
   Widget build(BuildContext context) {
+    final fmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 0);
+    final progress = summary.overallProgressPercentage;
+    final itemProgress = summary.totalItemCost > 0
+        ? (summary.totalItemPaid / summary.totalItemCost).clamp(0.0, 1.0)
+        : 0.0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // ── Savings progress ───────────────────────────────────────────
         ClipRRect(
           borderRadius: BorderRadius.circular(AppRadius.xs),
           child: LinearProgressIndicator(
@@ -317,13 +318,231 @@ class _SummaryDetail extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
-        SectionHeaderBullet(
-          '${summary.plansOnTrack} ${'budget_plans.plans_on_track'.tr}',
+
+        // ── Plan status pills ─────────────────────────────────────────
+        Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.xs,
+          children: [
+            _SummaryPill(
+              label: '${summary.activePlans} ${'budget_plans.active'.tr}',
+              color: Colors.white70,
+            ),
+            _SummaryPill(
+              label:
+                  '${summary.plansOnTrack} ${'budget_plans.plans_on_track'.tr}',
+              color: Colors.white70,
+            ),
+            _SummaryPill(
+              label:
+                  '${summary.plansAtRisk} ${'budget_plans.plans_at_risk'.tr}',
+              color: Colors.white54,
+            ),
+          ],
         ),
-        SectionHeaderBullet(
-          '${summary.plansAtRisk} ${'budget_plans.plans_at_risk'.tr}',
+        const SizedBox(height: AppSpacing.lg),
+
+        // ── Spending row ──────────────────────────────────────────────
+        _SummaryRow(
+          label: 'budget_plans.total_spent'.tr,
+          value: fmt.format(summary.totalSpent),
+          icon: Icons.north_outlined,
+          color: Colors.white,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+
+        // ── Divider ───────────────────────────────────────────────────
+        const Divider(color: Colors.white24, height: 1),
+        const SizedBox(height: AppSpacing.sm),
+
+        // ── Item section header ───────────────────────────────────────
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'budget_plans.items_overview'.tr,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: Colors.white70,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              '${summary.totalItemCount} ${'budget_plans.items'.tr}',
+              style: AppTextStyles.bodySmall.copyWith(color: Colors.white70),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+
+        // ── Item progress bar ─────────────────────────────────────────
+        ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.xs),
+          child: LinearProgressIndicator(
+            value: itemProgress,
+            backgroundColor: Colors.white24,
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+            minHeight: 6,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+
+        // ── Item amounts grid ─────────────────────────────────────────
+        Row(
+          children: [
+            Expanded(
+              child: _SummaryAmountCell(
+                label: 'budget_plans.item_cost'.tr,
+                value: fmt.format(summary.totalItemCost),
+              ),
+            ),
+            Expanded(
+              child: _SummaryAmountCell(
+                label: 'budget_plans.item_paid'.tr,
+                value: fmt.format(summary.totalItemPaid),
+              ),
+            ),
+            Expanded(
+              child: _SummaryAmountCell(
+                label: 'budget_plans.outstanding'.tr,
+                value: fmt.format(summary.totalItemOutstanding),
+                isWarning: summary.totalItemOutstanding > 0,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sm),
+
+        // ── Item status pills ─────────────────────────────────────────
+        Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.xs,
+          children: [
+            if (summary.unpaidItemCount > 0)
+              _SummaryPill(
+                label: '${summary.unpaidItemCount} ${'budget_plans.unpaid'.tr}',
+                color: Colors.red.shade200,
+              ),
+            if (summary.partialItemCount > 0)
+              _SummaryPill(
+                label:
+                    '${summary.partialItemCount} ${'budget_plans.partial'.tr}',
+                color: Colors.orange.shade200,
+              ),
+            if (summary.unpaidItemCount == 0 &&
+                summary.partialItemCount == 0 &&
+                summary.totalItemCount > 0)
+              _SummaryPill(
+                label: 'budget_plans.all_items_paid'.tr,
+                color: Colors.green.shade200,
+              ),
+          ],
         ),
       ],
+    );
+  }
+}
+
+// ── Private summary sub-widgets ───────────────────────────────────────────────
+
+class _SummaryRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color color;
+
+  const _SummaryRow({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: color.withValues(alpha: 0.7)),
+        const SizedBox(width: AppSpacing.xs),
+        Expanded(
+          child: Text(
+            label,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: color.withValues(alpha: 0.8),
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SummaryAmountCell extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isWarning;
+
+  const _SummaryAmountCell({
+    required this.label,
+    required this.value,
+    this.isWarning = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final valueColor = isWarning ? Colors.red.shade200 : Colors.white;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.captionSmall.copyWith(color: Colors.white54),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 2),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: valueColor,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SummaryPill extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _SummaryPill({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.captionSmall.copyWith(color: color),
+      ),
     );
   }
 }
@@ -533,8 +752,13 @@ class _PlanCard extends StatelessWidget {
                 totalDeposited: plan.totalDeposited,
                 hasItems: hasItems,
                 itemPaidTotal: itemPaidTotal,
+                itemDepositPaid: plan.totalItemDepositPaid,
+                itemAmountPaid: plan.totalItemAmountPaid,
                 itemOutstanding: itemOutstanding,
                 itemProgress: itemProgress,
+                fullyPaidItems: plan.fullyPaidItems,
+                depositOnlyItems: plan.depositOnlyItems,
+                outstandingItems: plan.outstandingItemCount,
                 fmt: fmt,
               ),
             ],
@@ -580,8 +804,13 @@ class _AmountsGrid extends StatefulWidget {
   final double totalDeposited;
   final bool hasItems;
   final double itemPaidTotal;
+  final double itemDepositPaid;
+  final double itemAmountPaid;
   final double itemOutstanding;
   final double itemProgress;
+  final int fullyPaidItems;
+  final int depositOnlyItems;
+  final int outstandingItems;
   final NumberFormat fmt;
 
   const _AmountsGrid({
@@ -593,6 +822,11 @@ class _AmountsGrid extends StatefulWidget {
     required this.itemOutstanding,
     required this.itemProgress,
     required this.fmt,
+    required this.itemDepositPaid,
+    required this.itemAmountPaid,
+    required this.fullyPaidItems,
+    required this.depositOnlyItems,
+    required this.outstandingItems,
   });
 
   @override
@@ -730,11 +964,17 @@ class _AmountsGridState extends State<_AmountsGrid> {
   }
 
   Widget _buildExpandedView(BuildContext context) {
+    final itemProgress = widget.hasItems && widget.itemPaidTotal > 0
+        ? (widget.itemPaidTotal /
+                  (widget.itemPaidTotal + widget.itemOutstanding))
+              .clamp(0.0, 1.0)
+        : 0.0;
+
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.md),
       child: Column(
         children: [
-          // Available Amount
+          // ── Collected ──────────────────────────────────────────────────
           _buildAmountRow(
             context,
             'budget_plans.collected'.tr,
@@ -743,7 +983,8 @@ class _AmountsGridState extends State<_AmountsGrid> {
             Icons.account_balance_wallet_outlined,
           ),
           const SizedBox(height: AppSpacing.sm),
-          // Spent Amount
+
+          // ── Spent ─────────────────────────────────────────────────────
           _buildAmountRow(
             context,
             'budget_plans.spent'.tr,
@@ -752,7 +993,25 @@ class _AmountsGridState extends State<_AmountsGrid> {
             Icons.north_outlined,
           ),
           const SizedBox(height: AppSpacing.sm),
-          // Deposited Amount
+
+          // ── Available balance ─────────────────────────────────────────
+          _buildAmountRow(
+            context,
+            'budget_plans.available'.tr,
+            widget.fmt.format(
+              (widget.currentAmount - widget.totalSpent).clamp(
+                0.0,
+                double.infinity,
+              ),
+            ),
+            (widget.currentAmount - widget.totalSpent) >= 0
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.error,
+            Icons.savings_outlined,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // ── Deposited ─────────────────────────────────────────────────
           _buildAmountRow(
             context,
             'budget_plans.deposited'.tr,
@@ -760,75 +1019,192 @@ class _AmountsGridState extends State<_AmountsGrid> {
             Theme.of(context).colorScheme.primary,
             Icons.south_outlined,
           ),
-          // Item payments (if has items)
+
+          // ── Items section ─────────────────────────────────────────────
           if (widget.hasItems) ...[
             const SizedBox(height: AppSpacing.md),
             const Divider(height: 1),
             const SizedBox(height: AppSpacing.md),
-            // Item payment summary
+
+            // Section header
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'budget_plans.item_payments'.tr,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+                Icon(
+                  Icons.list_alt_outlined,
+                  size: 14,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-                Expanded(
-                  child: Text(
-                    widget.fmt.format(widget.itemPaidTotal),
-                    style: AppTextStyles.bodySmall.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    textAlign: TextAlign.right,
+                const SizedBox(width: AppSpacing.xs),
+                Text(
+                  'budget_plans.items_overview'.tr,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.xs),
-            // Item payment progress bar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadius.full),
-              child: LinearProgressIndicator(
-                value: widget.itemProgress,
-                backgroundColor: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.1),
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  Theme.of(context).colorScheme.primary,
-                ),
-                minHeight: 4,
-              ),
+            const SizedBox(height: AppSpacing.md),
+
+            // ── Total cost row ───────────────────────────────────────────
+            _buildAmountRow(
+              context,
+              'budget_plans.item_cost'.tr,
+              widget.fmt.format(widget.itemPaidTotal + widget.itemOutstanding),
+              Theme.of(context).colorScheme.onSurface,
+              Icons.receipt_long_outlined,
             ),
-            const SizedBox(height: AppSpacing.xs),
-            // Outstanding amount
+            const SizedBox(height: AppSpacing.sm),
+
+            // ── Deposit paid row ─────────────────────────────────────────
+            _buildAmountRow(
+              context,
+              'budget_plans.deposit'.tr,
+              widget.fmt.format(widget.itemDepositPaid),
+              Theme.of(context).colorScheme.tertiary,
+              Icons.bookmark_outline,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
+            // ── Amount paid (excl deposit) row ───────────────────────────
+            _buildAmountRow(
+              context,
+              'budget_plans.item_paid_exclude_deposit'.tr,
+              widget.fmt.format(widget.itemAmountPaid),
+              Theme.of(context).colorScheme.primary,
+              Icons.check_circle_outline,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
+            // ── Total paid row ───────────────────────────────────────────
+            _buildAmountRow(
+              context,
+              'budget_plans.total_paid'.tr,
+              widget.fmt.format(widget.itemPaidTotal),
+              Theme.of(context).colorScheme.primary,
+              Icons.payments_outlined,
+              highlight: true,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+
+            // ── Item payment progress bar ────────────────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'budget_plans.outstanding'.tr,
-                  style: AppTextStyles.bodySmall.copyWith(
+                  'budget_plans.item_progress'.tr,
+                  style: AppTextStyles.captionSmall.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Text(
-                  widget.fmt.format(widget.itemOutstanding),
-                  style: AppTextStyles.bodySmall.copyWith(
+                  '${(itemProgress * 100).toStringAsFixed(0)}%',
+                  style: AppTextStyles.captionSmall.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: widget.itemOutstanding > 0
-                        ? Theme.of(context).colorScheme.error
-                        : Theme.of(context).colorScheme.primary,
+                    color: itemProgress >= 1.0
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: AppSpacing.xs),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.full),
+              child: LinearProgressIndicator(
+                value: itemProgress,
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  itemProgress >= 1.0
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.tertiary,
+                ),
+                minHeight: 6,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+
+            // ── Outstanding ──────────────────────────────────────────────
+            _buildAmountRow(
+              context,
+              'budget_plans.outstanding'.tr,
+              widget.fmt.format(widget.itemOutstanding),
+              widget.itemOutstanding > 0
+                  ? Theme.of(context).colorScheme.error
+                  : Theme.of(context).colorScheme.primary,
+              widget.itemOutstanding > 0
+                  ? Icons.warning_amber_outlined
+                  : Icons.check_circle_outline,
+              highlight: widget.itemOutstanding > 0,
+            ),
+
+            // ── Item status pills ────────────────────────────────────────
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.xs,
+              children: [
+                _buildStatusPill(
+                  context,
+                  icon: Icons.check_circle_outline,
+                  label: 'budget_plans.fully_paid'.tr,
+                  count: widget.fullyPaidItems,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                _buildStatusPill(
+                  context,
+                  icon: Icons.bookmark_outline,
+                  label: 'budget_plans.deposit_only'.tr,
+                  count: widget.depositOnlyItems,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+                _buildStatusPill(
+                  context,
+                  icon: Icons.radio_button_unchecked,
+                  label: 'budget_plans.unpaid'.tr,
+                  count: widget.outstandingItems,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ],
+            ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusPill(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required int count,
+    required Color color,
+  }) {
+    if (count == 0) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: 3,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 11, color: color),
+          const SizedBox(width: 3),
+          Text(
+            '$count $label',
+            style: AppTextStyles.captionSmall.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -839,12 +1215,15 @@ class _AmountsGridState extends State<_AmountsGrid> {
     String label,
     String value,
     Color color,
-    IconData icon,
-  ) {
+    IconData icon, {
+    bool highlight = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.04),
+        color: highlight
+            ? color.withValues(alpha: 0.08)
+            : color.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Row(
@@ -860,6 +1239,8 @@ class _AmountsGridState extends State<_AmountsGrid> {
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w500,
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

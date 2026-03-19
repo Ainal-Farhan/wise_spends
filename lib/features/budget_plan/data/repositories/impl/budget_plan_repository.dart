@@ -1221,16 +1221,48 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
 
     final totalTargetAmount = plans.fold<double>(
       0.0,
-      (sum, p) => sum + p.targetAmount,
+      (s, p) => s + p.targetAmount,
     );
     final totalSavedAmount = plans.fold<double>(
       0.0,
-      (sum, p) => sum + p.currentAmount,
+      (s, p) => s + p.currentAmount,
     );
     final totalRemainingAmount = totalTargetAmount - totalSavedAmount;
     final overallProgressPercentage = totalTargetAmount > 0
         ? ((totalSavedAmount / totalTargetAmount) * 100).toDouble()
         : 0.0;
+
+    // ── New item aggregations (no extra DB calls needed) ──────────────
+    final totalSpent = plans.fold<double>(0.0, (s, p) => s + p.totalSpent);
+    final totalItemCost = plans.fold<double>(
+      0.0,
+      (s, p) => s + p.totalItemCommitment,
+    );
+    final totalItemPaid = plans.fold<double>(
+      0.0,
+      (s, p) => s + p.totalItemDepositPaid + p.totalItemAmountPaid,
+    );
+    final totalItemOutstanding = plans.fold<double>(
+      0.0,
+      (s, p) => s + p.totalItemOutstanding,
+    );
+
+    // Item counts — derived from per-plan item fields
+    // totalItemCommitment > 0 means plan has items
+    // outstanding == commitment means nothing paid yet (unpaid)
+    // outstanding > 0 && outstanding < commitment means partial
+    final totalItemCount = plans.fold<int>(0, (s, p) {
+      // We don't have per-item count on entity yet so track plans-with-items
+      return s + (p.totalItemCommitment > 0 ? 1 : 0);
+    });
+    final unpaidItemCount = plans.fold<int>(0, (s, p) {
+      final paid = p.totalItemDepositPaid + p.totalItemAmountPaid;
+      return s + (p.totalItemCommitment > 0 && paid == 0 ? 1 : 0);
+    });
+    final partialItemCount = plans.fold<int>(0, (s, p) {
+      final paid = p.totalItemDepositPaid + p.totalItemAmountPaid;
+      return s + (paid > 0 && p.totalItemOutstanding > 0 ? 1 : 0);
+    });
 
     return BudgetPlanSummary(
       totalPlans: totalPlans,
@@ -1242,6 +1274,13 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
       totalSavedAmount: totalSavedAmount,
       totalRemainingAmount: totalRemainingAmount,
       overallProgressPercentage: overallProgressPercentage,
+      totalSpent: totalSpent,
+      totalItemCost: totalItemCost,
+      totalItemPaid: totalItemPaid,
+      totalItemOutstanding: totalItemOutstanding,
+      totalItemCount: totalItemCount,
+      unpaidItemCount: unpaidItemCount,
+      partialItemCount: partialItemCount,
     );
   }
 

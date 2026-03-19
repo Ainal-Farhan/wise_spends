@@ -25,6 +25,9 @@ class BudgetPlanEntity extends Equatable {
   final List<BudgetPlanTransactionEntity> recentTransactions;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final int fullyPaidItems;
+  final int depositOnlyItems;
+  final int outstandingItemCount;
 
   /// Total amount committed to items (sum of all item.totalCost)
   final double totalItemCommitment;
@@ -62,6 +65,9 @@ class BudgetPlanEntity extends Equatable {
     this.totalItemDepositPaid = 0.0,
     this.totalItemAmountPaid = 0.0,
     this.totalItemOutstanding = 0.0,
+    this.fullyPaidItems = 0,
+    this.depositOnlyItems = 0,
+    this.outstandingItemCount = 0,
   });
 
   /// Computed: Progress percentage (0.0 to 1.0)
@@ -219,6 +225,9 @@ class BudgetPlanEntity extends Equatable {
     totalItemDepositPaid,
     totalItemAmountPaid,
     totalItemOutstanding,
+    fullyPaidItems,
+    depositOnlyItems,
+    outstandingItemCount,
   ];
 
   BudgetPlanEntity copyWith({
@@ -245,6 +254,9 @@ class BudgetPlanEntity extends Equatable {
     double? totalItemDepositPaid,
     double? totalItemAmountPaid,
     double? totalItemOutstanding,
+    int? fullyPaidItems,
+    int? depositOnlyItems,
+    int? outstandingItemCount,
   }) {
     return BudgetPlanEntity(
       id: id ?? this.id,
@@ -270,6 +282,9 @@ class BudgetPlanEntity extends Equatable {
       totalItemDepositPaid: totalItemDepositPaid ?? this.totalItemDepositPaid,
       totalItemAmountPaid: totalItemAmountPaid ?? this.totalItemAmountPaid,
       totalItemOutstanding: totalItemOutstanding ?? this.totalItemOutstanding,
+      fullyPaidItems: fullyPaidItems ?? this.fullyPaidItems,
+      depositOnlyItems: depositOnlyItems ?? this.depositOnlyItems,
+      outstandingItemCount: outstandingItemCount ?? this.outstandingItemCount,
     );
   }
 }
