@@ -717,6 +717,9 @@ class MalayStrings {
     'savings.tip_goal': 'Tetapkan jumlah sasaran untuk jejak kemajuan',
     'savings.tip_storage': 'Paut ke storan wang untuk lihat sumbernya',
     'savings.with_goal': '{total} dengan matlamat',
+    'savings.default_category': 'Kategori Lalai',
+    'savings.select_default_category': 'Pilih Kategori Lalai',
+    'savings.no_default_category': 'Tiada kategori lalai',
     'error.something_wrong.title': 'Sesuatu telah berlaku',
 
     // Commitment Screen
@@ -980,9 +983,25 @@ class MalayStrings {
     // ── Butiran pelan belanjawan ─────────────────────────────────────────────
     'budget_plans.allocated': 'Diperuntukkan',
     'budget_plans.analytics_title': 'Analitik Pelan',
+    'budget_plans.analytics_error': 'Ralat memuatkan analitik',
     'budget_plans.savings_progress': 'Perkembangan Simpanan',
     'budget_plans.milestone_title_hint': 'cth., Bayaran Pendahuluan Tempat',
     'budget_plans.due_date_optional': 'Tarikh Akhir (pilihan)',
+    'budget_plans.avg_deposit': 'Purata Deposit',
+    'budget_plans.avg_spending': 'Purata Perbelanjaan',
+    'budget_plans.progress_chart': 'Perkembangan',
+    'budget_plans.progress_over_time': 'Perkembangan Dari Masa ke Masa',
+    'budget_plans.chart_achieved': 'Dicapai',
+    'budget_plans.chart_remaining': 'Baki',
+    'budget_plans.allocation_chart': 'Peruntukkan Mengikut Kategori',
+    'budget_plans.no_allocation_data': 'Tiada data peruntukkan tersedia',
+    'budget_plans.spending_by_category': 'Perbelanjaan Mengikut Kategori',
+    'budget_plans.top_categories': 'Kategori Teratas',
+    'budget_plans.no_category_data': 'Tiada data kategori tersedia',
+    'budget_plans.trend_chart': 'Trend Perbelanjaan',
+    'budget_plans.no_trend_data': 'Tiada data trend tersedia',
+    'budget_plans.chart_target': 'Sasaran',
+    'budget_plans.chart_progress': 'Perkembangan',
 
     // ── Wizard cipta / edit ───────────────────────────────────────────────────
     'budget_plans.step_financial_subtitle': 'Tetapkan sasaran dan jangka masa',

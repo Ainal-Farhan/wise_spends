@@ -10,6 +10,7 @@ class SavingVO implements IVO {
   String? moneyStorageId;
   SavingTableType? savingTableType;
   String? savingId;
+  String? categoryId;
 
   SavingVO({
     this.savingName,
@@ -19,6 +20,7 @@ class SavingVO implements IVO {
     this.moneyStorageId,
     this.savingTableType,
     this.savingId,
+    this.categoryId,
   });
 
   SavingVO.fromSvngSaving(SvngSaving saving) {
@@ -29,6 +31,7 @@ class SavingVO implements IVO {
     isHasGoal = saving.isHasGoal;
     moneyStorageId = saving.moneyStorageId;
     savingTableType = SavingTableType.findByValue(saving.type);
+    categoryId = saving.categoryId;
   }
 
   SavingVO.fromJson(Map<String, dynamic> json) {
@@ -38,6 +41,7 @@ class SavingVO implements IVO {
     goalAmount = json['goalAmount'];
     isHasGoal = json['isHasGoal'];
     moneyStorageId = json['moneyStorageId'];
+    categoryId = json['categoryId'];
     String? savingTableTypeValue = json['savingTableType'];
 
     if (savingTableTypeValue != null) {
@@ -56,6 +60,9 @@ class SavingVO implements IVO {
     data['moneyStorageId'] = moneyStorageId;
     if (savingTableType != null) {
       data['savingTableType'] = savingTableType!.value;
+    }
+    if (categoryId != null) {
+      data['categoryId'] = categoryId;
     }
     return data;
   }

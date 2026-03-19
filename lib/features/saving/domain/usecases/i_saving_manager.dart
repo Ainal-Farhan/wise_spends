@@ -19,7 +19,8 @@ abstract class ISavingManager extends IManager {
       required bool isHasGoal,
       required double goalAmount,
       required String moneyStorageId,
-      required SavingTableType savingTableType});
+      required SavingTableType savingTableType,
+      String? categoryId});
 
   Future<SvngMoneyStorage> addNewMoneyStorage({
     required String shortName,

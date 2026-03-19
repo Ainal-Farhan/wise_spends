@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/logger/wise_logger.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 import 'package:wise_spends/features/saving/domain/entities/reserve_vo.dart';
 import 'package:wise_spends/shared/components/app_text_field.dart';
 import 'package:wise_spends/shared/components/reservation_info_widget.dart';
@@ -17,6 +18,7 @@ class FormAccountItem {
   final String type; // cash, bank, credit_card, ewallet, savings
   final double balance;
   final String? currencySymbol;
+  final CategoryEntity? category;
 
   /// Optional reservation summary for savings accounts
   final SavingsReserveSummary? reserveSummary;
@@ -27,6 +29,7 @@ class FormAccountItem {
     required this.type,
     required this.balance,
     this.currencySymbol = 'RM',
+    this.category,
     this.reserveSummary,
   });
 

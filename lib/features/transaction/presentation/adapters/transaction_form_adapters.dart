@@ -49,6 +49,7 @@ extension ListSavingVOExt on ListSavingVO {
       type: saving.type,
       balance: saving.currentAmount,
       reserveSummary: reserveSummary,
+      category: category,
     );
   }
 }

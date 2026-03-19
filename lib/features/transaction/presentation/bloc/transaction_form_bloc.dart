@@ -27,6 +27,7 @@ class TransactionFormBloc
     emit(
       TransactionFormReady(
         transactionType: event.preselectedType ?? TransactionType.expense,
+        selectedDate: DateTime.now(), // Default to current date and time
       ),
     );
   }
@@ -100,7 +101,28 @@ class TransactionFormBloc
   ) {
     if (state is! TransactionFormReady) return;
     final current = state as TransactionFormReady;
-    emit(current.copyWith(selectedDate: event.date));
+    // Preserve the time if selected, otherwise use current time
+    DateTime newDate = event.date;
+    if (current.selectedTime != null) {
+      newDate = DateTime(
+        event.date.year,
+        event.date.month,
+        event.date.day,
+        current.selectedTime!.hour,
+        current.selectedTime!.minute,
+      );
+    } else {
+      // If no time is selected, use current time
+      final now = DateTime.now();
+      newDate = DateTime(
+        event.date.year,
+        event.date.month,
+        event.date.day,
+        now.hour,
+        now.minute,
+      );
+    }
+    emit(current.copyWith(selectedDate: newDate));
   }
 
   void _onChangeTime(

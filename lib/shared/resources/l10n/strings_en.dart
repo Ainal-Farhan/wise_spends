@@ -757,6 +757,9 @@ class EnglishStrings {
     'savings.commitment_tasks': 'Commitment Tasks',
     'savings.budget_allocations': 'Budget Allocations',
     'savings.reservations': 'Reservations',
+    'savings.default_category': 'Default Category',
+    'savings.select_default_category': 'Select Default Category',
+    'savings.no_default_category': 'No default category',
 
     // Commitment Screen
     'commitments.title': 'Commitments',
@@ -1003,9 +1006,27 @@ class EnglishStrings {
     // ── Budget plan detail ───────────────────────────────────────────────────
     'budget_plans.allocated': 'Allocated',
     'budget_plans.analytics_title': 'Plan Analytics',
+    'budget_plans.analytics_error': 'Error loading analytics',
     'budget_plans.savings_progress': 'Savings Progress',
     'budget_plans.milestone_title_hint': 'e.g., Venue Deposit',
     'budget_plans.due_date_optional': 'Due Date (optional)',
+    'budget_plans.avg_deposit': 'Avg Deposit',
+    'budget_plans.avg_spending': 'Avg Spending',
+    'budget_plans.progress_chart': 'Progress',
+    'budget_plans.progress_over_time': 'Progress Over Time',
+    'budget_plans.chart_achieved': 'Achieved',
+    'budget_plans.chart_remaining': 'Remaining',
+    'budget_plans.allocation_chart': 'Allocation by Category',
+    'budget_plans.allocation_by_category': 'Allocation by Category',
+    'budget_plans.no_allocation_data': 'No allocation data available',
+    'budget_plans.spending_by_category': 'Spending by Category',
+    'budget_plans.top_categories': 'Top Categories',
+    'budget_plans.no_category_data': 'No category data available',
+    'budget_plans.trend_chart': 'Spending Trend',
+    'budget_plans.spending_trend': 'Spending Trend',
+    'budget_plans.no_trend_data': 'No trend data available',
+    'budget_plans.chart_target': 'Target',
+    'budget_plans.chart_progress': 'Progress',
 
     // ── Create / edit wizard ──────────────────────────────────────────────────
     'budget_plans.step_basics_subtitle': 'Name, description and category',
@@ -1108,8 +1129,6 @@ class EnglishStrings {
     "budget_plans.paid": "Paid",
     "budget_plans.edit_item_sub": "Update item information",
     "budget_plans.add_item_sub": "Add new item to plan",
-    'budget_plans.allocation_by_category': 'Allocation by Category',
-    'budget_plans.spending_trend': 'Spending Trend',
 
     // Budget Plan Item Payment Labels
     "budget_plans.deposit_status": "Deposit Status",
@@ -1126,10 +1145,6 @@ class EnglishStrings {
     // Budget Plans - Missing keys
     'budget_plans.item_subtitle': 'Budget plan item',
     'budget_plans.payment_sub': 'Record payments toward this item',
-    'budget_plans.progress_chart': 'Progress',
-    'budget_plans.progress_over_time': 'Progress Over Time',
-    'budget_plans.allocation_chart': 'Allocation by Category',
-    'budget_plans.trend_chart': 'Spending Trend',
     'budget_plans.milestone_added': 'Milestone added successfully',
     'budget_plans.no_transactions': 'No transactions yet',
     'budget_plans.balance': 'Balance',

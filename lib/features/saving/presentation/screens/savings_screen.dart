@@ -4,18 +4,26 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/core/constants/constant/enum/action_button_enum.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
+import 'package:wise_spends/features/category/presentation/bloc/category_bloc.dart';
+import 'package:wise_spends/features/category/presentation/bloc/category_event.dart';
+import 'package:wise_spends/features/category/presentation/bloc/category_state.dart';
+import 'package:wise_spends/features/category/data/repositories/i_category_repository.dart';
 import 'package:wise_spends/features/saving/data/repositories/i_saving_repository.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/savings_bloc.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/savings_event.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/savings_state.dart';
 import 'package:wise_spends/shared/components/components.dart';
+import 'package:wise_spends/shared/components/forms/form_category_selector.dart';
 import 'package:wise_spends/shared/components/reservation_info_widget.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog_utils.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
 import 'package:wise_spends/features/saving/presentation/widgets/savings_reserve_info_card.dart';
+import 'package:wise_spends/shared/utils/category_icon_mapper.dart';
 
 /// Enhanced Savings Screen - Pure BLoC
 class SavingsScreen extends StatelessWidget {
@@ -271,6 +279,7 @@ class _SavingsScreenContent extends StatelessWidget {
     final progress = hasGoal
         ? (saving.saving.currentAmount / saving.saving.goal).clamp(0.0, 1.0)
         : 0.0;
+    final hasCategory = saving.saving.categoryId != null;
 
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -285,7 +294,14 @@ class _SavingsScreenContent extends StatelessWidget {
               CircleAvatar(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 radius: 24,
-                child: const Icon(Icons.savings, color: Colors.white),
+                child: Icon(
+                  hasCategory && saving.category != null
+                      ? CategoryIconMapper.getIconForCategory(
+                          saving.category!.iconCodePoint,
+                        )
+                      : Icons.wallet,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -303,6 +319,15 @@ class _SavingsScreenContent extends StatelessWidget {
                       Text(
                         'From: ${saving.moneyStorage!.shortName}',
                         style: AppTextStyles.caption,
+                      ),
+                    ],
+                    if (hasCategory) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'savings.default_category'.tr,
+                        style: AppTextStyles.caption.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     ],
                   ],
@@ -458,15 +483,18 @@ class _SavingsScreenContent extends StatelessWidget {
       text: saving?.saving.name ?? '',
     );
     final initialAmountController = TextEditingController(
-      text: saving?.saving.currentAmount.toString() ?? '',
+      text: saving != null
+          ? saving.saving.currentAmount.toStringAsFixed(2)
+          : '',
     );
     final goalAmountController = TextEditingController(
-      text: saving?.saving.goal.toString() ?? '',
+      text: saving != null ? saving.saving.goal.toStringAsFixed(2) : '',
     );
     bool isHasGoal = saving?.saving.isHasGoal ?? false;
     String selectedSavingType =
         saving?.saving.type ?? SavingTableType.values.first.value;
     String? selectedMoneyStorageId = saving?.moneyStorage?.id;
+    String? selectedCategoryId = saving?.saving.categoryId;
 
     final moneyStorageItems = <DropdownMenuItem<String>>[
       DropdownMenuItem(value: '', child: Text('savings.no_money_storage'.tr)),
@@ -475,139 +503,22 @@ class _SavingsScreenContent extends StatelessWidget {
       ),
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          isEditing ? 'general.edit_saving'.tr : 'general.add_new_saving'.tr,
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Form(
-          key: formKey,
-          child: ListView(
-            children: [
-              AppTextField(
-                label: 'general.name'.tr,
-                controller: nameController,
-                prefixIcon: Icons.label,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              AppTextField(
-                label: 'general.initial_amount'.tr,
-                controller: initialAmountController,
-                prefixText: 'RM ',
-                keyboardType: AppTextFieldKeyboardType.decimal,
-              ),
-              const SizedBox(height: AppSpacing.md),
-              StatefulBuilder(
-                builder: (context, setState) => AppCard(
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Column(
-                    children: [
-                      SwitchListTile(
-                        title: Text('savings.has_goal'.tr),
-                        value: isHasGoal,
-                        onChanged: (v) => setState(() => isHasGoal = v),
-                      ),
-                      if (isHasGoal) ...[
-                        const SizedBox(height: 8),
-                        AppTextField(
-                          label: 'general.goal_amount'.tr,
-                          controller: goalAmountController,
-                          prefixText: 'RM ',
-                          keyboardType: AppTextFieldKeyboardType.decimal,
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              DropdownButtonFormField<String>(
-                initialValue: selectedSavingType,
-                decoration: InputDecoration(
-                  labelText: 'general.saving_type'.tr,
-                  prefixIcon: const Icon(Icons.category),
-                ),
-                items: SavingTableType.values
-                    .map(
-                      (t) => DropdownMenuItem(
-                        value: t.value,
-                        child: Text(t.label),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (v) => selectedSavingType = v ?? 'saving',
-              ),
-              const SizedBox(height: AppSpacing.md),
-              DropdownButtonFormField<String>(
-                initialValue: selectedMoneyStorageId,
-                decoration: InputDecoration(
-                  labelText: 'general.money_storage'.tr,
-                  prefixIcon: const Icon(Icons.account_balance),
-                ),
-                items: moneyStorageItems,
-                onChanged: (v) => selectedMoneyStorageId = v,
-              ),
-              const SizedBox(height: AppSpacing.xxxl),
-              Row(
-                children: [
-                  Expanded(
-                    child: AppButton.secondary(
-                      label: 'general.cancel'.tr,
-                      onPressed: () => context.read<SavingsBloc>().add(
-                        LoadSavingsListEvent(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: AppButton.primary(
-                      label: isEditing ? 'general.update'.tr : 'general.add'.tr,
-                      onPressed: () {
-                        if (formKey.currentState!.validate()) {
-                          final initialAmount =
-                              double.tryParse(initialAmountController.text) ??
-                              0.0;
-                          final goalAmount =
-                              isHasGoal && goalAmountController.text.isNotEmpty
-                              ? double.tryParse(goalAmountController.text) ??
-                                    0.0
-                              : 0.0;
-                          if (isEditing && saving != null) {
-                            context.read<SavingsBloc>().add(
-                              UpdateSavingsEvent(
-                                id: saving.saving.id,
-                                name: nameController.text,
-                                initialAmount: initialAmount,
-                                isHasGoal: isHasGoal,
-                                goalAmount: goalAmount,
-                                moneyStorageId: selectedMoneyStorageId ?? '',
-                                savingType: selectedSavingType,
-                              ),
-                            );
-                          } else {
-                            context.read<SavingsBloc>().add(
-                              AddSavingsEvent(
-                                name: nameController.text,
-                                initialAmount: initialAmount,
-                                isHasGoal: isHasGoal,
-                                goalAmount: goalAmount,
-                                moneyStorageId: selectedMoneyStorageId ?? '',
-                                savingType: selectedSavingType,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+    return BlocProvider(
+      create: (ctx) =>
+          CategoryBloc(ctx.read<ICategoryRepository>())
+            ..add(LoadCategoriesEvent()),
+      child: _SavingsFormContent(
+        formKey: formKey,
+        nameController: nameController,
+        initialAmountController: initialAmountController,
+        goalAmountController: goalAmountController,
+        isHasGoal: isHasGoal,
+        selectedSavingType: selectedSavingType,
+        selectedMoneyStorageId: selectedMoneyStorageId,
+        selectedCategoryId: selectedCategoryId,
+        moneyStorageItems: moneyStorageItems,
+        isEditing: isEditing,
+        saving: saving,
       ),
     );
   }
@@ -626,6 +537,251 @@ class _SavingsScreenContent extends StatelessWidget {
         message: message,
         onAction: () => context.read<SavingsBloc>().add(LoadSavingsListEvent()),
       ),
+    );
+  }
+}
+
+class _SavingsFormContent extends StatefulWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController nameController;
+  final TextEditingController initialAmountController;
+  final TextEditingController goalAmountController;
+  final bool isHasGoal;
+  final String selectedSavingType;
+  final String? selectedMoneyStorageId;
+  final String? selectedCategoryId;
+  final List<DropdownMenuItem<String>> moneyStorageItems;
+  final bool isEditing;
+  final dynamic saving;
+
+  const _SavingsFormContent({
+    required this.formKey,
+    required this.nameController,
+    required this.initialAmountController,
+    required this.goalAmountController,
+    required this.isHasGoal,
+    required this.selectedSavingType,
+    required this.selectedMoneyStorageId,
+    required this.selectedCategoryId,
+    required this.moneyStorageItems,
+    required this.isEditing,
+    required this.saving,
+  });
+
+  @override
+  State<_SavingsFormContent> createState() => _SavingsFormContentState();
+}
+
+class _SavingsFormContentState extends State<_SavingsFormContent> {
+  String? _selectedCategoryId;
+  bool _isHasGoal = false;
+  String _selectedSavingType = '';
+  String? _selectedMoneyStorageId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategoryId = widget.selectedCategoryId;
+    _isHasGoal = widget.isHasGoal;
+    _selectedSavingType = widget.selectedSavingType;
+    _selectedMoneyStorageId = widget.selectedMoneyStorageId;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CategoryBloc, CategoryState>(
+      builder: (context, categoryState) {
+        final categories = categoryState is CategoryLoaded
+            ? categoryState.categories
+            : <CategoryEntity>[];
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              widget.isEditing
+                  ? 'general.edit_saving'.tr
+                  : 'general.add_new_saving'.tr,
+            ),
+            actions: [
+              if (!widget.isEditing)
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    context.read<CategoryBloc>().add(
+                      const LoadCategoriesForTransactionTypeEvent(
+                        TransactionType.expense,
+                      ),
+                    );
+                  },
+                  tooltip: 'categories.add'.tr,
+                ),
+            ],
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Form(
+              key: widget.formKey,
+              child: ListView(
+                children: [
+                  AppTextField(
+                    label: 'general.name'.tr,
+                    controller: widget.nameController,
+                    prefixIcon: Icons.label,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  AppTextField(
+                    label: 'general.initial_amount'.tr,
+                    controller: widget.initialAmountController,
+                    prefixText: 'RM ',
+                    keyboardType: AppTextFieldKeyboardType.decimal,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  StatefulBuilder(
+                    builder: (context, setState) => AppCard(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: Column(
+                        children: [
+                          SwitchListTile(
+                            title: Text('savings.has_goal'.tr),
+                            value: _isHasGoal,
+                            onChanged: (v) => setState(() => _isHasGoal = v),
+                          ),
+                          if (_isHasGoal) ...[
+                            const SizedBox(height: 8),
+                            AppTextField(
+                              label: 'general.goal_amount'.tr,
+                              controller: widget.goalAmountController,
+                              prefixText: 'RM ',
+                              keyboardType: AppTextFieldKeyboardType.decimal,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  FormCategorySelector(
+                    selectedCategory:
+                        _selectedCategoryId != null && categories.isNotEmpty
+                        ? categories.firstWhere(
+                            (c) => c.id == _selectedCategoryId,
+                            orElse: () => categories.first,
+                          )
+                        : null,
+                    categories: categories,
+                    label: 'savings.default_category'.tr,
+                    hint: 'savings.select_default_category'.tr,
+                    onCategorySelected: (category) {
+                      setState(() {
+                        _selectedCategoryId = category?.id;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  DropdownButtonFormField<String>(
+                    initialValue: _selectedSavingType,
+                    decoration: InputDecoration(
+                      labelText: 'general.saving_type'.tr,
+                      prefixIcon: const Icon(Icons.category),
+                    ),
+                    items: SavingTableType.values
+                        .map(
+                          (t) => DropdownMenuItem(
+                            value: t.value,
+                            child: Text(t.label),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) =>
+                        setState(() => _selectedSavingType = v ?? 'saving'),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  DropdownButtonFormField<String>(
+                    initialValue: _selectedMoneyStorageId,
+                    decoration: InputDecoration(
+                      labelText: 'general.money_storage'.tr,
+                      prefixIcon: const Icon(Icons.account_balance),
+                    ),
+                    items: widget.moneyStorageItems,
+                    onChanged: (v) =>
+                        setState(() => _selectedMoneyStorageId = v),
+                  ),
+                  const SizedBox(height: AppSpacing.xxxl),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: AppButton.secondary(
+                          label: 'general.cancel'.tr,
+                          onPressed: () => context.read<SavingsBloc>().add(
+                            LoadSavingsListEvent(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: AppButton.primary(
+                          label: widget.isEditing
+                              ? 'general.update'.tr
+                              : 'general.add'.tr,
+                          onPressed: () {
+                            if (widget.formKey.currentState!.validate()) {
+                              final initialAmount =
+                                  double.tryParse(
+                                    widget.initialAmountController.text,
+                                  ) ??
+                                  0.0;
+                              final goalAmount =
+                                  _isHasGoal &&
+                                      widget
+                                          .goalAmountController
+                                          .text
+                                          .isNotEmpty
+                                  ? double.tryParse(
+                                          widget.goalAmountController.text,
+                                        ) ??
+                                        0.0
+                                  : 0.0;
+                              if (widget.isEditing && widget.saving != null) {
+                                context.read<SavingsBloc>().add(
+                                  UpdateSavingsEvent(
+                                    id: widget.saving.saving.id,
+                                    name: widget.nameController.text,
+                                    initialAmount: initialAmount,
+                                    isHasGoal: _isHasGoal,
+                                    goalAmount: goalAmount,
+                                    moneyStorageId:
+                                        _selectedMoneyStorageId ?? '',
+                                    savingType: _selectedSavingType,
+                                    categoryId: _selectedCategoryId,
+                                  ),
+                                );
+                              } else {
+                                context.read<SavingsBloc>().add(
+                                  AddSavingsEvent(
+                                    name: widget.nameController.text,
+                                    initialAmount: initialAmount,
+                                    isHasGoal: _isHasGoal,
+                                    goalAmount: goalAmount,
+                                    moneyStorageId:
+                                        _selectedMoneyStorageId ?? '',
+                                    savingType: _selectedSavingType,
+                                    categoryId: _selectedCategoryId,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

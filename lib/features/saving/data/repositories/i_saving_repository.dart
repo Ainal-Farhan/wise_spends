@@ -35,6 +35,7 @@ abstract class ISavingRepository
     required double goalAmount,
     required String moneyStorageId,
     required String savingType,
+    String? categoryId,
   });
 
   Future<void> updateSaving({
@@ -45,6 +46,7 @@ abstract class ISavingRepository
     required double goalAmount,
     required String moneyStorageId,
     required String savingType,
+    String? categoryId,
   });
 
   Future<void> deleteSaving(String id);

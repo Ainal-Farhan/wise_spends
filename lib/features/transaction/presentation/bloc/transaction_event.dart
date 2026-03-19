@@ -76,7 +76,7 @@ final class CreateTransactionEvent extends TransactionEvent {
   final String title;
   final double amount;
   final TransactionType type;
-  final String categoryId;
+  final String? categoryId;
   final DateTime date;
   final TimeOfDay? time;
   final String? note;

@@ -39,7 +39,14 @@ class BudgetPlanDetailLoaded extends BudgetPlanDetailState {
   });
 
   @override
-  List<Object?> get props => [plan, deposits, transactions, milestones, linkedAccounts, analytics];
+  List<Object?> get props => [
+    plan,
+    deposits,
+    transactions,
+    milestones,
+    linkedAccounts,
+    analytics,
+  ];
 
   BudgetPlanDetailLoaded copyWith({
     BudgetPlanEntity? plan,

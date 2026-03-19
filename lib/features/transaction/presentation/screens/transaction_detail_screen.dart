@@ -92,7 +92,8 @@ class _TransactionDetailScreenContent extends StatelessWidget {
         actions: [
           BlocBuilder<TransactionBloc, TransactionState>(
             builder: (context, state) {
-              if (state is! TransactionDetailLoaded) {
+              if (state is! TransactionDetailLoaded ||
+                  state.transaction.isRevoked) {
                 return const SizedBox.shrink();
               }
               return IconButton(

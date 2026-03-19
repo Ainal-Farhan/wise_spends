@@ -17,6 +17,7 @@ import 'package:wise_spends/features/saving/domain/entities/edit_money_storage_f
 import 'package:wise_spends/features/saving/domain/entities/edit_saving_form_vo.dart';
 import 'package:wise_spends/features/saving/domain/entities/money_storage_vo.dart';
 import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
+import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 
 class SavingManager extends ISavingManager {
   final ISavingService _savingService =
@@ -45,6 +46,7 @@ class SavingManager extends ISavingManager {
     required double goalAmount,
     required String moneyStorageId,
     required SavingTableType savingTableType,
+    String? categoryId,
   }) async {
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
       createdBy: _startupManager.currentUser.name,
@@ -57,6 +59,7 @@ class SavingManager extends ISavingManager {
       goal: Value(goalAmount),
       moneyStorageId: Value(moneyStorageId),
       type: savingTableType.value,
+      categoryId: Value(categoryId),
     );
 
     return await _savingService.add(savingTableCompanion);
@@ -138,6 +141,7 @@ class SavingManager extends ISavingManager {
       ),
       moneyStorageId: Value(editSavingFormVO.moneyStorageId),
       type: Value(editSavingFormVO.savingTableType!.value),
+      categoryId: Value(editSavingFormVO.categoryId),
       dateUpdated: Value(DateTime.now()),
     );
 
@@ -262,11 +266,36 @@ class SavingManager extends ISavingManager {
         )
         .toList();
 
-    // Compute reservations for each saving
-    final reserveManager = SingletonUtil.getSingleton<IManagerLocator>()!
-        .getSavingsReserveManager();
-
+    // Load categories for savings that have categoryId set
+    final categoryRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCategoryRepository();
+    
     for (final saving in savingsList) {
+      // Load category if categoryId is set
+      if (saving.saving.categoryId != null && saving.saving.categoryId!.isNotEmpty) {
+        try {
+          final category = await categoryRepo.findById(id: saving.saving.categoryId!);
+          if (category != null) {
+            saving.category = CategoryEntity(
+              id: category.id,
+              name: category.name,
+              iconCodePoint: category.iconCodePoint,
+              iconFontFamily: category.iconFontFamily,
+              isIncome: category.isIncome,
+              isExpense: category.isExpense,
+              orderIndex: category.orderIndex,
+              isActive: category.isActive,
+              createdAt: category.createdAt,
+            );
+          }
+        } catch (e) {
+          // Ignore errors loading category
+        }
+      }
+
+      // Compute reservations for each saving
+      final reserveManager = SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingsReserveManager();
       final reserveSummary = await reserveManager.computeReservationsForSaving(
         saving.saving.id,
       );

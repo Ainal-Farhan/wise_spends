@@ -9,6 +9,7 @@ class EditSavingFormVO implements IVO {
   late bool isHasGoal;
   late String moneyStorageId;
   SavingTableType? savingTableType;
+  String? categoryId;
 
 
   EditSavingFormVO({
@@ -19,6 +20,7 @@ class EditSavingFormVO implements IVO {
     required this.isHasGoal,
     required this.moneyStorageId,
     required this.savingTableType,
+    this.categoryId,
   });
 
   EditSavingFormVO.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class EditSavingFormVO implements IVO {
     goalAmount = json['goalAmount'];
     isHasGoal = json['isHasGoal'];
     moneyStorageId = json['moneyStorageId'];
+    categoryId = json['categoryId'];
     String? savingTableTypeValue = json['savingTableType'];
 
     if (savingTableTypeValue != null) {
@@ -46,6 +49,9 @@ class EditSavingFormVO implements IVO {
     data['moneyStorageId'] = moneyStorageId;
     if (savingTableType != null) {
       data['savingTableType'] = savingTableType!.value;
+    }
+    if (categoryId != null) {
+      data['categoryId'] = categoryId;
     }
     return data;
   }

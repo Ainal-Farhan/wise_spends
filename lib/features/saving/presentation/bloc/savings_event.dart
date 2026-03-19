@@ -36,6 +36,7 @@ class AddSavingsEvent extends SavingsEvent {
   final double goalAmount;
   final String moneyStorageId;
   final String savingType;
+  final String? categoryId;
 
   const AddSavingsEvent({
     required this.name,
@@ -44,6 +45,7 @@ class AddSavingsEvent extends SavingsEvent {
     required this.goalAmount,
     required this.moneyStorageId,
     required this.savingType,
+    this.categoryId,
   });
 
   @override
@@ -54,6 +56,7 @@ class AddSavingsEvent extends SavingsEvent {
     goalAmount,
     moneyStorageId,
     savingType,
+    ?categoryId,
   ];
 }
 
@@ -65,6 +68,7 @@ class UpdateSavingsEvent extends SavingsEvent {
   final double goalAmount;
   final String moneyStorageId;
   final String savingType;
+  final String? categoryId;
 
   const UpdateSavingsEvent({
     required this.id,
@@ -74,6 +78,7 @@ class UpdateSavingsEvent extends SavingsEvent {
     required this.goalAmount,
     required this.moneyStorageId,
     required this.savingType,
+    this.categoryId,
   });
 
   @override
@@ -85,6 +90,7 @@ class UpdateSavingsEvent extends SavingsEvent {
     goalAmount,
     moneyStorageId,
     savingType,
+    ?categoryId,
   ];
 }
 

@@ -132,6 +132,7 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
         goalAmount: event.goalAmount,
         moneyStorageId: event.moneyStorageId,
         savingType: event.savingType,
+        categoryId: event.categoryId,
       );
       emit(SavingsSuccess('Successfully added saving'));
       // Reload the list after successful addition
@@ -155,6 +156,7 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
         goalAmount: event.goalAmount,
         moneyStorageId: event.moneyStorageId,
         savingType: event.savingType,
+        categoryId: event.categoryId,
       );
       emit(SavingsSuccess('Successfully updated saving'));
       // Reload the list after successful update

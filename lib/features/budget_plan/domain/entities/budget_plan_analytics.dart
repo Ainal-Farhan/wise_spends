@@ -15,15 +15,11 @@ class PlanProgressSnapshot extends Equatable {
   });
 
   /// Get day index for charting (days from start)
-  int get dayIndex => date.difference(DateTime(date.year, date.month, 1)).inDays;
+  int get dayIndex =>
+      date.difference(DateTime(date.year, date.month, 1)).inDays;
 
   @override
-  List<Object?> get props => [
-        date,
-        amount,
-        targetAmount,
-        progressPercentage,
-      ];
+  List<Object?> get props => [date, amount, targetAmount, progressPercentage];
 }
 
 /// Monthly Contribution - for bar charts
@@ -48,8 +44,18 @@ class MonthlyContribution extends Equatable {
   /// Get month name
   String get monthName {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[monthIndex];
   }
@@ -57,20 +63,24 @@ class MonthlyContribution extends Equatable {
   /// Get full month name
   String get monthFullName {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return months[monthIndex];
   }
 
   @override
-  List<Object?> get props => [
-        year,
-        month,
-        deposits,
-        spending,
-        net,
-      ];
+  List<Object?> get props => [year, month, deposits, spending, net];
 }
 
 /// Spending by Category - for donut charts
@@ -88,12 +98,7 @@ class SpendingByCategory extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        category,
-        amount,
-        percentage,
-        iconCode,
-      ];
+  List<Object?> get props => [category, amount, percentage, iconCode];
 }
 
 /// Plan Analytics Data - aggregated data for charts
@@ -118,12 +123,32 @@ class PlanAnalyticsData extends Equatable {
 
   @override
   List<Object?> get props => [
-        monthlyContributions,
-        progressHistory,
-        spendingByCategory,
-        averageMonthlyDeposit,
-        averageMonthlySpending,
-        projectedCompletionMonths,
-        projectedCompletionLabel,
-      ];
+    monthlyContributions,
+    progressHistory,
+    spendingByCategory,
+    averageMonthlyDeposit,
+    averageMonthlySpending,
+    projectedCompletionMonths,
+    projectedCompletionLabel,
+  ];
+}
+
+// ─── Point-in-time balance snapshot ───────────────────────────────────────
+
+class ProgressSnapshot {
+  final DateTime date;
+
+  /// Saved amount at this point in time.
+  final double amount;
+
+  const ProgressSnapshot({required this.date, required this.amount});
+}
+
+// ─── Spending broken down by category ─────────────────────────────────────
+
+class CategorySpending {
+  final String categoryName;
+  final double amount;
+
+  const CategorySpending({required this.categoryName, required this.amount});
 }

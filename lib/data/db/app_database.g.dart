@@ -7607,6 +7607,20 @@ class $SavingTableTable extends SavingTable
       'REFERENCES money_storage_table (id)',
     ),
   );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
+  );
+  @override
+  late final GeneratedColumn<String> categoryId = GeneratedColumn<String>(
+    'category_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES category_table (id)',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7630,6 +7644,7 @@ class $SavingTableTable extends SavingTable
     currentAmount,
     userId,
     moneyStorageId,
+    categoryId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7804,6 +7819,12 @@ class $SavingTableTable extends SavingTable
         ),
       );
     }
+    if (data.containsKey('category_id')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
+      );
+    }
     return context;
   }
 
@@ -7901,6 +7922,10 @@ class $SavingTableTable extends SavingTable
         DriftSqlType.string,
         data['${effectivePrefix}money_storage_id'],
       ),
+      categoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category_id'],
+      ),
     );
   }
 
@@ -7932,6 +7957,9 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   final double currentAmount;
   final String? userId;
   final String? moneyStorageId;
+
+  /// Optional default category for transactions from this saving account
+  final String? categoryId;
   const SvngSaving({
     required this.id,
     required this.createdBy,
@@ -7954,6 +7982,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     required this.currentAmount,
     this.userId,
     this.moneyStorageId,
+    this.categoryId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7989,6 +8018,9 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     if (!nullToAbsent || moneyStorageId != null) {
       map['money_storage_id'] = Variable<String>(moneyStorageId);
     }
+    if (!nullToAbsent || categoryId != null) {
+      map['category_id'] = Variable<String>(categoryId);
+    }
     return map;
   }
 
@@ -8023,6 +8055,9 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       moneyStorageId: moneyStorageId == null && nullToAbsent
           ? const Value.absent()
           : Value(moneyStorageId),
+      categoryId: categoryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoryId),
     );
   }
 
@@ -8053,6 +8088,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       currentAmount: serializer.fromJson<double>(json['currentAmount']),
       userId: serializer.fromJson<String?>(json['userId']),
       moneyStorageId: serializer.fromJson<String?>(json['moneyStorageId']),
+      categoryId: serializer.fromJson<String?>(json['categoryId']),
     );
   }
   @override
@@ -8080,6 +8116,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       'currentAmount': serializer.toJson<double>(currentAmount),
       'userId': serializer.toJson<String?>(userId),
       'moneyStorageId': serializer.toJson<String?>(moneyStorageId),
+      'categoryId': serializer.toJson<String?>(categoryId),
     };
   }
 
@@ -8105,6 +8142,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     double? currentAmount,
     Value<String?> userId = const Value.absent(),
     Value<String?> moneyStorageId = const Value.absent(),
+    Value<String?> categoryId = const Value.absent(),
   }) => SvngSaving(
     id: id ?? this.id,
     createdBy: createdBy ?? this.createdBy,
@@ -8129,6 +8167,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     moneyStorageId: moneyStorageId.present
         ? moneyStorageId.value
         : this.moneyStorageId,
+    categoryId: categoryId.present ? categoryId.value : this.categoryId,
   );
   SvngSaving copyWithCompanion(SavingTableCompanion data) {
     return SvngSaving(
@@ -8173,6 +8212,9 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       moneyStorageId: data.moneyStorageId.present
           ? data.moneyStorageId.value
           : this.moneyStorageId,
+      categoryId: data.categoryId.present
+          ? data.categoryId.value
+          : this.categoryId,
     );
   }
 
@@ -8199,7 +8241,8 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
           ..write('type: $type, ')
           ..write('currentAmount: $currentAmount, ')
           ..write('userId: $userId, ')
-          ..write('moneyStorageId: $moneyStorageId')
+          ..write('moneyStorageId: $moneyStorageId, ')
+          ..write('categoryId: $categoryId')
           ..write(')'))
         .toString();
   }
@@ -8227,6 +8270,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     currentAmount,
     userId,
     moneyStorageId,
+    categoryId,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -8252,7 +8296,8 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
           other.type == this.type &&
           other.currentAmount == this.currentAmount &&
           other.userId == this.userId &&
-          other.moneyStorageId == this.moneyStorageId);
+          other.moneyStorageId == this.moneyStorageId &&
+          other.categoryId == this.categoryId);
 }
 
 class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
@@ -8277,6 +8322,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<double> currentAmount;
   final Value<String?> userId;
   final Value<String?> moneyStorageId;
+  final Value<String?> categoryId;
   final Value<int> rowid;
   const SavingTableCompanion({
     this.id = const Value.absent(),
@@ -8300,6 +8346,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.currentAmount = const Value.absent(),
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
+    this.categoryId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   SavingTableCompanion.insert({
@@ -8324,6 +8371,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.currentAmount = const Value.absent(),
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
+    this.categoryId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdBy = Value(createdBy),
        dateUpdated = Value(dateUpdated),
@@ -8351,6 +8399,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     Expression<double>? currentAmount,
     Expression<String>? userId,
     Expression<String>? moneyStorageId,
+    Expression<String>? categoryId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -8375,6 +8424,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       if (currentAmount != null) 'current_amount': currentAmount,
       if (userId != null) 'user_id': userId,
       if (moneyStorageId != null) 'money_storage_id': moneyStorageId,
+      if (categoryId != null) 'category_id': categoryId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -8401,6 +8451,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     Value<double>? currentAmount,
     Value<String?>? userId,
     Value<String?>? moneyStorageId,
+    Value<String?>? categoryId,
     Value<int>? rowid,
   }) {
     return SavingTableCompanion(
@@ -8425,6 +8476,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       currentAmount: currentAmount ?? this.currentAmount,
       userId: userId ?? this.userId,
       moneyStorageId: moneyStorageId ?? this.moneyStorageId,
+      categoryId: categoryId ?? this.categoryId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -8495,6 +8547,9 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     if (moneyStorageId.present) {
       map['money_storage_id'] = Variable<String>(moneyStorageId.value);
     }
+    if (categoryId.present) {
+      map['category_id'] = Variable<String>(categoryId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -8525,6 +8580,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
           ..write('currentAmount: $currentAmount, ')
           ..write('userId: $userId, ')
           ..write('moneyStorageId: $moneyStorageId, ')
+          ..write('categoryId: $categoryId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -22104,6 +22160,27 @@ final class $$CategoryTableTableReferences
     );
   }
 
+  static MultiTypedResultKey<$SavingTableTable, List<SvngSaving>>
+  _savingTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.savingTable,
+    aliasName: $_aliasNameGenerator(
+      db.categoryTable.id,
+      db.savingTable.categoryId,
+    ),
+  );
+
+  $$SavingTableTableProcessedTableManager get savingTableRefs {
+    final manager = $$SavingTableTableTableManager(
+      $_db,
+      $_db.savingTable,
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_savingTableRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$TransactionTableTable, List<TrnsctnTransaction>>
   _transactionTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.transactionTable,
@@ -22246,6 +22323,31 @@ class $$CategoryTableTableFilterComposer
           }) => $$SpendingBudgetTableTableFilterComposer(
             $db: $db,
             $table: $db.spendingBudgetTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> savingTableRefs(
+    Expression<bool> Function($$SavingTableTableFilterComposer f) f,
+  ) {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -22469,6 +22571,31 @@ class $$CategoryTableTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> savingTableRefs<T extends Object>(
+    Expression<T> Function($$SavingTableTableAnnotationComposer a) f,
+  ) {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> transactionTableRefs<T extends Object>(
     Expression<T> Function($$TransactionTableTableAnnotationComposer a) f,
   ) {
@@ -22537,6 +22664,7 @@ class $$CategoryTableTableTableManager
           TrnsctnCategory,
           PrefetchHooks Function({
             bool spendingBudgetTableRefs,
+            bool savingTableRefs,
             bool transactionTableRefs,
             bool recurringTransactionTableRefs,
           })
@@ -22627,6 +22755,7 @@ class $$CategoryTableTableTableManager
           prefetchHooksCallback:
               ({
                 spendingBudgetTableRefs = false,
+                savingTableRefs = false,
                 transactionTableRefs = false,
                 recurringTransactionTableRefs = false,
               }) {
@@ -22634,6 +22763,7 @@ class $$CategoryTableTableTableManager
                   db: db,
                   explicitlyWatchedTables: [
                     if (spendingBudgetTableRefs) db.spendingBudgetTable,
+                    if (savingTableRefs) db.savingTable,
                     if (transactionTableRefs) db.transactionTable,
                     if (recurringTransactionTableRefs)
                       db.recurringTransactionTable,
@@ -22656,6 +22786,27 @@ class $$CategoryTableTableTableManager
                                 table,
                                 p0,
                               ).spendingBudgetTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.categoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (savingTableRefs)
+                        await $_getPrefetchedData<
+                          TrnsctnCategory,
+                          $CategoryTableTable,
+                          SvngSaving
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CategoryTableTableReferences
+                              ._savingTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CategoryTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).savingTableRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.categoryId == item.id,
@@ -22726,6 +22877,7 @@ typedef $$CategoryTableTableProcessedTableManager =
       TrnsctnCategory,
       PrefetchHooks Function({
         bool spendingBudgetTableRefs,
+        bool savingTableRefs,
         bool transactionTableRefs,
         bool recurringTransactionTableRefs,
       })
@@ -26261,6 +26413,7 @@ typedef $$SavingTableTableCreateCompanionBuilder =
       Value<double> currentAmount,
       Value<String?> userId,
       Value<String?> moneyStorageId,
+      Value<String?> categoryId,
       Value<int> rowid,
     });
 typedef $$SavingTableTableUpdateCompanionBuilder =
@@ -26286,6 +26439,7 @@ typedef $$SavingTableTableUpdateCompanionBuilder =
       Value<double> currentAmount,
       Value<String?> userId,
       Value<String?> moneyStorageId,
+      Value<String?> categoryId,
       Value<int> rowid,
     });
 
@@ -26328,6 +26482,25 @@ final class $$SavingTableTableReferences
       $_db.moneyStorageTable,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_moneyStorageIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $CategoryTableTable _categoryIdTable(_$AppDatabase db) =>
+      db.categoryTable.createAlias(
+        $_aliasNameGenerator(db.savingTable.categoryId, db.categoryTable.id),
+      );
+
+  $$CategoryTableTableProcessedTableManager? get categoryId {
+    final $_column = $_itemColumn<String>('category_id');
+    if ($_column == null) return null;
+    final manager = $$CategoryTableTableTableManager(
+      $_db,
+      $_db.categoryTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -26555,6 +26728,29 @@ class $$SavingTableTableFilterComposer
           }) => $$MoneyStorageTableTableFilterComposer(
             $db: $db,
             $table: $db.moneyStorageTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$CategoryTableTableFilterComposer get categoryId {
+    final $$CategoryTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryTableTableFilterComposer(
+            $db: $db,
+            $table: $db.categoryTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -26795,6 +26991,29 @@ class $$SavingTableTableOrderingComposer
     );
     return composer;
   }
+
+  $$CategoryTableTableOrderingComposer get categoryId {
+    final $$CategoryTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.categoryTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$SavingTableTableAnnotationComposer
@@ -26928,6 +27147,29 @@ class $$SavingTableTableAnnotationComposer
     return composer;
   }
 
+  $$CategoryTableTableAnnotationComposer get categoryId {
+    final $$CategoryTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categoryTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoryTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.categoryTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<T> commitmentTableRefs<T extends Object>(
     Expression<T> Function($$CommitmentTableTableAnnotationComposer a) f,
   ) {
@@ -27026,6 +27268,7 @@ class $$SavingTableTableTableManager
           PrefetchHooks Function({
             bool userId,
             bool moneyStorageId,
+            bool categoryId,
             bool commitmentTableRefs,
             bool savingsPlanLinkedAccountTableRefs,
             bool recurringTransactionTableRefs,
@@ -27065,6 +27308,7 @@ class $$SavingTableTableTableManager
                 Value<double> currentAmount = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> moneyStorageId = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SavingTableCompanion(
                 id: id,
@@ -27088,6 +27332,7 @@ class $$SavingTableTableTableManager
                 currentAmount: currentAmount,
                 userId: userId,
                 moneyStorageId: moneyStorageId,
+                categoryId: categoryId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -27113,6 +27358,7 @@ class $$SavingTableTableTableManager
                 Value<double> currentAmount = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> moneyStorageId = const Value.absent(),
+                Value<String?> categoryId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => SavingTableCompanion.insert(
                 id: id,
@@ -27136,6 +27382,7 @@ class $$SavingTableTableTableManager
                 currentAmount: currentAmount,
                 userId: userId,
                 moneyStorageId: moneyStorageId,
+                categoryId: categoryId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -27150,6 +27397,7 @@ class $$SavingTableTableTableManager
               ({
                 userId = false,
                 moneyStorageId = false,
+                categoryId = false,
                 commitmentTableRefs = false,
                 savingsPlanLinkedAccountTableRefs = false,
                 recurringTransactionTableRefs = false,
@@ -27205,6 +27453,21 @@ class $$SavingTableTableTableManager
                                     referencedColumn:
                                         $$SavingTableTableReferences
                                             ._moneyStorageIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (categoryId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.categoryId,
+                                    referencedTable:
+                                        $$SavingTableTableReferences
+                                            ._categoryIdTable(db),
+                                    referencedColumn:
+                                        $$SavingTableTableReferences
+                                            ._categoryIdTable(db)
                                             .id,
                                   )
                                   as T;
@@ -27300,6 +27563,7 @@ typedef $$SavingTableTableProcessedTableManager =
       PrefetchHooks Function({
         bool userId,
         bool moneyStorageId,
+        bool categoryId,
         bool commitmentTableRefs,
         bool savingsPlanLinkedAccountTableRefs,
         bool recurringTransactionTableRefs,

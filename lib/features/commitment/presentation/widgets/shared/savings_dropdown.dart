@@ -31,7 +31,7 @@ class SavingsDropdown extends StatelessWidget {
     required this.onChanged,
     this.label = 'Savings Account',
     this.hint,
-    this.prefixIcon = Icons.savings,
+    this.prefixIcon = Icons.wallet,
     this.includeNoneOption = true,
   });
 

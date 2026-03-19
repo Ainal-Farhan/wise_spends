@@ -44,6 +44,7 @@ class SavingRepository extends ISavingRepository {
     required double goalAmount,
     required String moneyStorageId,
     required String savingType,
+    String? categoryId,
   }) async {
     try {
       final savingTypeEnum = SavingTableType.findByValue(savingType);
@@ -60,6 +61,7 @@ class SavingRepository extends ISavingRepository {
             goalAmount: goalAmount,
             moneyStorageId: moneyStorageId,
             savingTableType: savingTypeEnum,
+            categoryId: categoryId,
           );
     } catch (e) {
       throw Exception('Failed to add saving: $e');
@@ -75,6 +77,7 @@ class SavingRepository extends ISavingRepository {
     required double goalAmount,
     required String moneyStorageId,
     required String savingType,
+    String? categoryId,
   }) async {
     try {
       final savingTypeEnum = SavingTableType.findByValue(savingType);
@@ -90,6 +93,7 @@ class SavingRepository extends ISavingRepository {
         isHasGoal: isHasGoal,
         moneyStorageId: moneyStorageId,
         savingTableType: savingTypeEnum,
+        categoryId: categoryId,
       );
 
       await SingletonUtil.getSingleton<IManagerLocator>()!

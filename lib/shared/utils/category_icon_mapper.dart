@@ -451,7 +451,7 @@ class CategoryIconMapper {
         {'icon': Icons.gavel, 'label': 'Tax'},
         {'icon': Icons.monetization_on, 'label': 'Loan'},
         {'icon': Icons.credit_card, 'label': 'Credit Card'},
-        {'icon': Icons.savings, 'label': 'Savings'},
+        {'icon': Icons.wallet, 'label': 'Savings'},
       ]),
 
       // Health Icons

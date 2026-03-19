@@ -117,7 +117,7 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
                       title: 'Finance',
                       items: [
                         _NavItemData(
-                          icon: Icons.savings,
+                          icon: Icons.wallet,
                           label: 'Savings',
                           route: AppRoutes.savings,
                         ),

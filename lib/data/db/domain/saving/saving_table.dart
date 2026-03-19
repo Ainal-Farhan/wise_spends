@@ -3,6 +3,7 @@ import 'package:wise_spends/core/constants/constant/domain/domain_table_constant
 import 'package:wise_spends/data/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/data/db/domain/common/user_table.dart';
 import 'package:wise_spends/data/db/domain/saving/money_storage_table.dart';
+import 'package:wise_spends/data/db/domain/transaction/category_table.dart';
 
 @DataClassName("${DomainTableConstant.savingTablePrefix}Saving")
 class SavingTable extends BaseEntityTable {
@@ -25,6 +26,10 @@ class SavingTable extends BaseEntityTable {
   TextColumn get userId => text().nullable().references(UserTable, #id)();
   TextColumn get moneyStorageId =>
       text().nullable().references(MoneyStorageTable, #id)();
+  
+  /// Optional default category for transactions from this saving account
+  TextColumn get categoryId =>
+      text().nullable().references(CategoryTable, #id)();
 
   @override
   List<Set<Column>> get uniqueKeys => [
@@ -50,6 +55,7 @@ class SavingTable extends BaseEntityTable {
       'currentAmount': currentAmount.name,
       'userId': userId.name,
       'moneyStorageId': moneyStorageId.name,
+      'categoryId': categoryId.name,
     };
   }
 }

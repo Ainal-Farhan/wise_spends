@@ -409,6 +409,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         );
       }
 
+      // Auto-select category based on priority: destination >> source
+      String? categoryId = event.categoryId;
+      if (categoryId == null) {
+        // Try destination account first (higher priority)
+        if (event.destinationAccountId != null) {
+          final destinationSaving = await _savingRepository.getSavingById(
+            event.destinationAccountId!,
+          );
+          categoryId = destinationSaving?.saving.categoryId;
+        }
+        // Fall back to source account if destination has no category
+        if (event.sourceAccountId != null) {
+          final sourceSaving = await _savingRepository.getSavingById(
+            event.sourceAccountId!,
+          );
+          categoryId = sourceSaving?.saving.categoryId;
+        }
+      }
+
       final transaction = TransactionEntity(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: event.title,
@@ -417,7 +436,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         savingId: event.sourceAccountId ?? '',
         payeeId: event.payeeId,
         destinationSavingId: event.destinationAccountId,
-        categoryId: event.categoryId,
+        categoryId: categoryId,
         date: transactionDateTime,
         note: event.note,
         createdAt: DateTime.now(),

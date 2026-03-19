@@ -177,7 +177,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
         ),
         BudgetPlanItemsListScreen(planId: widget.planUuid),
         BudgetPlanTransactionsTab(state: state),
-        BudgetPlanChartsTab(state: state),
+        BudgetPlanChartsTab(plan: state.plan, planUuid: widget.planUuid),
       ],
     );
   }
