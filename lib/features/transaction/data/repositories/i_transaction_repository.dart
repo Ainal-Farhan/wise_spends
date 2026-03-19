@@ -2,6 +2,7 @@ import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/db/domain/transaction/transaction_table.dart';
 import 'package:wise_spends/data/repositories/i_crud_repository.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_revoke_entity.dart';
 
 abstract class ITransactionRepository
     extends
@@ -83,4 +84,17 @@ abstract class ITransactionRepository
 
   /// Returns transactions whose description or note contains [keyword].
   Future<List<TransactionEntity>> searchByKeyword(String keyword);
+
+  // ---------------------------------------------------------------------------
+  // Revoke
+  // ---------------------------------------------------------------------------
+
+  /// Revokes a transaction with the given [reason] and [revokedAt] timestamp.
+  /// Returns the revoke entity.
+  /// Throws if the transaction is already revoked.
+  Future<TransactionRevokeEntity> revokeTransaction({
+    required String transactionId,
+    required String reason,
+    required DateTime revokedAt,
+  });
 }

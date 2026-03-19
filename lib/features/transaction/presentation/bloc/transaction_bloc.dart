@@ -38,6 +38,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<RefreshTransactionsEvent>(_onRefreshTransactions);
     on<ReloadTransactionsEvent>(_onReloadTransactions);
     on<FilterTransactionsByDateRangeEvent>(_onFilterByDateRange);
+    on<RevokeTransactionEvent>(_onRevokeTransaction);
   }
 
   // ============================================================================
@@ -846,5 +847,26 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) async {
     add(LoadTransactionsEvent());
+  }
+
+  // ============================================================================
+  // REVOKE
+  // ============================================================================
+
+  Future<void> _onRevokeTransaction(
+    RevokeTransactionEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    try {
+      await _repository.revokeTransaction(
+        transactionId: event.transactionId,
+        reason: event.reason,
+        revokedAt: DateTime.now(),
+      );
+      emit(TransactionRevoked(event.transactionId));
+      add(LoadTransactionsEvent());
+    } catch (e) {
+      emit(TransactionError('Failed to revoke transaction: ${e.toString()}'));
+    }
   }
 }

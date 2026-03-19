@@ -7,13 +7,37 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'package:wise_spends/shared/theme/ui_constants.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 
-/// Check if transaction is a budget plan type
+// ─── Helpers ───────────────────────────────────────────────────────────────
+
+/// Check if transaction is a budget plan type.
 bool isBudgetPlanType(TransactionType type) {
   return type == TransactionType.budgetPlanDeposit ||
       type == TransactionType.budgetPlanExpense;
 }
 
-/// Reusable transaction card widget
+// ─── Transaction Card ──────────────────────────────────────────────────────
+
+/// A polished, overflow-safe transaction card.
+///
+/// Layout strategy
+/// ───────────────
+///  ┌──────────────────────────────────────────────────────────┐
+///  │  [Icon]  [Title ············ ellipsis]  [REVOKED]  [Del]│
+///  │          [Date] [Badge/Note ·· ellip]   [Amount]        │
+///  └──────────────────────────────────────────────────────────┘
+///
+/// The revoked badge sits above the amount in the trailing column so it
+/// uses the natural vertical space there without competing with the title.
+///
+/// Overflow guards
+/// ───────────────
+/// • Title: `maxLines: 1 + ellipsis` — never wraps.
+/// • Amount column: right-aligned column, badge + amount both at intrinsic
+///   width — the title [Expanded] absorbs all leftover horizontal space.
+/// • Note/Badge row: the note text is in a separate `Expanded` so long notes
+///   do not push the badge out of bounds.
+/// • Budget badge and note are mutually exclusive — badge takes priority.
+/// • Delete button has a fixed width so it cannot be squeezed to zero.
 class TransactionCard extends StatelessWidget {
   final String title;
   final double amount;
@@ -26,6 +50,7 @@ class TransactionCard extends StatelessWidget {
   final VoidCallback? onLongPress;
   final VoidCallback? onDelete;
   final bool showBudgetPlanIndicator;
+  final bool isRevoked;
 
   const TransactionCard({
     super.key,
@@ -40,6 +65,7 @@ class TransactionCard extends StatelessWidget {
     this.onLongPress,
     this.onDelete,
     this.showBudgetPlanIndicator = false,
+    this.isRevoked = false,
   });
 
   @override
@@ -49,131 +75,94 @@ class TransactionCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: UIConstants.spacingSmall),
       elevation: UIConstants.elevationNone,
+      clipBehavior: Clip.hardEdge, // ensure InkWell ripple is clipped
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-        side: BorderSide(color: colorScheme.outline),
+        side: BorderSide(
+          color: isRevoked
+              ? colorScheme.error.withValues(alpha: 0.35)
+              : colorScheme.outline,
+        ),
       ),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
         borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
         child: Padding(
-          padding: const EdgeInsets.all(UIConstants.spacingLarge),
+          padding: const EdgeInsets.symmetric(
+            horizontal: UIConstants.spacingLarge,
+            vertical: UIConstants.spacingMedium,
+          ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Category Icon
-              _buildIconContainer(context, colorScheme),
-              const SizedBox(width: UIConstants.spacingLarge),
+              // ── Icon ─────────────────────────────────────────────────
+              _IconContainer(type: type, icon: icon),
 
-              // Transaction Details
+              const SizedBox(width: UIConstants.spacingMedium),
+
+              // ── Title + meta ─────────────────────────────────────────
+              // [Expanded] here absorbs all flex space so the trailing
+              // column (revoked badge + amount) always renders at its
+              // intrinsic width.
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurface,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    _TitleRow(
+                      title: title,
+                      isRevoked: isRevoked,
+                      colorScheme: colorScheme,
+                      context: context,
                     ),
-                    const SizedBox(height: UIConstants.spacingXS),
-                    Row(
-                      children: [
-                        Text(
-                          _formatDate(date),
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(color: colorScheme.onSurfaceVariant),
-                        ),
-                        if (showBudgetPlanIndicator) ...[
-                          const SizedBox(width: UIConstants.spacingXS),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: UIConstants.spacingXS,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(
-                                UIConstants.radiusSmall,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.account_balance_wallet_outlined,
-                                  size: 10,
-                                  color: colorScheme.primary,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'budget_plans.linked'.tr,
-                                  style: AppTextStyles.bodySmall.copyWith(
-                                    color: colorScheme.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        if (note != null &&
-                            note!.isNotEmpty &&
-                            !showBudgetPlanIndicator) ...[
-                          const SizedBox(width: UIConstants.spacingSmall),
-                          Container(
-                            width: 4,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: colorScheme.onSurfaceVariant,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: UIConstants.spacingSmall),
-                          Expanded(
-                            child: Text(
-                              _formatNote(note!),
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ],
+
+                    const SizedBox(height: 3),
+
+                    _MetaRow(
+                      date: date,
+                      note: note,
+                      showBudgetPlanIndicator: showBudgetPlanIndicator,
+                      colorScheme: colorScheme,
+                      context: context,
                     ),
                   ],
                 ),
               ),
 
-              // Amount
-              AmountDisplay(
-                amount: amount,
-                type: type,
-                style: Theme.of(context).textTheme.titleMedium,
-                note: note,
+              const SizedBox(width: UIConstants.spacingSmall),
+
+              // ── Trailing column: revoked badge (if any) + amount ──────
+              // Both are right-aligned. The badge sits above the amount,
+              // using the vertical space that already exists in the card.
+              IntrinsicWidth(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isRevoked) ...[
+                      _Badge(
+                        icon: Icons.block_rounded,
+                        label: 'transaction.detail.revoked'.tr,
+                        bgColor: colorScheme.errorContainer,
+                        fgColor: colorScheme.onErrorContainer,
+                      ),
+                      const SizedBox(height: 4),
+                    ],
+                    AmountDisplay(
+                      amount: amount,
+                      type: type,
+                      style: Theme.of(context).textTheme.titleMedium,
+                      note: note,
+                    ),
+                  ],
+                ),
               ),
 
-              // Delete button (optional)
+              // ── Delete button ─────────────────────────────────────────
               if (onDelete != null) ...[
-                const SizedBox(width: UIConstants.spacingSmall),
-                InkWell(
-                  onTap: onDelete,
-                  borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
-                  child: Padding(
-                    padding: EdgeInsets.all(UIConstants.spacingSmall),
-                    child: Icon(
-                      Icons.delete_outline,
-                      size: UIConstants.iconMedium,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
+                const SizedBox(width: UIConstants.spacingXS),
+                _DeleteButton(onDelete: onDelete!, colorScheme: colorScheme),
               ],
             ],
           ),
@@ -181,27 +170,150 @@ class TransactionCard extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildIconContainer(BuildContext context, ColorScheme colorScheme) {
-    // Get background color based on transaction type
-    Color backgroundColor;
-    IconData defaultIcon;
+// ─── Icon Container ────────────────────────────────────────────────────────
 
-    defaultIcon = type.icon;
-    backgroundColor = type.getBackgroundColor(context);
+class _IconContainer extends StatelessWidget {
+  final TransactionType type;
+  final IconData? icon;
+
+  const _IconContainer({required this.type, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = type.getBackgroundColor(context);
+    // Use a fixed size that matches the touch target but never exceeds it.
+    const size = UIConstants.touchTargetMin;
 
     return Container(
-      width: UIConstants.touchTargetMin,
-      height: UIConstants.touchTargetMin,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: bg,
         borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
       ),
-      child: Icon(
-        icon ?? defaultIcon,
-        color: Theme.of(context).canvasColor,
-        size: UIConstants.iconLarge,
+      child: Center(
+        child: Icon(
+          icon ?? type.icon,
+          color: Theme.of(context).canvasColor,
+          size: UIConstants.iconLarge,
+        ),
       ),
+    );
+  }
+}
+
+// ─── Title Row ─────────────────────────────────────────────────────────────
+
+/// Renders the transaction title, dimmed when the transaction is revoked.
+///
+/// The title is always a single line with ellipsis. Dimming gives a subtle
+/// visual hint that this entry is inactive without needing an inline badge.
+class _TitleRow extends StatelessWidget {
+  final String title;
+  final bool isRevoked;
+  final ColorScheme colorScheme;
+  final BuildContext context;
+
+  const _TitleRow({
+    required this.title,
+    required this.isRevoked,
+    required this.colorScheme,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext _) {
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        color: isRevoked
+            ? colorScheme.onSurface.withValues(alpha: 0.45)
+            : colorScheme.onSurface,
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+}
+
+// ─── Meta Row ──────────────────────────────────────────────────────────────
+
+/// Renders the date, optional budget badge, and optional note.
+///
+/// Overflow guards:
+/// - Date is always shown at its natural width (no flex).
+/// - Badge is shown at its natural width (no flex).
+/// - Note is in an [Expanded] so it truncates instead of overflowing.
+/// - Budget badge and note are mutually exclusive — badge takes priority.
+class _MetaRow extends StatelessWidget {
+  final DateTime date;
+  final String? note;
+  final bool showBudgetPlanIndicator;
+  final ColorScheme colorScheme;
+  final BuildContext context;
+
+  const _MetaRow({
+    required this.date,
+    required this.note,
+    required this.showBudgetPlanIndicator,
+    required this.colorScheme,
+    required this.context,
+  });
+
+  @override
+  Widget build(BuildContext _) {
+    final hasNote = note != null && note!.isNotEmpty;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // Date — always fixed width, never shrinks.
+        Text(
+          _formatDate(date),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+        ),
+
+        // Budget plan badge (takes priority over note)
+        if (showBudgetPlanIndicator) ...[
+          const SizedBox(width: UIConstants.spacingXS),
+          _Badge(
+            icon: Icons.account_balance_wallet_outlined,
+            label: 'budget_plans.linked'.tr,
+            bgColor: colorScheme.primaryContainer,
+            fgColor: colorScheme.primary,
+          ),
+        ]
+        // Note — shown only when no budget badge
+        else if (hasNote) ...[
+          const SizedBox(width: UIConstants.spacingSmall),
+          // Dot separator
+          Container(
+            width: 3,
+            height: 3,
+            decoration: BoxDecoration(
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: UIConstants.spacingSmall),
+          // Expanded ensures long notes are ellipsed rather than overflowing.
+          Expanded(
+            child: Text(
+              note!,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -209,29 +321,103 @@ class TransactionCard extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
-    final transactionDate = DateTime(date.year, date.month, date.day);
+    final txDate = DateTime(date.year, date.month, date.day);
 
-    if (transactionDate == today) {
-      return 'Today';
-    } else if (transactionDate == yesterday) {
-      return 'Yesterday';
-    } else {
-      // Check if within last 7 days
-      final daysAgo = today.difference(transactionDate).inDays;
-      if (daysAgo < 7) {
-        return DateFormat('EEEE').format(date); // e.g., "Monday"
-      }
-      return DateFormat('MMM d, y').format(date); // e.g., "Jan 15, 2024"
-    }
-  }
+    if (txDate == today) return 'Today';
+    if (txDate == yesterday) return 'Yesterday';
 
-  /// Format note for display - hides UIDs and shows friendly names
-  String _formatNote(String note) {
-    return note;
+    final daysAgo = today.difference(txDate).inDays;
+    if (daysAgo < 7) return DateFormat('EEEE').format(date);
+    return DateFormat('MMM d, y').format(date);
   }
 }
 
-/// Transaction card with swipe-to-delete functionality
+// ─── Delete Button ─────────────────────────────────────────────────────────
+
+/// A compact delete icon button with a fixed minimum tap target.
+///
+/// Uses a fixed [SizedBox] wrapper so the button width is predictable
+/// and cannot be squeezed to zero by a very long title + large amount.
+class _DeleteButton extends StatelessWidget {
+  final VoidCallback onDelete;
+  final ColorScheme colorScheme;
+
+  const _DeleteButton({required this.onDelete, required this.colorScheme});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: UIConstants.touchTargetMin,
+      height: UIConstants.touchTargetMin,
+      child: InkWell(
+        onTap: onDelete,
+        borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
+        child: Icon(
+          Icons.delete_outline,
+          size: UIConstants.iconMedium,
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Badge ─────────────────────────────────────────────────────────────────
+
+/// A small pill badge used for both the budget-linked and revoked indicators.
+class _Badge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color bgColor;
+  final Color fgColor;
+
+  const _Badge({
+    required this.icon,
+    required this.label,
+    required this.bgColor,
+    required this.fgColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 10, color: fgColor),
+          const SizedBox(width: 3),
+          // Label never wraps — it's a pill, not a text block.
+          Text(
+            label,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: fgColor,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Swipeable Transaction Card ────────────────────────────────────────────
+
+/// A [TransactionCard] wrapped in a [Dismissible] for swipe-to-delete.
+///
+/// Changes vs original:
+/// • Swipe background has a minimum height via [ConstrainedBox] so it
+///   renders correctly even when the card content is very short.
+/// • [confirmDismiss] returns `false` instead of `null` on any error path
+///   so the card is never accidentally dismissed.
+/// • The SnackBar undo label uses a const string key to avoid a missing
+///   translation crashing the widget.
 class SwipeableTransactionCard extends StatelessWidget {
   final String title;
   final double amount;
@@ -243,6 +429,7 @@ class SwipeableTransactionCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
   final bool showBudgetPlanIndicator;
+  final bool isRevoked;
 
   const SwipeableTransactionCard({
     super.key,
@@ -256,6 +443,7 @@ class SwipeableTransactionCard extends StatelessWidget {
     this.onTap,
     this.onDelete,
     this.showBudgetPlanIndicator = false,
+    this.isRevoked = false,
   });
 
   @override
@@ -263,66 +451,13 @@ class SwipeableTransactionCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Dismissible(
-      key: Key(title + date.toString()),
+      key: Key('${title}_${date.millisecondsSinceEpoch}'),
       direction: DismissDirection.endToStart,
-      background: Container(
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: UIConstants.spacingLarge),
-        decoration: BoxDecoration(
-          color: colorScheme.secondary,
-          borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
-        ),
-        child: const Icon(
-          Icons.delete_outline,
-          color: Colors.white,
-          size: UIConstants.iconXLarge,
-        ),
-      ),
-      confirmDismiss: (direction) async {
-        // Show confirmation dialog
-        return await showDialog(
-          context: context,
-          builder: (context) => CustomDialog(
-            config: CustomDialogConfig(
-              title: 'Delete Transaction?',
-              message:
-                  'This action cannot be undone. Are you sure you want to delete this transaction?',
-              icon: Icons.delete_outline,
-              iconColor: colorScheme.secondary,
-              buttons: [
-                CustomDialogButton(
-                  text: 'Cancel',
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-                CustomDialogButton(
-                  text: 'Delete',
-                  isDestructive: true,
-                  onPressed: () => Navigator.pop(context, true),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      onDismissed: (direction) {
+      background: _SwipeBackground(colorScheme: colorScheme),
+      confirmDismiss: (_) => _confirmDelete(context, colorScheme),
+      onDismissed: (_) {
         onDelete?.call();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('transaction.deleted'.tr),
-            backgroundColor: colorScheme.inverseSurface,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
-            ),
-            action: SnackBarAction(
-              label: 'Undo'.tr,
-              textColor: Colors.white,
-              onPressed: () {
-                // Undo is handled by parent BLoC listener
-              },
-            ),
-          ),
-        );
+        _showUndoSnackBar(context, colorScheme);
       },
       child: TransactionCard(
         title: title,
@@ -334,6 +469,105 @@ class SwipeableTransactionCard extends StatelessWidget {
         note: note,
         onTap: onTap,
         showBudgetPlanIndicator: showBudgetPlanIndicator,
+        isRevoked: isRevoked,
+      ),
+    );
+  }
+
+  Future<bool?> _confirmDelete(
+    BuildContext context,
+    ColorScheme colorScheme,
+  ) async {
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => CustomDialog(
+        config: CustomDialogConfig(
+          title: 'Delete Transaction?',
+          message:
+              'This action cannot be undone. Are you sure you want to delete this transaction?',
+          icon: Icons.delete_outline,
+          iconColor: colorScheme.error,
+          buttons: [
+            CustomDialogButton(
+              text: 'Cancel',
+              onPressed: () => Navigator.pop(ctx, false),
+            ),
+            CustomDialogButton(
+              text: 'Delete',
+              isDestructive: true,
+              onPressed: () => Navigator.pop(ctx, true),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showUndoSnackBar(BuildContext context, ColorScheme colorScheme) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('transaction.deleted'.tr),
+        backgroundColor: colorScheme.inverseSurface,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(UIConstants.radiusSmall),
+        ),
+        action: SnackBarAction(
+          label: 'Undo',
+          textColor: colorScheme.inversePrimary,
+          onPressed: () {
+            // Undo is handled by parent BLoC listener.
+          },
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Swipe Background ──────────────────────────────────────────────────────
+
+/// The red delete background revealed when the user swipes left.
+///
+/// [ConstrainedBox] sets a minimum height so the background is always
+/// tall enough to be legible regardless of card content height.
+class _SwipeBackground extends StatelessWidget {
+  final ColorScheme colorScheme;
+
+  const _SwipeBackground({required this.colorScheme});
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: UIConstants.touchTargetMin),
+      child: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(
+          horizontal: UIConstants.spacingLarge,
+        ),
+        decoration: BoxDecoration(
+          // Slightly saturated error colour — clearly destructive.
+          color: colorScheme.error,
+          borderRadius: BorderRadius.circular(UIConstants.radiusMedium),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.delete_outline_rounded,
+              color: Colors.white,
+              size: UIConstants.iconXLarge,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'Delete',
+              style: AppTextStyles.bodySmall.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

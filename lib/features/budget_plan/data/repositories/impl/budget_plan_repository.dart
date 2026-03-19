@@ -1,5 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wise_spends/core/di/i_service_locator.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/budget_plan_entity.dart';
 import 'package:wise_spends/features/budget_plan/domain/entities/budget_plan_deposit_entity.dart';
@@ -849,6 +852,64 @@ class BudgetPlanRepository extends IBudgetPlanRepository {
             .getSingleOrNull();
 
     return account?.allocatedAmount ?? 0.0;
+  }
+
+  @override
+  Future<void> syncAllocatedAmountWithBalance(String accountId) async {
+    try {
+      // Get current saving balance
+      final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
+          .getSavingService();
+      final saving = await savingService.watchSavingById(accountId).first;
+      final currentBalance = saving?.currentAmount ?? 0.0;
+      final Set<String> planUuids = {};
+
+      // Get all linked accounts for this saving
+      final linkedAccounts = await watchLinkedAccountsByAccountId(
+        accountId,
+      ).first;
+
+      // For each linked account, sync the allocated amount
+      for (final linkedAccount in linkedAccounts) {
+        final allocatedAmount = linkedAccount.allocatedAmount ?? 0.0;
+
+        // If current balance is less than allocated, reduce the allocation
+        if (currentBalance < allocatedAmount) {
+          final newAllocatedAmount = currentBalance < 0
+              ? 0.0
+              : currentBalance.toDouble();
+
+          // Update the allocation
+          final updating = SavingsPlanLinkedAccountTableCompanion(
+            allocatedAmount: Value(newAllocatedAmount),
+            dateUpdated: Value(DateTime.now()),
+            lastModifiedBy: Value('system'),
+          );
+
+          planUuids.add(linkedAccount.planId);
+
+          final query = _db.update(_db.savingsPlanLinkedAccountTable)
+            ..where(
+              (tbl) =>
+                  tbl.planId.equals(linkedAccount.planId) &
+                  tbl.accountId.equals(accountId),
+            );
+          await query.write(updating);
+        }
+      }
+
+      if (planUuids.isNotEmpty) {
+        for (var planId in planUuids) {
+          await recalculatePlanAmount(planId);
+        }
+      }
+    } catch (e, stackTrace) {
+      WiseLogger().error(
+        'Error syncing allocated amount with balance: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   /// Check if spending would exceed allocation

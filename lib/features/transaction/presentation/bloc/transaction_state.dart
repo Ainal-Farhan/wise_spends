@@ -268,6 +268,15 @@ final class TransactionError extends TransactionState {
   List<Object?> get props => [message];
 }
 
+final class TransactionRevoked extends TransactionState {
+  final String transactionId;
+
+  const TransactionRevoked(this.transactionId);
+
+  @override
+  List<Object?> get props => [transactionId];
+}
+
 final class TransactionSearchResults extends TransactionState {
   final String query;
   final List<TransactionEntity> searchResults;

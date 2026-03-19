@@ -742,7 +742,7 @@ class EnglishStrings {
     'savings.tip_goal': 'Set a goal amount to track your progress',
     'savings.tip_storage': 'Link to a money storage to see its source',
     'savings.with_goal': '{total} with goal',
-    
+
     // Savings Reservation
     'savings.reserved_funds': 'Reserved Funds',
     'savings.transferable_amount': 'Transferable Amount',
@@ -750,7 +750,8 @@ class EnglishStrings {
     'savings.available_for_use': 'Available',
     'savings.view_reservation_details': 'View Details',
     'savings.reservation_details': 'Reservation Details',
-    'savings.reservation_details_desc': 'Funds reserved for future commitments and allocations',
+    'savings.reservation_details_desc':
+        'Funds reserved for future commitments and allocations',
     'savings.total_reserved': 'Total Reserved',
     'savings.reservations_breakdown': 'Reservations Breakdown',
     'savings.commitment_tasks': 'Commitment Tasks',
@@ -818,6 +819,21 @@ class EnglishStrings {
     'transaction.detail.title': 'Transaction Details',
     'transaction.detail.deleted': 'Transaction deleted successfully',
     'transaction.detail.delete_title': 'Delete Transaction',
+    'transaction.detail.at': 'at',
+    'transaction.detail.revoked': 'Revoked',
+    'transaction.detail.revoked_status': 'This transaction has been revoked',
+    'transaction.detail.revoke_reason': 'Reason:',
+    'transaction.detail.revoked_at': 'Revoked at:',
+    'transaction.action.revoke': 'Revoke Transaction',
+    'transaction.action.revoke_title': 'Revoke Transaction',
+    'transaction.action.revoke_confirm':
+        'Are you sure you want to revoke this transaction? This will reverse the transfer.',
+    'transaction.action.revoke_reason_label': 'Revoke Reason',
+    'transaction.action.revoke_reason_hint':
+        'Enter a reason for revoking this transaction',
+    'transaction.action.revoke_success': 'Transaction revoked successfully',
+    'transaction.action.revoke_error_already_revoked':
+        'This transaction has already been revoked',
     'transaction.history.date_range': 'Date Range',
     'transaction.history.transaction_type': 'Transaction Type',
     'transaction.history.search': 'Search Transactions',
@@ -1247,7 +1263,6 @@ class EnglishStrings {
 
     // ── Transaction Detail ────────────────────────────────────────────────────
     'transaction.detail.transaction_details': 'Transaction Details',
-    'transaction.detail.at': 'at',
 
     // ── Transaction Actions ───────────────────────────────────────────────────
     'transaction.action.edit': 'Edit Transaction',

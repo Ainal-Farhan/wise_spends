@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_revoke_entity.dart';
 
 enum TransactionType {
   income,
@@ -87,6 +88,7 @@ class TransactionEntity extends Equatable {
   final String? note;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final TransactionRevokeEntity? revoke;
 
   const TransactionEntity({
     required this.id,
@@ -103,10 +105,14 @@ class TransactionEntity extends Equatable {
     this.note,
     required this.createdAt,
     required this.updatedAt,
+    this.revoke,
   });
 
   /// Alias — call sites that used sourceAccountId still compile.
   String get sourceAccountId => savingId;
+
+  /// Check if this transaction has been revoked.
+  bool get isRevoked => revoke != null;
 
   @override
   List<Object?> get props => [
@@ -124,6 +130,7 @@ class TransactionEntity extends Equatable {
     note,
     createdAt,
     updatedAt,
+    revoke,
   ];
 
   TransactionEntity copyWith({
@@ -141,6 +148,7 @@ class TransactionEntity extends Equatable {
     String? note,
     DateTime? createdAt,
     DateTime? updatedAt,
+    TransactionRevokeEntity? revoke,
   }) {
     return TransactionEntity(
       id: id ?? this.id,
@@ -157,6 +165,7 @@ class TransactionEntity extends Equatable {
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      revoke: revoke ?? this.revoke,
     );
   }
 }

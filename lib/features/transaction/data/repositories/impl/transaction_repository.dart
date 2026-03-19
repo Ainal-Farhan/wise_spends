@@ -1,16 +1,31 @@
 import 'package:drift/drift.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/logger/wise_logger.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/db/domain/transaction/transaction_table.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
+import 'package:wise_spends/features/transaction/data/repositories/i_transaction_revoke_repository.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_revoke_entity.dart';
 import 'package:wise_spends/features/category/domain/entities/category_entity.dart';
 import 'package:wise_spends/features/widget/presentation/services/widget_service.dart';
+import 'package:wise_spends/features/saving/data/repositories/i_saving_repository.dart';
 
 class TransactionRepository extends ITransactionRepository {
   TransactionRepository() : super(AppDatabase());
 
   @override
   String getTypeName() => 'TransactionTable';
+
+  // Revoke repository for managing revoke records
+  late final ITransactionRevokeRepository _revokeRepository =
+      SingletonUtil.getSingleton<IRepositoryLocator>()!
+          .getTransactionRevokeRepository();
+
+  // Saving repository for reversing transactions
+  late final ISavingRepository _savingRepository =
+      SingletonUtil.getSingleton<IRepositoryLocator>()!.getSavingRepository();
 
   // ---------------------------------------------------------------------------
   // Delete helpers
@@ -54,6 +69,12 @@ class TransactionRepository extends ITransactionRepository {
         db.categoryTable,
         db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
       ),
+      leftOuterJoin(
+        db.transactionRevokeTable,
+        db.transactionRevokeTable.transactionId.equalsExp(
+          db.transactionTable.id,
+        ),
+      ),
     ])..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList());
 
     final rows = await query.get();
@@ -67,6 +88,12 @@ class TransactionRepository extends ITransactionRepository {
             leftOuterJoin(
               db.categoryTable,
               db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+            leftOuterJoin(
+              db.transactionRevokeTable,
+              db.transactionRevokeTable.transactionId.equalsExp(
+                db.transactionTable.id,
+              ),
             ),
           ])
           ..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList())
@@ -90,6 +117,12 @@ class TransactionRepository extends ITransactionRepository {
             leftOuterJoin(
               db.categoryTable,
               db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+            leftOuterJoin(
+              db.transactionRevokeTable,
+              db.transactionRevokeTable.transactionId.equalsExp(
+                db.transactionTable.id,
+              ),
             ),
           ])
           ..where(
@@ -120,6 +153,12 @@ class TransactionRepository extends ITransactionRepository {
               db.categoryTable,
               db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
             ),
+            leftOuterJoin(
+              db.transactionRevokeTable,
+              db.transactionRevokeTable.transactionId.equalsExp(
+                db.transactionTable.id,
+              ),
+            ),
           ])
           ..where(db.transactionTable.type.equals(type.name))
           ..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList());
@@ -135,6 +174,12 @@ class TransactionRepository extends ITransactionRepository {
             leftOuterJoin(
               db.categoryTable,
               db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+            leftOuterJoin(
+              db.transactionRevokeTable,
+              db.transactionRevokeTable.transactionId.equalsExp(
+                db.transactionTable.id,
+              ),
             ),
           ])
           ..where(db.transactionTable.categoryId.equals(categoryId))
@@ -155,6 +200,12 @@ class TransactionRepository extends ITransactionRepository {
             leftOuterJoin(
               db.categoryTable,
               db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
+            ),
+            leftOuterJoin(
+              db.transactionRevokeTable,
+              db.transactionRevokeTable.transactionId.equalsExp(
+                db.transactionTable.id,
+              ),
             ),
           ])
           ..where(db.transactionTable.id.equals(transactionId))
@@ -278,6 +329,12 @@ class TransactionRepository extends ITransactionRepository {
         db.categoryTable,
         db.categoryTable.id.equalsExp(db.transactionTable.categoryId),
       ),
+      leftOuterJoin(
+        db.transactionRevokeTable,
+        db.transactionRevokeTable.transactionId.equalsExp(
+          db.transactionTable.id,
+        ),
+      ),
     ])..orderBy(_defaultOrder.map((e) => e(db.transactionTable)).toList());
 
     final rows = await query.get();
@@ -292,12 +349,125 @@ class TransactionRepository extends ITransactionRepository {
   }
 
   // ---------------------------------------------------------------------------
+  // Revoke
+  // ---------------------------------------------------------------------------
+
+  @override
+  Future<TransactionRevokeEntity> revokeTransaction({
+    required String transactionId,
+    required String reason,
+    required DateTime revokedAt,
+  }) async {
+    // Check if already revoked
+    final existingRevoke = await _revokeRepository.getByTransactionId(
+      transactionId,
+    );
+    if (existingRevoke != null) {
+      throw Exception('Transaction is already revoked');
+    }
+
+    // Fetch the transaction to reverse the transfer
+    final transaction = await fetchById(transactionId);
+    if (transaction == null) {
+      throw Exception('Transaction not found');
+    }
+
+    // Reverse the transfer based on transaction type
+    await _reverseTransactionTransfer(transaction);
+
+    // Sync budget plan allocations with new balance
+    await _syncBudgetPlanAllocations(transaction.savingId);
+    if (transaction.destinationSavingId != null) {
+      await _syncBudgetPlanAllocations(transaction.destinationSavingId!);
+    }
+
+    // Create the revoke record
+    return _revokeRepository.revokeTransaction(
+      transactionId: transactionId,
+      reason: reason,
+      revokedAt: revokedAt,
+    );
+  }
+
+  /// Sync budget plan allocations for a saving account
+  Future<void> _syncBudgetPlanAllocations(String savingId) async {
+    try {
+      final budgetPlanRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+          .getBudgetPlanRepository();
+      await budgetPlanRepo.syncAllocatedAmountWithBalance(savingId);
+    } catch (e, stackTrace) {
+      WiseLogger().error(
+        'Error syncing budget plan allocations: $e',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
+  /// Reverses the financial impact of a transaction.
+  /// For income/expense: adds/subtracts back to the account.
+  /// For transfer: reverses the transfer direction.
+  Future<void> _reverseTransactionTransfer(
+    TransactionEntity transaction,
+  ) async {
+    // Reverse the transaction type for the transfer reversal
+    TransactionType reverseType;
+    switch (transaction.type) {
+      case TransactionType.income:
+        reverseType = TransactionType.expense;
+        break;
+      case TransactionType.expense:
+        reverseType = TransactionType.income;
+        break;
+      case TransactionType.transfer:
+        // For transfers, we need to swap source and destination
+        await db.transaction(() async {
+          await _savingRepository.makeTransaction(
+            sourceSavingId: transaction.destinationSavingId!,
+            destinationSavingId: transaction.savingId,
+            amount: transaction.amount,
+            transactionType: TransactionType.transfer,
+            reference: 'Revoke transfer: ${transaction.title}',
+          );
+        });
+        return;
+      case TransactionType.commitment:
+        // For commitment, reverse to source account
+        await _savingRepository.makeTransaction(
+          sourceSavingId:
+              transaction.destinationSavingId ?? transaction.savingId,
+          destinationSavingId: transaction.savingId,
+          amount: transaction.amount,
+          transactionType: TransactionType.transfer,
+          reference: 'Revoke commitment: ${transaction.title}',
+        );
+        return;
+      case TransactionType.budgetPlanDeposit:
+        reverseType = TransactionType.expense;
+        break;
+      case TransactionType.budgetPlanExpense:
+        reverseType = TransactionType.income;
+        break;
+    }
+
+    // Apply the reverse transaction to the savings account
+    await _savingRepository.makeTransaction(
+      sourceSavingId: transaction.savingId,
+      destinationSavingId: transaction.destinationSavingId,
+      amount: transaction.amount,
+      transactionType: reverseType,
+      reference: 'Revoke: ${transaction.title}',
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // Private mapper
   // ---------------------------------------------------------------------------
 
   TransactionEntity _mapToEntityWithCategory(dynamic row) {
     final transaction = row.readTable(db.transactionTable);
     final categoryRow = row.readTableOrNull(db.categoryTable);
+    final revokeRow = row.readTableOrNull(db.transactionRevokeTable);
 
     CategoryEntity? category;
     if (categoryRow != null) {
@@ -311,6 +481,18 @@ class TransactionRepository extends ITransactionRepository {
         orderIndex: categoryRow.orderIndex,
         isActive: categoryRow.isActive,
         createdAt: categoryRow.createdAt,
+      );
+    }
+
+    TransactionRevokeEntity? revoke;
+    if (revokeRow != null) {
+      revoke = TransactionRevokeEntity(
+        id: revokeRow.id,
+        transactionId: revokeRow.transactionId,
+        reason: revokeRow.reason,
+        revokedAt: revokeRow.revokedAt,
+        createdAt: revokeRow.dateCreated,
+        updatedAt: revokeRow.dateUpdated,
       );
     }
 
@@ -329,6 +511,7 @@ class TransactionRepository extends ITransactionRepository {
       note: transaction.note,
       createdAt: transaction.dateCreated,
       updatedAt: transaction.dateUpdated,
+      revoke: revoke,
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/features/saving/data/repositories/i_saving_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
+import 'package:wise_spends/features/transaction/domain/entities/transaction_revoke_entity.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_bloc.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_event.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_state.dart';
@@ -42,6 +43,25 @@ class TransactionDetailScreen extends StatelessWidget {
                     const Icon(Icons.check_circle, color: Colors.white),
                     const SizedBox(width: 8),
                     Text('transaction.detail.deleted'.tr),
+                  ],
+                ),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            );
+          }
+          if (state is TransactionRevoked) {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text('transaction.action.revoke_success'.tr),
                   ],
                 ),
                 backgroundColor: Theme.of(context).colorScheme.primary,
@@ -223,6 +243,7 @@ class _TransactionDetailScreenContent extends StatelessWidget {
 
   Widget _buildInfoCard(BuildContext context, TransactionDetailLoaded state) {
     final tx = state.transaction;
+    final isRevoked = tx.isRevoked;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -251,11 +272,52 @@ class _TransactionDetailScreenContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  tx.title,
-                  style: AppTextStyles.h3,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        tx.title,
+                        style: AppTextStyles.h3,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (isRevoked) ...[
+                      const SizedBox(width: AppSpacing.xs),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: AppSpacing.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.block,
+                              size: 14,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onErrorContainer,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'transaction.detail.revoked'.tr,
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Row(
@@ -396,8 +458,110 @@ class _TransactionDetailScreenContent extends StatelessWidget {
               fontFamily: 'monospace',
             ),
           ),
+
+          // Revoke information - shown only if transaction is revoked
+          if (tx.isRevoked && tx.revoke != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            Divider(color: Theme.of(context).colorScheme.outline),
+            const SizedBox(height: AppSpacing.md),
+            _buildRevokeInfoCard(context, tx.revoke!),
+          ],
         ],
       ),
+    );
+  }
+
+  Widget _buildRevokeInfoCard(
+    BuildContext context,
+    TransactionRevokeEntity revoke,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: Theme.of(
+          context,
+        ).colorScheme.errorContainer.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.block,
+                size: 20,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                'transaction.detail.revoked_status'.tr,
+                style: AppTextStyles.bodySemiBold.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          _buildRevokeDetailRow(
+            context,
+            icon: Icons.info_outline,
+            label: 'transaction.detail.revoke_reason'.tr,
+            value: revoke.reason,
+            isMultiline: true,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          _buildRevokeDetailRow(
+            context,
+            icon: Icons.access_time,
+            label: 'transaction.detail.revoked_at'.tr,
+            value: _formatDateTime(revoke.revokedAt),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRevokeDetailRow(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+    bool isMultiline = false,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: AppTextStyles.caption.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                value,
+                style: AppTextStyles.bodySmall,
+                maxLines: isMultiline ? null : 1,
+                overflow: isMultiline ? null : TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -462,19 +626,65 @@ class _TransactionDetailScreenContent extends StatelessWidget {
     TransactionEntity tx,
     TransactionDetailLoaded state,
   ) {
+    final isRevoked = tx.isRevoked;
+
     return Column(
       children: [
-        AppButton.primary(
-          label: 'transaction.action.edit'.tr,
-          onPressed: () => _navigateToEdit(context, tx, state),
-          isFullWidth: true,
-        ),
-        const SizedBox(height: AppSpacing.md),
-        AppButton.destructive(
-          label: 'transaction.action.delete'.tr,
-          onPressed: () => _showDeleteConfirmation(context),
-          isFullWidth: true,
-        ),
+        if (!isRevoked) ...[
+          AppButton.primary(
+            label: 'transaction.action.edit'.tr,
+            onPressed: () => _navigateToEdit(context, tx, state),
+            isFullWidth: true,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          AppButton.destructive(
+            label: 'transaction.action.delete'.tr,
+            onPressed: () => _showDeleteConfirmation(context),
+            isFullWidth: true,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          AppButton.secondary(
+            label: 'transaction.action.revoke'.tr,
+            onPressed: () => _showRevokeDialog(context),
+            isFullWidth: true,
+            icon: Icons.block,
+          ),
+        ] else ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: Theme.of(
+                context,
+              ).colorScheme.errorContainer.withValues(alpha: .2),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+              border: Border.all(
+                color: Theme.of(
+                  context,
+                ).colorScheme.error.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: Theme.of(context).colorScheme.error,
+                  size: 20,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'transaction.detail.revoked_status'.tr,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: Theme.of(context).colorScheme.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -519,6 +729,87 @@ class _TransactionDetailScreenContent extends StatelessWidget {
           DeleteTransactionEvent(transactionId),
         );
       },
+    );
+  }
+
+  void _showRevokeDialog(BuildContext context) {
+    final reasonController = TextEditingController();
+    final transactionBloc = context.read<TransactionBloc>();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.block, color: Theme.of(context).colorScheme.error),
+              const SizedBox(width: AppSpacing.sm),
+              Text('transaction.action.revoke_title'.tr),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'transaction.action.revoke_confirm'.tr,
+                style: AppTextStyles.bodyMedium,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Text(
+                'transaction.action.revoke_reason_label'.tr,
+                style: AppTextStyles.bodySemiBold,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              TextField(
+                controller: reasonController,
+                decoration: InputDecoration(
+                  hintText: 'transaction.action.revoke_reason_hint'.tr,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.edit_note),
+                ),
+                maxLines: 3,
+                textInputAction: TextInputAction.done,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text('general.cancel'.tr),
+            ),
+            FilledButton.icon(
+              onPressed: () {
+                final reason = reasonController.text.trim();
+                if (reason.isEmpty) {
+                  ScaffoldMessenger.of(dialogContext).showSnackBar(
+                    SnackBar(
+                      content: Text('transaction.action.revoke_reason_hint'.tr),
+                      backgroundColor: Theme.of(
+                        dialogContext,
+                      ).colorScheme.error,
+                    ),
+                  );
+                  return;
+                }
+                Navigator.pop(dialogContext);
+                transactionBloc.add(
+                  RevokeTransactionEvent(
+                    transactionId: transactionId,
+                    reason: reason,
+                  ),
+                );
+              },
+              icon: const Icon(Icons.block),
+              label: Text('transaction.action.revoke'.tr),
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                foregroundColor: Theme.of(context).colorScheme.onError,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

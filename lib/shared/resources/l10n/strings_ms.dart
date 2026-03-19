@@ -779,6 +779,21 @@ class MalayStrings {
     'transaction.detail.title': 'Butiran Transaksi',
     'transaction.detail.deleted': 'Transaksi berjaya dipadam',
     'transaction.detail.delete_title': 'Padam Transaksi',
+    'transaction.detail.at': 'pada',
+    'transaction.detail.revoked': 'Dibatalkan',
+    'transaction.detail.revoked_status': 'Transaksi ini telah dibatalkan',
+    'transaction.detail.revoke_reason': 'Sebab:',
+    'transaction.detail.revoked_at': 'Dibatalkan pada:',
+    'transaction.action.revoke': 'Batal Transaksi',
+    'transaction.action.revoke_title': 'Batal Transaksi',
+    'transaction.action.revoke_confirm':
+        'Adakah anda pasti ingin membatalkan transaksi ini? Ini akan membatalkan pemindahan.',
+    'transaction.action.revoke_reason_label': 'Sebab Pembatalan',
+    'transaction.action.revoke_reason_hint':
+        'Masukkan sebab untuk membatalkan transaksi ini',
+    'transaction.action.revoke_success': 'Transaksi berjaya dibatalkan',
+    'transaction.action.revoke_error_already_revoked':
+        'Transaksi ini telah pun dibatalkan',
     'transaction.history.date_range': 'Julat Tarikh',
     'transaction.history.transaction_type': 'Jenis Transaksi',
     'transaction.history.search': 'Cari Transaksi',
@@ -1234,7 +1249,6 @@ class MalayStrings {
 
     // ── Transaction Detail ────────────────────────────────────────────────────
     'transaction.detail.transaction_details': 'Butiran Transaksi',
-    'transaction.detail.at': 'pada',
 
     // ── Transaction Actions ───────────────────────────────────────────────────
     'transaction.action.edit': 'Edit Transaksi',

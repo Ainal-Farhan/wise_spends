@@ -196,3 +196,16 @@ final class RefreshTransactionsEvent extends TransactionEvent {
 final class ReloadTransactionsEvent extends TransactionEvent {
   const ReloadTransactionsEvent();
 }
+
+final class RevokeTransactionEvent extends TransactionEvent {
+  final String transactionId;
+  final String reason;
+
+  const RevokeTransactionEvent({
+    required this.transactionId,
+    required this.reason,
+  });
+
+  @override
+  List<Object?> get props => [transactionId, reason];
+}

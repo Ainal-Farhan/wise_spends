@@ -24,6 +24,7 @@ import 'package:wise_spends/features/saving/data/repositories/i_saving_repositor
 import 'package:wise_spends/features/saving/data/repositories/impl/money_storage_repository.dart';
 import 'package:wise_spends/features/saving/data/repositories/impl/saving_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
+import 'package:wise_spends/features/transaction/data/repositories/i_transaction_revoke_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/impl/transaction_repository.dart';
 import 'package:wise_spends/features/category/data/repositories/impl/category_repository.dart';
 import 'package:wise_spends/features/budget/data/repositories/impl/budget_repository.dart';
@@ -46,6 +47,7 @@ import 'package:wise_spends/data/repositories/savings_plan/impl/savings_plan_ite
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_tag_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_tag_map_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_recurring_transaction_repository.dart';
+import 'package:wise_spends/features/transaction/data/repositories/impl/transaction_revoke_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/impl/transaction_tag_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/impl/transaction_tag_map_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/impl/recurring_transaction_repository.dart';
@@ -84,6 +86,7 @@ class RepositoryLocator extends IRepositoryLocator {
       getSavingsPlanItemRepository(),
       getSavingsPlanItemTagRepository(),
       getFileStorageRepository(),
+      getTransactionRevokeRepository(),
     ];
 
     return allRepository;
@@ -440,5 +443,19 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<IFileStorageRepository>()!;
+  }
+
+  @override
+  ITransactionRevokeRepository getTransactionRevokeRepository() {
+    ITransactionRevokeRepository? repository =
+        SingletonUtil.getSingleton<ITransactionRevokeRepository>();
+
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ITransactionRevokeRepository>(
+        TransactionRevokeRepository(),
+      );
+    }
+
+    return SingletonUtil.getSingleton<ITransactionRevokeRepository>()!;
   }
 }

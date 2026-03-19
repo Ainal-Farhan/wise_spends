@@ -331,6 +331,7 @@ class _TransactionHistoryScreenContentState
                     : transaction.type.icon,
                 date: transaction.date,
                 note: transaction.note,
+                isRevoked: transaction.isRevoked,
                 showBudgetPlanIndicator:
                     transaction.type == TransactionType.budgetPlanDeposit ||
                     transaction.type == TransactionType.budgetPlanExpense,

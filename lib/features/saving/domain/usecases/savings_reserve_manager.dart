@@ -130,7 +130,10 @@ class SavingsReserveManager implements ISavingsReserveManager {
   /// Load reservations from budget plan linked account allocations
   ///
   /// These represent amounts allocated from linked accounts to budget plans,
-  /// which should be reserved to prevent overspending
+  /// which should be reserved to prevent overspending.
+  ///
+  /// Note: The allocatedAmount in the database is automatically synced with
+  /// the saving balance when transactions occur, so we use it directly.
   Future<List<ReserveVO>> _loadBudgetPlanAllocationReservations(
     String savingId,
   ) async {
@@ -147,8 +150,8 @@ class SavingsReserveManager implements ISavingsReserveManager {
 
       for (final linkedAccount in linkedAccounts) {
         // Only create reservation if there's an allocated amount
-        final allocatedAmount = linkedAccount.allocatedAmount;
-        if (allocatedAmount != null && allocatedAmount > 0) {
+        final allocatedAmount = linkedAccount.allocatedAmount ?? 0.0;
+        if (allocatedAmount > 0) {
           // Get the budget plan details for description
           String planName = 'Unknown Plan';
           try {

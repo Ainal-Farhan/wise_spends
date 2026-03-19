@@ -21,6 +21,7 @@ import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_milest
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_linked_account_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_item_repository.dart';
 import 'package:wise_spends/data/repositories/savings_plan/i_savings_plan_item_tag_repository.dart';
+import 'package:wise_spends/features/transaction/data/repositories/i_transaction_revoke_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_tag_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_tag_map_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_recurring_transaction_repository.dart';
@@ -63,6 +64,7 @@ abstract class IRepositoryLocator extends ILocator {
   ITransactionTagRepository getTransactionTagRepository();
   ITransactionTagMapRepository getTransactionTagMapRepository();
   IRecurringTransactionRepository getRecurringTransactionRepository();
+  ITransactionRevokeRepository getTransactionRevokeRepository();
 
   // MasterData Child Repositories
   IReferenceDataRepository getReferenceDataRepository();

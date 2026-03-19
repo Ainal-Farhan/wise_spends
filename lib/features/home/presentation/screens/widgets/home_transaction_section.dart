@@ -88,6 +88,7 @@ class _TransactionList extends StatelessWidget {
           icon: _getCategoryIcon(transaction.category),
           date: transaction.date,
           note: transaction.note,
+          isRevoked: transaction.isRevoked,
           onTap: () {
             AppRouter.navigateTo(
               context,
