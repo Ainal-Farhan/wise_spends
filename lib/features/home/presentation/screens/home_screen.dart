@@ -27,7 +27,6 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => NavigationBloc()),
         BlocProvider(
           create: (context) => TransactionBloc(
             context.read<ITransactionRepository>(),
@@ -120,7 +119,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent>
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: colorScheme.surfaceContainerHighest,
@@ -213,7 +212,7 @@ class _HomeFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return FloatingActionButton.extended(
       onPressed: onPressed,
       elevation: AppElevation.sm,

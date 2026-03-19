@@ -13,6 +13,7 @@ import 'package:wise_spends/features/budget/presentation/widgets/budget_filter_c
 import 'package:wise_spends/features/budget/presentation/widgets/budget_card.dart';
 import 'package:wise_spends/features/category/data/repositories/impl/category_repository.dart';
 import 'package:wise_spends/features/category/presentation/bloc/category_bloc.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -52,6 +53,7 @@ class _BudgetListScreenContent extends StatelessWidget {
           ),
         ],
       ),
+      drawer: NavigationSidebar(),
       body: BlocBuilder<BudgetBloc, BudgetState>(
         builder: (context, state) {
           return RefreshIndicator(

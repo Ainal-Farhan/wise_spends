@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/domain/models/user_profile.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 
@@ -79,19 +78,6 @@ class SettingsProfileHeader extends StatelessWidget {
                   style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
-            ),
-          ),
-          // Edit button
-          InkWell(
-            onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.sm),
-              child: const Icon(
-                Icons.edit,
-                color: Colors.white,
-                size: AppIconSize.sm,
-              ),
             ),
           ),
         ],

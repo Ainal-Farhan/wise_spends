@@ -8,6 +8,7 @@ import 'package:wise_spends/features/category/presentation/bloc/category_event.d
 import 'package:wise_spends/features/category/presentation/bloc/category_state.dart';
 import 'package:wise_spends/features/category/presentation/screens/add_category_screen.dart';
 import 'package:wise_spends/features/category/presentation/screens/edit_category_screen.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/custom_dialog.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
@@ -67,6 +68,7 @@ class _CategoryManagementScreenContentState
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
+      drawer: NavigationSidebar(),
       backgroundColor: colorScheme.surface,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {

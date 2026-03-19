@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -40,6 +41,7 @@ class _PayeeManagementScreenContent extends StatelessWidget {
           ),
         ],
       ),
+      drawer: NavigationSidebar(),
       body: BlocConsumer<PayeeBloc, PayeeState>(
         listener: (context, state) {
           if (state is PayeeSaved || state is PayeeDeleted) {

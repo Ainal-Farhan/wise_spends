@@ -15,6 +15,7 @@ import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.
 import 'package:wise_spends/features/saving/presentation/bloc/savings_bloc.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/savings_event.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/savings_state.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/components/forms/form_category_selector.dart';
 import 'package:wise_spends/shared/components/reservation_info_widget.dart';
@@ -141,6 +142,7 @@ class _SavingsScreenContent extends StatelessWidget {
     if (savingsList.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: Text('savings.title'.tr)),
+        drawer: NavigationSidebar(),
         body: const NoSavingsEmptyState(),
       );
     }
@@ -157,6 +159,7 @@ class _SavingsScreenContent extends StatelessWidget {
           ),
         ],
       ),
+      drawer: NavigationSidebar(),
       body: RefreshIndicator(
         onRefresh: () async =>
             context.read<SavingsBloc>().add(LoadSavingsListEvent()),
@@ -526,6 +529,7 @@ class _SavingsScreenContent extends StatelessWidget {
   Widget _buildTransactionForm(BuildContext context, String savingId) {
     return Scaffold(
       appBar: AppBar(title: Text('savings.saving_transactions'.tr)),
+      drawer: NavigationSidebar(),
       body: Center(child: Text('savings.transaction_form_coming_soon'.tr)),
     );
   }
@@ -533,6 +537,7 @@ class _SavingsScreenContent extends StatelessWidget {
   Widget _buildErrorState(BuildContext context, String message) {
     return Scaffold(
       appBar: AppBar(title: Text('savings.title'.tr)),
+      drawer: NavigationSidebar(),
       body: ErrorStateWidget(
         message: message,
         onAction: () => context.read<SavingsBloc>().add(LoadSavingsListEvent()),
@@ -618,6 +623,7 @@ class _SavingsFormContentState extends State<_SavingsFormContent> {
                 ),
             ],
           ),
+          drawer: NavigationSidebar(),
           body: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
             child: Form(
@@ -797,6 +803,7 @@ class _SavingsScreenLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('savings.title'.tr)),
+      drawer: NavigationSidebar(),
       body: const Center(child: CircularProgressIndicator()),
     );
   }

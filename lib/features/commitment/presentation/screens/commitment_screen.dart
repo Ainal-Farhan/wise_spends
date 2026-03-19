@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/features/commitment/domain/entities/commitment_vo.dart';
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_bloc.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -200,6 +201,7 @@ class _CommitmentScreenContent extends StatelessWidget {
           ),
         ],
       ),
+      drawer: NavigationSidebar(),
       body: BlocConsumer<CommitmentBloc, CommitmentState>(
         listener: _handleState,
         builder: (context, state) {

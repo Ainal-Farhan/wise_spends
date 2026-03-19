@@ -8,6 +8,7 @@ import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.
 import 'package:wise_spends/features/saving/presentation/bloc/money_storage_bloc.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/money_storage_event.dart';
 import 'package:wise_spends/features/saving/presentation/bloc/money_storage_state.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
@@ -115,6 +116,7 @@ class MoneyStorageScreen extends StatelessWidget {
           ),
         ],
       ),
+      drawer: NavigationSidebar(),
       body: RefreshIndicator(
         onRefresh: () async =>
             context.read<MoneyStorageBloc>().add(LoadMoneyStorageListEvent()),
@@ -354,6 +356,7 @@ class MoneyStorageScreen extends StatelessWidget {
               : 'general.add_money_storage'.tr,
         ),
       ),
+      drawer: NavigationSidebar(),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Form(
@@ -475,6 +478,7 @@ class MoneyStorageScreen extends StatelessWidget {
   Widget _buildErrorState(BuildContext context, String message) {
     return Scaffold(
       appBar: AppBar(title: Text('money_storage.title'.tr)),
+      drawer: NavigationSidebar(),
       body: ErrorStateWidget(
         message: message,
         onAction: () =>
@@ -493,6 +497,7 @@ class _MoneyStorageScreenLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('money_storage.title'.tr)),
+      drawer: NavigationSidebar(),
       body: const Center(child: CircularProgressIndicator()),
     );
   }

@@ -101,6 +101,19 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
                   children: [
                     const SizedBox(height: AppSpacing.md),
                     _NavSection(
+                      title: 'Home',
+                      items: [
+                        _NavItemData(
+                          icon: Icons.home,
+                          label: 'Home',
+                          route: AppRoutes.home,
+                        ),
+                      ],
+                      activeRoute: context.read<NavigationBloc>().activeRoute,
+                      onNavigate: _navigateTo,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    _NavSection(
                       title: 'Profile',
                       items: [
                         _NavItemData(
@@ -196,7 +209,11 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
     context.read<NavigationBloc>().add(NavigateToScreenEvent(route));
     Future.delayed(const Duration(milliseconds: 150), () {
       if (context.mounted) {
-        Navigator.pushNamed(context, route).then((_) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          route,
+          (route) => false,
+        ).then((_) {
           // Refresh sidebar profile when returning from profile screen
           if (route == AppRoutes.profile && context.mounted) {
             context.read<NavigationBloc>().add(RefreshSidebarProfileEvent());
@@ -327,8 +344,6 @@ class _SidebarHeader extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.md),
-            _EditProfileChip(onTap: onEditTap),
           ],
         ),
       ),
@@ -404,44 +419,6 @@ class _InitialAvatar extends StatelessWidget {
             fontSize: 22,
             fontWeight: FontWeight.bold,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _EditProfileChip extends StatelessWidget {
-  const _EditProfileChip({required this.onTap});
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.sm),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.edit, color: Colors.white, size: 14),
-            SizedBox(width: AppSpacing.xs),
-            Text(
-              'Edit Profile',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
         ),
       ),
     );

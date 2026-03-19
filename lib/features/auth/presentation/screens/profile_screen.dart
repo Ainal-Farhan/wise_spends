@@ -13,6 +13,7 @@ import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_a
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_avatar.dart';
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_danger_zone.dart';
 import 'package:wise_spends/features/auth/presentation/screens/widgets/profile_form_fields.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
@@ -49,8 +50,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ProfileBloc(UserRepository())..add(LoadProfileEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => ProfileBloc(UserRepository())..add(LoadProfileEvent()),
+        ),
+      ],
       child: BlocConsumer<ProfileBloc, ProfileState>(
         listener: _handleStateChanges,
         builder: (context, state) {
@@ -172,6 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         profile: profile,
         onMoreOptions: () => _showMoreOptions(context, profile),
       ),
+      drawer: NavigationSidebar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Form(
@@ -461,6 +467,7 @@ class _LoadingScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('profile.title'.tr)),
+      drawer: NavigationSidebar(),
       body: const Center(child: CircularProgressIndicator()),
     );
   }
@@ -477,6 +484,7 @@ class _ErrorScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('profile.title'.tr)),
+      drawer: NavigationSidebar(),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xl),

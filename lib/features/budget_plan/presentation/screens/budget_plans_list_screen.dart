@@ -13,6 +13,7 @@ import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_l
 import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_list_event.dart';
 import 'package:wise_spends/features/budget_plan/presentation/bloc/budget_plan_list_state.dart';
 import 'package:wise_spends/presentation/widgets/loaders/shimmer_loader.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
@@ -96,6 +97,7 @@ class _BudgetPlansListContentState extends State<_BudgetPlansListContent>
           ),
         ],
       ),
+      drawer: NavigationSidebar(),
       body: BlocListener<BudgetPlanListBloc, BudgetPlanListState>(
         listener: (context, state) {
           if (state is BudgetPlanListDeleteError) {

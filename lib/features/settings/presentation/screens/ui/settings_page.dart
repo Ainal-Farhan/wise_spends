@@ -9,8 +9,7 @@ import 'package:wise_spends/features/settings/presentation/screens/dialogs/langu
 import 'package:wise_spends/features/settings/presentation/screens/dialogs/theme_selector_dialog.dart';
 import 'package:wise_spends/features/settings/presentation/screens/widgets/settings_profile_header.dart';
 import 'package:wise_spends/features/settings/presentation/screens/widgets/settings_widgets.dart';
-import 'package:wise_spends/shared/components/components.dart';
-import 'package:wise_spends/shared/resources/ui/dialog/dialog.dart';
+import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -62,8 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         centerTitle: true,
         elevation: 0,
       ),
-      // BlocListener handles side-effects (snackbars) while BlocBuilder
-      // rebuilds only the parts of the UI that changed.
+      drawer: NavigationSidebar(),
       body: BlocConsumer<SettingsBloc, SettingsState>(
         listenWhen: (prev, curr) => curr is SettingsLoaded && prev != curr,
         listener: (context, state) {
@@ -102,13 +100,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             isExpanded: _isAccountExpanded,
             onExpansionChanged: (v) => setState(() => _isAccountExpanded = v),
             children: [
-              SettingsTile(
-                leadingIcon: Icons.person_outline,
-                title: 'settings.edit_profile'.tr,
-                subtitle: 'settings.profile_subtitle'.tr,
-                hideTrailing: true,
-                onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
-              ),
               const Divider(height: 1, indent: 60),
               SettingsTile(
                 leadingIcon: Icons.lock_outline,
@@ -176,7 +167,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'settings.preferences'.tr,
             description: 'settings.preferences_desc'.tr,
             leadingIcon: Icons.tune,
-            leadingBackgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+            leadingBackgroundColor: Theme.of(
+              context,
+            ).colorScheme.secondaryContainer,
             isExpanded: _isPreferencesExpanded,
             onExpansionChanged: (v) =>
                 setState(() => _isPreferencesExpanded = v),
@@ -215,7 +208,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'settings.data_storage'.tr,
             description: 'settings.data_storage_desc'.tr,
             leadingIcon: Icons.storage_outlined,
-            leadingBackgroundColor: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.1),
+            leadingBackgroundColor: Theme.of(
+              context,
+            ).colorScheme.tertiary.withValues(alpha: 0.1),
             isExpanded: _isDataExpanded,
             onExpansionChanged: (v) => setState(() => _isDataExpanded = v),
             children: [
@@ -235,7 +230,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'settings.support'.tr,
             description: 'settings.support_desc'.tr,
             leadingIcon: Icons.help_outline,
-            leadingBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            leadingBackgroundColor: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.1),
             isExpanded: _isSupportExpanded,
             onExpansionChanged: (v) => setState(() => _isSupportExpanded = v),
             children: [
@@ -265,16 +262,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onTap: _showAboutDialog,
               ),
             ],
-          ),
-
-          // ── Sign out ─────────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: AppButton.destructive(
-              label: 'settings.sign_out'.tr,
-              onPressed: _showSignOutConfirmation,
-              isFullWidth: true,
-            ),
           ),
 
           const SizedBox(height: AppSpacing.xxl),
@@ -373,34 +360,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
-        ),
-      ),
-    );
-  }
-
-  void _showSignOutConfirmation() {
-    showDialog(
-      context: context,
-      builder: (ctx) => CustomDialog(
-        config: CustomDialogConfig(
-          title: 'settings.sign_out'.tr,
-          message: 'settings.sign_out_msg'.tr,
-          icon: Icons.logout,
-          iconColor: Theme.of(context).colorScheme.tertiary,
-          buttons: [
-            CustomDialogButton(
-              text: 'general.cancel'.tr,
-              onPressed: () => Navigator.pop(ctx),
-            ),
-            CustomDialogButton(
-              text: 'settings.sign_out'.tr,
-              isDestructive: true,
-              onPressed: () {
-                Navigator.pop(ctx);
-                _showSuccessSnackbar('settings.signed_out'.tr);
-              },
-            ),
-          ],
         ),
       ),
     );

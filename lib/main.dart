@@ -19,6 +19,7 @@ import 'package:wise_spends/features/widget/presentation/services/widget_backgro
 import 'package:wise_spends/features/widget/presentation/services/widget_platform_channel.dart';
 import 'package:wise_spends/features/widget/presentation/services/widget_service.dart';
 import 'package:wise_spends/presentation/blocs/action_button/action_button_bloc.dart';
+import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/theme/app_theme.dart';
 
@@ -75,6 +76,7 @@ class WiseSpendsApp extends StatelessWidget {
           BlocProvider(
             create: (_) => SettingsBloc()..add(const LoadSettingsEvent()),
           ),
+          BlocProvider(create: (_) => NavigationBloc()),
         ],
         child: const _AppRoot(),
       ),
