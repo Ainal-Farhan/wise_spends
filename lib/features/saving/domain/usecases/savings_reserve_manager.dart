@@ -32,6 +32,12 @@ class SavingsReserveManager implements ISavingsReserveManager {
     );
     reservations.addAll(budgetPlanReservations);
 
+    // Load reservations from unpaid credit card charges
+    final creditCardReservations = await _loadCreditCardChargeReservations(
+      savingId,
+    );
+    reservations.addAll(creditCardReservations);
+
     // Get current amount from saving
     final savingService = SingletonUtil.getSingleton<IServiceLocator>()!
         .getSavingService();
@@ -186,6 +192,49 @@ class SavingsReserveManager implements ISavingsReserveManager {
       );
     }
 
+    return reservations;
+  }
+
+  /// Load reservations from unpaid credit card charges.
+  ///
+  /// A charge contributes to this saving's reserved amount when:
+  /// - Its reservedSavingId matches [savingId]
+  /// - It still has an unpaid balance (charge.amount − allocated payments)
+  Future<List<ReserveVO>> _loadCreditCardChargeReservations(
+    String savingId,
+  ) async {
+    final reservations = <ReserveVO>[];
+    try {
+      final chargeRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+          .getCreditCardChargeRepository();
+      final cardRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+          .getCreditCardRepository();
+
+      final allCards = await cardRepo.getAllCards();
+      for (final card in allCards) {
+        final charges = await chargeRepo.getChargesForCard(card.id);
+        for (final charge in charges) {
+          if (charge.reservedSavingId != savingId) continue;
+          final unpaid = await chargeRepo.getUnpaidAmount(charge.id);
+          if (unpaid <= 0) continue;
+          reservations.add(
+            ReserveVO(
+              id: charge.id,
+              amount: unpaid,
+              description: '${card.name}: ${charge.description}',
+              type: ReserveType.creditCardCharge,
+              isCompleted: false,
+            ),
+          );
+        }
+      }
+    } catch (e, st) {
+      WiseLogger().error(
+        'Error loading credit card charge reservations: $e',
+        error: e,
+        stackTrace: st,
+      );
+    }
     return reservations;
   }
 }

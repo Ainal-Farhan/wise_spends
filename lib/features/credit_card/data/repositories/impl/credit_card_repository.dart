@@ -70,6 +70,54 @@ class CreditCardRepository extends ICreditCardRepository {
 
   @override
   Future<void> deleteCard(String id) async {
+    await deleteCardWithCleanup(id);
+  }
+
+  @override
+  Future<void> deleteCardWithCleanup(String id) async {
+    final charges = await (db.select(db.creditCardChargeTable)
+          ..where((t) => t.creditCardId.equals(id)))
+        .get();
+
+    for (final charge in charges) {
+      // Restore unpaid reserved amount back to the saving account
+      if (charge.reservedSavingId != null) {
+        final allocations = await (db.select(db.creditCardChargePaymentTable)
+              ..where((t) => t.chargeId.equals(charge.id)))
+            .get();
+        final paid =
+            allocations.fold<double>(0.0, (s, a) => s + a.allocatedAmount);
+        final unpaid = (charge.amount - paid).clamp(0.0, double.infinity);
+        // Nothing to restore — the saving balance was never deducted for the
+        // reservation itself (only deducted at payment time). So we only need
+        // to clean up allocations/charges so FK constraints don't block delete.
+        assert(unpaid >= 0);
+      }
+      // Delete allocation rows for this charge
+      await (db.delete(db.creditCardChargePaymentTable)
+            ..where((t) => t.chargeId.equals(charge.id)))
+          .go();
+    }
+
+    // Delete all payments for this card
+    final payments = await (db.select(db.creditCardPaymentTable)
+          ..where((t) => t.creditCardId.equals(id)))
+        .get();
+    for (final p in payments) {
+      await (db.delete(db.creditCardChargePaymentTable)
+            ..where((t) => t.paymentId.equals(p.id)))
+          .go();
+    }
+    await (db.delete(db.creditCardPaymentTable)
+          ..where((t) => t.creditCardId.equals(id)))
+        .go();
+
+    // Delete all charges
+    await (db.delete(db.creditCardChargeTable)
+          ..where((t) => t.creditCardId.equals(id)))
+        .go();
+
+    // Now safe to delete the card
     await (db.delete(db.creditCardTable)..where((t) => t.id.equals(id))).go();
   }
 

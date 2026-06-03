@@ -20,27 +20,92 @@ class CreditCardDetailBloc
     on<AddChargeEvent>(_onAddCharge);
     on<AddPaymentEvent>(_onAddPayment);
     on<DeleteChargeEvent>(_onDeleteCharge);
+    on<UpdateCreditCardEvent>(_onUpdateCard);
+    on<DeleteCreditCardDetailEvent>(_onDeleteCard);
+    on<ChangePeriodEvent>(_onChangePeriod);
   }
+
+  ChargePeriod _currentPeriod = ChargePeriod.days30;
 
   Future<void> _onLoad(
     LoadCreditCardDetailEvent event,
     Emitter<CreditCardDetailState> emit,
   ) async {
     emit(CreditCardDetailLoading());
+    await _reload(event.cardId, emit);
+  }
+
+  Future<void> _onChangePeriod(
+    ChangePeriodEvent event,
+    Emitter<CreditCardDetailState> emit,
+  ) async {
+    final current = state;
+    if (current is! CreditCardDetailLoaded) return;
+    _currentPeriod = event.period;
+    await _reload(current.card.id, emit, preserveLoading: false);
+  }
+
+  Future<void> _reload(
+    String cardId,
+    Emitter<CreditCardDetailState> emit, {
+    bool preserveLoading = true,
+  }) async {
     try {
-      final card = await _cardRepo.getCardById(event.cardId);
+      final card = await _cardRepo.getCardById(cardId);
       if (card == null) {
         emit(const CreditCardDetailError('Card not found'));
         return;
       }
-      final charges = await _chargeRepo.getChargesForCard(event.cardId);
-      final payments = await _paymentRepo.getPaymentsForCard(event.cardId);
-      final debt = await _cardRepo.getTotalDebt(event.cardId);
+
+      // All charges — needed for payment sheet and unpaid calculations
+      final allCharges = await _chargeRepo.getChargesForCard(cardId);
+
+      // Filtered charges/payments for display
+      final since = _currentPeriod.since;
+      final filteredCharges =
+          await _chargeRepo.getChargesForCardSince(cardId, since);
+      final filteredPayments =
+          await _paymentRepo.getPaymentsForCardSince(cardId, since);
+
+      final debt = await _cardRepo.getTotalDebt(cardId);
+
+      // Per-charge unpaid amounts (always from ALL charges)
+      final unpaidMap = <String, double>{};
+      for (final c in allCharges) {
+        unpaidMap[c.id] = await _chargeRepo.getUnpaidAmount(c.id);
+      }
+
+      // Per-payment allocation details (for the filtered payments)
+      final allocationMap =
+          <String, List<PaymentAllocationDetail>>{};
+      for (final p in filteredPayments) {
+        final rows = await _paymentRepo.getPaymentAllocations(p.id);
+        final details = rows.map((row) {
+          final charge = allCharges.firstWhere(
+            (c) => c.id == row.chargeId,
+            orElse: () => allCharges.first,
+          );
+          return PaymentAllocationDetail(
+            chargeId: row.chargeId,
+            chargeDescription:
+                allCharges.any((c) => c.id == row.chargeId)
+                    ? charge.description
+                    : row.chargeId,
+            allocatedAmount: row.allocatedAmount,
+          );
+        }).toList();
+        if (details.isNotEmpty) allocationMap[p.id] = details;
+      }
+
       emit(CreditCardDetailLoaded(
         card: card,
-        charges: charges,
-        payments: payments,
+        charges: filteredCharges,
+        allCharges: allCharges,
+        payments: filteredPayments,
         totalDebt: debt,
+        period: _currentPeriod,
+        chargeUnpaidAmounts: unpaidMap,
+        paymentAllocations: allocationMap,
       ));
     } catch (e) {
       emit(CreditCardDetailError(e.toString()));
@@ -59,6 +124,7 @@ class CreditCardDetailBloc
         categoryId: event.categoryId,
         chargeDate: event.chargeDate,
         note: event.note,
+        reservedSavingId: event.reservedSavingId,
       );
       add(LoadCreditCardDetailEvent(event.creditCardId));
     } catch (e) {
@@ -95,6 +161,38 @@ class CreditCardDetailBloc
       if (current is CreditCardDetailLoaded) {
         add(LoadCreditCardDetailEvent(current.card.id));
       }
+    } catch (e) {
+      emit(CreditCardDetailError(e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateCard(
+    UpdateCreditCardEvent event,
+    Emitter<CreditCardDetailState> emit,
+  ) async {
+    try {
+      await _cardRepo.updateCard(
+        id: event.cardId,
+        name: event.name,
+        lastFourDigits: event.lastFourDigits,
+        creditLimit: event.creditLimit,
+        statementDay: event.statementDay,
+        dueDay: event.dueDay,
+        note: event.note,
+      );
+      add(LoadCreditCardDetailEvent(event.cardId));
+    } catch (e) {
+      emit(CreditCardDetailError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteCard(
+    DeleteCreditCardDetailEvent event,
+    Emitter<CreditCardDetailState> emit,
+  ) async {
+    try {
+      await _cardRepo.deleteCardWithCleanup(event.cardId);
+      emit(const CreditCardDetailError('deleted'));
     } catch (e) {
       emit(CreditCardDetailError(e.toString()));
     }

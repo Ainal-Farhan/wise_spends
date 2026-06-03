@@ -7,6 +7,9 @@ enum ReserveType {
 
   /// Reserved for budget plan linked account allocation
   budgetPlanAllocation,
+
+  /// Reserved for an unpaid credit card charge
+  creditCardCharge,
 }
 
 /// VO for a single reservation entry - represents funds that are reserved
@@ -128,6 +131,8 @@ class ReserveVO extends Equatable {
         return 'Commitment Task';
       case ReserveType.budgetPlanAllocation:
         return 'Budget Plan Allocation';
+      case ReserveType.creditCardCharge:
+        return 'Credit Card Charge';
     }
   }
 
@@ -176,6 +181,23 @@ class SavingsReserveSummary extends Equatable {
     return reservations
         .where((r) => r.type == ReserveType.budgetPlanAllocation && r.affectsTransferable)
         .fold(0.0, (sum, r) => sum + r.amount);
+  }
+
+  /// Reserved amount from unpaid credit card charges
+  double get creditCardChargeReserved {
+    return reservations
+        .where((r) => r.type == ReserveType.creditCardCharge && r.affectsTransferable)
+        .fold(0.0, (sum, r) => sum + r.amount);
+  }
+
+  /// Per-type totals — only includes types with a non-zero reserved amount
+  Map<ReserveType, double> get reservedByType {
+    final result = <ReserveType, double>{};
+    for (final r in reservations) {
+      if (!r.affectsTransferable) continue;
+      result[r.type] = (result[r.type] ?? 0.0) + r.amount;
+    }
+    return result;
   }
 
   /// Whether there are any active reservations

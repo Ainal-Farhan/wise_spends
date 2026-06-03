@@ -13,6 +13,17 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
   }
 
   @override
+  Future<List<CrdCardCharge>> getChargesForCardSince(
+      String cardId, DateTime? since) {
+    final q = db.select(db.creditCardChargeTable)
+      ..where((t) => t.creditCardId.equals(cardId));
+    if (since != null) {
+      q.where((t) => t.chargeDate.isBiggerOrEqualValue(since));
+    }
+    return q.get();
+  }
+
+  @override
   Future<void> addCharge({
     required String creditCardId,
     required String description,
@@ -20,6 +31,7 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
     String? categoryId,
     required DateTime chargeDate,
     String? note,
+    String? reservedSavingId,
   }) async {
     final now = DateTime.now();
     await db.into(db.creditCardChargeTable).insert(
@@ -31,12 +43,26 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
         categoryId: Value(categoryId),
         chargeDate: chargeDate,
         note: Value(note),
+        reservedSavingId: Value(reservedSavingId),
         createdBy: 'app',
         dateCreated: Value(now),
         dateUpdated: now,
         lastModifiedBy: 'app',
       ),
     );
+  }
+
+  @override
+  Future<double> getUnpaidAmount(String chargeId) async {
+    final charge = await (db.select(db.creditCardChargeTable)
+          ..where((t) => t.id.equals(chargeId)))
+        .getSingleOrNull();
+    if (charge == null) return 0.0;
+    final allocations = await (db.select(db.creditCardChargePaymentTable)
+          ..where((t) => t.chargeId.equals(chargeId)))
+        .get();
+    final paid = allocations.fold<double>(0.0, (s, a) => s + a.allocatedAmount);
+    return (charge.amount - paid).clamp(0.0, double.infinity);
   }
 
   @override

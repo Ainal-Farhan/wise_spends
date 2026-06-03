@@ -17,6 +17,7 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 import 'widgets/add_transaction_sheet.dart';
 import 'widgets/home_app_bar.dart';
 import 'widgets/home_balance_section.dart';
+import 'widgets/home_credit_card_summary.dart';
 import 'widgets/home_loan_summary.dart';
 import 'widgets/home_quick_actions.dart';
 import 'widgets/home_transaction_section.dart';
@@ -154,6 +155,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent>
                       const SizedBox(height: AppSpacing.xxl),
                       const HomeQuickActions(),
                       const SizedBox(height: AppSpacing.xxl),
+                      const HomeCreditCardSummary(),
                       const HomeLoanSummary(),
                       HomeTransactionSection(
                         onAddTransaction: () =>

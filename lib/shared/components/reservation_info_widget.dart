@@ -449,6 +449,39 @@ class _ReservationDetailsSheetState extends State<ReservationDetailsSheet> {
     );
   }
 
+  IconData _iconForReserveType(ReserveType type) {
+    switch (type) {
+      case ReserveType.commitmentTask:
+        return Icons.task;
+      case ReserveType.budgetPlanAllocation:
+        return Icons.account_balance;
+      case ReserveType.creditCardCharge:
+        return Icons.credit_card_rounded;
+    }
+  }
+
+  Color _containerColorForType(BuildContext context, ReserveType type) {
+    switch (type) {
+      case ReserveType.commitmentTask:
+        return Theme.of(context).colorScheme.errorContainer;
+      case ReserveType.budgetPlanAllocation:
+        return Theme.of(context).colorScheme.tertiaryContainer;
+      case ReserveType.creditCardCharge:
+        return Theme.of(context).colorScheme.secondaryContainer;
+    }
+  }
+
+  Color _iconColorForType(BuildContext context, ReserveType type) {
+    switch (type) {
+      case ReserveType.commitmentTask:
+        return Theme.of(context).colorScheme.error;
+      case ReserveType.budgetPlanAllocation:
+        return Theme.of(context).colorScheme.tertiary;
+      case ReserveType.creditCardCharge:
+        return Theme.of(context).colorScheme.secondary;
+    }
+  }
+
   Widget _buildReservationItem(
     BuildContext context,
     ReserveVO reservation,
@@ -468,19 +501,13 @@ class _ReservationDetailsSheetState extends State<ReservationDetailsSheet> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.xs),
             decoration: BoxDecoration(
-              color: reservation.type == ReserveType.commitmentTask
-                  ? Theme.of(context).colorScheme.errorContainer
-                  : Theme.of(context).colorScheme.tertiaryContainer,
+              color: _containerColorForType(context, reservation.type),
               borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Icon(
-              reservation.type == ReserveType.commitmentTask
-                  ? Icons.task
-                  : Icons.account_balance,
+              _iconForReserveType(reservation.type),
               size: 16,
-              color: reservation.type == ReserveType.commitmentTask
-                  ? Theme.of(context).colorScheme.error
-                  : Theme.of(context).colorScheme.tertiary,
+              color: _iconColorForType(context, reservation.type),
             ),
           ),
           const SizedBox(width: AppSpacing.md),

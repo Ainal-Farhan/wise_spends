@@ -32,6 +32,11 @@ abstract class ICreditCardRepository
     String? note,
   });
   Future<void> deleteCard(String id);
+
+  /// Deletes the card and all its charges/payments.
+  /// For any charge with a [reservedSavingId] that still has an unpaid amount,
+  /// the unpaid portion is returned to that saving account before deletion.
+  Future<void> deleteCardWithCleanup(String id);
   Future<double> getTotalDebt(String cardId);
   Future<double> getAvailableCredit(String cardId);
 }

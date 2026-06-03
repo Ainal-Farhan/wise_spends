@@ -14,6 +14,10 @@ abstract class ICreditCardPaymentRepository
     : super(db, db.creditCardPaymentTable);
 
   Future<List<CrdCardPayment>> getPaymentsForCard(String cardId);
+
+  /// Returns payments for [cardId] on or after [since]. Pass null for all.
+  Future<List<CrdCardPayment>> getPaymentsForCardSince(
+      String cardId, DateTime? since);
   Future<void> addPayment({
     required String creditCardId,
     required String sourceSavingId,
@@ -23,4 +27,5 @@ abstract class ICreditCardPaymentRepository
     List<({String chargeId, double amount})>? chargeAllocations,
   });
   Future<double> getTotalPaid(String cardId);
+  Future<List<CrdCardChargePayment>> getPaymentAllocations(String paymentId);
 }

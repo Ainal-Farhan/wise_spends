@@ -8,9 +8,20 @@ class CreditCardPaymentRepository extends ICreditCardPaymentRepository {
 
   @override
   Future<List<CrdCardPayment>> getPaymentsForCard(String cardId) {
-    return (db.select(
-      db.creditCardPaymentTable,
-    )..where((t) => t.creditCardId.equals(cardId))).get();
+    return (db.select(db.creditCardPaymentTable)
+          ..where((t) => t.creditCardId.equals(cardId)))
+        .get();
+  }
+
+  @override
+  Future<List<CrdCardPayment>> getPaymentsForCardSince(
+      String cardId, DateTime? since) {
+    final q = db.select(db.creditCardPaymentTable)
+      ..where((t) => t.creditCardId.equals(cardId));
+    if (since != null) {
+      q.where((t) => t.paymentDate.isBiggerOrEqualValue(since));
+    }
+    return q.get();
   }
 
   @override
@@ -24,40 +35,75 @@ class CreditCardPaymentRepository extends ICreditCardPaymentRepository {
   }) async {
     final now = DateTime.now();
     final paymentId = UuidGenerator().v4();
-    await db
-        .into(db.creditCardPaymentTable)
-        .insert(
-          CreditCardPaymentTableCompanion.insert(
-            id: Value(paymentId),
-            creditCardId: creditCardId,
-            sourceSavingId: sourceSavingId,
-            amount: amount,
-            paymentDate: paymentDate,
-            note: Value(note),
+
+    await db.into(db.creditCardPaymentTable).insert(
+      CreditCardPaymentTableCompanion.insert(
+        id: Value(paymentId),
+        creditCardId: creditCardId,
+        sourceSavingId: sourceSavingId,
+        amount: amount,
+        paymentDate: paymentDate,
+        note: Value(note),
+        createdBy: 'app',
+        dateCreated: Value(now),
+        dateUpdated: now,
+        lastModifiedBy: 'app',
+      ),
+    );
+
+    if (chargeAllocations != null && chargeAllocations.isNotEmpty) {
+      // Per-charge allocations: deduct from each charge's reservedSavingId if
+      // set, otherwise fall back to sourceSavingId.
+      for (final alloc in chargeAllocations) {
+        await db.into(db.creditCardChargePaymentTable).insert(
+          CreditCardChargePaymentTableCompanion.insert(
+            id: Value(UuidGenerator().v4()),
+            chargeId: alloc.chargeId,
+            paymentId: paymentId,
+            allocatedAmount: alloc.amount,
             createdBy: 'app',
             dateCreated: Value(now),
             dateUpdated: now,
             lastModifiedBy: 'app',
           ),
         );
-    if (chargeAllocations != null) {
-      for (final alloc in chargeAllocations) {
-        await db
-            .into(db.creditCardChargePaymentTable)
-            .insert(
-              CreditCardChargePaymentTableCompanion.insert(
-                id: Value(UuidGenerator().v4()),
-                chargeId: alloc.chargeId,
-                paymentId: paymentId,
-                allocatedAmount: alloc.amount,
-                createdBy: 'app',
-                dateCreated: Value(now),
-                dateUpdated: now,
-                lastModifiedBy: 'app',
-              ),
-            );
+
+        final charge = await (db.select(db.creditCardChargeTable)
+              ..where((t) => t.id.equals(alloc.chargeId)))
+            .getSingleOrNull();
+        final deductFrom = charge?.reservedSavingId ?? sourceSavingId;
+        await _adjustSavingBalance(deductFrom, -alloc.amount, now);
       }
+    } else {
+      // No per-charge allocations — deduct full amount from sourceSavingId.
+      await _adjustSavingBalance(sourceSavingId, -amount, now);
     }
+  }
+
+  Future<void> _adjustSavingBalance(
+    String savingId,
+    double delta,
+    DateTime now,
+  ) async {
+    final saving = await (db.select(db.savingTable)
+          ..where((t) => t.id.equals(savingId)))
+        .getSingleOrNull();
+    if (saving == null) return;
+    await (db.update(db.savingTable)..where((t) => t.id.equals(savingId)))
+        .write(
+          SavingTableCompanion(
+            currentAmount: Value(saving.currentAmount + delta),
+            dateUpdated: Value(now),
+            lastModifiedBy: const Value('app'),
+          ),
+        );
+  }
+
+  @override
+  Future<List<CrdCardChargePayment>> getPaymentAllocations(String paymentId) {
+    return (db.select(db.creditCardChargePaymentTable)
+          ..where((t) => t.paymentId.equals(paymentId)))
+        .get();
   }
 
   @override

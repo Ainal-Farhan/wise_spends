@@ -69,22 +69,20 @@ class SavingsReserveInfoCard extends StatelessWidget {
 
           const SizedBox(height: AppSpacing.md),
 
-          // Reserved amount breakdown
-          _buildReserveRow(
-            context,
-            label: 'savings.commitment_tasks'.tr,
-            amount: reserveSummary.commitmentTaskReserved,
-            icon: Icons.task_outlined,
-          ),
-
-          const SizedBox(height: AppSpacing.xs),
-
-          _buildReserveRow(
-            context,
-            label: 'savings.budget_allocations'.tr,
-            amount: reserveSummary.budgetPlanAllocationReserved,
-            icon: Icons.pie_chart,
-          ),
+          // Reserved amount breakdown — only show categories with non-zero amounts
+          ...reserveSummary.reservedByType.entries
+              .where((e) => e.value > 0)
+              .map(
+                (e) => Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                  child: _buildReserveRow(
+                    context,
+                    label: _labelForType(e.key),
+                    amount: e.value,
+                    icon: _iconForType(e.key),
+                  ),
+                ),
+              ),
 
           const SizedBox(height: AppSpacing.md),
 
@@ -167,6 +165,28 @@ class SavingsReserveInfoCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _labelForType(ReserveType type) {
+    switch (type) {
+      case ReserveType.commitmentTask:
+        return 'savings.commitment_tasks'.tr;
+      case ReserveType.budgetPlanAllocation:
+        return 'savings.budget_allocations'.tr;
+      case ReserveType.creditCardCharge:
+        return 'savings.credit_card_charges'.tr;
+    }
+  }
+
+  IconData _iconForType(ReserveType type) {
+    switch (type) {
+      case ReserveType.commitmentTask:
+        return Icons.task_outlined;
+      case ReserveType.budgetPlanAllocation:
+        return Icons.pie_chart;
+      case ReserveType.creditCardCharge:
+        return Icons.credit_card_rounded;
+    }
   }
 
   Widget _buildReserveRow(

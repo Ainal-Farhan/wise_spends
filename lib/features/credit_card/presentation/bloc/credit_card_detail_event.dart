@@ -1,5 +1,33 @@
 import 'package:equatable/equatable.dart';
 
+/// How far back to show charges/payments in the detail view.
+enum ChargePeriod {
+  days30,
+  days60,
+  days90,
+  all;
+
+  int? get days => switch (this) {
+        ChargePeriod.days30 => 30,
+        ChargePeriod.days60 => 60,
+        ChargePeriod.days90 => 90,
+        ChargePeriod.all => null,
+      };
+
+  String get label => switch (this) {
+        ChargePeriod.days30 => '30d',
+        ChargePeriod.days60 => '60d',
+        ChargePeriod.days90 => '90d',
+        ChargePeriod.all => 'All',
+      };
+
+  DateTime? get since {
+    final d = days;
+    if (d == null) return null;
+    return DateTime.now().subtract(Duration(days: d));
+  }
+}
+
 abstract class CreditCardDetailEvent extends Equatable {
   const CreditCardDetailEvent();
 
@@ -23,6 +51,7 @@ class AddChargeEvent extends CreditCardDetailEvent {
   final String? categoryId;
   final DateTime chargeDate;
   final String? note;
+  final String? reservedSavingId;
 
   const AddChargeEvent({
     required this.creditCardId,
@@ -31,6 +60,7 @@ class AddChargeEvent extends CreditCardDetailEvent {
     this.categoryId,
     required this.chargeDate,
     this.note,
+    this.reservedSavingId,
   });
 
   @override
@@ -41,6 +71,7 @@ class AddChargeEvent extends CreditCardDetailEvent {
     categoryId,
     chargeDate,
     note,
+    reservedSavingId,
   ];
 }
 
@@ -78,4 +109,46 @@ class DeleteChargeEvent extends CreditCardDetailEvent {
 
   @override
   List<Object?> get props => [id];
+}
+
+class UpdateCreditCardEvent extends CreditCardDetailEvent {
+  final String cardId;
+  final String name;
+  final String? lastFourDigits;
+  final double creditLimit;
+  final int statementDay;
+  final int dueDay;
+  final String? note;
+
+  const UpdateCreditCardEvent({
+    required this.cardId,
+    required this.name,
+    this.lastFourDigits,
+    required this.creditLimit,
+    required this.statementDay,
+    required this.dueDay,
+    this.note,
+  });
+
+  @override
+  List<Object?> get props =>
+      [cardId, name, lastFourDigits, creditLimit, statementDay, dueDay, note];
+}
+
+class DeleteCreditCardDetailEvent extends CreditCardDetailEvent {
+  final String cardId;
+
+  const DeleteCreditCardDetailEvent(this.cardId);
+
+  @override
+  List<Object?> get props => [cardId];
+}
+
+class ChangePeriodEvent extends CreditCardDetailEvent {
+  final ChargePeriod period;
+
+  const ChangePeriodEvent(this.period);
+
+  @override
+  List<Object?> get props => [period];
 }
