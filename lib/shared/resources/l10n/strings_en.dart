@@ -1411,13 +1411,16 @@ class EnglishStrings {
     'credit_card.payment_date_prefix': 'Date',
     'credit_card.payment_source_fallback': 'Default Source Account',
     'credit_card.reserve_toggle': 'Reserve from saving',
-    'credit_card.reserve_hint': 'Set aside money now so it\'s ready when you pay this charge.',
+    'credit_card.reserve_hint':
+        'Set aside money now so it\'s ready when you pay this charge.',
     'credit_card.reserve_account': 'Saving to Reserve From',
     'credit_card.reserved': 'Reserved',
     'credit_card.reserved_from': 'Reserved from {name}',
     'credit_card.reserved_charges_title': 'Auto-deduct from reserved savings',
-    'credit_card.reserved_charges_hint': 'These charges have reserved savings and will be deducted automatically.',
-    'credit_card.delete_charge_confirm': 'Delete charge "{name}"? This cannot be undone.',
+    'credit_card.reserved_charges_hint':
+        'These charges have reserved savings and will be deducted automatically.',
+    'credit_card.delete_charge_confirm':
+        'Delete charge "{name}"? This cannot be undone.',
     'credit_card.select_charges': 'Select Charges to Pay',
     'credit_card.select_all': 'Select All',
     'credit_card.deselect_all': 'Deselect All',
@@ -1426,7 +1429,8 @@ class EnglishStrings {
     'credit_card.payment_total': 'Total to Pay',
     'credit_card.override_amount': 'Override Amount',
     'credit_card.full_amount': 'Full Amount',
-    'credit_card.select_at_least_one': 'Please select at least one charge to pay.',
+    'credit_card.select_at_least_one':
+        'Please select at least one charge to pay.',
     'credit_card.paid': 'Paid',
     'credit_card.all_paid': 'All charges are fully paid.',
     'credit_card.charges_covered': 'charge(s) covered',
@@ -1434,11 +1438,14 @@ class EnglishStrings {
     'credit_card.unpaid_amount': 'Unpaid amount',
     'credit_card.remaining_of': '{remaining} remaining of {total}',
     'credit_card.edit': 'Edit Card',
-    'credit_card.delete_reserved_warning': '{count} charge(s) with reserved savings will release their reservations.',
-    'credit_card.delete_reserved_note': 'The saving balances will not be restored since they were never deducted.',
+    'credit_card.delete_reserved_warning':
+        '{count} charge(s) with reserved savings will release their reservations.',
+    'credit_card.delete_reserved_note':
+        'The saving balances will not be restored since they were never deducted.',
     'credit_card.statement_day_hint': 'Closes on day {day} of month',
     'credit_card.due_day_hint': 'Payment due on day {day} of month',
-    'credit_card.billing_cycle_preview': 'Statement closes on day {stmt} each month. Payment due on day {due}.',
+    'credit_card.billing_cycle_preview':
+        'Statement closes on day {stmt} each month. Payment due on day {due}.',
     'credit_card.day_picker_hint': 'Select the day of the month',
     // Charge type toggles
     'credit_card.type_charge': 'Charge',
@@ -1462,6 +1469,14 @@ class EnglishStrings {
     'credit_card.filter_rebate': 'Rebates',
     'credit_card.charges_empty_filter': 'No charges match this filter.',
     'credit_card.confirm_charge': 'Mark as Posted',
+    'credit_card.delete_completed_title': 'Delete Paid Charges',
+    'credit_card.delete_completed_confirm':
+        'This will permanently remove all fully paid charges. This cannot be undone.',
+    'credit_card.delete_payment_title': 'Delete Payment',
+    'credit_card.delete_payment_confirm':
+        'Delete payment of {amount}? The saving balance will be restored.',
+    'credit_card.rebate_label': 'Rebate',
+    'credit_card.rebate_partial': '{remaining} remaining of {total}',
     'home.credit_cards_title': 'Credit Cards',
     'home.credit_cards_count': 'Cards',
     'home.credit_cards_total_debt': 'Total Debt',

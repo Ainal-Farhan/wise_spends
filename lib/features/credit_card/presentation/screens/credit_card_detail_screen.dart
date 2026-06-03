@@ -128,16 +128,29 @@ class _CreditCardDetailContentState extends State<_CreditCardDetailContent>
                         onDelete: (id) => context
                             .read<CreditCardDetailBloc>()
                             .add(DeleteChargeEvent(id)),
-                        onConfirm: (chargeId) => context
-                            .read<CreditCardDetailBloc>()
-                            .add(ConfirmChargeEvent(
+                        onConfirm: (chargeId) =>
+                            context.read<CreditCardDetailBloc>().add(
+                              ConfirmChargeEvent(
                                 chargeId: chargeId,
-                                cardId: state.card.id)),
+                                cardId: state.card.id,
+                              ),
+                            ),
+                        onDeleteCompleted: () => context
+                            .read<CreditCardDetailBloc>()
+                            .add(DeleteCompletedChargesEvent(state.card.id)),
                       ),
                       _PaymentsList(
                         payments: state.payments,
                         allocations: state.paymentAllocations,
                         period: state.period,
+                        cardId: state.card.id,
+                        onDelete: (paymentId) =>
+                            context.read<CreditCardDetailBloc>().add(
+                              DeletePaymentEvent(
+                                paymentId: paymentId,
+                                cardId: state.card.id,
+                              ),
+                            ),
                       ),
                     ],
                   ),
@@ -172,22 +185,31 @@ class _CreditCardDetailContentState extends State<_CreditCardDetailContent>
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       builder: (_) => _AddChargeSheet(
-        onAdd: (desc, amount, categoryId, date, note, reservedSavingId,
-            status, isRebate) {
-          context.read<CreditCardDetailBloc>().add(
-            AddChargeEvent(
-              creditCardId: cardId,
-              description: desc,
-              amount: amount,
-              categoryId: categoryId,
-              chargeDate: date,
-              note: note,
-              reservedSavingId: reservedSavingId,
-              status: status,
-              isRebate: isRebate,
-            ),
-          );
-        },
+        onAdd:
+            (
+              desc,
+              amount,
+              categoryId,
+              date,
+              note,
+              reservedSavingId,
+              status,
+              isRebate,
+            ) {
+              context.read<CreditCardDetailBloc>().add(
+                AddChargeEvent(
+                  creditCardId: cardId,
+                  description: desc,
+                  amount: amount,
+                  categoryId: categoryId,
+                  chargeDate: date,
+                  note: note,
+                  reservedSavingId: reservedSavingId,
+                  status: status,
+                  isRebate: isRebate,
+                ),
+              );
+            },
       ),
     );
   }
@@ -209,19 +231,31 @@ class _CreditCardDetailContentState extends State<_CreditCardDetailContent>
       builder: (_) => _AddPaymentSheet(
         charges: charges,
         unpaidAmounts: unpaidAmounts,
-        onAdd: (amount, sourceSavingId, date, note, allocations, rebateAllocs) {
-          context.read<CreditCardDetailBloc>().add(
-            AddPaymentEvent(
-              creditCardId: cardId,
-              sourceSavingId: sourceSavingId,
-              amount: amount,
-              paymentDate: date,
-              note: note,
-              chargeAllocations: allocations,
-              rebateAllocations: rebateAllocs,
-            ),
-          );
-        },
+        onAdd:
+            (
+              amount,
+              sourceSavingId,
+              date,
+              note,
+              allocations,
+              rebateAllocs,
+              appliedRebates,
+            ) {
+              context.read<CreditCardDetailBloc>().add(
+                AddPaymentEvent(
+                  creditCardId: cardId,
+                  sourceSavingId: sourceSavingId,
+                  amount: amount,
+                  paymentDate: date,
+                  note: note,
+                  chargeAllocations: allocations,
+                  rebateAllocations: rebateAllocs,
+                  appliedRebates: appliedRebates.isNotEmpty
+                      ? appliedRebates
+                      : null,
+                ),
+              );
+            },
       ),
     );
   }
@@ -700,6 +734,7 @@ class _ChargesList extends StatefulWidget {
   final String cardId;
   final void Function(String id) onDelete;
   final void Function(String chargeId) onConfirm;
+  final VoidCallback onDeleteCompleted;
 
   const _ChargesList({
     required this.charges,
@@ -708,6 +743,7 @@ class _ChargesList extends StatefulWidget {
     required this.cardId,
     required this.onDelete,
     required this.onConfirm,
+    required this.onDeleteCompleted,
   });
 
   @override
@@ -785,12 +821,14 @@ class _ChargesListState extends State<_ChargesList> {
                     AppSpacing.xxxl + 72,
                   ),
                   itemCount: visible.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+                  separatorBuilder: (_, _) =>
+                      const SizedBox(height: AppSpacing.sm),
                   itemBuilder: (context, index) {
                     final charge = visible[index];
                     return _ChargeTile(
                       charge: charge,
-                      unpaidAmount: widget.unpaidAmounts[charge.id] ?? charge.amount,
+                      unpaidAmount:
+                          widget.unpaidAmounts[charge.id] ?? charge.amount,
                       onDelete: () => widget.onDelete(charge.id),
                       onConfirm: charge.status == 'pending'
                           ? () => widget.onConfirm(charge.id)
@@ -808,6 +846,7 @@ class _ChargeTile extends StatelessWidget {
   final CrdCardCharge charge;
   final double unpaidAmount;
   final VoidCallback onDelete;
+
   /// Non-null only when status == 'pending'. Promotes to 'posted'.
   final VoidCallback? onConfirm;
 
@@ -881,7 +920,10 @@ class _ChargeTile extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.check_circle_rounded, color: Colors.green.shade700),
+                  Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.green.shade700,
+                  ),
                   const SizedBox(width: AppSpacing.xs),
                   Text(
                     'credit_card.confirm_charge'.tr,
@@ -942,9 +984,7 @@ class _ChargeTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: cs.surfaceContainer,
             borderRadius: BorderRadius.circular(AppRadius.lg),
-            border: Border(
-              left: BorderSide(color: accentColor, width: 3),
-            ),
+            border: Border(left: BorderSide(color: accentColor, width: 3)),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -1010,17 +1050,19 @@ class _ChargeTile extends StatelessWidget {
                             ),
                             decoration: BoxDecoration(
                               color: Colors.green.shade50,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.full),
-                              border: Border.all(
-                                  color: Colors.green.shade300),
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.full,
+                              ),
+                              border: Border.all(color: Colors.green.shade300),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.check_rounded,
-                                    size: 11,
-                                    color: Colors.green.shade700),
+                                Icon(
+                                  Icons.check_rounded,
+                                  size: 11,
+                                  color: Colors.green.shade700,
+                                ),
                                 const SizedBox(width: 3),
                                 Text(
                                   'credit_card.confirm_charge'.tr,
@@ -1154,19 +1196,29 @@ class _TypeToggleBtn extends StatelessWidget {
           color: selected ? color.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(
-            color: selected ? color : Theme.of(context).colorScheme.outlineVariant,
+            color: selected
+                ? color
+                : Theme.of(context).colorScheme.outlineVariant,
             width: selected ? 1.5 : 1,
           ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 16, color: selected ? color : Theme.of(context).colorScheme.onSurfaceVariant),
+            Icon(
+              icon,
+              size: 16,
+              color: selected
+                  ? color
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(width: AppSpacing.xs),
             Text(
               label,
               style: AppTextStyles.labelMedium.copyWith(
-                color: selected ? color : Theme.of(context).colorScheme.onSurfaceVariant,
+                color: selected
+                    ? color
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
               ),
             ),
@@ -1245,11 +1297,15 @@ class _PaymentsList extends StatelessWidget {
   final List<CrdCardPayment> payments;
   final Map<String, List<PaymentAllocationDetail>> allocations;
   final ChargePeriod period;
+  final String cardId;
+  final void Function(String paymentId) onDelete;
 
   const _PaymentsList({
     required this.payments,
     required this.allocations,
     required this.period,
+    required this.cardId,
+    required this.onDelete,
   });
 
   @override
@@ -1274,6 +1330,7 @@ class _PaymentsList extends StatelessWidget {
         return _PaymentTile(
           payment: payment,
           allocationDetails: allocations[payment.id] ?? [],
+          onDelete: () => onDelete(payment.id),
         );
       },
     );
@@ -1283,8 +1340,13 @@ class _PaymentsList extends StatelessWidget {
 class _PaymentTile extends StatefulWidget {
   final CrdCardPayment payment;
   final List<PaymentAllocationDetail> allocationDetails;
+  final VoidCallback onDelete;
 
-  const _PaymentTile({required this.payment, required this.allocationDetails});
+  const _PaymentTile({
+    required this.payment,
+    required this.allocationDetails,
+    required this.onDelete,
+  });
 
   @override
   State<_PaymentTile> createState() => _PaymentTileState();
@@ -1298,151 +1360,216 @@ class _PaymentTileState extends State<_PaymentTile> {
     final cs = Theme.of(context).colorScheme;
     final hasDetails = widget.allocationDetails.isNotEmpty;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: cs.surfaceContainer,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border(left: BorderSide(color: cs.primary, width: 3)),
+    return Dismissible(
+      key: Key(widget.payment.id),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: cs.errorContainer,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+        child: Icon(Icons.delete_outline_rounded, color: cs.error),
       ),
-      child: Column(
-        children: [
-          InkWell(
-            onTap: hasDetails
-                ? () => setState(() => _expanded = !_expanded)
-                : null,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.md,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: cs.primaryContainer.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(AppRadius.md),
+      confirmDismiss: (_) => showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('credit_card.delete_payment_title'.tr),
+          content: Text(
+            'credit_card.delete_payment_confirm'.trWith({
+              'amount': _currFmt.format(widget.payment.amount),
+            }),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text('general.cancel'.tr),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: cs.error),
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text('general.delete'.tr),
+            ),
+          ],
+        ),
+      ),
+      onDismissed: (_) => widget.onDelete(),
+      child: Container(
+        decoration: BoxDecoration(
+          color: cs.surfaceContainer,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border(left: BorderSide(color: cs.primary, width: 3)),
+        ),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: hasDetails
+                  ? () => setState(() => _expanded = !_expanded)
+                  : null,
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.md,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: cs.primaryContainer.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                      child: Icon(
+                        Icons.payments_rounded,
+                        size: 18,
+                        color: cs.primary,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.payments_rounded,
-                      size: 18,
-                      color: cs.primary,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _dateFmt.format(widget.payment.paymentDate),
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        if (widget.payment.note != null)
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            widget.payment.note!,
-                            style: AppTextStyles.caption.copyWith(
-                              color: cs.onSurfaceVariant,
-                            ),
-                          ),
-                        if (hasDetails)
-                          Text(
-                            '${widget.allocationDetails.length} ${'credit_card.charges_covered'.tr}',
-                            style: AppTextStyles.caption.copyWith(
-                              color: cs.primary,
+                            _dateFmt.format(widget.payment.paymentDate),
+                            style: AppTextStyles.bodyMedium.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        _currFmt.format(widget.payment.amount),
-                        style: AppTextStyles.bodyLarge.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: cs.primary,
-                        ),
-                      ),
-                      if (hasDetails)
-                        Icon(
-                          _expanded
-                              ? Icons.expand_less_rounded
-                              : Icons.expand_more_rounded,
-                          size: 16,
-                          color: cs.onSurfaceVariant,
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Expanded allocation breakdown
-          if (_expanded && hasDetails)
-            Container(
-              margin: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                0,
-                AppSpacing.lg,
-                AppSpacing.md,
-              ),
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: cs.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'credit_card.payment_breakdown'.tr,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: cs.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  ...widget.allocationDetails.map(
-                    (d) => Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.receipt_outlined,
-                            size: 13,
-                            color: cs.primary,
-                          ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Expanded(
-                            child: Text(
-                              d.chargeDescription,
-                              style: AppTextStyles.caption,
+                          if (widget.payment.note != null)
+                            Text(
+                              widget.payment.note!,
+                              style: AppTextStyles.caption.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                          Text(
-                            _currFmt.format(d.allocatedAmount),
-                            style: AppTextStyles.caption.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: cs.primary,
+                          if (hasDetails)
+                            Text(
+                              '${widget.allocationDetails.length} ${'credit_card.charges_covered'.tr}',
+                              style: AppTextStyles.caption.copyWith(
+                                color: cs.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          _currFmt.format(widget.payment.amount),
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: cs.primary,
+                          ),
+                        ),
+                        if (hasDetails)
+                          Icon(
+                            _expanded
+                                ? Icons.expand_less_rounded
+                                : Icons.expand_more_rounded,
+                            size: 16,
+                            color: cs.onSurfaceVariant,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-        ],
-      ),
-    );
+            // Expanded allocation breakdown
+            if (_expanded && hasDetails)
+              Container(
+                margin: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                ),
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'credit_card.payment_breakdown'.tr,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    ...widget.allocationDetails.map(
+                      (d) => Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          children: [
+                            Icon(
+                              d.isRebateCovered
+                                  ? Icons.redeem_rounded
+                                  : Icons.receipt_outlined,
+                              size: 13,
+                              color: d.isRebateCovered
+                                  ? Colors.teal
+                                  : cs.primary,
+                            ),
+                            const SizedBox(width: AppSpacing.xs),
+                            Expanded(
+                              child: Text(
+                                d.chargeDescription,
+                                style: AppTextStyles.caption,
+                              ),
+                            ),
+                            if (d.isRebateCovered) ...[
+                              Container(
+                                margin: const EdgeInsets.only(left: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 1,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.teal.withValues(alpha: 0.12),
+                                  borderRadius:
+                                      BorderRadius.circular(AppRadius.full),
+                                ),
+                                child: Text(
+                                  'credit_card.rebate_label'.tr,
+                                  style: AppTextStyles.caption.copyWith(
+                                    color: Colors.teal,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                            ],
+                            Text(
+                              _currFmt.format(d.allocatedAmount),
+                              style: AppTextStyles.caption.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: d.isRebateCovered
+                                    ? Colors.teal
+                                    : cs.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ), // end child Container
+    ); // end Dismissible
   }
 }
 
@@ -1875,8 +2002,9 @@ class _AddChargeSheetState extends State<_AddChargeSheet> {
                     ),
                     subtitle: Text(
                       'credit_card.pending_hint'.tr,
-                      style: AppTextStyles.caption
-                          .copyWith(color: cs.onSurfaceVariant),
+                      style: AppTextStyles.caption.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                     value: _isPending,
                     onChanged: (v) => setState(() => _isPending = v),
@@ -1987,7 +2115,9 @@ class _AddChargeSheetState extends State<_AddChargeSheet> {
                       _noteCtrl.text.trim().isEmpty
                           ? null
                           : _noteCtrl.text.trim(),
-                      (!_isRebate && _reserveEnabled) ? _reservedSaving?.id : null,
+                      (!_isRebate && _reserveEnabled)
+                          ? _reservedSaving?.id
+                          : null,
                       _isPending ? 'pending' : 'posted',
                       _isRebate,
                     );
@@ -2015,6 +2145,7 @@ class _AddPaymentSheet extends StatefulWidget {
     String? note,
     List<({String chargeId, double amount})>? chargeAllocations,
     List<({String chargeId, double amount})>? rebateAllocations,
+    List<({String rebateId, double amount})> appliedRebates,
   )
   onAdd;
 
@@ -2080,14 +2211,19 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
     (s, c) => s + (_selected.keys.contains(c.id) ? _payAmountFor(c) : .0),
   );
 
-  /// Rebate charges (isRebate = true) — shown as available credits.
-  List<CrdCardCharge> get _rebates =>
-      widget.charges.where((c) => c.isRebate).toList();
+  /// Rebate charges (isRebate = true) that still have unconsumed credit.
+  List<CrdCardCharge> get _rebates => widget.charges
+      .where((c) => c.isRebate && (widget.unpaidAmounts[c.id] ?? c.amount) > 0)
+      .toList();
 
-  /// Sum of currently-toggled rebate credits.
+  /// Remaining credit for a rebate (original minus already consumed).
+  double _remainingFor(CrdCardCharge r) =>
+      (widget.unpaidAmounts[r.id] ?? r.amount).clamp(0.0, r.amount.abs());
+
+  /// Sum of remaining credits for currently-toggled rebates.
   double get _appliedCredits => _rebates
       .where((c) => _appliedRebateIds.contains(c.id))
-      .fold(0.0, (s, c) => s + c.amount.abs());
+      .fold(0.0, (s, c) => s + _remainingFor(c));
 
   /// Net cash that must come from the user's saving account.
   double get _netPayable =>
@@ -2117,8 +2253,9 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
   List<({String chargeId, double amount})> _buildRebateAllocations() {
     final credits = _appliedCredits;
     if (credits <= 0) return [];
-    final selected =
-        _activeCharges.where((c) => _selected.containsKey(c.id)).toList();
+    final selected = _activeCharges
+        .where((c) => _selected.containsKey(c.id))
+        .toList();
     final total = _totalSelected;
     if (total <= 0) return [];
 
@@ -2130,7 +2267,10 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
       final share = (credits * chargeAmt / total).clamp(0.0, chargeAmt);
       final actual = share.clamp(0.0, remaining);
       if (actual > 0.001) {
-        result.add((chargeId: c.id, amount: double.parse(actual.toStringAsFixed(2))));
+        result.add((
+          chargeId: c.id,
+          amount: double.parse(actual.toStringAsFixed(2)),
+        ));
         remaining -= actual;
       }
     }
@@ -2139,16 +2279,43 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
 
   List<({String chargeId, double amount})> _buildCashAllocations() {
     final rebateMap = {
-      for (final r in _buildRebateAllocations()) r.chargeId: r.amount
+      for (final r in _buildRebateAllocations()) r.chargeId: r.amount,
     };
     return _activeCharges
         .where((c) => _selected.containsKey(c.id))
         .map((c) {
           final cash = _payAmountFor(c) - (rebateMap[c.id] ?? 0.0);
-          return (chargeId: c.id, amount: double.parse(cash.toStringAsFixed(2)));
+          return (
+            chargeId: c.id,
+            amount: double.parse(cash.toStringAsFixed(2)),
+          );
         })
         .where((a) => a.amount > 0.001)
         .toList();
+  }
+
+  /// Computes how much of each applied rebate was actually consumed.
+  /// Rebates are consumed in list order until the total credit needed is met.
+  List<({String rebateId, double amount})> _buildAppliedRebates() {
+    // Actual credits consumed = min(total toggled credits, total selected charges).
+    final totalConsumed = _appliedCredits.clamp(0.0, _totalSelected);
+    if (totalConsumed <= 0.001) return [];
+
+    var remaining = totalConsumed;
+    final result = <({String rebateId, double amount})>[];
+    for (final r in _rebates.where((r) => _appliedRebateIds.contains(r.id))) {
+      if (remaining <= 0.001) break;
+      final available = _remainingFor(r);
+      final used = available.clamp(0.0, remaining);
+      if (used > 0.001) {
+        result.add((
+          rebateId: r.id,
+          amount: double.parse(used.toStringAsFixed(2)),
+        ));
+        remaining -= used;
+      }
+    }
+    return result;
   }
 
   void _toggleAll() {
@@ -2318,17 +2485,20 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
                     color: Colors.teal,
                   ),
                   const SizedBox(height: AppSpacing.xs),
-                  ..._rebates.map((r) => _RebateCreditTile(
-                        charge: r,
-                        isApplied: _appliedRebateIds.contains(r.id),
-                        onToggle: (v) => setState(() {
-                          if (v) {
-                            _appliedRebateIds.add(r.id);
-                          } else {
-                            _appliedRebateIds.remove(r.id);
-                          }
-                        }),
-                      )),
+                  ..._rebates.map(
+                    (r) => _RebateCreditTile(
+                      charge: r,
+                      remainingCredit: _remainingFor(r),
+                      isApplied: _appliedRebateIds.contains(r.id),
+                      onToggle: (v) => setState(() {
+                        if (v) {
+                          _appliedRebateIds.add(r.id);
+                        } else {
+                          _appliedRebateIds.remove(r.id);
+                        }
+                      }),
+                    ),
+                  ),
                 ],
 
                 // Total breakdown box
@@ -2385,7 +2555,10 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
                               ),
                             ],
                           ),
-                          Divider(height: AppSpacing.md, color: cs.outline.withValues(alpha: 0.3)),
+                          Divider(
+                            height: AppSpacing.md,
+                            color: cs.outline.withValues(alpha: 0.3),
+                          ),
                         ],
                         // Net row
                         Row(
@@ -2513,6 +2686,7 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
                                       : _noteCtrl.text.trim(),
                                   cashAllocs.isNotEmpty ? cashAllocs : null,
                                   rebateAllocs.isNotEmpty ? rebateAllocs : null,
+                                  _buildAppliedRebates(),
                                 );
                                 Navigator.pop(context);
                               }
@@ -2797,11 +2971,14 @@ class _ChargeSelectTile extends StatelessWidget {
 
 class _RebateCreditTile extends StatelessWidget {
   final CrdCardCharge charge;
+  /// Remaining unconsumed credit for this rebate.
+  final double remainingCredit;
   final bool isApplied;
   final ValueChanged<bool> onToggle;
 
   const _RebateCreditTile({
     required this.charge,
+    required this.remainingCredit,
     required this.isApplied,
     required this.onToggle,
   });
@@ -2809,6 +2986,7 @@ class _RebateCreditTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final isPartial = remainingCredit < charge.amount.abs() - 0.001;
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.xs),
       decoration: BoxDecoration(
@@ -2830,24 +3008,44 @@ class _RebateCreditTile extends StatelessWidget {
         controlAffinity: ListTileControlAffinity.leading,
         title: Text(
           charge.description,
-          style: AppTextStyles.bodyMedium.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500),
         ),
-        subtitle: charge.note != null && charge.note!.isNotEmpty
+        subtitle: isPartial
             ? Text(
-                charge.note!,
+                'credit_card.rebate_partial'.trWith({
+                  'remaining': _currFmt.format(remainingCredit),
+                  'total': _currFmt.format(charge.amount.abs()),
+                }),
+                style: AppTextStyles.caption.copyWith(
+                  color: Colors.teal.shade700,
+                ),
+              )
+            : (charge.note != null && charge.note!.isNotEmpty
+                ? Text(
+                    charge.note!,
+                    style: AppTextStyles.caption
+                        .copyWith(color: cs.onSurfaceVariant),
+                  )
+                : null),
+        secondary: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              '+ ${_currFmt.format(remainingCredit)}',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.teal,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            if (isPartial)
+              Text(
+                'of ${_currFmt.format(charge.amount.abs())}',
                 style: AppTextStyles.caption.copyWith(
                   color: cs.onSurfaceVariant,
                 ),
-              )
-            : null,
-        secondary: Text(
-          '+ ${_currFmt.format(charge.amount.abs())}',
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: Colors.teal,
-            fontWeight: FontWeight.w700,
-          ),
+              ),
+          ],
         ),
       ),
     );

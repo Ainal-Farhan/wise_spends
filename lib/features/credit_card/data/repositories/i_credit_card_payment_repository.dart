@@ -29,7 +29,11 @@ abstract class ICreditCardPaymentRepository
     /// created so [getUnpaidAmount] is reduced, but **no saving balance is
     /// touched** for these entries.
     List<({String chargeId, double amount})>? rebateAllocations,
+    /// Per-rebate consumed amounts — allocation rows are inserted so each
+    /// rebate's remaining credit is correctly tracked.
+    List<({String rebateId, double amount})>? appliedRebates,
   });
   Future<double> getTotalPaid(String cardId);
   Future<List<CrdCardChargePayment>> getPaymentAllocations(String paymentId);
+  Future<void> deletePayment(String paymentId);
 }

@@ -3,12 +3,17 @@ import 'package:wise_spends/core/constants/constant/domain/domain_table_constant
 import 'package:wise_spends/data/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/data/db/domain/credit_card/credit_card_charge_table.dart';
 import 'package:wise_spends/data/db/domain/credit_card/credit_card_payment_table.dart';
+import 'package:wise_spends/data/db/domain/saving/saving_table.dart';
 
 @DataClassName("${DomainTableConstant.creditCardTablePrefix}ChargePayment")
 class CreditCardChargePaymentTable extends BaseEntityTable {
   TextColumn get chargeId => text().references(CreditCardChargeTable, #id)();
   TextColumn get paymentId => text().references(CreditCardPaymentTable, #id)();
   RealColumn get allocatedAmount => real()();
+  /// Saving account that was debited for this allocation.
+  /// Null for rebate-covered and rebate-consumption rows (no cash was moved).
+  TextColumn get deductedSavingId =>
+      text().nullable().references(SavingTable, #id)();
 
   @override
   Map<String, dynamic> toMapFromSubClass() {
@@ -16,6 +21,7 @@ class CreditCardChargePaymentTable extends BaseEntityTable {
       'chargeId': chargeId.name,
       'paymentId': paymentId.name,
       'allocatedAmount': allocatedAmount.name,
+      'deductedSavingId': deductedSavingId.name,
     };
   }
 }

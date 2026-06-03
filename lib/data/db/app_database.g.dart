@@ -23094,6 +23094,20 @@ class $CreditCardChargePaymentTableTable extends CreditCardChargePaymentTable
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _deductedSavingIdMeta = const VerificationMeta(
+    'deductedSavingId',
+  );
+  @override
+  late final GeneratedColumn<String> deductedSavingId = GeneratedColumn<String>(
+    'deducted_saving_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES saving_table (id)',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -23104,6 +23118,7 @@ class $CreditCardChargePaymentTableTable extends CreditCardChargePaymentTable
     chargeId,
     paymentId,
     allocatedAmount,
+    deductedSavingId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -23186,6 +23201,15 @@ class $CreditCardChargePaymentTableTable extends CreditCardChargePaymentTable
     } else if (isInserting) {
       context.missing(_allocatedAmountMeta);
     }
+    if (data.containsKey('deducted_saving_id')) {
+      context.handle(
+        _deductedSavingIdMeta,
+        deductedSavingId.isAcceptableOrUnknown(
+          data['deducted_saving_id']!,
+          _deductedSavingIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -23227,6 +23251,10 @@ class $CreditCardChargePaymentTableTable extends CreditCardChargePaymentTable
         DriftSqlType.double,
         data['${effectivePrefix}allocated_amount'],
       )!,
+      deductedSavingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deducted_saving_id'],
+      ),
     );
   }
 
@@ -23246,6 +23274,10 @@ class CrdCardChargePayment extends DataClass
   final String chargeId;
   final String paymentId;
   final double allocatedAmount;
+
+  /// Saving account that was debited for this allocation.
+  /// Null for rebate-covered and rebate-consumption rows (no cash was moved).
+  final String? deductedSavingId;
   const CrdCardChargePayment({
     required this.id,
     required this.createdBy,
@@ -23255,6 +23287,7 @@ class CrdCardChargePayment extends DataClass
     required this.chargeId,
     required this.paymentId,
     required this.allocatedAmount,
+    this.deductedSavingId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -23267,6 +23300,9 @@ class CrdCardChargePayment extends DataClass
     map['charge_id'] = Variable<String>(chargeId);
     map['payment_id'] = Variable<String>(paymentId);
     map['allocated_amount'] = Variable<double>(allocatedAmount);
+    if (!nullToAbsent || deductedSavingId != null) {
+      map['deducted_saving_id'] = Variable<String>(deductedSavingId);
+    }
     return map;
   }
 
@@ -23280,6 +23316,9 @@ class CrdCardChargePayment extends DataClass
       chargeId: Value(chargeId),
       paymentId: Value(paymentId),
       allocatedAmount: Value(allocatedAmount),
+      deductedSavingId: deductedSavingId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deductedSavingId),
     );
   }
 
@@ -23297,6 +23336,7 @@ class CrdCardChargePayment extends DataClass
       chargeId: serializer.fromJson<String>(json['chargeId']),
       paymentId: serializer.fromJson<String>(json['paymentId']),
       allocatedAmount: serializer.fromJson<double>(json['allocatedAmount']),
+      deductedSavingId: serializer.fromJson<String?>(json['deductedSavingId']),
     );
   }
   @override
@@ -23311,6 +23351,7 @@ class CrdCardChargePayment extends DataClass
       'chargeId': serializer.toJson<String>(chargeId),
       'paymentId': serializer.toJson<String>(paymentId),
       'allocatedAmount': serializer.toJson<double>(allocatedAmount),
+      'deductedSavingId': serializer.toJson<String?>(deductedSavingId),
     };
   }
 
@@ -23323,6 +23364,7 @@ class CrdCardChargePayment extends DataClass
     String? chargeId,
     String? paymentId,
     double? allocatedAmount,
+    Value<String?> deductedSavingId = const Value.absent(),
   }) => CrdCardChargePayment(
     id: id ?? this.id,
     createdBy: createdBy ?? this.createdBy,
@@ -23332,6 +23374,9 @@ class CrdCardChargePayment extends DataClass
     chargeId: chargeId ?? this.chargeId,
     paymentId: paymentId ?? this.paymentId,
     allocatedAmount: allocatedAmount ?? this.allocatedAmount,
+    deductedSavingId: deductedSavingId.present
+        ? deductedSavingId.value
+        : this.deductedSavingId,
   );
   CrdCardChargePayment copyWithCompanion(
     CreditCardChargePaymentTableCompanion data,
@@ -23353,6 +23398,9 @@ class CrdCardChargePayment extends DataClass
       allocatedAmount: data.allocatedAmount.present
           ? data.allocatedAmount.value
           : this.allocatedAmount,
+      deductedSavingId: data.deductedSavingId.present
+          ? data.deductedSavingId.value
+          : this.deductedSavingId,
     );
   }
 
@@ -23366,7 +23414,8 @@ class CrdCardChargePayment extends DataClass
           ..write('lastModifiedBy: $lastModifiedBy, ')
           ..write('chargeId: $chargeId, ')
           ..write('paymentId: $paymentId, ')
-          ..write('allocatedAmount: $allocatedAmount')
+          ..write('allocatedAmount: $allocatedAmount, ')
+          ..write('deductedSavingId: $deductedSavingId')
           ..write(')'))
         .toString();
   }
@@ -23381,6 +23430,7 @@ class CrdCardChargePayment extends DataClass
     chargeId,
     paymentId,
     allocatedAmount,
+    deductedSavingId,
   );
   @override
   bool operator ==(Object other) =>
@@ -23393,7 +23443,8 @@ class CrdCardChargePayment extends DataClass
           other.lastModifiedBy == this.lastModifiedBy &&
           other.chargeId == this.chargeId &&
           other.paymentId == this.paymentId &&
-          other.allocatedAmount == this.allocatedAmount);
+          other.allocatedAmount == this.allocatedAmount &&
+          other.deductedSavingId == this.deductedSavingId);
 }
 
 class CreditCardChargePaymentTableCompanion
@@ -23406,6 +23457,7 @@ class CreditCardChargePaymentTableCompanion
   final Value<String> chargeId;
   final Value<String> paymentId;
   final Value<double> allocatedAmount;
+  final Value<String?> deductedSavingId;
   final Value<int> rowid;
   const CreditCardChargePaymentTableCompanion({
     this.id = const Value.absent(),
@@ -23416,6 +23468,7 @@ class CreditCardChargePaymentTableCompanion
     this.chargeId = const Value.absent(),
     this.paymentId = const Value.absent(),
     this.allocatedAmount = const Value.absent(),
+    this.deductedSavingId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CreditCardChargePaymentTableCompanion.insert({
@@ -23427,6 +23480,7 @@ class CreditCardChargePaymentTableCompanion
     required String chargeId,
     required String paymentId,
     required double allocatedAmount,
+    this.deductedSavingId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdBy = Value(createdBy),
        dateUpdated = Value(dateUpdated),
@@ -23443,6 +23497,7 @@ class CreditCardChargePaymentTableCompanion
     Expression<String>? chargeId,
     Expression<String>? paymentId,
     Expression<double>? allocatedAmount,
+    Expression<String>? deductedSavingId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -23454,6 +23509,7 @@ class CreditCardChargePaymentTableCompanion
       if (chargeId != null) 'charge_id': chargeId,
       if (paymentId != null) 'payment_id': paymentId,
       if (allocatedAmount != null) 'allocated_amount': allocatedAmount,
+      if (deductedSavingId != null) 'deducted_saving_id': deductedSavingId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -23467,6 +23523,7 @@ class CreditCardChargePaymentTableCompanion
     Value<String>? chargeId,
     Value<String>? paymentId,
     Value<double>? allocatedAmount,
+    Value<String?>? deductedSavingId,
     Value<int>? rowid,
   }) {
     return CreditCardChargePaymentTableCompanion(
@@ -23478,6 +23535,7 @@ class CreditCardChargePaymentTableCompanion
       chargeId: chargeId ?? this.chargeId,
       paymentId: paymentId ?? this.paymentId,
       allocatedAmount: allocatedAmount ?? this.allocatedAmount,
+      deductedSavingId: deductedSavingId ?? this.deductedSavingId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -23509,6 +23567,9 @@ class CreditCardChargePaymentTableCompanion
     if (allocatedAmount.present) {
       map['allocated_amount'] = Variable<double>(allocatedAmount.value);
     }
+    if (deductedSavingId.present) {
+      map['deducted_saving_id'] = Variable<String>(deductedSavingId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -23526,6 +23587,7 @@ class CreditCardChargePaymentTableCompanion
           ..write('chargeId: $chargeId, ')
           ..write('paymentId: $paymentId, ')
           ..write('allocatedAmount: $allocatedAmount, ')
+          ..write('deductedSavingId: $deductedSavingId, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -31398,6 +31460,37 @@ final class $$SavingTableTableReferences
     );
   }
 
+  static MultiTypedResultKey<
+    $CreditCardChargePaymentTableTable,
+    List<CrdCardChargePayment>
+  >
+  _creditCardChargePaymentTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.creditCardChargePaymentTable,
+        aliasName: $_aliasNameGenerator(
+          db.savingTable.id,
+          db.creditCardChargePaymentTable.deductedSavingId,
+        ),
+      );
+
+  $$CreditCardChargePaymentTableTableProcessedTableManager
+  get creditCardChargePaymentTableRefs {
+    final manager =
+        $$CreditCardChargePaymentTableTableTableManager(
+          $_db,
+          $_db.creditCardChargePaymentTable,
+        ).filter(
+          (f) => f.deductedSavingId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _creditCardChargePaymentTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<$LoanTableTable, List<LoanLoan>>
   _loanTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.loanTable,
@@ -31745,6 +31838,35 @@ class $$SavingTableTableFilterComposer
               }) => $$CreditCardPaymentTableTableFilterComposer(
                 $db: $db,
                 $table: $db.creditCardPaymentTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> creditCardChargePaymentTableRefs(
+    Expression<bool> Function(
+      $$CreditCardChargePaymentTableTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$CreditCardChargePaymentTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.creditCardChargePaymentTable,
+          getReferencedColumn: (t) => t.deductedSavingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CreditCardChargePaymentTableTableFilterComposer(
+                $db: $db,
+                $table: $db.creditCardChargePaymentTable,
                 $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
                 joinBuilder: joinBuilder,
                 $removeJoinBuilderFromRootComposer:
@@ -32266,6 +32388,35 @@ class $$SavingTableTableAnnotationComposer
     return f(composer);
   }
 
+  Expression<T> creditCardChargePaymentTableRefs<T extends Object>(
+    Expression<T> Function(
+      $$CreditCardChargePaymentTableTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$CreditCardChargePaymentTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.creditCardChargePaymentTable,
+          getReferencedColumn: (t) => t.deductedSavingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CreditCardChargePaymentTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.creditCardChargePaymentTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
   Expression<T> loanTableRefs<T extends Object>(
     Expression<T> Function($$LoanTableTableAnnotationComposer a) f,
   ) {
@@ -32340,6 +32491,7 @@ class $$SavingTableTableTableManager
             bool recurringTransactionTableRefs,
             bool creditCardChargeTableRefs,
             bool creditCardPaymentTableRefs,
+            bool creditCardChargePaymentTableRefs,
             bool loanTableRefs,
             bool loanRepaymentTableRefs,
           })
@@ -32473,6 +32625,7 @@ class $$SavingTableTableTableManager
                 recurringTransactionTableRefs = false,
                 creditCardChargeTableRefs = false,
                 creditCardPaymentTableRefs = false,
+                creditCardChargePaymentTableRefs = false,
                 loanTableRefs = false,
                 loanRepaymentTableRefs = false,
               }) {
@@ -32486,6 +32639,8 @@ class $$SavingTableTableTableManager
                       db.recurringTransactionTable,
                     if (creditCardChargeTableRefs) db.creditCardChargeTable,
                     if (creditCardPaymentTableRefs) db.creditCardPaymentTable,
+                    if (creditCardChargePaymentTableRefs)
+                      db.creditCardChargePaymentTable,
                     if (loanTableRefs) db.loanTable,
                     if (loanRepaymentTableRefs) db.loanRepaymentTable,
                   ],
@@ -32660,6 +32815,27 @@ class $$SavingTableTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (creditCardChargePaymentTableRefs)
+                        await $_getPrefetchedData<
+                          SvngSaving,
+                          $SavingTableTable,
+                          CrdCardChargePayment
+                        >(
+                          currentTable: table,
+                          referencedTable: $$SavingTableTableReferences
+                              ._creditCardChargePaymentTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$SavingTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).creditCardChargePaymentTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.deductedSavingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (loanTableRefs)
                         await $_getPrefetchedData<
                           SvngSaving,
@@ -32731,6 +32907,7 @@ typedef $$SavingTableTableProcessedTableManager =
         bool recurringTransactionTableRefs,
         bool creditCardChargeTableRefs,
         bool creditCardPaymentTableRefs,
+        bool creditCardChargePaymentTableRefs,
         bool loanTableRefs,
         bool loanRepaymentTableRefs,
       })
@@ -46398,6 +46575,7 @@ typedef $$CreditCardChargePaymentTableTableCreateCompanionBuilder =
       required String chargeId,
       required String paymentId,
       required double allocatedAmount,
+      Value<String?> deductedSavingId,
       Value<int> rowid,
     });
 typedef $$CreditCardChargePaymentTableTableUpdateCompanionBuilder =
@@ -46410,6 +46588,7 @@ typedef $$CreditCardChargePaymentTableTableUpdateCompanionBuilder =
       Value<String> chargeId,
       Value<String> paymentId,
       Value<double> allocatedAmount,
+      Value<String?> deductedSavingId,
       Value<int> rowid,
     });
 
@@ -46464,6 +46643,28 @@ final class $$CreditCardChargePaymentTableTableReferences
       $_db.creditCardPaymentTable,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_paymentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $SavingTableTable _deductedSavingIdTable(_$AppDatabase db) =>
+      db.savingTable.createAlias(
+        $_aliasNameGenerator(
+          db.creditCardChargePaymentTable.deductedSavingId,
+          db.savingTable.id,
+        ),
+      );
+
+  $$SavingTableTableProcessedTableManager? get deductedSavingId {
+    final $_column = $_itemColumn<String>('deducted_saving_id');
+    if ($_column == null) return null;
+    final manager = $$SavingTableTableTableManager(
+      $_db,
+      $_db.savingTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_deductedSavingIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -46557,6 +46758,29 @@ class $$CreditCardChargePaymentTableTableFilterComposer
         );
     return composer;
   }
+
+  $$SavingTableTableFilterComposer get deductedSavingId {
+    final $$SavingTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.deductedSavingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableFilterComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$CreditCardChargePaymentTableTableOrderingComposer
@@ -46645,6 +46869,29 @@ class $$CreditCardChargePaymentTableTableOrderingComposer
         );
     return composer;
   }
+
+  $$SavingTableTableOrderingComposer get deductedSavingId {
+    final $$SavingTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.deductedSavingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$CreditCardChargePaymentTableTableAnnotationComposer
@@ -46729,6 +46976,29 @@ class $$CreditCardChargePaymentTableTableAnnotationComposer
         );
     return composer;
   }
+
+  $$SavingTableTableAnnotationComposer get deductedSavingId {
+    final $$SavingTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.deductedSavingId,
+      referencedTable: $db.savingTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$SavingTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.savingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$CreditCardChargePaymentTableTableTableManager
@@ -46744,7 +47014,11 @@ class $$CreditCardChargePaymentTableTableTableManager
           $$CreditCardChargePaymentTableTableUpdateCompanionBuilder,
           (CrdCardChargePayment, $$CreditCardChargePaymentTableTableReferences),
           CrdCardChargePayment,
-          PrefetchHooks Function({bool chargeId, bool paymentId})
+          PrefetchHooks Function({
+            bool chargeId,
+            bool paymentId,
+            bool deductedSavingId,
+          })
         > {
   $$CreditCardChargePaymentTableTableTableManager(
     _$AppDatabase db,
@@ -46778,6 +47052,7 @@ class $$CreditCardChargePaymentTableTableTableManager
                 Value<String> chargeId = const Value.absent(),
                 Value<String> paymentId = const Value.absent(),
                 Value<double> allocatedAmount = const Value.absent(),
+                Value<String?> deductedSavingId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CreditCardChargePaymentTableCompanion(
                 id: id,
@@ -46788,6 +47063,7 @@ class $$CreditCardChargePaymentTableTableTableManager
                 chargeId: chargeId,
                 paymentId: paymentId,
                 allocatedAmount: allocatedAmount,
+                deductedSavingId: deductedSavingId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -46800,6 +47076,7 @@ class $$CreditCardChargePaymentTableTableTableManager
                 required String chargeId,
                 required String paymentId,
                 required double allocatedAmount,
+                Value<String?> deductedSavingId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CreditCardChargePaymentTableCompanion.insert(
                 id: id,
@@ -46810,6 +47087,7 @@ class $$CreditCardChargePaymentTableTableTableManager
                 chargeId: chargeId,
                 paymentId: paymentId,
                 allocatedAmount: allocatedAmount,
+                deductedSavingId: deductedSavingId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -46820,7 +47098,7 @@ class $$CreditCardChargePaymentTableTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({chargeId = false, paymentId = false}) {
+          prefetchHooksCallback: ({chargeId = false, paymentId = false, deductedSavingId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -46870,6 +47148,21 @@ class $$CreditCardChargePaymentTableTableTableManager
                               )
                               as T;
                     }
+                    if (deductedSavingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.deductedSavingId,
+                                referencedTable:
+                                    $$CreditCardChargePaymentTableTableReferences
+                                        ._deductedSavingIdTable(db),
+                                referencedColumn:
+                                    $$CreditCardChargePaymentTableTableReferences
+                                        ._deductedSavingIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
 
                     return state;
                   },
@@ -46894,7 +47187,11 @@ typedef $$CreditCardChargePaymentTableTableProcessedTableManager =
       $$CreditCardChargePaymentTableTableUpdateCompanionBuilder,
       (CrdCardChargePayment, $$CreditCardChargePaymentTableTableReferences),
       CrdCardChargePayment,
-      PrefetchHooks Function({bool chargeId, bool paymentId})
+      PrefetchHooks Function({
+        bool chargeId,
+        bool paymentId,
+        bool deductedSavingId,
+      })
     >;
 typedef $$LoanTableTableCreateCompanionBuilder =
     LoanTableCompanion Function({

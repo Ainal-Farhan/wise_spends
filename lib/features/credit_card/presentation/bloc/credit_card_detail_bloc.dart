@@ -20,6 +20,8 @@ class CreditCardDetailBloc
     on<AddChargeEvent>(_onAddCharge);
     on<AddPaymentEvent>(_onAddPayment);
     on<DeleteChargeEvent>(_onDeleteCharge);
+    on<DeleteCompletedChargesEvent>(_onDeleteCompleted);
+    on<DeletePaymentEvent>(_onDeletePayment);
     on<ConfirmChargeEvent>(_onConfirmCharge);
     on<UpdateCreditCardEvent>(_onUpdateCard);
     on<DeleteCreditCardDetailEvent>(_onDeleteCard);
@@ -76,25 +78,37 @@ class CreditCardDetailBloc
         unpaidMap[c.id] = await _chargeRepo.getUnpaidAmount(c.id);
       }
 
-      // Per-payment allocation details (for the filtered payments)
+      // Per-payment allocation details (for the filtered payments).
+      // Rebate-consumption rows (chargeId points to a rebate charge) are
+      // excluded — they are meta tracking, not charge coverage rows.
       final allocationMap =
           <String, List<PaymentAllocationDetail>>{};
       for (final p in filteredPayments) {
         final rows = await _paymentRepo.getPaymentAllocations(p.id);
-        final details = rows.map((row) {
-          final charge = allCharges.firstWhere(
-            (c) => c.id == row.chargeId,
-            orElse: () => allCharges.first,
-          );
-          return PaymentAllocationDetail(
-            chargeId: row.chargeId,
-            chargeDescription:
-                allCharges.any((c) => c.id == row.chargeId)
-                    ? charge.description
-                    : row.chargeId,
-            allocatedAmount: row.allocatedAmount,
-          );
-        }).toList();
+        final details = rows
+            .where((row) {
+              // Skip rows where chargeId belongs to a rebate charge
+              final matchingCharge =
+                  allCharges.where((c) => c.id == row.chargeId).firstOrNull;
+              return matchingCharge == null || !matchingCharge.isRebate;
+            })
+            .map((row) {
+              final charge = allCharges.firstWhere(
+                (c) => c.id == row.chargeId,
+                orElse: () => allCharges.first,
+              );
+              return PaymentAllocationDetail(
+                chargeId: row.chargeId,
+                chargeDescription:
+                    allCharges.any((c) => c.id == row.chargeId)
+                        ? charge.description
+                        : row.chargeId,
+                allocatedAmount: row.allocatedAmount,
+                // No deductedSavingId means this was covered by a rebate credit.
+                isRebateCovered: row.deductedSavingId == null,
+              );
+            })
+            .toList();
         if (details.isNotEmpty) allocationMap[p.id] = details;
       }
 
@@ -148,6 +162,7 @@ class CreditCardDetailBloc
         note: event.note,
         chargeAllocations: event.chargeAllocations,
         rebateAllocations: event.rebateAllocations,
+        appliedRebates: event.appliedRebates,
       );
       add(LoadCreditCardDetailEvent(event.creditCardId));
     } catch (e) {
@@ -165,6 +180,30 @@ class CreditCardDetailBloc
       if (current is CreditCardDetailLoaded) {
         add(LoadCreditCardDetailEvent(current.card.id));
       }
+    } catch (e) {
+      emit(CreditCardDetailError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeletePayment(
+    DeletePaymentEvent event,
+    Emitter<CreditCardDetailState> emit,
+  ) async {
+    try {
+      await _paymentRepo.deletePayment(event.paymentId);
+      add(LoadCreditCardDetailEvent(event.cardId));
+    } catch (e) {
+      emit(CreditCardDetailError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteCompleted(
+    DeleteCompletedChargesEvent event,
+    Emitter<CreditCardDetailState> emit,
+  ) async {
+    try {
+      await _chargeRepo.deleteCompletedCharges(event.cardId);
+      add(LoadCreditCardDetailEvent(event.cardId));
     } catch (e) {
       emit(CreditCardDetailError(e.toString()));
     }

@@ -91,6 +91,8 @@ class AddPaymentEvent extends CreditCardDetailEvent {
   final List<({String chargeId, double amount})>? chargeAllocations;
   /// Portions covered by rebate credits — no saving deduction.
   final List<({String chargeId, double amount})>? rebateAllocations;
+  /// Per-rebate consumed amounts: how much of each rebate charge was used.
+  final List<({String rebateId, double amount})>? appliedRebates;
 
   const AddPaymentEvent({
     required this.creditCardId,
@@ -100,6 +102,7 @@ class AddPaymentEvent extends CreditCardDetailEvent {
     this.note,
     this.chargeAllocations,
     this.rebateAllocations,
+    this.appliedRebates,
   });
 
   @override
@@ -110,6 +113,25 @@ class AddPaymentEvent extends CreditCardDetailEvent {
     paymentDate,
     note,
   ];
+}
+
+class DeleteCompletedChargesEvent extends CreditCardDetailEvent {
+  final String cardId;
+
+  const DeleteCompletedChargesEvent(this.cardId);
+
+  @override
+  List<Object?> get props => [cardId];
+}
+
+class DeletePaymentEvent extends CreditCardDetailEvent {
+  final String paymentId;
+  final String cardId;
+
+  const DeletePaymentEvent({required this.paymentId, required this.cardId});
+
+  @override
+  List<Object?> get props => [paymentId, cardId];
 }
 
 class DeleteChargeEvent extends CreditCardDetailEvent {

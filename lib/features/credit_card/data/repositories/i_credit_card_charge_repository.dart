@@ -36,4 +36,5 @@ abstract class ICreditCardChargeRepository
   Future<void> updateChargeStatus(String chargeId, String newStatus);
   Future<double> getTotalUnpaid(String cardId);
   Future<double> getUnpaidAmount(String chargeId);
+  Future<void> deleteCompletedCharges(String cardId);
 }

@@ -81,11 +81,14 @@ class PaymentAllocationDetail {
   final String chargeId;
   final String chargeDescription;
   final double allocatedAmount;
+  /// True when this portion was covered by a rebate credit (no cash moved).
+  final bool isRebateCovered;
 
   const PaymentAllocationDetail({
     required this.chargeId,
     required this.chargeDescription,
     required this.allocatedAmount,
+    this.isRebateCovered = false,
   });
 }
 

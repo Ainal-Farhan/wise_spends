@@ -33,6 +33,7 @@ class CreditCardPaymentRepository extends ICreditCardPaymentRepository {
     String? note,
     List<({String chargeId, double amount})>? chargeAllocations,
     List<({String chargeId, double amount})>? rebateAllocations,
+    List<({String rebateId, double amount})>? appliedRebates,
   }) async {
     final now = DateTime.now();
     final paymentId = UuidGenerator().v4();
@@ -53,26 +54,27 @@ class CreditCardPaymentRepository extends ICreditCardPaymentRepository {
     );
 
     if (chargeAllocations != null && chargeAllocations.isNotEmpty) {
-      // Per-charge allocations: deduct from each charge's reservedSavingId if
-      // set, otherwise fall back to sourceSavingId.
+      // Cash allocations: deduct from each charge's reservedSavingId if set,
+      // otherwise fall back to sourceSavingId.  Store deductedSavingId so
+      // deletePayment can restore the correct account.
       for (final alloc in chargeAllocations) {
+        final charge = await (db.select(db.creditCardChargeTable)
+              ..where((t) => t.id.equals(alloc.chargeId)))
+            .getSingleOrNull();
+        final deductFrom = charge?.reservedSavingId ?? sourceSavingId;
         await db.into(db.creditCardChargePaymentTable).insert(
           CreditCardChargePaymentTableCompanion.insert(
             id: Value(UuidGenerator().v4()),
             chargeId: alloc.chargeId,
             paymentId: paymentId,
             allocatedAmount: alloc.amount,
+            deductedSavingId: Value(deductFrom),
             createdBy: 'app',
             dateCreated: Value(now),
             dateUpdated: now,
             lastModifiedBy: 'app',
           ),
         );
-
-        final charge = await (db.select(db.creditCardChargeTable)
-              ..where((t) => t.id.equals(alloc.chargeId)))
-            .getSingleOrNull();
-        final deductFrom = charge?.reservedSavingId ?? sourceSavingId;
         await _adjustSavingBalance(deductFrom, -alloc.amount, now);
       }
     } else {
@@ -80,8 +82,8 @@ class CreditCardPaymentRepository extends ICreditCardPaymentRepository {
       await _adjustSavingBalance(sourceSavingId, -amount, now);
     }
 
-    // Rebate-covered allocations: create rows so getUnpaidAmount is reduced,
-    // but intentionally skip any saving balance adjustment.
+    // Rebate-covered allocations: reduce the charge's unpaid amount but no
+    // saving is touched.  deductedSavingId left null to mark as non-cash.
     if (rebateAllocations != null && rebateAllocations.isNotEmpty) {
       for (final alloc in rebateAllocations) {
         await db.into(db.creditCardChargePaymentTable).insert(
@@ -96,9 +98,66 @@ class CreditCardPaymentRepository extends ICreditCardPaymentRepository {
             lastModifiedBy: 'app',
           ),
         );
-        // No _adjustSavingBalance — rebate credit, not real cash.
       }
     }
+
+    // Consume each rebate charge by the exact amount used from it.
+    // deductedSavingId left null — no cash movement for rebate consumption.
+    if (appliedRebates != null && appliedRebates.isNotEmpty) {
+      for (final r in appliedRebates) {
+        if (r.amount <= 0) continue;
+        await db.into(db.creditCardChargePaymentTable).insert(
+          CreditCardChargePaymentTableCompanion.insert(
+            id: Value(UuidGenerator().v4()),
+            chargeId: r.rebateId,
+            paymentId: paymentId,
+            allocatedAmount: r.amount,
+            createdBy: 'app',
+            dateCreated: Value(now),
+            dateUpdated: now,
+            lastModifiedBy: 'app',
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Future<void> deletePayment(String paymentId) async {
+    final payment = await (db.select(db.creditCardPaymentTable)
+          ..where((t) => t.id.equals(paymentId)))
+        .getSingleOrNull();
+    if (payment == null) return;
+
+    final now = DateTime.now();
+    final allocations = await (db.select(db.creditCardChargePaymentTable)
+          ..where((t) => t.paymentId.equals(paymentId)))
+        .get();
+
+    if (allocations.isNotEmpty) {
+      // Restore saving balances for cash allocations only (deductedSavingId != null).
+      // Group by saving account to batch the adjustments.
+      final Map<String, double> restoreMap = {};
+      for (final alloc in allocations) {
+        final savingId = alloc.deductedSavingId;
+        if (savingId == null) continue; // rebate row — no cash was moved
+        restoreMap[savingId] = (restoreMap[savingId] ?? 0.0) + alloc.allocatedAmount;
+      }
+      for (final entry in restoreMap.entries) {
+        await _adjustSavingBalance(entry.key, entry.value, now);
+      }
+    } else {
+      // No allocation rows — the full payment amount came from sourceSavingId.
+      await _adjustSavingBalance(payment.sourceSavingId, payment.amount, now);
+    }
+
+    // Remove allocation rows then the payment record.
+    await (db.delete(db.creditCardChargePaymentTable)
+          ..where((t) => t.paymentId.equals(paymentId)))
+        .go();
+    await (db.delete(db.creditCardPaymentTable)
+          ..where((t) => t.id.equals(paymentId)))
+        .go();
   }
 
   Future<void> _adjustSavingBalance(

@@ -65,13 +65,12 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
           ..where((t) => t.id.equals(chargeId)))
         .getSingleOrNull();
     if (charge == null) return 0.0;
-    // Rebates are credits — they are never "unpaid".
-    if (charge.isRebate) return 0.0;
     final allocations = await (db.select(db.creditCardChargePaymentTable)
           ..where((t) => t.chargeId.equals(chargeId)))
         .get();
     final paid = allocations.fold<double>(0.0, (s, a) => s + a.allocatedAmount);
-    return (charge.amount - paid).clamp(0.0, double.infinity);
+    final unpaid = double.parse((charge.amount - paid).toStringAsFixed(2));
+    return unpaid.clamp(0.0, double.infinity);
   }
 
   @override
@@ -98,12 +97,21 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
     final charges = await getChargesForCard(cardId);
     double total = 0;
     for (final charge in charges) {
-      final allocations = await (db.select(db.creditCardChargePaymentTable)
-        ..where((t) => t.chargeId.equals(charge.id))).get();
-      final paid = allocations.fold<double>(0.0, (sum, a) => sum + a.allocatedAmount);
-      total += (charge.amount - paid).clamp(0.0, double.infinity);
+      total += await getUnpaidAmount(charge.id);
     }
     return total;
+  }
+
+  @override
+  Future<void> deleteCompletedCharges(String cardId) async {
+    final charges = await getChargesForCard(cardId);
+    for (final charge in charges) {
+      if (charge.isRebate) continue;
+      final unpaid = await getUnpaidAmount(charge.id);
+      if (unpaid <= 0) {
+        await deleteCharge(charge.id);
+      }
+    }
   }
 
   @override

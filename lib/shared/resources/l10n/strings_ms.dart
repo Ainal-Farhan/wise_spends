@@ -1349,7 +1349,8 @@ class MalayStrings {
     'credit_card.empty': 'Tiada kad kredit lagi. Ketik + untuk tambah.',
     'credit_card.add': 'Tambah Kad Kredit',
     'credit_card.delete_title': 'Padam Kad',
-    'credit_card.delete_confirm': 'Padam "{name}"? Tindakan ini tidak boleh dibatalkan.',
+    'credit_card.delete_confirm':
+        'Padam "{name}"? Tindakan ini tidak boleh dibatalkan.',
     'credit_card.label_limit': 'Had',
     'credit_card.label_debt': 'Hutang',
     'credit_card.label_available': 'Tersedia',
@@ -1382,13 +1383,17 @@ class MalayStrings {
     'credit_card.payment_date_prefix': 'Tarikh',
     'credit_card.payment_source_fallback': 'Akaun Sumber Lalai',
     'credit_card.reserve_toggle': 'Rizab daripada simpanan',
-    'credit_card.reserve_hint': 'Ketepikan wang sekarang agar sedia semasa bayar.',
+    'credit_card.reserve_hint':
+        'Ketepikan wang sekarang agar sedia semasa bayar.',
     'credit_card.reserve_account': 'Simpanan untuk Dirizab',
     'credit_card.reserved': 'Dirizab',
     'credit_card.reserved_from': 'Dirizab dari {name}',
-    'credit_card.reserved_charges_title': 'Tolak auto daripada simpanan dirizab',
-    'credit_card.reserved_charges_hint': 'Caj ini mempunyai simpanan dirizab dan akan ditolak secara automatik.',
-    'credit_card.delete_charge_confirm': 'Padam caj "{name}"? Tindakan ini tidak boleh dibatalkan.',
+    'credit_card.reserved_charges_title':
+        'Tolak auto daripada simpanan dirizab',
+    'credit_card.reserved_charges_hint':
+        'Caj ini mempunyai simpanan dirizab dan akan ditolak secara automatik.',
+    'credit_card.delete_charge_confirm':
+        'Padam caj "{name}"? Tindakan ini tidak boleh dibatalkan.',
     'credit_card.select_charges': 'Pilih Caj untuk Dibayar',
     'credit_card.select_all': 'Pilih Semua',
     'credit_card.deselect_all': 'Nyah Pilih Semua',
@@ -1397,7 +1402,8 @@ class MalayStrings {
     'credit_card.payment_total': 'Jumlah Bayaran',
     'credit_card.override_amount': 'Tukar Jumlah',
     'credit_card.full_amount': 'Jumlah Penuh',
-    'credit_card.select_at_least_one': 'Sila pilih sekurang-kurangnya satu caj untuk dibayar.',
+    'credit_card.select_at_least_one':
+        'Sila pilih sekurang-kurangnya satu caj untuk dibayar.',
     'credit_card.paid': 'Dibayar',
     'credit_card.all_paid': 'Semua caj telah dibayar sepenuhnya.',
     'credit_card.charges_covered': 'caj diliputi',
@@ -1405,11 +1411,14 @@ class MalayStrings {
     'credit_card.unpaid_amount': 'Jumlah belum bayar',
     'credit_card.remaining_of': '{remaining} baki daripada {total}',
     'credit_card.edit': 'Sunting Kad',
-    'credit_card.delete_reserved_warning': '{count} caj dengan simpanan dirizab akan melepaskan rizab mereka.',
-    'credit_card.delete_reserved_note': 'Baki simpanan tidak akan dipulihkan kerana ia tidak pernah ditolak.',
+    'credit_card.delete_reserved_warning':
+        '{count} caj dengan simpanan dirizab akan melepaskan rizab mereka.',
+    'credit_card.delete_reserved_note':
+        'Baki simpanan tidak akan dipulihkan kerana ia tidak pernah ditolak.',
     'credit_card.statement_day_hint': 'Tutup pada hari {day} setiap bulan',
     'credit_card.due_day_hint': 'Tarikh bayaran pada hari {day} setiap bulan',
-    'credit_card.billing_cycle_preview': 'Penyata ditutup pada hari {stmt} setiap bulan. Bayaran perlu dibuat pada hari {due}.',
+    'credit_card.billing_cycle_preview':
+        'Penyata ditutup pada hari {stmt} setiap bulan. Bayaran perlu dibuat pada hari {due}.',
     'credit_card.day_picker_hint': 'Pilih hari dalam bulan',
     'credit_card.type_charge': 'Caj',
     'credit_card.type_rebate': 'Rebat',
@@ -1430,6 +1439,14 @@ class MalayStrings {
     'credit_card.filter_rebate': 'Rebat',
     'credit_card.charges_empty_filter': 'Tiada caj sepadan dengan penapis ini.',
     'credit_card.confirm_charge': 'Tandakan sebagai Disahkan',
+    'credit_card.delete_completed_title': 'Padam Caj Berbayar',
+    'credit_card.delete_completed_confirm':
+        'Ini akan memadamkan semua caj yang telah dibayar sepenuhnya. Tindakan ini tidak boleh dibatalkan.',
+    'credit_card.delete_payment_title': 'Padam Pembayaran',
+    'credit_card.delete_payment_confirm':
+        'Padam pembayaran sebanyak {amount}? Baki simpanan akan dipulihkan.',
+    'credit_card.rebate_label': 'Rebat',
+    'credit_card.rebate_partial': '{remaining} baki daripada {total}',
     'home.credit_cards_title': 'Kad Kredit',
     'home.credit_cards_count': 'Kad',
     'home.credit_cards_total_debt': 'Jumlah Hutang',
@@ -1445,7 +1462,8 @@ class MalayStrings {
     'loan.empty': 'Tiada pinjaman lagi. Ketik + untuk rekod.',
     'loan.add': 'Tambah Pinjaman',
     'loan.delete_title': 'Padam Pinjaman',
-    'loan.delete_confirm': 'Padam pinjaman untuk "{name}"? Tindakan ini tidak boleh dibatalkan.',
+    'loan.delete_confirm':
+        'Padam pinjaman untuk "{name}"? Tindakan ini tidak boleh dibatalkan.',
     'loan.label_principal': 'Prinsipal',
     'loan.label_outstanding': 'Tertunggak',
     'loan.label_loaned': 'Dipinjam: {date}',
