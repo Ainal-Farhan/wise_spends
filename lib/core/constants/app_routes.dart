@@ -50,6 +50,14 @@ abstract class AppRoutes {
   static const String payeeManagement = '/payee_management';
   static const String moneyStorage = '/money-storage';
 
+  // Credit Card routes
+  static const String creditCards = '/credit-cards';
+  static const String creditCardDetail = '/credit-cards/detail';
+
+  // Loan routes
+  static const String loans = '/loans';
+  static const String loanDetail = '/loans/detail';
+
   // Developer/Debug routes
   static const String hiddenUtilityMenu = '/developer/utilities';
   static const String logViewer = '/developer/logs';

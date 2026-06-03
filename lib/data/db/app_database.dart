@@ -25,6 +25,8 @@ import 'package:wise_spends/data/db/domain/saving/index.dart';
 import 'package:wise_spends/data/db/domain/transaction/index.dart';
 import 'package:wise_spends/data/db/domain/budget/index.dart';
 import 'package:wise_spends/data/db/domain/savings_plan/index.dart';
+import 'package:wise_spends/data/db/domain/credit_card/index.dart';
+import 'package:wise_spends/data/db/domain/loan/index.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 
 part 'app_database.g.dart';
@@ -38,6 +40,8 @@ part 'app_database.g.dart';
     ...Saving.tableList,
     ...Expense.tableList,
     ...Transaction.tableList,
+    ...CreditCard.tableList,
+    ...Loan.tableList,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -48,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration {
@@ -56,7 +60,16 @@ class AppDatabase extends _$AppDatabase {
       onCreate: (Migrator m) async {
         await m.createAll();
       },
-      onUpgrade: (Migrator m, int from, int to) async {},
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await m.createTable(creditCardTable);
+          await m.createTable(creditCardChargeTable);
+          await m.createTable(creditCardPaymentTable);
+          await m.createTable(creditCardChargePaymentTable);
+          await m.createTable(loanTable);
+          await m.createTable(loanRepaymentTable);
+        }
+      },
     );
   }
 

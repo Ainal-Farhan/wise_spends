@@ -55,6 +55,18 @@ import 'package:wise_spends/data/repositories/masterdata/i_reference_data_reposi
 import 'package:wise_spends/features/commitment/data/repositories/i_expense_reference_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/impl/reference_data_repository.dart';
 import 'package:wise_spends/features/commitment/data/repositories/impl/expense_reference_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/i_credit_card_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/i_credit_card_charge_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/i_credit_card_payment_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/i_credit_card_charge_payment_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/impl/credit_card_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/impl/credit_card_charge_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/impl/credit_card_payment_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/impl/credit_card_charge_payment_repository.dart';
+import 'package:wise_spends/features/loan/data/repositories/i_loan_repository.dart';
+import 'package:wise_spends/features/loan/data/repositories/i_loan_repayment_repository.dart';
+import 'package:wise_spends/features/loan/data/repositories/impl/loan_repository.dart';
+import 'package:wise_spends/features/loan/data/repositories/impl/loan_repayment_repository.dart';
 
 class RepositoryLocator extends IRepositoryLocator {
   @override
@@ -87,6 +99,12 @@ class RepositoryLocator extends IRepositoryLocator {
       getSavingsPlanItemTagRepository(),
       getFileStorageRepository(),
       getTransactionRevokeRepository(),
+      getCreditCardRepository(),
+      getCreditCardChargeRepository(),
+      getCreditCardPaymentRepository(),
+      getCreditCardChargePaymentRepository(),
+      getLoanRepository(),
+      getLoanRepaymentRepository(),
     ];
 
     return allRepository;
@@ -457,5 +475,75 @@ class RepositoryLocator extends IRepositoryLocator {
     }
 
     return SingletonUtil.getSingleton<ITransactionRevokeRepository>()!;
+  }
+
+  @override
+  ICreditCardRepository getCreditCardRepository() {
+    ICreditCardRepository? repository =
+        SingletonUtil.getSingleton<ICreditCardRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ICreditCardRepository>(
+        CreditCardRepository(),
+      );
+    }
+    return SingletonUtil.getSingleton<ICreditCardRepository>()!;
+  }
+
+  @override
+  ICreditCardChargeRepository getCreditCardChargeRepository() {
+    ICreditCardChargeRepository? repository =
+        SingletonUtil.getSingleton<ICreditCardChargeRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ICreditCardChargeRepository>(
+        CreditCardChargeRepository(),
+      );
+    }
+    return SingletonUtil.getSingleton<ICreditCardChargeRepository>()!;
+  }
+
+  @override
+  ICreditCardPaymentRepository getCreditCardPaymentRepository() {
+    ICreditCardPaymentRepository? repository =
+        SingletonUtil.getSingleton<ICreditCardPaymentRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ICreditCardPaymentRepository>(
+        CreditCardPaymentRepository(),
+      );
+    }
+    return SingletonUtil.getSingleton<ICreditCardPaymentRepository>()!;
+  }
+
+  @override
+  ICreditCardChargePaymentRepository getCreditCardChargePaymentRepository() {
+    ICreditCardChargePaymentRepository? repository =
+        SingletonUtil.getSingleton<ICreditCardChargePaymentRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ICreditCardChargePaymentRepository>(
+        CreditCardChargePaymentRepository(),
+      );
+    }
+    return SingletonUtil.getSingleton<ICreditCardChargePaymentRepository>()!;
+  }
+
+  @override
+  ILoanRepository getLoanRepository() {
+    ILoanRepository? repository =
+        SingletonUtil.getSingleton<ILoanRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ILoanRepository>(LoanRepository());
+    }
+    return SingletonUtil.getSingleton<ILoanRepository>()!;
+  }
+
+  @override
+  ILoanRepaymentRepository getLoanRepaymentRepository() {
+    ILoanRepaymentRepository? repository =
+        SingletonUtil.getSingleton<ILoanRepaymentRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ILoanRepaymentRepository>(
+        LoanRepaymentRepository(),
+      );
+    }
+    return SingletonUtil.getSingleton<ILoanRepaymentRepository>()!;
   }
 }

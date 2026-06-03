@@ -164,6 +164,16 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
                           label: 'Categories',
                           route: AppRoutes.categoryManage,
                         ),
+                        _NavItemData(
+                          icon: Icons.credit_card,
+                          label: 'Credit Cards',
+                          route: AppRoutes.creditCards,
+                        ),
+                        _NavItemData(
+                          icon: Icons.handshake_outlined,
+                          label: 'Loans',
+                          route: AppRoutes.loans,
+                        ),
                       ],
                       activeRoute: context.read<NavigationBloc>().activeRoute,
                       onNavigate: _navigateTo,

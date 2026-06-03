@@ -27,6 +27,12 @@ import 'package:wise_spends/features/transaction/data/repositories/i_transaction
 import 'package:wise_spends/features/transaction/data/repositories/i_recurring_transaction_repository.dart';
 import 'package:wise_spends/data/repositories/masterdata/i_reference_data_repository.dart';
 import 'package:wise_spends/features/commitment/data/repositories/i_expense_reference_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/i_credit_card_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/i_credit_card_charge_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/i_credit_card_payment_repository.dart';
+import 'package:wise_spends/features/credit_card/data/repositories/i_credit_card_charge_payment_repository.dart';
+import 'package:wise_spends/features/loan/data/repositories/i_loan_repository.dart';
+import 'package:wise_spends/features/loan/data/repositories/i_loan_repayment_repository.dart';
 
 abstract class IRepositoryLocator extends ILocator {
   List<ICrudRepository> retrieveAllRepository();
@@ -73,4 +79,14 @@ abstract class IRepositoryLocator extends ILocator {
   IExpenseReferenceRepository getExpenseReferenceRepository();
 
   IFileStorageRepository getFileStorageRepository();
+
+  // Credit Card Repositories
+  ICreditCardRepository getCreditCardRepository();
+  ICreditCardChargeRepository getCreditCardChargeRepository();
+  ICreditCardPaymentRepository getCreditCardPaymentRepository();
+  ICreditCardChargePaymentRepository getCreditCardChargePaymentRepository();
+
+  // Loan Repositories
+  ILoanRepository getLoanRepository();
+  ILoanRepaymentRepository getLoanRepaymentRepository();
 }

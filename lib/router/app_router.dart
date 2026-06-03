@@ -41,6 +41,14 @@ import 'package:wise_spends/features/widget/presentation/screens/widget_info_scr
 import 'package:wise_spends/features/commitment/presentation/bloc/commitment_task_bloc.dart';
 import 'package:wise_spends/features/commitment/data/repositories/impl/commitment_task_repository.dart';
 import 'package:wise_spends/router/route_arguments.dart';
+import 'package:wise_spends/features/credit_card/presentation/screens/credit_card_list_screen.dart'
+    as credit_card_screen;
+import 'package:wise_spends/features/credit_card/presentation/screens/credit_card_detail_screen.dart'
+    as credit_card_detail_screen;
+import 'package:wise_spends/features/loan/presentation/screens/loan_list_screen.dart'
+    as loan_screen;
+import 'package:wise_spends/features/loan/presentation/screens/loan_detail_screen.dart'
+    as loan_detail_screen;
 
 /// Enhanced App Router with typed arguments
 /// Uses MaterialPageRoute for now, consider migrating to go_router for production
@@ -225,6 +233,29 @@ abstract class AppRouter {
 
       case AppRoutes.widgetInfo:
         return _createRoute(const WidgetInfoScreen(), settings);
+
+      case AppRoutes.creditCards:
+        return _createRoute(
+          const credit_card_screen.CreditCardListScreen(),
+          settings,
+        );
+
+      case AppRoutes.creditCardDetail:
+        final cardId = args is String ? args : '';
+        return _createRoute(
+          credit_card_detail_screen.CreditCardDetailScreen(cardId: cardId),
+          settings,
+        );
+
+      case AppRoutes.loans:
+        return _createRoute(const loan_screen.LoanListScreen(), settings);
+
+      case AppRoutes.loanDetail:
+        final loanId = args is String ? args : '';
+        return _createRoute(
+          loan_detail_screen.LoanDetailScreen(loanId: loanId),
+          settings,
+        );
 
       // Default: Show error screen
       default:
