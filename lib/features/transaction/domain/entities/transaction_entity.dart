@@ -10,7 +10,9 @@ enum TransactionType {
   transfer,
   commitment,
   budgetPlanDeposit,
-  budgetPlanExpense;
+  budgetPlanExpense,
+  loanDisbursement,
+  loanRepayment;
 
   /// Get localized label for transaction type
   String get label {
@@ -27,6 +29,10 @@ enum TransactionType {
         return 'transaction.type.budget_plan_deposit'.tr;
       case budgetPlanExpense:
         return 'transaction.type.budget_plan_expense'.tr;
+      case loanDisbursement:
+        return 'transaction.type.loan_disbursement'.tr;
+      case loanRepayment:
+        return 'transaction.type.loan_repayment'.tr;
     }
   }
 
@@ -45,6 +51,10 @@ enum TransactionType {
         return Icons.add_card_rounded;
       case budgetPlanExpense:
         return Icons.payment_rounded;
+      case loanDisbursement:
+        return Icons.handshake_outlined;
+      case loanRepayment:
+        return Icons.payment_rounded;
     }
   }
 
@@ -62,6 +72,10 @@ enum TransactionType {
       case budgetPlanDeposit:
         return Theme.of(context).colorScheme.primary;
       case budgetPlanExpense:
+        return Theme.of(context).colorScheme.primary;
+      case loanDisbursement:
+        return Theme.of(context).colorScheme.secondary;
+      case loanRepayment:
         return Theme.of(context).colorScheme.primary;
     }
   }
@@ -82,6 +96,7 @@ class TransactionEntity extends Equatable {
   final CategoryEntity? category;
   final String? commitmentTaskId;
   final String? payeeId;
+  final String? loanId;
 
   // -- Metadata --------------------------------------------------------------
   final DateTime date;
@@ -101,6 +116,7 @@ class TransactionEntity extends Equatable {
     this.category,
     this.commitmentTaskId,
     this.payeeId,
+    this.loanId,
     required this.date,
     this.note,
     required this.createdAt,
@@ -126,6 +142,7 @@ class TransactionEntity extends Equatable {
     category,
     commitmentTaskId,
     payeeId,
+    loanId,
     date,
     note,
     createdAt,
@@ -144,6 +161,7 @@ class TransactionEntity extends Equatable {
     CategoryEntity? category,
     String? commitmentTaskId,
     String? payeeId,
+    String? loanId,
     DateTime? date,
     String? note,
     DateTime? createdAt,
@@ -161,6 +179,7 @@ class TransactionEntity extends Equatable {
       category: category ?? this.category,
       commitmentTaskId: commitmentTaskId ?? this.commitmentTaskId,
       payeeId: payeeId ?? this.payeeId,
+      loanId: loanId ?? this.loanId,
       date: date ?? this.date,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,

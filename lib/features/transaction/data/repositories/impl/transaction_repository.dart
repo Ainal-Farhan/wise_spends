@@ -448,6 +448,9 @@ class TransactionRepository extends ITransactionRepository {
       case TransactionType.budgetPlanExpense:
         reverseType = TransactionType.income;
         break;
+      case TransactionType.loanDisbursement:
+      case TransactionType.loanRepayment:
+        return;
     }
 
     // Apply the reverse transaction to the savings account
@@ -507,6 +510,7 @@ class TransactionRepository extends ITransactionRepository {
       category: category,
       commitmentTaskId: transaction.commitmentTaskId,
       payeeId: transaction.payeeId,
+      loanId: transaction.loanId,
       date: transaction.transactionDateTime ?? transaction.dateCreated,
       note: transaction.note,
       createdAt: transaction.dateCreated,

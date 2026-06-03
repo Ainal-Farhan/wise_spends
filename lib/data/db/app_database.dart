@@ -52,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -68,6 +68,9 @@ class AppDatabase extends _$AppDatabase {
           await m.createTable(creditCardChargePaymentTable);
           await m.createTable(loanTable);
           await m.createTable(loanRepaymentTable);
+        }
+        if (from < 3) {
+          await m.addColumn(transactionTable, transactionTable.loanId);
         }
       },
     );

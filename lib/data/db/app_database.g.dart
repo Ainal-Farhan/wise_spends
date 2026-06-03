@@ -11781,6 +11781,15 @@ class $TransactionTableTable extends TransactionTable
       'REFERENCES payee_table (id)',
     ),
   );
+  static const VerificationMeta _loanIdMeta = const VerificationMeta('loanId');
+  @override
+  late final GeneratedColumn<String> loanId = GeneratedColumn<String>(
+    'loan_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _transactionDateTimeMeta =
       const VerificationMeta('transactionDateTime');
   @override
@@ -11816,6 +11825,7 @@ class $TransactionTableTable extends TransactionTable
     categoryId,
     commitmentTaskId,
     payeeId,
+    loanId,
     transactionDateTime,
     note,
   ];
@@ -11928,6 +11938,12 @@ class $TransactionTableTable extends TransactionTable
         payeeId.isAcceptableOrUnknown(data['payee_id']!, _payeeIdMeta),
       );
     }
+    if (data.containsKey('loan_id')) {
+      context.handle(
+        _loanIdMeta,
+        loanId.isAcceptableOrUnknown(data['loan_id']!, _loanIdMeta),
+      );
+    }
     if (data.containsKey('transaction_date_time')) {
       context.handle(
         _transactionDateTimeMeta,
@@ -12006,6 +12022,10 @@ class $TransactionTableTable extends TransactionTable
         DriftSqlType.string,
         data['${effectivePrefix}payee_id'],
       ),
+      loanId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}loan_id'],
+      ),
       transactionDateTime: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}transaction_date_time'],
@@ -12059,6 +12079,10 @@ class TrnsctnTransaction extends DataClass
 
   /// FK to [PayeeTable] — only set for third-party payment transactions.
   final String? payeeId;
+
+  /// FK to [LoanTable] — set when this transaction was created by a loan
+  /// disbursement or repayment event.
+  final String? loanId;
   final DateTime? transactionDateTime;
   final String? note;
   const TrnsctnTransaction({
@@ -12075,6 +12099,7 @@ class TrnsctnTransaction extends DataClass
     this.categoryId,
     this.commitmentTaskId,
     this.payeeId,
+    this.loanId,
     this.transactionDateTime,
     this.note,
   });
@@ -12105,6 +12130,9 @@ class TrnsctnTransaction extends DataClass
     }
     if (!nullToAbsent || payeeId != null) {
       map['payee_id'] = Variable<String>(payeeId);
+    }
+    if (!nullToAbsent || loanId != null) {
+      map['loan_id'] = Variable<String>(loanId);
     }
     if (!nullToAbsent || transactionDateTime != null) {
       map['transaction_date_time'] = Variable<DateTime>(transactionDateTime);
@@ -12138,6 +12166,9 @@ class TrnsctnTransaction extends DataClass
       payeeId: payeeId == null && nullToAbsent
           ? const Value.absent()
           : Value(payeeId),
+      loanId: loanId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(loanId),
       transactionDateTime: transactionDateTime == null && nullToAbsent
           ? const Value.absent()
           : Value(transactionDateTime),
@@ -12168,6 +12199,7 @@ class TrnsctnTransaction extends DataClass
       categoryId: serializer.fromJson<String?>(json['categoryId']),
       commitmentTaskId: serializer.fromJson<String?>(json['commitmentTaskId']),
       payeeId: serializer.fromJson<String?>(json['payeeId']),
+      loanId: serializer.fromJson<String?>(json['loanId']),
       transactionDateTime: serializer.fromJson<DateTime?>(
         json['transactionDateTime'],
       ),
@@ -12193,6 +12225,7 @@ class TrnsctnTransaction extends DataClass
       'categoryId': serializer.toJson<String?>(categoryId),
       'commitmentTaskId': serializer.toJson<String?>(commitmentTaskId),
       'payeeId': serializer.toJson<String?>(payeeId),
+      'loanId': serializer.toJson<String?>(loanId),
       'transactionDateTime': serializer.toJson<DateTime?>(transactionDateTime),
       'note': serializer.toJson<String?>(note),
     };
@@ -12212,6 +12245,7 @@ class TrnsctnTransaction extends DataClass
     Value<String?> categoryId = const Value.absent(),
     Value<String?> commitmentTaskId = const Value.absent(),
     Value<String?> payeeId = const Value.absent(),
+    Value<String?> loanId = const Value.absent(),
     Value<DateTime?> transactionDateTime = const Value.absent(),
     Value<String?> note = const Value.absent(),
   }) => TrnsctnTransaction(
@@ -12232,6 +12266,7 @@ class TrnsctnTransaction extends DataClass
         ? commitmentTaskId.value
         : this.commitmentTaskId,
     payeeId: payeeId.present ? payeeId.value : this.payeeId,
+    loanId: loanId.present ? loanId.value : this.loanId,
     transactionDateTime: transactionDateTime.present
         ? transactionDateTime.value
         : this.transactionDateTime,
@@ -12266,6 +12301,7 @@ class TrnsctnTransaction extends DataClass
           ? data.commitmentTaskId.value
           : this.commitmentTaskId,
       payeeId: data.payeeId.present ? data.payeeId.value : this.payeeId,
+      loanId: data.loanId.present ? data.loanId.value : this.loanId,
       transactionDateTime: data.transactionDateTime.present
           ? data.transactionDateTime.value
           : this.transactionDateTime,
@@ -12289,6 +12325,7 @@ class TrnsctnTransaction extends DataClass
           ..write('categoryId: $categoryId, ')
           ..write('commitmentTaskId: $commitmentTaskId, ')
           ..write('payeeId: $payeeId, ')
+          ..write('loanId: $loanId, ')
           ..write('transactionDateTime: $transactionDateTime, ')
           ..write('note: $note')
           ..write(')'))
@@ -12310,6 +12347,7 @@ class TrnsctnTransaction extends DataClass
     categoryId,
     commitmentTaskId,
     payeeId,
+    loanId,
     transactionDateTime,
     note,
   );
@@ -12330,6 +12368,7 @@ class TrnsctnTransaction extends DataClass
           other.categoryId == this.categoryId &&
           other.commitmentTaskId == this.commitmentTaskId &&
           other.payeeId == this.payeeId &&
+          other.loanId == this.loanId &&
           other.transactionDateTime == this.transactionDateTime &&
           other.note == this.note);
 }
@@ -12348,6 +12387,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
   final Value<String?> categoryId;
   final Value<String?> commitmentTaskId;
   final Value<String?> payeeId;
+  final Value<String?> loanId;
   final Value<DateTime?> transactionDateTime;
   final Value<String?> note;
   final Value<int> rowid;
@@ -12365,6 +12405,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.categoryId = const Value.absent(),
     this.commitmentTaskId = const Value.absent(),
     this.payeeId = const Value.absent(),
+    this.loanId = const Value.absent(),
     this.transactionDateTime = const Value.absent(),
     this.note = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -12383,6 +12424,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     this.categoryId = const Value.absent(),
     this.commitmentTaskId = const Value.absent(),
     this.payeeId = const Value.absent(),
+    this.loanId = const Value.absent(),
     this.transactionDateTime = const Value.absent(),
     this.note = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -12406,6 +12448,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     Expression<String>? categoryId,
     Expression<String>? commitmentTaskId,
     Expression<String>? payeeId,
+    Expression<String>? loanId,
     Expression<DateTime>? transactionDateTime,
     Expression<String>? note,
     Expression<int>? rowid,
@@ -12425,6 +12468,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       if (categoryId != null) 'category_id': categoryId,
       if (commitmentTaskId != null) 'commitment_task_id': commitmentTaskId,
       if (payeeId != null) 'payee_id': payeeId,
+      if (loanId != null) 'loan_id': loanId,
       if (transactionDateTime != null)
         'transaction_date_time': transactionDateTime,
       if (note != null) 'note': note,
@@ -12446,6 +12490,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     Value<String?>? categoryId,
     Value<String?>? commitmentTaskId,
     Value<String?>? payeeId,
+    Value<String?>? loanId,
     Value<DateTime?>? transactionDateTime,
     Value<String?>? note,
     Value<int>? rowid,
@@ -12464,6 +12509,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
       categoryId: categoryId ?? this.categoryId,
       commitmentTaskId: commitmentTaskId ?? this.commitmentTaskId,
       payeeId: payeeId ?? this.payeeId,
+      loanId: loanId ?? this.loanId,
       transactionDateTime: transactionDateTime ?? this.transactionDateTime,
       note: note ?? this.note,
       rowid: rowid ?? this.rowid,
@@ -12516,6 +12562,9 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
     if (payeeId.present) {
       map['payee_id'] = Variable<String>(payeeId.value);
     }
+    if (loanId.present) {
+      map['loan_id'] = Variable<String>(loanId.value);
+    }
     if (transactionDateTime.present) {
       map['transaction_date_time'] = Variable<DateTime>(
         transactionDateTime.value,
@@ -12546,6 +12595,7 @@ class TransactionTableCompanion extends UpdateCompanion<TrnsctnTransaction> {
           ..write('categoryId: $categoryId, ')
           ..write('commitmentTaskId: $commitmentTaskId, ')
           ..write('payeeId: $payeeId, ')
+          ..write('loanId: $loanId, ')
           ..write('transactionDateTime: $transactionDateTime, ')
           ..write('note: $note, ')
           ..write('rowid: $rowid')
@@ -35510,6 +35560,7 @@ typedef $$TransactionTableTableCreateCompanionBuilder =
       Value<String?> categoryId,
       Value<String?> commitmentTaskId,
       Value<String?> payeeId,
+      Value<String?> loanId,
       Value<DateTime?> transactionDateTime,
       Value<String?> note,
       Value<int> rowid,
@@ -35529,6 +35580,7 @@ typedef $$TransactionTableTableUpdateCompanionBuilder =
       Value<String?> categoryId,
       Value<String?> commitmentTaskId,
       Value<String?> payeeId,
+      Value<String?> loanId,
       Value<DateTime?> transactionDateTime,
       Value<String?> note,
       Value<int> rowid,
@@ -35780,6 +35832,11 @@ class $$TransactionTableTableFilterComposer
 
   ColumnFilters<double> get amount => $composableBuilder(
     column: $table.amount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get loanId => $composableBuilder(
+    column: $table.loanId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -36037,6 +36094,11 @@ class $$TransactionTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get loanId => $composableBuilder(
+    column: $table.loanId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get transactionDateTime => $composableBuilder(
     column: $table.transactionDateTime,
     builder: (column) => ColumnOrderings(column),
@@ -36204,6 +36266,9 @@ class $$TransactionTableTableAnnotationComposer
 
   GeneratedColumn<double> get amount =>
       $composableBuilder(column: $table.amount, builder: (column) => column);
+
+  GeneratedColumn<String> get loanId =>
+      $composableBuilder(column: $table.loanId, builder: (column) => column);
 
   GeneratedColumn<DateTime> get transactionDateTime => $composableBuilder(
     column: $table.transactionDateTime,
@@ -36461,6 +36526,7 @@ class $$TransactionTableTableTableManager
                 Value<String?> categoryId = const Value.absent(),
                 Value<String?> commitmentTaskId = const Value.absent(),
                 Value<String?> payeeId = const Value.absent(),
+                Value<String?> loanId = const Value.absent(),
                 Value<DateTime?> transactionDateTime = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -36478,6 +36544,7 @@ class $$TransactionTableTableTableManager
                 categoryId: categoryId,
                 commitmentTaskId: commitmentTaskId,
                 payeeId: payeeId,
+                loanId: loanId,
                 transactionDateTime: transactionDateTime,
                 note: note,
                 rowid: rowid,
@@ -36497,6 +36564,7 @@ class $$TransactionTableTableTableManager
                 Value<String?> categoryId = const Value.absent(),
                 Value<String?> commitmentTaskId = const Value.absent(),
                 Value<String?> payeeId = const Value.absent(),
+                Value<String?> loanId = const Value.absent(),
                 Value<DateTime?> transactionDateTime = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -36514,6 +36582,7 @@ class $$TransactionTableTableTableManager
                 categoryId: categoryId,
                 commitmentTaskId: commitmentTaskId,
                 payeeId: payeeId,
+                loanId: loanId,
                 transactionDateTime: transactionDateTime,
                 note: note,
                 rowid: rowid,

@@ -67,6 +67,8 @@ extension TransactionTypeExt on TransactionType {
       TransactionType.commitment => FormTransactionType.expense,
       TransactionType.budgetPlanDeposit => FormTransactionType.income,
       TransactionType.budgetPlanExpense => FormTransactionType.expense,
+      TransactionType.loanDisbursement => FormTransactionType.expense,
+      TransactionType.loanRepayment => FormTransactionType.income,
     };
   }
 
@@ -78,6 +80,8 @@ extension TransactionTypeExt on TransactionType {
       TransactionType.commitment => FormAmountFieldType.expense,
       TransactionType.budgetPlanDeposit => FormAmountFieldType.income,
       TransactionType.budgetPlanExpense => FormAmountFieldType.expense,
+      TransactionType.loanDisbursement => FormAmountFieldType.expense,
+      TransactionType.loanRepayment => FormAmountFieldType.income,
     };
   }
 }

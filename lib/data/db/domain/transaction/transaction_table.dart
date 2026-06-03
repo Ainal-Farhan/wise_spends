@@ -50,6 +50,12 @@ class TransactionTable extends BaseEntityTable {
   /// FK to [PayeeTable] — only set for third-party payment transactions.
   TextColumn get payeeId => text().nullable().references(PayeeTable, #id)();
 
+  // -- Loan link -------------------------------------------------------------
+
+  /// FK to [LoanTable] — set when this transaction was created by a loan
+  /// disbursement or repayment event.
+  TextColumn get loanId => text().nullable()();
+
   // -- Metadata --------------------------------------------------------------
 
   DateTimeColumn get transactionDateTime => dateTime().nullable()();
@@ -65,6 +71,7 @@ class TransactionTable extends BaseEntityTable {
     'categoryId': categoryId.name,
     'commitmentTaskId': commitmentTaskId.name,
     'payeeId': payeeId.name,
+    'loanId': loanId.name,
     'transactionDateTime': transactionDateTime.name,
     'note': note.name,
   };

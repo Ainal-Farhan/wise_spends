@@ -76,22 +76,30 @@ class AmountDisplay extends StatelessWidget {
       case TransactionType.budgetPlanDeposit:
       case TransactionType.budgetPlanExpense:
         return colorScheme.primary;
+      case TransactionType.loanDisbursement:
+        return colorScheme.secondary;
+      case TransactionType.loanRepayment:
+        return colorScheme.primary;
     }
   }
 
   String _getPrefixForType() {
     switch (type) {
       case TransactionType.income:
-        return '+'; // universally "gaining"
+        return '+';
       case TransactionType.expense:
-        return '−'; // universally "losing"
+        return '−';
       case TransactionType.transfer:
-        return '⇄ '; // cleaner than ↔, reads better at small sizes
+        return '⇄ ';
       case TransactionType.commitment:
-        return '↻ '; // signals recurring/scheduled
+        return '↻ ';
       case TransactionType.budgetPlanDeposit:
       case TransactionType.budgetPlanExpense:
-        return ''; // No prefix - amount sign will be shown via +/- based on context
+        return '';
+      case TransactionType.loanDisbursement:
+        return '−';
+      case TransactionType.loanRepayment:
+        return '+';
     }
   }
 }

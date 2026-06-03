@@ -38,7 +38,7 @@ class FormAccountItem {
 
   /// Transferable amount (balance minus reserved)
   double get transferableAmount {
-    if (reserveSummary == null) return balance;
+    if (reserveSummary == null || balance < 0) return balance;
     return reserveSummary!.transferableAmount;
   }
 
@@ -129,7 +129,9 @@ class _FormAccountSelectorState extends State<FormAccountSelector> {
     super.didUpdateWidget(old);
     if (old.selectedAccount?.id != widget.selectedAccount?.id ||
         old.accounts != widget.accounts) {
-      _controller.text = _displayText(_selected);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _controller.text = _displayText(_selected);
+      });
     }
   }
 
