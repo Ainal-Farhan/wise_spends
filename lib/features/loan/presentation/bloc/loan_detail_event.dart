@@ -49,3 +49,34 @@ class SettleLoanEvent extends LoanDetailEvent {
   @override
   List<Object?> get props => [id];
 }
+
+class UpdateLoanEvent extends LoanDetailEvent {
+  final String loanId;
+  final String borrowerName;
+  final double principalAmount;
+  final DateTime loanDate;
+  final DateTime? dueDate;
+  final String? note;
+  final bool noAutoDeduct;
+
+  const UpdateLoanEvent({
+    required this.loanId,
+    required this.borrowerName,
+    required this.principalAmount,
+    required this.loanDate,
+    this.dueDate,
+    this.note,
+    this.noAutoDeduct = false,
+  });
+
+  @override
+  List<Object?> get props => [
+    loanId,
+    borrowerName,
+    principalAmount,
+    loanDate,
+    dueDate,
+    note,
+    noAutoDeduct,
+  ];
+}

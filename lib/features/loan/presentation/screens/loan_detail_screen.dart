@@ -7,6 +7,7 @@ import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/features/loan/presentation/bloc/loan_detail_bloc.dart';
 import 'package:wise_spends/features/loan/presentation/bloc/loan_detail_event.dart';
 import 'package:wise_spends/features/loan/presentation/bloc/loan_detail_state.dart';
+import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/features/transaction/presentation/adapters/transaction_form_adapters.dart';
 import 'package:wise_spends/shared/components/components.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
@@ -100,7 +101,7 @@ class _LoanDetailBody extends StatelessWidget {
 
     final paidPct = loan.principalAmount > 0
         ? ((loan.principalAmount - state.outstanding) / loan.principalAmount)
-            .clamp(0.0, 1.0)
+              .clamp(0.0, 1.0)
         : 1.0;
 
     return Scaffold(
@@ -109,10 +110,20 @@ class _LoanDetailBody extends StatelessWidget {
         title: Text(loan.borrowerName),
         centerTitle: false,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'loan.edit'.tr,
+            onPressed: () => _showEditSheet(context, state),
+          ),
           if (!isSettled)
             TextButton.icon(
-              onPressed: () => _confirmSettle(context, loan.id, loan.borrowerName),
-              icon: Icon(Icons.check_circle_outline, size: 18, color: cs.primary),
+              onPressed: () =>
+                  _confirmSettle(context, loan.id, loan.borrowerName),
+              icon: Icon(
+                Icons.check_circle_outline,
+                size: 18,
+                color: cs.primary,
+              ),
               label: Text(
                 'loan.btn_settle'.tr,
                 style: TextStyle(color: cs.primary),
@@ -168,9 +179,9 @@ class _LoanDetailBody extends StatelessWidget {
                   ),
                   if (state.repayments.isNotEmpty)
                     Text(
-                      'loan.repayments_count'.trWith(
-                        {'count': state.repayments.length.toString()},
-                      ),
+                      'loan.repayments_count'.trWith({
+                        'count': state.repayments.length.toString(),
+                      }),
                       style: AppTextStyles.caption.copyWith(
                         color: cs.onSurfaceVariant,
                       ),
@@ -217,13 +228,49 @@ class _LoanDetailBody extends StatelessWidget {
                     const SizedBox(height: AppSpacing.sm),
                 itemBuilder: (context, index) {
                   // show most recent first
-                  final r = state.repayments[
-                      state.repayments.length - 1 - index];
+                  final r =
+                      state.repayments[state.repayments.length - 1 - index];
                   return _RepaymentTile(repayment: r, index: index);
                 },
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  void _showEditSheet(BuildContext context, LoanDetailLoaded state) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: false,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (_) => _EditLoanSheet(
+        existing: state.loan,
+        onSave:
+            (
+              borrowerName,
+              principalAmount,
+              loanDate,
+              dueDate,
+              note,
+              noAutoDeduct,
+            ) {
+              context.read<LoanDetailBloc>().add(
+                UpdateLoanEvent(
+                  loanId: state.loan.id,
+                  borrowerName: borrowerName,
+                  principalAmount: principalAmount,
+                  loanDate: loanDate,
+                  dueDate: dueDate,
+                  note: note,
+                  noAutoDeduct: noAutoDeduct,
+                ),
+              );
+            },
       ),
     );
   }
@@ -253,7 +300,10 @@ class _LoanDetailBody extends StatelessWidget {
   }
 
   void _showAddRepaymentSheet(
-      BuildContext context, String loanId, double outstanding) {
+    BuildContext context,
+    String loanId,
+    double outstanding,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -308,16 +358,16 @@ class _HeaderCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: isSettled
-              ? [cs.primaryContainer, cs.primaryContainer.withValues(alpha: 0.6)]
+              ? [
+                  cs.primaryContainer,
+                  cs.primaryContainer.withValues(alpha: 0.6),
+                ]
               : urgency == _DueUrgency.overdue
-                  ? [
-                      cs.errorContainer,
-                      cs.errorContainer.withValues(alpha: 0.6),
-                    ]
-                  : [
-                      cs.primaryContainer,
-                      cs.secondaryContainer.withValues(alpha: 0.7),
-                    ],
+              ? [cs.errorContainer, cs.errorContainer.withValues(alpha: 0.6)]
+              : [
+                  cs.primaryContainer,
+                  cs.secondaryContainer.withValues(alpha: 0.7),
+                ],
         ),
         borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
@@ -373,9 +423,7 @@ class _HeaderCard extends StatelessWidget {
             Text(
               _currFmt.format(state.outstanding),
               style: AppTextStyles.h2.copyWith(
-                color: state.outstanding > 0
-                    ? cs.error
-                    : cs.onPrimaryContainer,
+                color: state.outstanding > 0 ? cs.error : cs.onPrimaryContainer,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -502,7 +550,11 @@ class _InfoItem extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(icon, size: 12, color: cs.onPrimaryContainer.withValues(alpha: 0.6)),
+            Icon(
+              icon,
+              size: 12,
+              color: cs.onPrimaryContainer.withValues(alpha: 0.6),
+            ),
             const SizedBox(width: 3),
             Text(
               label,
@@ -550,8 +602,9 @@ class _UrgencyBanner extends StatelessWidget {
       message = 'loan.banner_due_soon'.trWith({'days': days.toString()});
       icon = Icons.schedule_rounded;
     } else {
-      message = 'loan.banner_due_upcoming'.trWith(
-          {'date': _dateFmt.format(dueDate)});
+      message = 'loan.banner_due_upcoming'.trWith({
+        'date': _dateFmt.format(dueDate),
+      });
       icon = Icons.event_rounded;
     }
 
@@ -617,11 +670,7 @@ class _RepaymentTile extends StatelessWidget {
                 color: cs.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppRadius.md),
               ),
-              child: Icon(
-                Icons.payments_outlined,
-                size: 18,
-                color: cs.primary,
-              ),
+              child: Icon(Icons.payments_outlined, size: 18, color: cs.primary),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -667,12 +716,10 @@ class _AddRepaymentSheet extends StatefulWidget {
     String destinationSavingId,
     DateTime repaymentDate,
     String? note,
-  ) onAdd;
+  )
+  onAdd;
 
-  const _AddRepaymentSheet({
-    required this.outstanding,
-    required this.onAdd,
-  });
+  const _AddRepaymentSheet({required this.outstanding, required this.onAdd});
 
   @override
   State<_AddRepaymentSheet> createState() => _AddRepaymentSheetState();
@@ -698,7 +745,9 @@ class _AddRepaymentSheetState extends State<_AddRepaymentSheet> {
           .getSavingRepository();
       final savings = await repo.getAllSavings();
       if (mounted) {
-        setState(() => _savings = savings.map((s) => s.toFormAccountItem()).toList());
+        setState(
+          () => _savings = savings.map((s) => s.toFormAccountItem()).toList(),
+        );
       }
     } catch (_) {}
   }
@@ -742,9 +791,9 @@ class _AddRepaymentSheetState extends State<_AddRepaymentSheet> {
               if (widget.outstanding > 0) ...[
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'loan.outstanding_hint'.trWith(
-                    {'amount': _currFmt.format(widget.outstanding)},
-                  ),
+                  'loan.outstanding_hint'.trWith({
+                    'amount': _currFmt.format(widget.outstanding),
+                  }),
                   style: AppTextStyles.caption.copyWith(
                     color: cs.onSurfaceVariant,
                   ),
@@ -763,14 +812,14 @@ class _AddRepaymentSheetState extends State<_AddRepaymentSheet> {
                     const SizedBox(width: AppSpacing.xs),
                     _QuickFillChip(
                       label: '50%',
-                      onTap: () => _amountCtrl.text =
-                          (widget.outstanding * 0.5).toStringAsFixed(2),
+                      onTap: () => _amountCtrl.text = (widget.outstanding * 0.5)
+                          .toStringAsFixed(2),
                     ),
                     const SizedBox(width: AppSpacing.xs),
                     _QuickFillChip(
                       label: 'loan.full_amount'.tr,
-                      onTap: () => _amountCtrl.text =
-                          widget.outstanding.toStringAsFixed(2),
+                      onTap: () => _amountCtrl.text = widget.outstanding
+                          .toStringAsFixed(2),
                     ),
                   ],
                 ),
@@ -788,9 +837,8 @@ class _AddRepaymentSheetState extends State<_AddRepaymentSheet> {
               ),
               const SizedBox(height: AppSpacing.sm),
               FormField<FormAccountItem>(
-                validator: (_) => _selectedSaving == null
-                    ? 'general.required'.tr
-                    : null,
+                validator: (_) =>
+                    _selectedSaving == null ? 'general.required'.tr : null,
                 builder: (field) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -834,8 +882,11 @@ class _AddRepaymentSheetState extends State<_AddRepaymentSheet> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.calendar_today_outlined,
-                          size: 18, color: cs.primary),
+                      Icon(
+                        Icons.calendar_today_outlined,
+                        size: 18,
+                        color: cs.primary,
+                      ),
                       const SizedBox(width: AppSpacing.sm),
                       Text(
                         '${'loan.repayment_date_prefix'.tr}: ',
@@ -910,6 +961,294 @@ class _QuickFillChip extends StatelessWidget {
             color: cs.primary,
             fontWeight: FontWeight.w600,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── edit loan sheet ───────────────────────────────────────────────────────────
+
+class _EditLoanSheet extends StatefulWidget {
+  final LoanLoan existing;
+  final void Function(
+    String borrowerName,
+    double principalAmount,
+    DateTime loanDate,
+    DateTime? dueDate,
+    String? note,
+    bool noAutoDeduct,
+  )
+  onSave;
+
+  const _EditLoanSheet({required this.existing, required this.onSave});
+
+  @override
+  State<_EditLoanSheet> createState() => _EditLoanSheetState();
+}
+
+class _EditLoanSheetState extends State<_EditLoanSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _borrowerCtrl;
+  late final TextEditingController _amountCtrl;
+  late final TextEditingController _noteCtrl;
+  late DateTime _loanDate;
+  DateTime? _dueDate;
+  late bool _noAutoDeduct;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    _borrowerCtrl = TextEditingController(text: e.borrowerName);
+    _amountCtrl = TextEditingController(
+      text: e.principalAmount.toStringAsFixed(2),
+    );
+    _noteCtrl = TextEditingController(text: e.note ?? '');
+    _loanDate = e.loanDate;
+    _dueDate = e.dueDate;
+    _noAutoDeduct = e.noAutoDeduct;
+  }
+
+  @override
+  void dispose() {
+    _borrowerCtrl.dispose();
+    _amountCtrl.dispose();
+    _noteCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: EdgeInsets.only(
+        left: AppSpacing.lg,
+        right: AppSpacing.lg,
+        top: AppSpacing.xxl,
+        bottom: MediaQuery.of(context).viewInsets.bottom + AppSpacing.xxl,
+      ),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // handle
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+                  decoration: BoxDecoration(
+                    color: cs.onSurface.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                ),
+              ),
+              Text('loan.edit'.tr, style: AppTextStyles.h3),
+              const SizedBox(height: AppSpacing.xs),
+              // Info: balance not re-adjusted
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: cs.tertiaryContainer.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 14,
+                      color: cs.onTertiaryContainer,
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Expanded(
+                      child: Text(
+                        'loan.edit_note'.tr,
+                        style: AppTextStyles.caption.copyWith(
+                          color: cs.onTertiaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppTextField(
+                controller: _borrowerCtrl,
+                label: 'loan.field_borrower'.tr,
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'general.required'.tr : null,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              AppTextField(
+                controller: _amountCtrl,
+                label: 'loan.field_amount'.tr,
+                keyboardType: AppTextFieldKeyboardType.decimal,
+                validator: (v) {
+                  final n = double.tryParse(v ?? '');
+                  if (n == null || n <= 0) return 'general.must_be_positive'.tr;
+                  return null;
+                },
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              // noAutoDeduct toggle (read-only indicator in edit mode)
+              _NoAutoDeductDisplay(noAutoDeduct: _noAutoDeduct),
+              const SizedBox(height: AppSpacing.sm),
+              _EditDateTile(
+                label: _dateFmt.format(_loanDate),
+                icon: Icons.calendar_today_outlined,
+                prefix: 'loan.field_loan_date_prefix'.tr,
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _loanDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                  );
+                  if (picked != null) setState(() => _loanDate = picked);
+                },
+              ),
+              _EditDateTile(
+                label: _dueDate != null
+                    ? _dateFmt.format(_dueDate!)
+                    : 'loan.field_due_date_empty'.tr,
+                icon: Icons.event_outlined,
+                prefix: 'loan.field_due_date_prefix'.tr,
+                trailing: _dueDate != null
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        onPressed: () => setState(() => _dueDate = null),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      )
+                    : null,
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _dueDate ?? DateTime.now(),
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                  );
+                  if (picked != null) setState(() => _dueDate = picked);
+                },
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              AppTextField(
+                controller: _noteCtrl,
+                label: 'general.note_optional'.tr,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AppButton.primary(
+                label: 'general.save'.tr,
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    widget.onSave(
+                      _borrowerCtrl.text.trim(),
+                      double.parse(_amountCtrl.text),
+                      _loanDate,
+                      _dueDate,
+                      _noteCtrl.text.trim().isEmpty
+                          ? null
+                          : _noteCtrl.text.trim(),
+                      _noAutoDeduct,
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NoAutoDeductDisplay extends StatelessWidget {
+  final bool noAutoDeduct;
+
+  const _NoAutoDeductDisplay({required this.noAutoDeduct});
+
+  @override
+  Widget build(BuildContext context) {
+    if (!noAutoDeduct) return const SizedBox.shrink();
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: cs.secondaryContainer.withValues(alpha: 0.4),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: cs.secondary.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.money_off_outlined, size: 16, color: cs.secondary),
+          const SizedBox(width: AppSpacing.sm),
+          Text(
+            'loan.no_auto_deduct'.tr,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: cs.onSecondaryContainer,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// shared date-picker tile reused in edit sheet
+class _EditDateTile extends StatelessWidget {
+  final String prefix;
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  final Widget? trailing;
+
+  const _EditDateTile({
+    required this.prefix,
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    this.trailing,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.sm,
+          horizontal: AppSpacing.xs,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: cs.primary),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              '$prefix: ',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: cs.onSurfaceVariant,
+              ),
+            ),
+            Text(
+              label,
+              style: AppTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            ?trailing,
+          ],
         ),
       ),
     );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
+import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/features/commitment/data/constants/commitment_task_type.dart';
 import 'package:wise_spends/features/commitment/data/constants/commitment_detail_type.dart';
 import 'package:wise_spends/features/commitment/domain/entities/commitment_detail_vo.dart';
@@ -54,6 +57,13 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
   String? _targetSavingId;
   String? _payeeId;
 
+  // CC charge fields
+  String? _linkedCreditCardId;
+  bool _isInfinite = true; // true = no installment limit
+  int? _eppTotalInstallments;
+  final _eppCtrl = TextEditingController();
+  List<CrdCardCreditCard> _creditCards = [];
+
   @override
   void initState() {
     super.initState();
@@ -78,12 +88,32 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
         widget.commitmentVO?.referredSavingVO?.savingName ??
         vo.sourceSavingVO?.savingName ??
         _sourceSavingId;
+
+    // CC fields
+    _linkedCreditCardId = vo.linkedCreditCardId;
+    _eppTotalInstallments = vo.eppTotalInstallments;
+    _isInfinite = vo.eppTotalInstallments == null;
+    if (vo.eppTotalInstallments != null) {
+      _eppCtrl.text = vo.eppTotalInstallments.toString();
+    }
+
+    _loadCreditCards();
+  }
+
+  Future<void> _loadCreditCards() async {
+    try {
+      final repo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+          .getCreditCardRepository();
+      final cards = await repo.getAllCards();
+      if (mounted) setState(() => _creditCards = cards);
+    } catch (_) {}
   }
 
   @override
   void dispose() {
     _descriptionController.dispose();
     _amountController.dispose();
+    _eppCtrl.dispose();
     super.dispose();
   }
 
@@ -180,7 +210,7 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
           ),
           const SizedBox(height: 12),
 
-          // ── Source saving (read-only, hidden for cash) ─────────────────────
+          // ── Source saving (read-only, hidden for cash only) ──────────────────
           if (_taskType != CommitmentTaskType.cash) ...[
             _FormCard(
               children: [
@@ -373,6 +403,111 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
             ],
           ),
         );
+
+      case CommitmentTaskType.creditCardCharge:
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _FormCard(
+            headerIcon: Icons.credit_card_rounded,
+            headerLabel: 'Credit Card Charge',
+            headerColor: Colors.purple,
+            children: [
+              // ── Card selector ──────────────────────────────────────────────
+              const _FieldLabel('Credit Card'),
+              const SizedBox(height: 6),
+              _creditCards.isEmpty
+                  ? Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.purple.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        'No credit cards found. Add a card first.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.purple[800],
+                        ),
+                      ),
+                    )
+                  : DropdownButtonFormField<String>(
+                      initialValue: _linkedCreditCardId,
+                      decoration: _inputDeco(
+                        hint: 'Select credit card',
+                        icon: Icons.credit_card_rounded,
+                      ),
+                      items: _creditCards
+                          .map(
+                            (c) => DropdownMenuItem(
+                              value: c.id,
+                              child: Text(
+                                c.lastFourDigits != null
+                                    ? '${c.name} •••• ${c.lastFourDigits}'
+                                    : c.name,
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) => setState(() => _linkedCreditCardId = v),
+                      validator: (v) =>
+                          v == null ? 'Select a credit card' : null,
+                    ),
+              const SizedBox(height: 14),
+
+              // ── EPP / Infinite toggle ──────────────────────────────────────
+              const _FieldLabel('Installment Type'),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Expanded(
+                    child: _TypeToggle(
+                      label: '∞ Infinite',
+                      selected: _isInfinite,
+                      color: Colors.purple,
+                      onTap: () => setState(() {
+                        _isInfinite = true;
+                        _eppTotalInstallments = null;
+                        _eppCtrl.clear();
+                      }),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _TypeToggle(
+                      label: 'Fixed EPP',
+                      selected: !_isInfinite,
+                      color: Colors.deepPurple,
+                      onTap: () => setState(() => _isInfinite = false),
+                    ),
+                  ),
+                ],
+              ),
+
+              // ── Total installments (EPP only) ──────────────────────────────
+              if (!_isInfinite) ...[
+                const SizedBox(height: 14),
+                const _FieldLabel('Total Installments'),
+                const SizedBox(height: 6),
+                TextFormField(
+                  controller: _eppCtrl,
+                  keyboardType: TextInputType.number,
+                  decoration: _inputDeco(
+                    hint: 'e.g. 36',
+                    icon: Icons.format_list_numbered_rounded,
+                  ),
+                  onChanged: (v) =>
+                      setState(() => _eppTotalInstallments = int.tryParse(v)),
+                  validator: (v) {
+                    if (_isInfinite) return null;
+                    final n = int.tryParse(v ?? '');
+                    if (n == null || n < 1) return 'Enter a valid number';
+                    return null;
+                  },
+                ),
+              ],
+            ],
+          ),
+        );
     }
   }
 
@@ -407,6 +542,13 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
           : null
       ..payeeId = _taskType == CommitmentTaskType.thirdPartyPayment
           ? _payeeId
+          : null
+      ..linkedCreditCardId = _taskType == CommitmentTaskType.creditCardCharge
+          ? _linkedCreditCardId
+          : null
+      ..eppTotalInstallments =
+          (_taskType == CommitmentTaskType.creditCardCharge && !_isInfinite)
+          ? _eppTotalInstallments
           : null;
 
     // Attach VOs for immediate UI update
@@ -430,6 +572,16 @@ class _CommitmentDetailFormState extends State<CommitmentDetailForm> {
       vo.payeeVO = widget.payeeVOList
           .where((p) => p.id == _payeeId)
           .firstOrNull;
+    }
+    if (_linkedCreditCardId != null) {
+      final card = _creditCards
+          .where((c) => c.id == _linkedCreditCardId)
+          .firstOrNull;
+      if (card != null) {
+        vo.linkedCreditCardName = card.lastFourDigits != null
+            ? '${card.name} •••• ${card.lastFourDigits}'
+            : card.name;
+      }
     }
 
     context.read<CommitmentBloc>().add(
@@ -673,6 +825,8 @@ class _PaymentTypeSelector extends StatelessWidget {
         return Icons.send_rounded;
       case CommitmentTaskType.cash:
         return Icons.payments_outlined;
+      case CommitmentTaskType.creditCardCharge:
+        return Icons.credit_card_rounded;
     }
   }
 
@@ -684,6 +838,8 @@ class _PaymentTypeSelector extends StatelessWidget {
         return Colors.orange;
       case CommitmentTaskType.cash:
         return Colors.green;
+      case CommitmentTaskType.creditCardCharge:
+        return Colors.purple;
     }
   }
 
@@ -695,7 +851,50 @@ class _PaymentTypeSelector extends StatelessWidget {
         return 'Pay Out';
       case CommitmentTaskType.cash:
         return 'Cash';
+      case CommitmentTaskType.creditCardCharge:
+        return 'CC Charge';
     }
+  }
+}
+
+// ── Type toggle button (Infinite / EPP) ─────────────────────────────────────
+
+class _TypeToggle extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _TypeToggle({
+    required this.label,
+    required this.selected,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? color : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: selected ? color : Colors.grey.shade300),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: selected ? Colors.white : Colors.grey.shade600,
+          ),
+        ),
+      ),
+    );
   }
 }
 

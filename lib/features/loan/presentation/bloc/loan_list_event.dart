@@ -14,16 +14,19 @@ class AddLoanEvent extends LoanListEvent {
   final double principalAmount;
   final DateTime loanDate;
   final DateTime? dueDate;
+  /// Empty string when [noAutoDeduct] is true.
   final String sourceSavingId;
   final String? note;
+  final bool noAutoDeduct;
 
   const AddLoanEvent({
     required this.borrowerName,
     required this.principalAmount,
     required this.loanDate,
     this.dueDate,
-    required this.sourceSavingId,
+    this.sourceSavingId = '',
     this.note,
+    this.noAutoDeduct = false,
   });
 
   @override
@@ -34,6 +37,7 @@ class AddLoanEvent extends LoanListEvent {
     dueDate,
     sourceSavingId,
     note,
+    noAutoDeduct,
   ];
 }
 

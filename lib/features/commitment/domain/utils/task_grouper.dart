@@ -193,10 +193,11 @@ class TaskGrouper {
 
     return tasks.where((task) {
       if (task.isDone == true) return true;
-      
-      // Cash tasks can't be grouped
+
+      // Cash and credit card charge tasks are never grouped — always shown individually.
       if (task.isCash) return true;
-      
+      if (task.type == CommitmentTaskType.creditCardCharge) return true;
+
       // Tasks without source saving can't be grouped
       if (task.sourceSavingId == null) return true;
       

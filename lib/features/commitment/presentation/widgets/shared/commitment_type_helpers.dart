@@ -16,6 +16,8 @@ IconData iconForTaskType(CommitmentTaskType? type) {
       return Icons.send;
     case CommitmentTaskType.cash:
       return Icons.payments_outlined;
+    case CommitmentTaskType.creditCardCharge:
+      return Icons.credit_card_rounded;
     case null:
       return Icons.schedule;
   }
@@ -30,6 +32,8 @@ String labelForTaskType(CommitmentTaskType? type) {
       return 'Third-Party Payment';
     case CommitmentTaskType.cash:
       return 'Cash';
+    case CommitmentTaskType.creditCardCharge:
+      return 'Credit Card Charge';
     case null:
       return '—';
   }
@@ -44,6 +48,8 @@ String subtitleForTask(CommitmentTaskVO task) {
       return '${task.sourceSavingName} → ${task.payeeName}';
     case CommitmentTaskType.cash:
       return 'Cash payment';
+    case CommitmentTaskType.creditCardCharge:
+      return 'Charges credit card';
     case null:
       return '';
   }

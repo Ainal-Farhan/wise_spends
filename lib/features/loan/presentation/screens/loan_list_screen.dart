@@ -279,19 +279,20 @@ class _LoanListContentState extends State<_LoanListContent> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       builder: (_) => _AddLoanSheet(
-        onAdd:
-            (borrowerName, principal, loanDate, dueDate, sourceSavingId, note) {
-              context.read<LoanListBloc>().add(
-                AddLoanEvent(
-                  borrowerName: borrowerName,
-                  principalAmount: principal,
-                  loanDate: loanDate,
-                  dueDate: dueDate,
-                  sourceSavingId: sourceSavingId,
-                  note: note,
-                ),
-              );
-            },
+        onAdd: (borrowerName, principal, loanDate, dueDate, sourceSavingId,
+            note, noAutoDeduct) {
+          context.read<LoanListBloc>().add(
+            AddLoanEvent(
+              borrowerName: borrowerName,
+              principalAmount: principal,
+              loanDate: loanDate,
+              dueDate: dueDate,
+              sourceSavingId: sourceSavingId,
+              note: note,
+              noAutoDeduct: noAutoDeduct,
+            ),
+          );
+        },
       ),
     );
   }
@@ -703,7 +704,7 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-// ── add loan sheet ────────────────────────────────────────────────────────────
+// ── add / edit loan sheet ─────────────────────────────────────────────────────
 
 class _AddLoanSheet extends StatefulWidget {
   final void Function(
@@ -713,16 +714,16 @@ class _AddLoanSheet extends StatefulWidget {
     DateTime? dueDate,
     String sourceSavingId,
     String? note,
-  )
-  onAdd;
+    bool noAutoDeduct,
+  ) onAdd;
 
   const _AddLoanSheet({required this.onAdd});
 
   @override
-  State<_AddLoanSheet> createState() => _AddLoanSheetState();
+  State<_AddLoanSheet> createState() => _LoanFormSheetState();
 }
 
-class _AddLoanSheetState extends State<_AddLoanSheet> {
+class _LoanFormSheetState extends State<_AddLoanSheet> {
   final _formKey = GlobalKey<FormState>();
   final _borrowerCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
@@ -731,6 +732,7 @@ class _AddLoanSheetState extends State<_AddLoanSheet> {
   DateTime? _dueDate;
   FormAccountItem? _selectedSaving;
   List<FormAccountItem> _savings = [];
+  bool _noAutoDeduct = false;
 
   @override
   void initState() {
@@ -808,33 +810,45 @@ class _AddLoanSheetState extends State<_AddLoanSheet> {
                 },
               ),
               const SizedBox(height: AppSpacing.sm),
-              FormField<FormAccountItem>(
-                validator: (_) =>
-                    _selectedSaving == null ? 'general.required'.tr : null,
-                builder: (field) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FormAccountSelector(
-                      label: 'loan.field_source'.tr,
-                      selectedAccount: _selectedSaving,
-                      accounts: _savings,
-                      onAccountSelected: (a) =>
-                          setState(() => _selectedSaving = a),
-                    ),
-                    if (field.errorText != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4, left: 12),
-                        child: Text(
-                          field.errorText!,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
-                            fontSize: 12,
+              // ── no-auto-deduct toggle ────────────────────────────────────────
+              _NoAutoDeductToggle(
+                value: _noAutoDeduct,
+                onChanged: (v) => setState(() {
+                  _noAutoDeduct = v;
+                  if (v) _selectedSaving = null;
+                }),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              // ── source saving (hidden when noAutoDeduct) ─────────────────────
+              if (!_noAutoDeduct)
+                FormField<FormAccountItem>(
+                  validator: (_) => (!_noAutoDeduct && _selectedSaving == null)
+                      ? 'general.required'.tr
+                      : null,
+                  builder: (field) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FormAccountSelector(
+                        label: 'loan.field_source'.tr,
+                        selectedAccount: _selectedSaving,
+                        accounts: _savings,
+                        onAccountSelected: (a) =>
+                            setState(() => _selectedSaving = a),
+                      ),
+                      if (field.errorText != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4, left: 12),
+                          child: Text(
+                            field.errorText!,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.error,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
               const SizedBox(height: AppSpacing.sm),
               _DatePickerTile(
                 label: _dateFmt.format(_loanDate),
@@ -889,10 +903,11 @@ class _AddLoanSheetState extends State<_AddLoanSheet> {
                       double.parse(_amountCtrl.text),
                       _loanDate,
                       _dueDate,
-                      _selectedSaving!.id,
+                      _noAutoDeduct ? '' : _selectedSaving!.id,
                       _noteCtrl.text.trim().isEmpty
                           ? null
                           : _noteCtrl.text.trim(),
+                      _noAutoDeduct,
                     );
                     Navigator.pop(context);
                   }
@@ -901,6 +916,69 @@ class _AddLoanSheetState extends State<_AddLoanSheet> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ── no-auto-deduct toggle widget ──────────────────────────────────────────────
+
+class _NoAutoDeductToggle extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _NoAutoDeductToggle({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: value
+            ? cs.secondaryContainer.withValues(alpha: 0.4)
+            : cs.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: value
+              ? cs.secondary.withValues(alpha: 0.4)
+              : cs.outlineVariant.withValues(alpha: 0.4),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.money_off_outlined,
+            size: 18,
+            color: value ? cs.secondary : cs.onSurfaceVariant,
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'loan.no_auto_deduct'.tr,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: value ? cs.onSecondaryContainer : cs.onSurface,
+                  ),
+                ),
+                Text(
+                  'loan.no_auto_deduct_hint'.tr,
+                  style: AppTextStyles.caption.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(value: value, onChanged: onChanged),
+        ],
       ),
     );
   }

@@ -32,6 +32,7 @@ class CreditCardPaymentRepository extends ICreditCardPaymentRepository {
     required DateTime paymentDate,
     String? note,
     List<({String chargeId, double amount})>? chargeAllocations,
+    List<({String chargeId, double amount})>? rebateAllocations,
   }) async {
     final now = DateTime.now();
     final paymentId = UuidGenerator().v4();
@@ -77,6 +78,26 @@ class CreditCardPaymentRepository extends ICreditCardPaymentRepository {
     } else {
       // No per-charge allocations — deduct full amount from sourceSavingId.
       await _adjustSavingBalance(sourceSavingId, -amount, now);
+    }
+
+    // Rebate-covered allocations: create rows so getUnpaidAmount is reduced,
+    // but intentionally skip any saving balance adjustment.
+    if (rebateAllocations != null && rebateAllocations.isNotEmpty) {
+      for (final alloc in rebateAllocations) {
+        await db.into(db.creditCardChargePaymentTable).insert(
+          CreditCardChargePaymentTableCompanion.insert(
+            id: Value(UuidGenerator().v4()),
+            chargeId: alloc.chargeId,
+            paymentId: paymentId,
+            allocatedAmount: alloc.amount,
+            createdBy: 'app',
+            dateCreated: Value(now),
+            dateUpdated: now,
+            lastModifiedBy: 'app',
+          ),
+        );
+        // No _adjustSavingBalance — rebate credit, not real cash.
+      }
     }
   }
 

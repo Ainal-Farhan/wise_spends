@@ -25,8 +25,9 @@ class LoanRepository extends ILoanRepository {
     required double principalAmount,
     required DateTime loanDate,
     DateTime? dueDate,
-    required String sourceSavingId,
+    String sourceSavingId = '',
     String? note,
+    bool noAutoDeduct = false,
   }) async {
     final now = DateTime.now();
     final loanId = UuidGenerator().v4();
@@ -44,6 +45,7 @@ class LoanRepository extends ILoanRepository {
             sourceSavingId: sourceSavingId,
             note: Value(note),
             status: const Value('active'),
+            noAutoDeduct: Value(noAutoDeduct),
             createdBy: 'app',
             dateCreated: Value(now),
             dateUpdated: now,
@@ -51,28 +53,30 @@ class LoanRepository extends ILoanRepository {
           ),
         );
 
-    // 2. Create a loanDisbursement transaction that debits the source saving
-    await db
-        .into(db.transactionTable)
-        .insert(
-          TransactionTableCompanion.insert(
-            id: Value(UuidGenerator().v4()),
-            type: TransactionType.loanDisbursement,
-            description: Value('Loan to $borrowerName'),
-            amount: principalAmount,
-            savingId: sourceSavingId,
-            loanId: Value(loanId),
-            transactionDateTime: Value(loanDate),
-            note: Value(note),
-            createdBy: 'app',
-            dateCreated: Value(now),
-            dateUpdated: now,
-            lastModifiedBy: 'app',
-          ),
-        );
+    if (!noAutoDeduct && sourceSavingId.isNotEmpty) {
+      // 2. Create a loanDisbursement transaction that debits the source saving
+      await db
+          .into(db.transactionTable)
+          .insert(
+            TransactionTableCompanion.insert(
+              id: Value(UuidGenerator().v4()),
+              type: TransactionType.loanDisbursement,
+              description: Value('Loan to $borrowerName'),
+              amount: principalAmount,
+              savingId: sourceSavingId,
+              loanId: Value(loanId),
+              transactionDateTime: Value(loanDate),
+              note: Value(note),
+              createdBy: 'app',
+              dateCreated: Value(now),
+              dateUpdated: now,
+              lastModifiedBy: 'app',
+            ),
+          );
 
-    // 3. Deduct from source saving
-    await _adjustSavingBalance(sourceSavingId, -principalAmount, now);
+      // 3. Deduct from source saving
+      await _adjustSavingBalance(sourceSavingId, -principalAmount, now);
+    }
   }
 
   @override
@@ -82,17 +86,18 @@ class LoanRepository extends ILoanRepository {
     required double principalAmount,
     required DateTime loanDate,
     DateTime? dueDate,
-    required String sourceSavingId,
     String? note,
+    bool noAutoDeduct = false,
   }) async {
+    // Metadata-only update — saving balances are NOT recalculated.
     await (db.update(db.loanTable)..where((t) => t.id.equals(id))).write(
       LoanTableCompanion(
         borrowerName: Value(borrowerName),
         principalAmount: Value(principalAmount),
         loanDate: Value(loanDate),
         dueDate: Value(dueDate),
-        sourceSavingId: Value(sourceSavingId),
         note: Value(note),
+        noAutoDeduct: Value(noAutoDeduct),
         dateUpdated: Value(DateTime.now()),
         lastModifiedBy: const Value('app'),
       ),

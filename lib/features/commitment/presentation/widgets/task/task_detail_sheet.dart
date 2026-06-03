@@ -135,8 +135,13 @@ class _TaskDetailSheetState extends State<_TaskDetailSheet> {
                       ),
                   ] else if (task.type == CommitmentTaskType.cash) ...[
                     const DetailRow(label: 'Method', value: 'Cash'),
+                  ] else if (task.type == CommitmentTaskType.creditCardCharge) ...[
+                    DetailRow(label: 'From', value: task.sourceSavingName),
+                    const DetailRow(label: 'Method', value: 'Credit Card Charge'),
                   ],
-                  if (task.note?.isNotEmpty == true)
+                  // For CC charge tasks, note field contains the card ID — skip raw display.
+                  if (task.note?.isNotEmpty == true &&
+                      task.type != CommitmentTaskType.creditCardCharge)
                     DetailRow(label: 'Note', value: task.note),
                   if (task.paymentReference?.isNotEmpty == true)
                     DetailRow(label: 'Reference', value: task.paymentReference),
@@ -294,6 +299,11 @@ class _ConfirmCompletePanel extends StatelessWidget {
             const _ImpactRow(
               icon: Icons.money_off,
               label: 'Cash — no account affected',
+            ),
+          ] else if (task.type == CommitmentTaskType.creditCardCharge) ...[
+            _ImpactRow(
+              icon: Icons.credit_card_rounded,
+              label: '${task.sourceSavingName} — posts CC charge (reserved until bill paid)',
             ),
           ],
 

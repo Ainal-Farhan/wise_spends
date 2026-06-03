@@ -17,6 +17,16 @@ class CreditCardChargeTable extends BaseEntityTable {
   TextColumn get reservedSavingId =>
       text().nullable().references(SavingTable, #id)();
 
+  /// Charge lifecycle status: 'posted' (default) or 'pending'.
+  /// Pending charges are reserved but not yet confirmed by the bank.
+  TextColumn get status =>
+      text().withDefault(const Constant('posted'))();
+
+  /// True when this entry is a credit/rebate from the card (e.g. cashback,
+  /// points redemption).  Rebates reduce total debt instead of adding to it.
+  BoolColumn get isRebate =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
@@ -27,6 +37,8 @@ class CreditCardChargeTable extends BaseEntityTable {
       'chargeDate': chargeDate.name,
       'note': note.name,
       'reservedSavingId': reservedSavingId.name,
+      'status': status.name,
+      'isRebate': isRebate.name,
     };
   }
 }

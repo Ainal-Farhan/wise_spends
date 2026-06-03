@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wise_spends/features/commitment/data/repositories/impl/commitment_task_repository.dart';
 import 'package:wise_spends/features/saving/data/repositories/i_saving_repository.dart';
 import 'package:wise_spends/features/transaction/data/repositories/i_transaction_repository.dart';
-import 'package:wise_spends/features/commitment/data/repositories/impl/commitment_task_repository.dart';
 import 'package:wise_spends/presentation/blocs/navigation/navigation_bloc.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_bloc.dart';
 import 'package:wise_spends/features/transaction/presentation/bloc/transaction_event.dart';
-import 'package:wise_spends/features/transaction/presentation/bloc/transaction_state.dart';
 import 'package:wise_spends/presentation/widgets/navigation/navigation_sidebar.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
@@ -16,8 +15,8 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
 import 'widgets/add_transaction_sheet.dart';
 import 'widgets/home_app_bar.dart';
-import 'widgets/home_balance_section.dart';
 import 'widgets/home_credit_card_summary.dart';
+import 'widgets/home_financial_overview.dart';
 import 'widgets/home_loan_summary.dart';
 import 'widgets/home_quick_actions.dart';
 import 'widgets/home_transaction_section.dart';
@@ -151,7 +150,7 @@ class _HomeScreenContentState extends State<_HomeScreenContent>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const _BalanceOverview(),
+                      const HomeFinancialOverview(),
                       const SizedBox(height: AppSpacing.xxl),
                       const HomeQuickActions(),
                       const SizedBox(height: AppSpacing.xxl),
@@ -173,35 +172,6 @@ class _HomeScreenContentState extends State<_HomeScreenContent>
       floatingActionButton: _HomeFAB(
         onPressed: () => showAddTransactionSheet(context),
       ),
-    );
-  }
-}
-
-// ── Balance overview ──────────────────────────────────────────────────────────
-
-class _BalanceOverview extends StatelessWidget {
-  const _BalanceOverview();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        if (state is TransactionLoaded || state is RecentTransactionsLoaded) {
-          final totalIncome = state is TransactionLoaded
-              ? state.totalIncome
-              : (state as RecentTransactionsLoaded).totalIncome;
-          final totalExpenses = state is TransactionLoaded
-              ? state.totalExpenses
-              : (state as RecentTransactionsLoaded).totalExpenses;
-
-          return HomeBalanceSection(
-            totalBalance: totalIncome - totalExpenses,
-            totalIncome: totalIncome,
-            totalExpenses: totalExpenses,
-          );
-        }
-        return const HomeBalanceSectionShimmer();
-      },
     );
   }
 }

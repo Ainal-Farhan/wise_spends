@@ -25,6 +25,10 @@ abstract class ICreditCardPaymentRepository
     required DateTime paymentDate,
     String? note,
     List<({String chargeId, double amount})>? chargeAllocations,
+    /// Portions of charges covered by rebate credits.  Allocation rows are
+    /// created so [getUnpaidAmount] is reduced, but **no saving balance is
+    /// touched** for these entries.
+    List<({String chargeId, double amount})>? rebateAllocations,
   });
   Future<double> getTotalPaid(String cardId);
   Future<List<CrdCardChargePayment>> getPaymentAllocations(String paymentId);

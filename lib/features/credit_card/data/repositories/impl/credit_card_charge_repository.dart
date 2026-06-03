@@ -9,14 +9,17 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
   @override
   Future<List<CrdCardCharge>> getChargesForCard(String cardId) {
     return (db.select(db.creditCardChargeTable)
-      ..where((t) => t.creditCardId.equals(cardId))).get();
+          ..where((t) => t.creditCardId.equals(cardId))
+          ..orderBy([(t) => OrderingTerm.desc(t.chargeDate)]))
+        .get();
   }
 
   @override
   Future<List<CrdCardCharge>> getChargesForCardSince(
       String cardId, DateTime? since) {
     final q = db.select(db.creditCardChargeTable)
-      ..where((t) => t.creditCardId.equals(cardId));
+      ..where((t) => t.creditCardId.equals(cardId))
+      ..orderBy([(t) => OrderingTerm.desc(t.chargeDate)]);
     if (since != null) {
       q.where((t) => t.chargeDate.isBiggerOrEqualValue(since));
     }
@@ -32,6 +35,8 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
     required DateTime chargeDate,
     String? note,
     String? reservedSavingId,
+    String status = 'posted',
+    bool isRebate = false,
   }) async {
     final now = DateTime.now();
     await db.into(db.creditCardChargeTable).insert(
@@ -44,6 +49,8 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
         chargeDate: chargeDate,
         note: Value(note),
         reservedSavingId: Value(reservedSavingId),
+        status: Value(status),
+        isRebate: Value(isRebate),
         createdBy: 'app',
         dateCreated: Value(now),
         dateUpdated: now,
@@ -58,6 +65,8 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
           ..where((t) => t.id.equals(chargeId)))
         .getSingleOrNull();
     if (charge == null) return 0.0;
+    // Rebates are credits — they are never "unpaid".
+    if (charge.isRebate) return 0.0;
     final allocations = await (db.select(db.creditCardChargePaymentTable)
           ..where((t) => t.chargeId.equals(chargeId)))
         .get();
@@ -69,6 +78,19 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
   Future<void> deleteCharge(String id) async {
     await (db.delete(db.creditCardChargeTable)
       ..where((t) => t.id.equals(id))).go();
+  }
+
+  @override
+  Future<void> updateChargeStatus(String chargeId, String newStatus) async {
+    await (db.update(db.creditCardChargeTable)
+          ..where((t) => t.id.equals(chargeId)))
+        .write(
+          CreditCardChargeTableCompanion(
+            status: Value(newStatus),
+            dateUpdated: Value(DateTime.now()),
+            lastModifiedBy: const Value('app'),
+          ),
+        );
   }
 
   @override

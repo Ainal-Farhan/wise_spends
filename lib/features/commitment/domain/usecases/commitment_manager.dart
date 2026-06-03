@@ -155,6 +155,13 @@ class CommitmentManager extends ICommitmentManager {
         );
       }
 
+      if (vo.taskType == CommitmentTaskType.creditCardCharge &&
+          vo.linkedCreditCardId == null) {
+        throw Exception(
+          'Detail "${vo.description}" is a credit card charge but has no card selected.',
+        );
+      }
+
       // ── Recurrence type ────────────────────────────────────────────────────
       final CommitmentDetailType resolvedType =
           vo.type ??
@@ -173,22 +180,33 @@ class CommitmentManager extends ICommitmentManager {
         amount: vo.amount ?? 0.0,
         description: vo.description ?? '-',
         type: resolvedType,
-        // NEW: persist the task payment type chosen in the form
         taskType: Value(vo.taskType),
-        // Source saving — null only for cash payments
-        savingId: Value(resolvedSourceSavingId),
-        // NEW: target saving (internal transfer only, null otherwise)
+        // Source saving — null only for cash
+        savingId: Value(
+          vo.taskType == CommitmentTaskType.cash ? null : resolvedSourceSavingId,
+        ),
         targetSavingId: Value(
           vo.taskType == CommitmentTaskType.internalTransfer
               ? vo.targetSavingId
               : null,
         ),
-        // NEW: payee (third-party payment only, null otherwise)
         payeeId: Value(
           vo.taskType == CommitmentTaskType.thirdPartyPayment
               ? vo.payeeId
               : null,
         ),
+        // CC / EPP fields
+        linkedCreditCardId: Value(
+          vo.taskType == CommitmentTaskType.creditCardCharge
+              ? vo.linkedCreditCardId
+              : null,
+        ),
+        eppTotalInstallments: Value(
+          vo.taskType == CommitmentTaskType.creditCardCharge
+              ? vo.eppTotalInstallments
+              : null,
+        ),
+        eppCompletedInstallments: Value(vo.eppCompletedInstallments),
         commitmentId: commitmentId,
       );
 
@@ -255,6 +273,8 @@ class CommitmentManager extends ICommitmentManager {
         .first;
 
     // Build detail VOs with all three optional joins resolved
+    final cardRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCreditCardRepository();
     final List<CommitmentDetailVO> detailVOs = [];
     for (final detail in details) {
       // Source saving
@@ -279,14 +299,24 @@ class CommitmentManager extends ICommitmentManager {
         payee = await payeeRepo.findById(id: detail.payeeId!);
       }
 
-      detailVOs.add(
-        CommitmentDetailVO.fromExpnsCommitmentDetail(
-          detail,
-          saving: sourceSaving,
-          targetSaving: targetSaving,
-          payee: payee,
-        ),
+      final vo = CommitmentDetailVO.fromExpnsCommitmentDetail(
+        detail,
+        saving: sourceSaving,
+        targetSaving: targetSaving,
+        payee: payee,
       );
+
+      // Hydrate CC name for display
+      if (detail.linkedCreditCardId != null) {
+        final card = await cardRepo.getCardById(detail.linkedCreditCardId!);
+        if (card != null) {
+          vo.linkedCreditCardName = card.lastFourDigits != null
+              ? '${card.name} •••• ${card.lastFourDigits}'
+              : card.name;
+        }
+      }
+
+      detailVOs.add(vo);
     }
 
     // Build commitment VO using detail VOs directly
@@ -394,7 +424,7 @@ class CommitmentManager extends ICommitmentManager {
         .getCommitmentTaskRepository();
 
     // ── Balance check: sum amounts that will debit a digital account ──────────
-    // Cash tasks don't touch any account so they are excluded.
+    // Only cash has no savings impact. CC charges deduct from source saving.
     double totalDebit = 0.0;
     for (final detail in vo.commitmentDetailVOList) {
       if (detail.taskType != CommitmentTaskType.cash) {
@@ -485,7 +515,6 @@ class CommitmentManager extends ICommitmentManager {
 
         // ── Cash ───────────────────────────────────────────────────────────
         case CommitmentTaskType.cash:
-          // No account links needed — just record the task.
           companions.add(
             CommitmentTaskTableCompanion.insert(
               createdBy: startupManager.currentUser.name,
@@ -497,7 +526,35 @@ class CommitmentManager extends ICommitmentManager {
               commitmentId: vo.commitmentId!,
               commitmentDetailId: detail.commitmentDetailId!,
               type: CommitmentTaskType.cash,
-              // Both saving fields null — cash has no digital movement
+            ),
+          );
+          break;
+
+        // ── Credit card charge (EPP / infinite) ────────────────────────────
+        case CommitmentTaskType.creditCardCharge:
+          final String? cardId = detail.linkedCreditCardId;
+          if (cardId == null) continue;
+
+          // EPP limit: skip if all installments are already done.
+          if (detail.isEppComplete) continue;
+
+          final String? sourceSavingId =
+              detail.savingId ?? vo.referredSavingVO?.savingId;
+
+          companions.add(
+            CommitmentTaskTableCompanion.insert(
+              createdBy: startupManager.currentUser.name,
+              dateUpdated: DateTime.now(),
+              lastModifiedBy: startupManager.currentUser.name,
+              name: detail.description ?? 'Commitment Task',
+              amount: detail.amount ?? 0.0,
+              isDone: const Value(false),
+              commitmentId: vo.commitmentId!,
+              commitmentDetailId: detail.commitmentDetailId!,
+              type: CommitmentTaskType.creditCardCharge,
+              sourceSavingId: Value(sourceSavingId),
+              // note carries the credit card ID for lookup at completion time.
+              note: Value(cardId),
             ),
           );
           break;
@@ -525,6 +582,7 @@ class CommitmentManager extends ICommitmentManager {
     if (taskVO.commitmentTaskId == null) return;
 
     if (isDone) {
+      final now = DateTime.now();
       await _saveTransactionForTask(taskVO);
 
       final savingManager = SingletonUtil.getSingleton<IManagerLocator>()!
@@ -559,6 +617,36 @@ class CommitmentManager extends ICommitmentManager {
           break;
 
         case CommitmentTaskType.cash:
+          break;
+
+        case CommitmentTaskType.creditCardCharge:
+          // The credit card ID was stored in the task's note field at distribute time.
+          final cardId = taskVO.note;
+          if (cardId != null && cardId.isNotEmpty) {
+            final chargeRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+                .getCreditCardChargeRepository();
+            // Post the charge and link the source saving as the reserved saving.
+            // This means the amount stays reserved in the saving account until
+            // the CC bill is paid — it is NOT immediately deducted.
+            await chargeRepo.addCharge(
+              creditCardId: cardId,
+              description: taskVO.name ?? 'Commitment Charge',
+              amount: taskVO.amount ?? 0.0,
+              chargeDate: now,
+              status: 'posted',
+              reservedSavingId: taskVO.sourceSavingId,
+            );
+          }
+          // Do NOT call updateSavingCurrentAmount here.
+          // The saving is already shown as "reserved" (via pending commitment task).
+          // Once the charge is posted above, _loadCreditCardChargeReservations
+          // picks it up as a reservation instead, keeping the reserved amount
+          // intact until the CC bill is paid.
+          //
+          // Increment eppCompletedInstallments on the detail.
+          if (taskVO.commitmentDetailId != null) {
+            await _incrementEppInstallment(taskVO.commitmentDetailId!);
+          }
           break;
 
         case null:
@@ -665,6 +753,19 @@ class CommitmentManager extends ICommitmentManager {
   // Private helpers
   // ---------------------------------------------------------------------------
 
+  /// Increments [eppCompletedInstallments] on the commitment detail row.
+  Future<void> _incrementEppInstallment(String commitmentDetailId) async {
+    final repo = SingletonUtil.getSingleton<IRepositoryLocator>()!
+        .getCommitmentDetailRepository();
+    final detail = await repo.findById(id: commitmentDetailId);
+    if (detail == null) return;
+    final updated = detail.copyWith(
+      eppCompletedInstallments: detail.eppCompletedInstallments + 1,
+      dateUpdated: DateTime.now(),
+    );
+    await repo.update(updated);
+  }
+
   CommitmentDetailType _commitmentDetailTypeFromSavingType(String? value) {
     if (value == null) return CommitmentDetailType.monthly;
     return CommitmentDetailType.values.firstWhere(
@@ -703,6 +804,10 @@ class CommitmentManager extends ICommitmentManager {
         break;
 
       case CommitmentTaskType.cash:
+        break;
+
+      case CommitmentTaskType.creditCardCharge:
+        // Validation handled separately; note carries the card ID.
         break;
 
       case null:
@@ -780,6 +885,7 @@ class CommitmentManager extends ICommitmentManager {
         break;
 
       case CommitmentTaskType.cash:
+      case CommitmentTaskType.creditCardCharge:
       case null:
         break;
     }

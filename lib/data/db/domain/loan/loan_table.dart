@@ -15,6 +15,11 @@ class LoanTable extends BaseEntityTable {
   TextColumn get status => text().withDefault(const Constant('active'))();
   TextColumn get userId => text().nullable().references(UserTable, #id)();
 
+  /// When true the loan originated from a wallet/account outside the app,
+  /// so no saving-account deduction should be made on disbursement.
+  BoolColumn get noAutoDeduct =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
@@ -26,6 +31,7 @@ class LoanTable extends BaseEntityTable {
       'note': note.name,
       'status': status.name,
       'userId': userId.name,
+      'noAutoDeduct': noAutoDeduct.name,
     };
   }
 }

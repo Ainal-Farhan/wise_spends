@@ -127,7 +127,10 @@ class CreditCardRepository extends ICreditCardRepository {
       ..where((t) => t.creditCardId.equals(cardId))).get();
     final payments = await (db.select(db.creditCardPaymentTable)
       ..where((t) => t.creditCardId.equals(cardId))).get();
-    final totalCharges = charges.fold<double>(0.0, (sum, c) => sum + c.amount);
+    // Regular charges add to debt; rebates reduce it.
+    final totalCharges = charges.fold<double>(0.0, (sum, c) {
+      return c.isRebate ? sum - c.amount : sum + c.amount;
+    });
     final totalPayments = payments.fold<double>(0.0, (sum, p) => sum + p.amount);
     return (totalCharges - totalPayments).clamp(0.0, double.infinity);
   }

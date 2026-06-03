@@ -14,4 +14,8 @@ enum CommitmentTaskType {
 
   /// Physical cash payment — no source saving deducted digitally.
   cash,
+
+  /// Posts a charge to a linked credit card (EPP or infinite recurring).
+  /// No savings deduction — the CC balance increases instead.
+  creditCardCharge,
 }

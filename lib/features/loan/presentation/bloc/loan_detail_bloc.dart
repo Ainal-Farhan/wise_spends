@@ -13,6 +13,7 @@ class LoanDetailBloc extends Bloc<LoanDetailEvent, LoanDetailState> {
     on<LoadLoanDetailEvent>(_onLoad);
     on<AddRepaymentEvent>(_onAddRepayment);
     on<SettleLoanEvent>(_onSettle);
+    on<UpdateLoanEvent>(_onUpdate);
   }
 
   Future<void> _onLoad(
@@ -64,6 +65,26 @@ class LoanDetailBloc extends Bloc<LoanDetailEvent, LoanDetailState> {
     try {
       await _loanRepo.settleLoan(event.id);
       add(LoadLoanDetailEvent(event.id));
+    } catch (e) {
+      emit(LoanDetailError(e.toString()));
+    }
+  }
+
+  Future<void> _onUpdate(
+    UpdateLoanEvent event,
+    Emitter<LoanDetailState> emit,
+  ) async {
+    try {
+      await _loanRepo.updateLoan(
+        id: event.loanId,
+        borrowerName: event.borrowerName,
+        principalAmount: event.principalAmount,
+        loanDate: event.loanDate,
+        dueDate: event.dueDate,
+        note: event.note,
+        noAutoDeduct: event.noAutoDeduct,
+      );
+      add(LoadLoanDetailEvent(event.loanId));
     } catch (e) {
       emit(LoanDetailError(e.toString()));
     }

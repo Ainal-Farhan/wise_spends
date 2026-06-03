@@ -20,6 +20,7 @@ class CreditCardDetailBloc
     on<AddChargeEvent>(_onAddCharge);
     on<AddPaymentEvent>(_onAddPayment);
     on<DeleteChargeEvent>(_onDeleteCharge);
+    on<ConfirmChargeEvent>(_onConfirmCharge);
     on<UpdateCreditCardEvent>(_onUpdateCard);
     on<DeleteCreditCardDetailEvent>(_onDeleteCard);
     on<ChangePeriodEvent>(_onChangePeriod);
@@ -125,6 +126,8 @@ class CreditCardDetailBloc
         chargeDate: event.chargeDate,
         note: event.note,
         reservedSavingId: event.reservedSavingId,
+        status: event.status,
+        isRebate: event.isRebate,
       );
       add(LoadCreditCardDetailEvent(event.creditCardId));
     } catch (e) {
@@ -144,6 +147,7 @@ class CreditCardDetailBloc
         paymentDate: event.paymentDate,
         note: event.note,
         chargeAllocations: event.chargeAllocations,
+        rebateAllocations: event.rebateAllocations,
       );
       add(LoadCreditCardDetailEvent(event.creditCardId));
     } catch (e) {
@@ -161,6 +165,18 @@ class CreditCardDetailBloc
       if (current is CreditCardDetailLoaded) {
         add(LoadCreditCardDetailEvent(current.card.id));
       }
+    } catch (e) {
+      emit(CreditCardDetailError(e.toString()));
+    }
+  }
+
+  Future<void> _onConfirmCharge(
+    ConfirmChargeEvent event,
+    Emitter<CreditCardDetailState> emit,
+  ) async {
+    try {
+      await _chargeRepo.updateChargeStatus(event.chargeId, 'posted');
+      add(LoadCreditCardDetailEvent(event.cardId));
     } catch (e) {
       emit(CreditCardDetailError(e.toString()));
     }

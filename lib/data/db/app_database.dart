@@ -52,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -76,6 +76,36 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(
             creditCardChargeTable,
             creditCardChargeTable.reservedSavingId,
+          );
+        }
+        if (from < 5) {
+          await m.addColumn(
+            loanTable,
+            loanTable.noAutoDeduct as GeneratedColumn,
+          );
+        }
+        if (from < 6) {
+          await m.addColumn(
+            creditCardChargeTable,
+            creditCardChargeTable.status as GeneratedColumn,
+          );
+          await m.addColumn(
+            creditCardChargeTable,
+            creditCardChargeTable.isRebate as GeneratedColumn,
+          );
+        }
+        if (from < 7) {
+          await m.addColumn(
+            commitmentDetailTable,
+            commitmentDetailTable.linkedCreditCardId,
+          );
+          await m.addColumn(
+            commitmentDetailTable,
+            commitmentDetailTable.eppTotalInstallments,
+          );
+          await m.addColumn(
+            commitmentDetailTable,
+            commitmentDetailTable.eppCompletedInstallments as GeneratedColumn,
           );
         }
       },

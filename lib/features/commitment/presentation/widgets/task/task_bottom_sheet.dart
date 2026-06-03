@@ -172,9 +172,12 @@ class _TaskBottomSheetState extends State<_TaskBottomSheet> {
       ..sourceSavingId = _selectedSourceId
       ..targetSavingId = _selectedTargetId
       ..payeeId = _selectedPayeeId
-      ..note = _noteController.text.trim().isEmpty
-          ? null
-          : _noteController.text.trim()
+      // For CC charge tasks the note field stores the credit card ID — preserve it.
+      ..note = _selectedType == CommitmentTaskType.creditCardCharge
+          ? widget.initial?.note
+          : (_noteController.text.trim().isEmpty
+              ? null
+              : _noteController.text.trim())
       ..paymentReference = _referenceController.text.trim().isEmpty
           ? null
           : _referenceController.text.trim();
@@ -256,6 +259,7 @@ class _TaskBottomSheetState extends State<_TaskBottomSheet> {
         );
 
       case CommitmentTaskType.cash:
+      case CommitmentTaskType.creditCardCharge:
         return const SizedBox.shrink();
     }
   }
@@ -365,12 +369,15 @@ class _TaskBottomSheetState extends State<_TaskBottomSheet> {
                     _typeSpecificFields(),
                     const SizedBox(height: 16),
 
-                    AppTextField(
-                      label: 'Note (Optional)',
-                      controller: _noteController,
-                      hint: 'Any additional info',
-                      maxLines: 2,
-                    ),
+                    // Note field is hidden for CC charge tasks — the note stores
+                    // the internal card UUID and should not be user-editable.
+                    if (_selectedType != CommitmentTaskType.creditCardCharge)
+                      AppTextField(
+                        label: 'Note (Optional)',
+                        controller: _noteController,
+                        hint: 'Any additional info',
+                        maxLines: 2,
+                      ),
                     if (widget.initial != null) ...[
                       const SizedBox(height: 16),
                       AppTextField(

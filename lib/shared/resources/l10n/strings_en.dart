@@ -1440,10 +1440,37 @@ class EnglishStrings {
     'credit_card.due_day_hint': 'Payment due on day {day} of month',
     'credit_card.billing_cycle_preview': 'Statement closes on day {stmt} each month. Payment due on day {due}.',
     'credit_card.day_picker_hint': 'Select the day of the month',
+    // Charge type toggles
+    'credit_card.type_charge': 'Charge',
+    'credit_card.type_rebate': 'Rebate',
+    'credit_card.add_rebate': 'Add Rebate',
+    'credit_card.rebate_description': 'Rebate description',
+    'credit_card.rebate_btn': 'Add Rebate',
+    'credit_card.rebate_credits_title': 'Available Credits',
+    'credit_card.rebate_credits_applied': 'Credits Applied',
+    'credit_card.payment_net': 'Net Payable',
+    // Status
+    'credit_card.pending_toggle': 'Mark as Pending',
+    'credit_card.pending_hint': 'Charge is not yet confirmed by the bank.',
+    'credit_card.status_pending': 'Pending',
+    'credit_card.status_rebate': 'Rebate',
+    // Filters
+    'credit_card.filter_all': 'All',
+    'credit_card.filter_unpaid': 'Unpaid',
+    'credit_card.filter_pending': 'Pending',
+    'credit_card.filter_paid': 'Paid',
+    'credit_card.filter_rebate': 'Rebates',
+    'credit_card.charges_empty_filter': 'No charges match this filter.',
+    'credit_card.confirm_charge': 'Mark as Posted',
     'home.credit_cards_title': 'Credit Cards',
     'home.credit_cards_count': 'Cards',
     'home.credit_cards_total_debt': 'Total Debt',
     'home.credit_cards_reserved': 'Reserved',
+    'home.financial_overview': 'Savings Health',
+    'home.available': 'Available',
+    'home.reserved': 'Reserved',
+    'home.total_saved': 'Total Saved',
+    'home.spending_7d': '7-day Spending',
 
     // ── Loan ─────────────────────────────────────────────────────────────────
     'loan.title': 'Loans',
@@ -1493,5 +1520,11 @@ class EnglishStrings {
     'loan.full_amount': 'Full',
     'loan.field_loan_date_prefix': 'Loan Date',
     'loan.field_due_date_prefix': 'Due Date',
+    'loan.no_auto_deduct': 'External Source (No Deduction)',
+    'loan.no_auto_deduct_hint':
+        'Loan originated from outside the app — no saving account deducted.',
+    'loan.edit': 'Edit Loan',
+    'loan.edit_note':
+        'Editing does not recalculate saving balances. Only metadata is updated.',
   };
 }

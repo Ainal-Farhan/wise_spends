@@ -14,17 +14,21 @@ abstract class ILoanRepository
     required double principalAmount,
     required DateTime loanDate,
     DateTime? dueDate,
-    required String sourceSavingId,
+    /// Ignored (may be empty) when [noAutoDeduct] is true.
+    String sourceSavingId,
     String? note,
+    bool noAutoDeduct,
   });
+
+  /// Updates loan metadata only — does NOT touch saving balances.
   Future<void> updateLoan({
     required String id,
     required String borrowerName,
     required double principalAmount,
     required DateTime loanDate,
     DateTime? dueDate,
-    required String sourceSavingId,
     String? note,
+    bool noAutoDeduct,
   });
   Future<void> deleteLoan(String id);
   Future<void> settleLoan(String id);

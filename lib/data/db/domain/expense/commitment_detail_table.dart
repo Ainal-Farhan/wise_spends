@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:wise_spends/data/db/domain/base/base_entity_table.dart';
 import 'package:wise_spends/core/constants/constant/domain/domain_table_constant.dart';
+import 'package:wise_spends/data/db/domain/credit_card/credit_card_table.dart';
 import 'package:wise_spends/data/db/domain/expense/commitment_table.dart';
 import 'package:wise_spends/data/db/domain/saving/saving_table.dart';
 import 'package:wise_spends/data/db/domain/expense/payee_table.dart';
@@ -48,6 +49,21 @@ class CommitmentDetailTable extends BaseEntityTable {
   /// Recipient. Only meaningful when taskType == thirdPartyPayment.
   TextColumn get payeeId => text().nullable().references(PayeeTable, #id)();
 
+  // -- Credit card charge (EPP / infinite) -----------------------------------
+
+  /// FK to the credit card this detail charges when completed.
+  /// Only meaningful when taskType == creditCardCharge.
+  TextColumn get linkedCreditCardId =>
+      text().nullable().references(CreditCardTable, #id)();
+
+  /// For EPP: total number of installments (e.g. 36).
+  /// null = infinite recurring.
+  IntColumn get eppTotalInstallments => integer().nullable()();
+
+  /// Number of installments completed so far.
+  IntColumn get eppCompletedInstallments =>
+      integer().withDefault(const Constant(0))();
+
   // -- Commitment parent -----------------------------------------------------
 
   TextColumn get commitmentId => text().references(CommitmentTable, #id)();
@@ -61,6 +77,9 @@ class CommitmentDetailTable extends BaseEntityTable {
     'savingId': savingId.name,
     'targetSavingId': targetSavingId.name,
     'payeeId': payeeId.name,
+    'linkedCreditCardId': linkedCreditCardId.name,
+    'eppTotalInstallments': eppTotalInstallments.name,
+    'eppCompletedInstallments': eppCompletedInstallments.name,
     'commitmentId': commitmentId.name,
   };
 }

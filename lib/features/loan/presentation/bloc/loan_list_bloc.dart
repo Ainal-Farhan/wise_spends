@@ -43,6 +43,7 @@ class LoanListBloc extends Bloc<LoanListEvent, LoanListState> {
         dueDate: event.dueDate,
         sourceSavingId: event.sourceSavingId,
         note: event.note,
+        noAutoDeduct: event.noAutoDeduct,
       );
       add(LoadLoansEvent());
     } catch (e) {

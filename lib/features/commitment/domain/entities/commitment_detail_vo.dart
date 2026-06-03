@@ -45,18 +45,36 @@ class CommitmentDetailVO extends IVO {
   String? payeeId;
   PayeeVO? payeeVO;
 
+  // -- Credit card (EPP / infinite) ------------------------------------------
+
+  /// FK to the credit card that gets charged when type = creditCardCharge.
+  String? linkedCreditCardId;
+
+  /// Name for UI display only (not persisted — hydrated at load time).
+  String? linkedCreditCardName;
+
+  /// Total EPP installments. null = infinite.
+  int? eppTotalInstallments;
+
+  /// Number of installments already completed.
+  int eppCompletedInstallments;
+
   // ---------------------------------------------------------------------------
   // Constructor
   // ---------------------------------------------------------------------------
 
-  CommitmentDetailVO({this.taskType = CommitmentTaskType.internalTransfer});
+  CommitmentDetailVO({
+    this.taskType = CommitmentTaskType.internalTransfer,
+    this.eppCompletedInstallments = 0,
+  });
 
   CommitmentDetailVO.fromExpnsCommitmentDetail(
     ExpnsCommitmentDetail commitmentDetail, {
     SvngSaving? saving,
     SvngSaving? targetSaving,
     ExpnsPayee? payee,
-  }) : taskType = commitmentDetail.taskType {
+  }) : taskType = commitmentDetail.taskType,
+       eppCompletedInstallments = commitmentDetail.eppCompletedInstallments {
     commitmentDetailId = commitmentDetail.id;
     description = commitmentDetail.description;
     amount = commitmentDetail.amount;
@@ -76,10 +94,14 @@ class CommitmentDetailVO extends IVO {
     if (payee != null) {
       payeeVO = PayeeVO.fromExpnsPayee(payee);
     }
+
+    linkedCreditCardId = commitmentDetail.linkedCreditCardId;
+    eppTotalInstallments = commitmentDetail.eppTotalInstallments;
   }
 
   CommitmentDetailVO.fromJson(Map<String, dynamic> json)
-    : taskType = _parseTaskType(json['taskType'] as String?) {
+    : taskType = _parseTaskType(json['taskType'] as String?),
+      eppCompletedInstallments = (json['eppCompletedInstallments'] as int?) ?? 0 {
     commitmentDetailId = json['commitmentDetailId'];
     description = json['description'];
     amount = json['amount'] as double?;
@@ -106,6 +128,9 @@ class CommitmentDetailVO extends IVO {
     payeeVO = json['payeeVO'] != null
         ? PayeeVO.fromJson(json['payeeVO'] as Map<String, dynamic>)
         : null;
+
+    linkedCreditCardId = json['linkedCreditCardId'] as String?;
+    eppTotalInstallments = json['eppTotalInstallments'] as int?;
   }
 
   // ---------------------------------------------------------------------------
@@ -126,6 +151,27 @@ class CommitmentDetailVO extends IVO {
   bool get isThirdPartyPayment =>
       taskType == CommitmentTaskType.thirdPartyPayment;
   bool get isCash => taskType == CommitmentTaskType.cash;
+  bool get isCreditCardCharge =>
+      taskType == CommitmentTaskType.creditCardCharge;
+
+  /// True when this is a CC EPP with a fixed total installment count.
+  bool get isEpp =>
+      isCreditCardCharge && eppTotalInstallments != null;
+
+  /// True when this CC charge recurs indefinitely.
+  bool get isInfiniteRecurring =>
+      isCreditCardCharge && eppTotalInstallments == null;
+
+  /// Remaining installments, or null for infinite.
+  int? get eppRemainingInstallments =>
+      eppTotalInstallments == null
+          ? null
+          : (eppTotalInstallments! - eppCompletedInstallments)
+              .clamp(0, eppTotalInstallments!);
+
+  /// True when all EPP installments are done.
+  bool get isEppComplete =>
+      isEpp && eppCompletedInstallments >= eppTotalInstallments!;
 
   /// Display name for source saving — safe to call in UI without null checks.
   String get sourceSavingName => sourceSavingVO?.savingName ?? savingId ?? '—';
@@ -154,6 +200,9 @@ class CommitmentDetailVO extends IVO {
     'targetSavingVO': targetSavingVO?.toJson(),
     'payeeId': payeeId,
     'payeeVO': payeeVO?.toJson(),
+    'linkedCreditCardId': linkedCreditCardId,
+    'eppTotalInstallments': eppTotalInstallments,
+    'eppCompletedInstallments': eppCompletedInstallments,
   };
 
   static CommitmentTaskType _parseTaskType(String? value) {

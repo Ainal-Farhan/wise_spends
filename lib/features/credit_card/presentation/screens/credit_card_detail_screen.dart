@@ -124,9 +124,15 @@ class _CreditCardDetailContentState extends State<_CreditCardDetailContent>
                         charges: state.charges,
                         unpaidAmounts: state.chargeUnpaidAmounts,
                         period: state.period,
+                        cardId: state.card.id,
                         onDelete: (id) => context
                             .read<CreditCardDetailBloc>()
                             .add(DeleteChargeEvent(id)),
+                        onConfirm: (chargeId) => context
+                            .read<CreditCardDetailBloc>()
+                            .add(ConfirmChargeEvent(
+                                chargeId: chargeId,
+                                cardId: state.card.id)),
                       ),
                       _PaymentsList(
                         payments: state.payments,
@@ -166,7 +172,8 @@ class _CreditCardDetailContentState extends State<_CreditCardDetailContent>
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       builder: (_) => _AddChargeSheet(
-        onAdd: (desc, amount, categoryId, date, note, reservedSavingId) {
+        onAdd: (desc, amount, categoryId, date, note, reservedSavingId,
+            status, isRebate) {
           context.read<CreditCardDetailBloc>().add(
             AddChargeEvent(
               creditCardId: cardId,
@@ -176,6 +183,8 @@ class _CreditCardDetailContentState extends State<_CreditCardDetailContent>
               chargeDate: date,
               note: note,
               reservedSavingId: reservedSavingId,
+              status: status,
+              isRebate: isRebate,
             ),
           );
         },
@@ -200,7 +209,7 @@ class _CreditCardDetailContentState extends State<_CreditCardDetailContent>
       builder: (_) => _AddPaymentSheet(
         charges: charges,
         unpaidAmounts: unpaidAmounts,
-        onAdd: (amount, sourceSavingId, date, note, allocations) {
+        onAdd: (amount, sourceSavingId, date, note, allocations, rebateAllocs) {
           context.read<CreditCardDetailBloc>().add(
             AddPaymentEvent(
               creditCardId: cardId,
@@ -209,6 +218,7 @@ class _CreditCardDetailContentState extends State<_CreditCardDetailContent>
               paymentDate: date,
               note: note,
               chargeAllocations: allocations,
+              rebateAllocations: rebateAllocs,
             ),
           );
         },
@@ -677,46 +687,119 @@ class _CustomTabBar extends StatelessWidget {
   }
 }
 
+// ── charges filter enum ────────────────────────────────────────────────────────
+
+enum _ChargeFilter { all, unpaid, pending, paid, rebate }
+
 // ── charges list ───────────────────────────────────────────────────────────────
 
-class _ChargesList extends StatelessWidget {
+class _ChargesList extends StatefulWidget {
   final List<CrdCardCharge> charges;
   final Map<String, double> unpaidAmounts;
   final ChargePeriod period;
+  final String cardId;
   final void Function(String id) onDelete;
+  final void Function(String chargeId) onConfirm;
 
   const _ChargesList({
     required this.charges,
     required this.unpaidAmounts,
     required this.period,
+    required this.cardId,
     required this.onDelete,
+    required this.onConfirm,
   });
 
   @override
+  State<_ChargesList> createState() => _ChargesListState();
+}
+
+class _ChargesListState extends State<_ChargesList> {
+  _ChargeFilter _filter = _ChargeFilter.all;
+
+  List<CrdCardCharge> get _filtered {
+    return widget.charges.where((c) {
+      final unpaid = widget.unpaidAmounts[c.id] ?? c.amount;
+      return switch (_filter) {
+        _ChargeFilter.all => true,
+        _ChargeFilter.unpaid => !c.isRebate && unpaid > 0,
+        _ChargeFilter.pending => c.status == 'pending',
+        _ChargeFilter.paid => !c.isRebate && unpaid <= 0,
+        _ChargeFilter.rebate => c.isRebate,
+      };
+    }).toList();
+  }
+
+  String _filterLabel(_ChargeFilter f) => switch (f) {
+    _ChargeFilter.all => 'credit_card.filter_all'.tr,
+    _ChargeFilter.unpaid => 'credit_card.filter_unpaid'.tr,
+    _ChargeFilter.pending => 'credit_card.filter_pending'.tr,
+    _ChargeFilter.paid => 'credit_card.filter_paid'.tr,
+    _ChargeFilter.rebate => 'credit_card.filter_rebate'.tr,
+  };
+
+  @override
   Widget build(BuildContext context) {
-    if (charges.isEmpty) {
-      return _EmptyTabState(
-        icon: Icons.receipt_long_outlined,
-        message: 'credit_card.charges_empty'.tr,
-      );
-    }
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg,
-        AppSpacing.sm,
-        AppSpacing.lg,
-        AppSpacing.xxxl + 72,
-      ),
-      itemCount: charges.length,
-      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-      itemBuilder: (context, index) {
-        final charge = charges[charges.length - 1 - index];
-        return _ChargeTile(
-          charge: charge,
-          unpaidAmount: unpaidAmounts[charge.id] ?? charge.amount,
-          onDelete: () => onDelete(charge.id),
-        );
-      },
+    final cs = Theme.of(context).colorScheme;
+    final visible = _filtered;
+
+    return Column(
+      children: [
+        // ── filter chips ────────────────────────────────────────────────────
+        SizedBox(
+          height: 40,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            children: _ChargeFilter.values.map((f) {
+              final selected = _filter == f;
+              return Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.xs),
+                child: FilterChip(
+                  label: Text(_filterLabel(f)),
+                  selected: selected,
+                  onSelected: (_) => setState(() => _filter = f),
+                  visualDensity: VisualDensity.compact,
+                  selectedColor: cs.primaryContainer,
+                  checkmarkColor: cs.primary,
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        // ── list ────────────────────────────────────────────────────────────
+        Expanded(
+          child: visible.isEmpty
+              ? _EmptyTabState(
+                  icon: Icons.receipt_long_outlined,
+                  message: _filter == _ChargeFilter.all
+                      ? 'credit_card.charges_empty'.tr
+                      : 'credit_card.charges_empty_filter'.tr,
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.sm,
+                    AppSpacing.lg,
+                    AppSpacing.xxxl + 72,
+                  ),
+                  itemCount: visible.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
+                  itemBuilder: (context, index) {
+                    final charge = visible[index];
+                    return _ChargeTile(
+                      charge: charge,
+                      unpaidAmount: widget.unpaidAmounts[charge.id] ?? charge.amount,
+                      onDelete: () => widget.onDelete(charge.id),
+                      onConfirm: charge.status == 'pending'
+                          ? () => widget.onConfirm(charge.id)
+                          : null,
+                    );
+                  },
+                ),
+        ),
+      ],
     );
   }
 }
@@ -725,24 +808,94 @@ class _ChargeTile extends StatelessWidget {
   final CrdCardCharge charge;
   final double unpaidAmount;
   final VoidCallback onDelete;
+  /// Non-null only when status == 'pending'. Promotes to 'posted'.
+  final VoidCallback? onConfirm;
 
   const _ChargeTile({
     required this.charge,
     required this.unpaidAmount,
     required this.onDelete,
+    this.onConfirm,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final isReserved = charge.reservedSavingId != null;
-    final isPartiallyPaid = unpaidAmount < charge.amount && unpaidAmount > 0;
-    final isFullyPaid = unpaidAmount <= 0;
+    final isRebate = charge.isRebate;
+    final isPending = charge.status == 'pending';
+    final isReserved = charge.reservedSavingId != null && !isRebate;
+    final isPartiallyPaid =
+        !isRebate && unpaidAmount < charge.amount && unpaidAmount > 0;
+    final isFullyPaid = !isRebate && unpaidAmount <= 0;
+
+    // accent / icon colours
+    final Color accentColor;
+    final Color iconBg;
+    final Color iconColor;
+    final IconData iconData;
+
+    if (isRebate) {
+      accentColor = Colors.green.shade600;
+      iconBg = Colors.green.shade50;
+      iconColor = Colors.green.shade700;
+      iconData = Icons.card_giftcard_rounded;
+    } else if (isPending) {
+      accentColor = Colors.amber.shade700;
+      iconBg = Colors.amber.shade50;
+      iconColor = Colors.amber.shade800;
+      iconData = Icons.hourglass_empty_rounded;
+    } else if (isFullyPaid) {
+      accentColor = cs.primary;
+      iconBg = cs.primaryContainer.withValues(alpha: 0.5);
+      iconColor = cs.primary;
+      iconData = Icons.check_circle_rounded;
+    } else if (isReserved) {
+      accentColor = cs.primary;
+      iconBg = cs.primaryContainer.withValues(alpha: 0.5);
+      iconColor = cs.primary;
+      iconData = Icons.savings_outlined;
+    } else {
+      accentColor = cs.outlineVariant;
+      iconBg = cs.secondaryContainer.withValues(alpha: 0.5);
+      iconColor = cs.secondary;
+      iconData = Icons.receipt_outlined;
+    }
 
     return Dismissible(
       key: Key(charge.id),
-      direction: DismissDirection.endToStart,
-      background: Container(
+      // Pending charges: swipe right = confirm, swipe left = delete.
+      // Others: swipe left = delete only.
+      direction: isPending
+          ? DismissDirection.horizontal
+          : DismissDirection.endToStart,
+      // Background (swipe right) — confirm action for pending
+      background: isPending
+          ? Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: AppSpacing.lg),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(color: Colors.green.shade300),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle_rounded, color: Colors.green.shade700),
+                  const SizedBox(width: AppSpacing.xs),
+                  Text(
+                    'credit_card.confirm_charge'.tr,
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : const SizedBox.shrink(),
+      // Secondary background (swipe left) — delete
+      secondaryBackground: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: AppSpacing.lg),
         decoration: BoxDecoration(
@@ -751,7 +904,13 @@ class _ChargeTile extends StatelessWidget {
         ),
         child: Icon(Icons.delete_outline_rounded, color: cs.error),
       ),
-      confirmDismiss: (_) async {
+      confirmDismiss: (direction) async {
+        if (direction == DismissDirection.startToEnd && isPending) {
+          // Confirm the pending charge — no dialog needed
+          onConfirm?.call();
+          return false; // keep in list; BLoC reload will re-render as posted
+        }
+        // Delete
         return await showDialog<bool>(
               context: context,
               builder: (ctx) => AlertDialog(
@@ -784,14 +943,7 @@ class _ChargeTile extends StatelessWidget {
             color: cs.surfaceContainer,
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border(
-              left: BorderSide(
-                color: isFullyPaid
-                    ? cs.primary
-                    : isReserved
-                    ? cs.primary
-                    : cs.outlineVariant,
-                width: 3,
-              ),
+              left: BorderSide(color: accentColor, width: 3),
             ),
           ),
           child: Padding(
@@ -805,37 +957,37 @@ class _ChargeTile extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: isFullyPaid
-                        ? cs.primaryContainer.withValues(alpha: 0.5)
-                        : isReserved
-                        ? cs.primaryContainer.withValues(alpha: 0.5)
-                        : cs.secondaryContainer.withValues(alpha: 0.5),
+                    color: iconBg,
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
-                  child: Icon(
-                    isFullyPaid
-                        ? Icons.check_circle_rounded
-                        : isReserved
-                        ? Icons.savings_outlined
-                        : Icons.receipt_outlined,
-                    size: 18,
-                    color: isFullyPaid
-                        ? cs.primary
-                        : isReserved
-                        ? cs.primary
-                        : cs.secondary,
-                  ),
+                  child: Icon(iconData, size: 18, color: iconColor),
                 ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        charge.description,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              charge.description,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          if (isPending)
+                            _StatusBadge(
+                              label: 'credit_card.status_pending'.tr,
+                              color: Colors.amber.shade700,
+                            ),
+                          if (isRebate)
+                            _StatusBadge(
+                              label: 'credit_card.status_rebate'.tr,
+                              color: Colors.green.shade700,
+                            ),
+                        ],
                       ),
                       Text(
                         _dateFmt.format(charge.chargeDate),
@@ -847,6 +999,42 @@ class _ChargeTile extends StatelessWidget {
                         const SizedBox(height: 3),
                         _ReservationBadge(savingId: charge.reservedSavingId!),
                       ],
+                      if (isPending && onConfirm != null) ...[
+                        const SizedBox(height: 4),
+                        GestureDetector(
+                          onTap: onConfirm,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.sm,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green.shade50,
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.full),
+                              border: Border.all(
+                                  color: Colors.green.shade300),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.check_rounded,
+                                    size: 11,
+                                    color: Colors.green.shade700),
+                                const SizedBox(width: 3),
+                                Text(
+                                  'credit_card.confirm_charge'.tr,
+                                  style: AppTextStyles.caption.copyWith(
+                                    color: Colors.green.shade700,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -854,7 +1042,15 @@ class _ChargeTile extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (isFullyPaid)
+                    if (isRebate)
+                      Text(
+                        '+ ${_currFmt.format(charge.amount)}',
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.green.shade700,
+                        ),
+                      )
+                    else if (isFullyPaid)
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.sm,
@@ -877,7 +1073,9 @@ class _ChargeTile extends StatelessWidget {
                         _currFmt.format(unpaidAmount),
                         style: AppTextStyles.bodyLarge.copyWith(
                           fontWeight: FontWeight.w700,
-                          color: cs.secondary,
+                          color: isPending
+                              ? Colors.amber.shade800
+                              : cs.secondary,
                         ),
                       ),
                       if (isPartiallyPaid)
@@ -893,6 +1091,86 @@ class _ChargeTile extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _StatusBadge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Text(
+        label,
+        style: AppTextStyles.caption.copyWith(
+          color: color,
+          fontWeight: FontWeight.w700,
+          fontSize: 10,
+        ),
+      ),
+    );
+  }
+}
+
+// ── charge type toggle button ──────────────────────────────────────────────────
+
+class _TypeToggleBtn extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _TypeToggleBtn({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.sm,
+          horizontal: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: selected ? color.withValues(alpha: 0.12) : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(
+            color: selected ? color : Theme.of(context).colorScheme.outlineVariant,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 16, color: selected ? color : Theme.of(context).colorScheme.onSurfaceVariant),
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              label,
+              style: AppTextStyles.labelMedium.copyWith(
+                color: selected ? color : Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -1398,6 +1676,8 @@ class _AddChargeSheet extends StatefulWidget {
     DateTime chargeDate,
     String? note,
     String? reservedSavingId,
+    String status,
+    bool isRebate,
   )
   onAdd;
 
@@ -1416,6 +1696,8 @@ class _AddChargeSheetState extends State<_AddChargeSheet> {
   bool _reserveEnabled = false;
   FormAccountItem? _reservedSaving;
   List<FormAccountItem> _savings = [];
+  bool _isRebate = false;
+  bool _isPending = false;
 
   @override
   void initState() {
@@ -1467,22 +1749,70 @@ class _AddChargeSheetState extends State<_AddChargeSheet> {
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.sm),
                     decoration: BoxDecoration(
-                      color: cs.secondaryContainer,
+                      color: _isRebate
+                          ? Colors.green.shade50
+                          : cs.secondaryContainer,
                       borderRadius: BorderRadius.circular(AppRadius.md),
                     ),
                     child: Icon(
-                      Icons.receipt_long_rounded,
-                      color: cs.onSecondaryContainer,
+                      _isRebate
+                          ? Icons.card_giftcard_rounded
+                          : Icons.receipt_long_rounded,
+                      color: _isRebate
+                          ? Colors.green.shade700
+                          : cs.onSecondaryContainer,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
-                  Text('credit_card.add_charge'.tr, style: AppTextStyles.h3),
+                  Text(
+                    _isRebate
+                        ? 'credit_card.add_rebate'.tr
+                        : 'credit_card.add_charge'.tr,
+                    style: AppTextStyles.h3,
+                  ),
                 ],
               ),
-              const SizedBox(height: AppSpacing.xl),
+              const SizedBox(height: AppSpacing.md),
+
+              // ── charge type toggle ─────────────────────────────────────────
+              Row(
+                children: [
+                  Expanded(
+                    child: _TypeToggleBtn(
+                      label: 'credit_card.type_charge'.tr,
+                      icon: Icons.receipt_long_rounded,
+                      selected: !_isRebate,
+                      color: cs.secondary,
+                      onTap: () => setState(() {
+                        _isRebate = false;
+                        _reserveEnabled = false;
+                        _reservedSaving = null;
+                      }),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: _TypeToggleBtn(
+                      label: 'credit_card.type_rebate'.tr,
+                      icon: Icons.card_giftcard_rounded,
+                      selected: _isRebate,
+                      color: Colors.green.shade700,
+                      onTap: () => setState(() {
+                        _isRebate = true;
+                        _isPending = false;
+                        _reserveEnabled = false;
+                        _reservedSaving = null;
+                      }),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
               AppTextField(
                 controller: _descCtrl,
-                label: 'credit_card.charge_description'.tr,
+                label: _isRebate
+                    ? 'credit_card.rebate_description'.tr
+                    : 'credit_card.charge_description'.tr,
                 validator: (v) =>
                     v == null || v.isEmpty ? 'general.required'.tr : null,
               ),
@@ -1510,96 +1840,143 @@ class _AddChargeSheetState extends State<_AddChargeSheet> {
                 label: 'general.note_optional'.tr,
               ),
               const SizedBox(height: AppSpacing.md),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                decoration: BoxDecoration(
-                  color: _reserveEnabled
-                      ? cs.primaryContainer.withValues(alpha: 0.3)
-                      : cs.surfaceContainerHighest.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  border: Border.all(
-                    color: _reserveEnabled
-                        ? cs.primary.withValues(alpha: 0.4)
-                        : cs.outlineVariant,
+
+              // ── pending toggle (only for regular charges) ──────────────────
+              if (!_isRebate)
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: _isPending
+                        ? Colors.amber.shade50
+                        : cs.surfaceContainerHighest.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(
+                      color: _isPending
+                          ? Colors.amber.shade400
+                          : cs.outlineVariant,
+                    ),
+                  ),
+                  child: SwitchListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                    ),
+                    secondary: Icon(
+                      Icons.hourglass_empty_rounded,
+                      color: _isPending
+                          ? Colors.amber.shade700
+                          : cs.onSurfaceVariant,
+                    ),
+                    title: Text(
+                      'credit_card.pending_toggle'.tr,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'credit_card.pending_hint'.tr,
+                      style: AppTextStyles.caption
+                          .copyWith(color: cs.onSurfaceVariant),
+                    ),
+                    value: _isPending,
+                    onChanged: (v) => setState(() => _isPending = v),
                   ),
                 ),
-                child: Column(
-                  children: [
-                    SwitchListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.md,
-                      ),
-                      title: Text(
-                        'credit_card.reserve_toggle'.tr,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      subtitle: Text(
-                        'credit_card.reserve_hint'.tr,
-                        style: AppTextStyles.caption.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                      secondary: Icon(
-                        Icons.savings_outlined,
-                        color: _reserveEnabled
-                            ? cs.primary
-                            : cs.onSurfaceVariant,
-                      ),
-                      value: _reserveEnabled,
-                      onChanged: (v) => setState(() {
-                        _reserveEnabled = v;
-                        if (!v) _reservedSaving = null;
-                      }),
+
+              // ── reserve toggle (only for regular charges) ──────────────────
+              if (!_isRebate)
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  decoration: BoxDecoration(
+                    color: _reserveEnabled
+                        ? cs.primaryContainer.withValues(alpha: 0.3)
+                        : cs.surfaceContainerHighest.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                    border: Border.all(
+                      color: _reserveEnabled
+                          ? cs.primary.withValues(alpha: 0.4)
+                          : cs.outlineVariant,
                     ),
-                    if (_reserveEnabled)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.md,
-                          0,
-                          AppSpacing.md,
-                          AppSpacing.md,
+                  ),
+                  child: Column(
+                    children: [
+                      SwitchListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
                         ),
-                        child: FormField<FormAccountItem>(
-                          validator: (_) =>
-                              _reserveEnabled && _reservedSaving == null
-                              ? 'general.required'.tr
-                              : null,
-                          builder: (field) => Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              FormAccountSelector(
-                                label: 'credit_card.reserve_account'.tr,
-                                selectedAccount: _reservedSaving,
-                                accounts: _savings,
-                                onAccountSelected: (a) =>
-                                    setState(() => _reservedSaving = a),
-                              ),
-                              if (field.errorText != null)
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 4,
-                                    left: 12,
-                                  ),
-                                  child: Text(
-                                    field.errorText!,
-                                    style: TextStyle(
-                                      color: cs.error,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                            ],
+                        title: Text(
+                          'credit_card.reserve_toggle'.tr,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
+                        subtitle: Text(
+                          'credit_card.reserve_hint'.tr,
+                          style: AppTextStyles.caption.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
+                        ),
+                        secondary: Icon(
+                          Icons.savings_outlined,
+                          color: _reserveEnabled
+                              ? cs.primary
+                              : cs.onSurfaceVariant,
+                        ),
+                        value: _reserveEnabled,
+                        onChanged: (v) => setState(() {
+                          _reserveEnabled = v;
+                          if (!v) _reservedSaving = null;
+                        }),
                       ),
-                  ],
+                      if (_reserveEnabled)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(
+                            AppSpacing.md,
+                            0,
+                            AppSpacing.md,
+                            AppSpacing.md,
+                          ),
+                          child: FormField<FormAccountItem>(
+                            validator: (_) =>
+                                _reserveEnabled && _reservedSaving == null
+                                ? 'general.required'.tr
+                                : null,
+                            builder: (field) => Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                FormAccountSelector(
+                                  label: 'credit_card.reserve_account'.tr,
+                                  selectedAccount: _reservedSaving,
+                                  accounts: _savings,
+                                  onAccountSelected: (a) =>
+                                      setState(() => _reservedSaving = a),
+                                ),
+                                if (field.errorText != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 4,
+                                      left: 12,
+                                    ),
+                                    child: Text(
+                                      field.errorText!,
+                                      style: TextStyle(
+                                        color: cs.error,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
               const SizedBox(height: AppSpacing.lg),
               AppButton.primary(
-                label: 'credit_card.charge_btn'.tr,
+                label: _isRebate
+                    ? 'credit_card.rebate_btn'.tr
+                    : 'credit_card.charge_btn'.tr,
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     widget.onAdd(
@@ -1610,7 +1987,9 @@ class _AddChargeSheetState extends State<_AddChargeSheet> {
                       _noteCtrl.text.trim().isEmpty
                           ? null
                           : _noteCtrl.text.trim(),
-                      _reserveEnabled ? _reservedSaving?.id : null,
+                      (!_isRebate && _reserveEnabled) ? _reservedSaving?.id : null,
+                      _isPending ? 'pending' : 'posted',
+                      _isRebate,
                     );
                     Navigator.pop(context);
                   }
@@ -1635,6 +2014,7 @@ class _AddPaymentSheet extends StatefulWidget {
     DateTime paymentDate,
     String? note,
     List<({String chargeId, double amount})>? chargeAllocations,
+    List<({String chargeId, double amount})>? rebateAllocations,
   )
   onAdd;
 
@@ -1656,6 +2036,9 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
   /// selected chargeId → overridden amount (null = use full unpaid amount)
   final Map<String, double?> _selected = {};
 
+  /// Rebate charge IDs whose credit is applied toward this payment.
+  final Set<String> _appliedRebateIds = {};
+
   FormAccountItem? _sourceSaving;
   List<FormAccountItem> _savings = [];
 
@@ -1663,6 +2046,10 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
   void initState() {
     super.initState();
     _loadSavings();
+    // Default: all rebates applied.
+    for (final r in _rebates) {
+      _appliedRebateIds.add(r.id);
+    }
   }
 
   Future<void> _loadSavings() async {
@@ -1693,17 +2080,76 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
     (s, c) => s + (_selected.keys.contains(c.id) ? _payAmountFor(c) : .0),
   );
 
-  bool get _hasNonReservedSelected => _activeCharges.any(
-    (c) => _selected.keys.contains(c.id) && c.reservedSavingId == null,
-  );
+  /// Rebate charges (isRebate = true) — shown as available credits.
+  List<CrdCardCharge> get _rebates =>
+      widget.charges.where((c) => c.isRebate).toList();
+
+  /// Sum of currently-toggled rebate credits.
+  double get _appliedCredits => _rebates
+      .where((c) => _appliedRebateIds.contains(c.id))
+      .fold(0.0, (s, c) => s + c.amount.abs());
+
+  /// Net cash that must come from the user's saving account.
+  double get _netPayable =>
+      (_totalSelected - _appliedCredits).clamp(0.0, double.infinity);
+
+  /// Whether a source saving is required (net cash > 0 and any selected
+  /// charge is not fully covered by reserved savings).
+  bool get _needsSourceSaving {
+    if (_netPayable <= 0) return false;
+    // If all selected charges are reserved, their savings are used automatically.
+    return _activeCharges.any(
+      (c) => _selected.containsKey(c.id) && c.reservedSavingId == null,
+    );
+  }
 
   bool get _allSelected =>
       _activeCharges.isNotEmpty &&
       _activeCharges.every((c) => _selected.containsKey(c.id));
 
-  /// Only charges with unpaid amount > 0
+  /// Only non-rebate charges with unpaid amount > 0
   List<CrdCardCharge> get _activeCharges =>
-      widget.charges.where((c) => _unpaidFor(c) > 0).toList();
+      widget.charges.where((c) => !c.isRebate && _unpaidFor(c) > 0).toList();
+
+  // ── Allocation builders ────────────────────────────────────────────────────
+
+  /// Distributes applied credits proportionally across selected charges.
+  List<({String chargeId, double amount})> _buildRebateAllocations() {
+    final credits = _appliedCredits;
+    if (credits <= 0) return [];
+    final selected =
+        _activeCharges.where((c) => _selected.containsKey(c.id)).toList();
+    final total = _totalSelected;
+    if (total <= 0) return [];
+
+    var remaining = credits;
+    final result = <({String chargeId, double amount})>[];
+    for (final c in selected) {
+      if (remaining <= 0) break;
+      final chargeAmt = _payAmountFor(c);
+      final share = (credits * chargeAmt / total).clamp(0.0, chargeAmt);
+      final actual = share.clamp(0.0, remaining);
+      if (actual > 0.001) {
+        result.add((chargeId: c.id, amount: double.parse(actual.toStringAsFixed(2))));
+        remaining -= actual;
+      }
+    }
+    return result;
+  }
+
+  List<({String chargeId, double amount})> _buildCashAllocations() {
+    final rebateMap = {
+      for (final r in _buildRebateAllocations()) r.chargeId: r.amount
+    };
+    return _activeCharges
+        .where((c) => _selected.containsKey(c.id))
+        .map((c) {
+          final cash = _payAmountFor(c) - (rebateMap[c.id] ?? 0.0);
+          return (chargeId: c.id, amount: double.parse(cash.toStringAsFixed(2)));
+        })
+        .where((a) => a.amount > 0.001)
+        .toList();
+  }
 
   void _toggleAll() {
     setState(() {
@@ -1863,7 +2309,29 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
                   ),
                 ],
 
-                // Total row
+                // Rebate credits section
+                if (_rebates.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  _SectionLabel(
+                    icon: Icons.redeem_rounded,
+                    label: 'credit_card.rebate_credits_title'.tr,
+                    color: Colors.teal,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  ..._rebates.map((r) => _RebateCreditTile(
+                        charge: r,
+                        isApplied: _appliedRebateIds.contains(r.id),
+                        onToggle: (v) => setState(() {
+                          if (v) {
+                            _appliedRebateIds.add(r.id);
+                          } else {
+                            _appliedRebateIds.remove(r.id);
+                          }
+                        }),
+                      )),
+                ],
+
+                // Total breakdown box
                 if (_selected.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.md),
                   Container(
@@ -1876,21 +2344,67 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
                         color: cs.primary.withValues(alpha: 0.3),
                       ),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
                       children: [
-                        Text(
-                          'credit_card.payment_total'.tr,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        // Charges row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'credit_card.payment_total'.tr,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              _currFmt.format(_totalSelected),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: cs.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          _currFmt.format(_totalSelected),
-                          style: AppTextStyles.h3.copyWith(
-                            color: cs.primary,
-                            fontWeight: FontWeight.bold,
+                        // Credits row (if any applied)
+                        if (_appliedCredits > 0) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'credit_card.rebate_credits_applied'.tr,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: Colors.teal,
+                                ),
+                              ),
+                              Text(
+                                '- ${_currFmt.format(_appliedCredits)}',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: Colors.teal,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
+                          Divider(height: AppSpacing.md, color: cs.outline.withValues(alpha: 0.3)),
+                        ],
+                        // Net row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'credit_card.payment_net'.tr,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            Text(
+                              _currFmt.format(_netPayable),
+                              style: AppTextStyles.h3.copyWith(
+                                color: cs.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -1899,8 +2413,8 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
 
                 const SizedBox(height: AppSpacing.md),
 
-                // Source saving — only for non-reserved selected
-                if (_hasNonReservedSelected) ...[
+                // Source saving — only when net cash > 0 and non-reserved charges exist
+                if (_needsSourceSaving) ...[
                   _SectionLabel(
                     icon: Icons.account_balance_outlined,
                     label: 'credit_card.payment_source'.tr,
@@ -1909,7 +2423,7 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
                   const SizedBox(height: AppSpacing.xs),
                   FormField<FormAccountItem>(
                     validator: (_) =>
-                        _hasNonReservedSelected && _sourceSaving == null
+                        _needsSourceSaving && _sourceSaving == null
                         ? 'general.required'.tr
                         : null,
                     builder: (field) => Column(
@@ -1973,16 +2487,11 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
                           ? null
                           : () {
                               if (_formKey.currentState!.validate()) {
-                                final allocations = _activeCharges
-                                    .where((c) => _selected.containsKey(c.id))
-                                    .map(
-                                      (c) => (
-                                        chargeId: c.id,
-                                        amount: _payAmountFor(c),
-                                      ),
-                                    )
-                                    .toList();
+                                final cashAllocs = _buildCashAllocations();
+                                final rebateAllocs = _buildRebateAllocations();
 
+                                // Source saving: user-selected, or fall back to
+                                // the first reserved saving among selected charges.
                                 final fallback =
                                     _sourceSaving?.id ??
                                     _activeCharges
@@ -1996,13 +2505,14 @@ class _AddPaymentSheetState extends State<_AddPaymentSheet> {
                                     '';
 
                                 widget.onAdd(
-                                  _totalSelected,
+                                  _netPayable,
                                   fallback,
                                   _paymentDate,
                                   _noteCtrl.text.trim().isEmpty
                                       ? null
                                       : _noteCtrl.text.trim(),
-                                  allocations.isNotEmpty ? allocations : null,
+                                  cashAllocs.isNotEmpty ? cashAllocs : null,
+                                  rebateAllocs.isNotEmpty ? rebateAllocs : null,
                                 );
                                 Navigator.pop(context);
                               }
@@ -2278,6 +2788,67 @@ class _ChargeSelectTile extends StatelessWidget {
             child: Text('general.apply'.tr),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ── rebate credit tile ─────────────────────────────────────────────────────────
+
+class _RebateCreditTile extends StatelessWidget {
+  final CrdCardCharge charge;
+  final bool isApplied;
+  final ValueChanged<bool> onToggle;
+
+  const _RebateCreditTile({
+    required this.charge,
+    required this.isApplied,
+    required this.onToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.xs),
+      decoration: BoxDecoration(
+        color: isApplied
+            ? Colors.teal.withValues(alpha: 0.08)
+            : cs.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: isApplied
+              ? Colors.teal.withValues(alpha: 0.4)
+              : cs.outline.withValues(alpha: 0.2),
+        ),
+      ),
+      child: CheckboxListTile(
+        dense: true,
+        value: isApplied,
+        onChanged: (v) => onToggle(v ?? false),
+        activeColor: Colors.teal,
+        controlAffinity: ListTileControlAffinity.leading,
+        title: Text(
+          charge.description,
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        subtitle: charge.note != null && charge.note!.isNotEmpty
+            ? Text(
+                charge.note!,
+                style: AppTextStyles.caption.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+              )
+            : null,
+        secondary: Text(
+          '+ ${_currFmt.format(charge.amount.abs())}',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: Colors.teal,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ),
     );
   }

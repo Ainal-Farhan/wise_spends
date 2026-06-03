@@ -264,6 +264,27 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
             ),
           ],
         );
+      case CommitmentTaskType.creditCardCharge:
+        return Row(
+          children: [
+            Icon(Icons.credit_card_rounded, size: 16, color: Colors.purple[600]),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                detail.linkedCreditCardName ?? detail.linkedCreditCardId ?? 'Credit Card',
+                style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (detail.isEpp)
+              Text(
+                '${detail.eppCompletedInstallments}/${detail.eppTotalInstallments}',
+                style: TextStyle(fontSize: 12, color: Colors.purple[700], fontWeight: FontWeight.w600),
+              )
+            else
+              Text('∞', style: TextStyle(fontSize: 14, color: Colors.purple[700])),
+          ],
+        );
     }
   }
 
@@ -373,6 +394,8 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
         return Colors.orange;
       case CommitmentTaskType.cash:
         return Colors.green;
+      case CommitmentTaskType.creditCardCharge:
+        return Colors.purple;
     }
   }
 
@@ -384,6 +407,8 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
         return Icons.send_rounded;
       case CommitmentTaskType.cash:
         return Icons.payments_outlined;
+      case CommitmentTaskType.creditCardCharge:
+        return Icons.credit_card_rounded;
     }
   }
 
@@ -395,6 +420,8 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
         return 'Third-Party Payment';
       case CommitmentTaskType.cash:
         return 'Cash';
+      case CommitmentTaskType.creditCardCharge:
+        return 'Credit Card Charge';
     }
   }
 }
