@@ -9,9 +9,15 @@ class LoanRepaymentRepository extends ILoanRepaymentRepository {
 
   @override
   Future<List<LoanRepayment>> getRepaymentsForLoan(String loanId) {
-    return (db.select(
-      db.loanRepaymentTable,
-    )..where((t) => t.loanId.equals(loanId))).get();
+    return (db.select(db.loanRepaymentTable)
+          ..where((t) => t.loanId.equals(loanId))
+          ..orderBy([
+            (t) => OrderingTerm(
+              expression: t.repaymentDate,
+              mode: OrderingMode.desc,
+            ),
+          ]))
+        .get();
   }
 
   @override
