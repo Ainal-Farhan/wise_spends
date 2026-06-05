@@ -125,6 +125,11 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
   ) async {
     emit(SavingsLoading());
     try {
+      if (event.moneyStorageId.trim().isEmpty) {
+        emit(SavingsError('Please select a money storage'));
+        return;
+      }
+
       await _repository.addSaving(
         name: event.name,
         initialAmount: event.initialAmount,
@@ -148,6 +153,11 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
   ) async {
     emit(SavingsLoading());
     try {
+      if (event.moneyStorageId.trim().isEmpty) {
+        emit(SavingsError('Please select a money storage'));
+        return;
+      }
+
       await _repository.updateSaving(
         id: event.id,
         name: event.name,

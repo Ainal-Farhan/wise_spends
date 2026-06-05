@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:wise_spends/core/config/configuration/i_configuration_manager.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
 import 'package:wise_spends/core/di/i_service_locator.dart';
 import 'package:wise_spends/core/logger/logger.dart';
 import 'package:wise_spends/core/services/preferences_service.dart';
@@ -19,6 +20,9 @@ class StartupManager extends IStartupManager {
 
   final IUserService _userService =
       SingletonUtil.getSingleton<IServiceLocator>()!.getUserService();
+
+  final IRepositoryLocator _repositoryLocator =
+      SingletonUtil.getSingleton<IRepositoryLocator>()!;
 
   CmmnUser? _currentUser;
   bool isFirstInit = true;
@@ -40,6 +44,7 @@ class StartupManager extends IStartupManager {
     await _initializeLogger();
 
     await _initCurrentUser("Guest", true, false);
+    await _cleanupSavingsWithoutMoneyStorage();
     await _configurationManager.init();
     await _themeManager.init();
 
@@ -77,6 +82,45 @@ class StartupManager extends IStartupManager {
         );
       } catch (_) {
         // Silent failure - logger couldn't be initialized
+      }
+    }
+  }
+
+  Future<void> _cleanupSavingsWithoutMoneyStorage() async {
+    try {
+      final savingRepository = _repositoryLocator.getSavingRepository();
+      final moneyStorageRepository = _repositoryLocator
+          .getMoneyStorageRepository();
+      final transactionRepository = _repositoryLocator
+          .getTransactionRepository();
+
+      final validMoneyStorageIds = (await moneyStorageRepository.findAll())
+          .map((storage) => storage.id)
+          .toSet();
+      final savings = await savingRepository.findAll();
+
+      for (final saving in savings) {
+        final moneyStorageId = saving.moneyStorageId;
+        final hasValidMoneyStorage =
+            moneyStorageId != null &&
+            moneyStorageId.trim().isNotEmpty &&
+            validMoneyStorageIds.contains(moneyStorageId);
+
+        if (!hasValidMoneyStorage) {
+          await transactionRepository.deleteAllBySavingAccount(saving.id);
+          await savingRepository.delete(saving);
+        }
+      }
+    } catch (e, stackTrace) {
+      try {
+        WiseLogger().error(
+          'Failed to cleanup invalid savings: $e',
+          tag: 'StartupManager',
+          error: e,
+          stackTrace: stackTrace,
+        );
+      } catch (_) {
+        // Keep startup resilient if cleanup logging is unavailable.
       }
     }
   }

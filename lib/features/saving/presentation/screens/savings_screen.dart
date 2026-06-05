@@ -500,7 +500,6 @@ class _SavingsScreenContent extends StatelessWidget {
     String? selectedCategoryId = saving?.saving.categoryId;
 
     final moneyStorageItems = <DropdownMenuItem<String>>[
-      DropdownMenuItem(value: '', child: Text('savings.no_money_storage'.tr)),
       ...moneyStorageList.map(
         (s) => DropdownMenuItem(value: s.id, child: Text(s.shortName)),
       ),
@@ -712,6 +711,12 @@ class _SavingsFormContentState extends State<_SavingsFormContent> {
                     items: widget.moneyStorageItems,
                     onChanged: (v) =>
                         setState(() => _selectedMoneyStorageId = v),
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Please select a money storage';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: AppSpacing.xxxl),
                   Row(

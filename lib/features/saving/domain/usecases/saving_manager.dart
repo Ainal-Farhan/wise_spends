@@ -48,6 +48,13 @@ class SavingManager extends ISavingManager {
     required SavingTableType savingTableType,
     String? categoryId,
   }) async {
+    final storage = await _moneyStorageService
+        .watchMoneyStorageById(moneyStorageId)
+        .first;
+    if (moneyStorageId.trim().isEmpty || storage == null) {
+      throw Exception('Please select a valid money storage.');
+    }
+
     SavingTableCompanion savingTableCompanion = SavingTableCompanion.insert(
       createdBy: _startupManager.currentUser.name,
       lastModifiedBy: _startupManager.currentUser.name,
@@ -131,6 +138,13 @@ class SavingManager extends ISavingManager {
   Future<void> updateSaving({
     required EditSavingFormVO editSavingFormVO,
   }) async {
+    final storage = await _moneyStorageService
+        .watchMoneyStorageById(editSavingFormVO.moneyStorageId)
+        .first;
+    if (editSavingFormVO.moneyStorageId.trim().isEmpty || storage == null) {
+      throw Exception('Please select a valid money storage.');
+    }
+
     SavingTableCompanion updatedSaving = SavingTableCompanion(
       id: Value(editSavingFormVO.savingId),
       name: Value(editSavingFormVO.savingName),
@@ -253,28 +267,32 @@ class SavingManager extends ISavingManager {
 
   @override
   Future<List<ListSavingVO>> loadListSavingVOList() async {
-    final savingsList = (await _savingService
-            .watchAllSavingWithMoneyStorageBasedOnUserId(
-              _startupManager.currentUser.id,
+    final savingsList =
+        (await _savingService
+                .watchAllSavingWithMoneyStorageBasedOnUserId(
+                  _startupManager.currentUser.id,
+                )
+                .first)
+            .map(
+              (savingWithMoneyStorage) => ListSavingVO(
+                saving: savingWithMoneyStorage.saving,
+                moneyStorage: savingWithMoneyStorage.moneyStorage,
+              ),
             )
-            .first)
-        .map(
-          (savingWithMoneyStorage) => ListSavingVO(
-            saving: savingWithMoneyStorage.saving,
-            moneyStorage: savingWithMoneyStorage.moneyStorage,
-          ),
-        )
-        .toList();
+            .toList();
 
     // Load categories for savings that have categoryId set
     final categoryRepo = SingletonUtil.getSingleton<IRepositoryLocator>()!
         .getCategoryRepository();
-    
+
     for (final saving in savingsList) {
       // Load category if categoryId is set
-      if (saving.saving.categoryId != null && saving.saving.categoryId!.isNotEmpty) {
+      if (saving.saving.categoryId != null &&
+          saving.saving.categoryId!.isNotEmpty) {
         try {
-          final category = await categoryRepo.findById(id: saving.saving.categoryId!);
+          final category = await categoryRepo.findById(
+            id: saving.saving.categoryId!,
+          );
           if (category != null) {
             saving.category = CategoryEntity(
               id: category.id,
