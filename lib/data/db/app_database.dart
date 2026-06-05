@@ -633,7 +633,13 @@ class AppDatabase extends _$AppDatabase {
             .map((row) => row)
             .toList() ??
         <Map>[];
-    if (taskRows.isEmpty) return;
+    final detailRows =
+        (normalized['CommitmentDetailTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => row)
+            .toList() ??
+        <Map>[];
+    if (taskRows.isEmpty && detailRows.isEmpty) return;
 
     final savingRows =
         (normalized['SavingTable'] as List?)
@@ -674,6 +680,18 @@ class AppDatabase extends _$AppDatabase {
 
     const fallbackCommitmentId = 'restored-unassigned-commitment';
     var needsFallbackCommitment = false;
+    Map? fallbackSourceRow;
+
+    for (final detail in detailRows) {
+      final commitmentId = detail['commitmentId'];
+      if (commitmentId is! String ||
+          commitmentId.trim().isEmpty ||
+          !commitmentIds.contains(commitmentId)) {
+        detail['commitmentId'] = fallbackCommitmentId;
+        fallbackSourceRow ??= detail;
+        needsFallbackCommitment = true;
+      }
+    }
 
     for (final task in taskRows) {
       final commitmentId = task['commitmentId'];
@@ -681,6 +699,7 @@ class AppDatabase extends _$AppDatabase {
           commitmentId.trim().isEmpty ||
           !commitmentIds.contains(commitmentId)) {
         task['commitmentId'] = fallbackCommitmentId;
+        fallbackSourceRow ??= task;
         needsFallbackCommitment = true;
       }
 
@@ -692,11 +711,11 @@ class AppDatabase extends _$AppDatabase {
 
     if (needsFallbackCommitment &&
         !commitmentIds.contains(fallbackCommitmentId)) {
-      final firstTask = taskRows.firstWhere(
-        (task) => task['commitmentId'] == fallbackCommitmentId,
-        orElse: () => taskRows.first,
-      );
-      final sourceSavingId = firstTask['sourceSavingId'];
+      final sourceRow =
+          fallbackSourceRow ??
+          (taskRows.isNotEmpty ? taskRows.first : detailRows.first);
+      final sourceSavingId =
+          sourceRow['sourceSavingId'] ?? sourceRow['savingId'];
       final referredSavingId =
           sourceSavingId is String && savingIds.contains(sourceSavingId)
           ? sourceSavingId
@@ -715,12 +734,12 @@ class AppDatabase extends _$AppDatabase {
       commitmentRows.add(
         _normalizeRestoreRow('CommitmentTable', {
           'id': fallbackCommitmentId,
-          'createdBy': firstTask['createdBy'] ?? 'restore',
-          'dateCreated': firstTask['dateCreated'],
-          'dateUpdated': firstTask['dateUpdated'],
-          'lastModifiedBy': firstTask['lastModifiedBy'] ?? 'restore',
+          'createdBy': sourceRow['createdBy'] ?? 'restore',
+          'dateCreated': sourceRow['dateCreated'],
+          'dateUpdated': sourceRow['dateUpdated'],
+          'lastModifiedBy': sourceRow['lastModifiedBy'] ?? 'restore',
           'name': 'Restored Unassigned',
-          'description': 'Tasks restored without commitment links.',
+          'description': 'Items restored without commitment links.',
           'referredSavingId': referredSavingId,
           'userId': userId,
         }, commitmentRows.length),
