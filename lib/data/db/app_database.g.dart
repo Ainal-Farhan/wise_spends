@@ -6827,6 +6827,18 @@ class $MoneyStorageTableTable extends MoneyStorageTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _displayOrderMeta = const VerificationMeta(
+    'displayOrder',
+  );
+  @override
+  late final GeneratedColumn<int> displayOrder = GeneratedColumn<int>(
+    'display_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
   late final GeneratedColumn<String> userId = GeneratedColumn<String>(
@@ -6850,6 +6862,7 @@ class $MoneyStorageTableTable extends MoneyStorageTable
     longName,
     shortName,
     type,
+    displayOrder,
     userId,
   ];
   @override
@@ -6936,6 +6949,15 @@ class $MoneyStorageTableTable extends MoneyStorageTable
     } else if (isInserting) {
       context.missing(_typeMeta);
     }
+    if (data.containsKey('display_order')) {
+      context.handle(
+        _displayOrderMeta,
+        displayOrder.isAcceptableOrUnknown(
+          data['display_order']!,
+          _displayOrderMeta,
+        ),
+      );
+    }
     if (data.containsKey('user_id')) {
       context.handle(
         _userIdMeta,
@@ -6987,6 +7009,10 @@ class $MoneyStorageTableTable extends MoneyStorageTable
         DriftSqlType.string,
         data['${effectivePrefix}type'],
       )!,
+      displayOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}display_order'],
+      )!,
       userId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
@@ -7011,6 +7037,7 @@ class SvngMoneyStorage extends DataClass
   final String longName;
   final String shortName;
   final String type;
+  final int displayOrder;
   final String? userId;
   const SvngMoneyStorage({
     required this.id,
@@ -7022,6 +7049,7 @@ class SvngMoneyStorage extends DataClass
     required this.longName,
     required this.shortName,
     required this.type,
+    required this.displayOrder,
     this.userId,
   });
   @override
@@ -7036,6 +7064,7 @@ class SvngMoneyStorage extends DataClass
     map['long_name'] = Variable<String>(longName);
     map['short_name'] = Variable<String>(shortName);
     map['type'] = Variable<String>(type);
+    map['display_order'] = Variable<int>(displayOrder);
     if (!nullToAbsent || userId != null) {
       map['user_id'] = Variable<String>(userId);
     }
@@ -7053,6 +7082,7 @@ class SvngMoneyStorage extends DataClass
       longName: Value(longName),
       shortName: Value(shortName),
       type: Value(type),
+      displayOrder: Value(displayOrder),
       userId: userId == null && nullToAbsent
           ? const Value.absent()
           : Value(userId),
@@ -7074,6 +7104,7 @@ class SvngMoneyStorage extends DataClass
       longName: serializer.fromJson<String>(json['longName']),
       shortName: serializer.fromJson<String>(json['shortName']),
       type: serializer.fromJson<String>(json['type']),
+      displayOrder: serializer.fromJson<int>(json['displayOrder']),
       userId: serializer.fromJson<String?>(json['userId']),
     );
   }
@@ -7090,6 +7121,7 @@ class SvngMoneyStorage extends DataClass
       'longName': serializer.toJson<String>(longName),
       'shortName': serializer.toJson<String>(shortName),
       'type': serializer.toJson<String>(type),
+      'displayOrder': serializer.toJson<int>(displayOrder),
       'userId': serializer.toJson<String?>(userId),
     };
   }
@@ -7104,6 +7136,7 @@ class SvngMoneyStorage extends DataClass
     String? longName,
     String? shortName,
     String? type,
+    int? displayOrder,
     Value<String?> userId = const Value.absent(),
   }) => SvngMoneyStorage(
     id: id ?? this.id,
@@ -7115,6 +7148,7 @@ class SvngMoneyStorage extends DataClass
     longName: longName ?? this.longName,
     shortName: shortName ?? this.shortName,
     type: type ?? this.type,
+    displayOrder: displayOrder ?? this.displayOrder,
     userId: userId.present ? userId.value : this.userId,
   );
   SvngMoneyStorage copyWithCompanion(MoneyStorageTableCompanion data) {
@@ -7134,6 +7168,9 @@ class SvngMoneyStorage extends DataClass
       longName: data.longName.present ? data.longName.value : this.longName,
       shortName: data.shortName.present ? data.shortName.value : this.shortName,
       type: data.type.present ? data.type.value : this.type,
+      displayOrder: data.displayOrder.present
+          ? data.displayOrder.value
+          : this.displayOrder,
       userId: data.userId.present ? data.userId.value : this.userId,
     );
   }
@@ -7150,6 +7187,7 @@ class SvngMoneyStorage extends DataClass
           ..write('longName: $longName, ')
           ..write('shortName: $shortName, ')
           ..write('type: $type, ')
+          ..write('displayOrder: $displayOrder, ')
           ..write('userId: $userId')
           ..write(')'))
         .toString();
@@ -7166,6 +7204,7 @@ class SvngMoneyStorage extends DataClass
     longName,
     shortName,
     type,
+    displayOrder,
     userId,
   );
   @override
@@ -7181,6 +7220,7 @@ class SvngMoneyStorage extends DataClass
           other.longName == this.longName &&
           other.shortName == this.shortName &&
           other.type == this.type &&
+          other.displayOrder == this.displayOrder &&
           other.userId == this.userId);
 }
 
@@ -7194,6 +7234,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
   final Value<String> longName;
   final Value<String> shortName;
   final Value<String> type;
+  final Value<int> displayOrder;
   final Value<String?> userId;
   final Value<int> rowid;
   const MoneyStorageTableCompanion({
@@ -7206,6 +7247,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     this.longName = const Value.absent(),
     this.shortName = const Value.absent(),
     this.type = const Value.absent(),
+    this.displayOrder = const Value.absent(),
     this.userId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -7219,6 +7261,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     required String longName,
     required String shortName,
     required String type,
+    this.displayOrder = const Value.absent(),
     this.userId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : createdBy = Value(createdBy),
@@ -7237,6 +7280,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     Expression<String>? longName,
     Expression<String>? shortName,
     Expression<String>? type,
+    Expression<int>? displayOrder,
     Expression<String>? userId,
     Expression<int>? rowid,
   }) {
@@ -7250,6 +7294,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       if (longName != null) 'long_name': longName,
       if (shortName != null) 'short_name': shortName,
       if (type != null) 'type': type,
+      if (displayOrder != null) 'display_order': displayOrder,
       if (userId != null) 'user_id': userId,
       if (rowid != null) 'rowid': rowid,
     });
@@ -7265,6 +7310,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     Value<String>? longName,
     Value<String>? shortName,
     Value<String>? type,
+    Value<int>? displayOrder,
     Value<String?>? userId,
     Value<int>? rowid,
   }) {
@@ -7278,6 +7324,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
       longName: longName ?? this.longName,
       shortName: shortName ?? this.shortName,
       type: type ?? this.type,
+      displayOrder: displayOrder ?? this.displayOrder,
       userId: userId ?? this.userId,
       rowid: rowid ?? this.rowid,
     );
@@ -7313,6 +7360,9 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
     if (type.present) {
       map['type'] = Variable<String>(type.value);
     }
+    if (displayOrder.present) {
+      map['display_order'] = Variable<int>(displayOrder.value);
+    }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
     }
@@ -7334,6 +7384,7 @@ class MoneyStorageTableCompanion extends UpdateCompanion<SvngMoneyStorage> {
           ..write('longName: $longName, ')
           ..write('shortName: $shortName, ')
           ..write('type: $type, ')
+          ..write('displayOrder: $displayOrder, ')
           ..write('userId: $userId, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -7581,6 +7632,18 @@ class $SavingTableTable extends SavingTable
     requiredDuringInsert: false,
     defaultValue: const Constant(.0),
   );
+  static const VerificationMeta _displayOrderMeta = const VerificationMeta(
+    'displayOrder',
+  );
+  @override
+  late final GeneratedColumn<int> displayOrder = GeneratedColumn<int>(
+    'display_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
   @override
   late final GeneratedColumn<String> userId = GeneratedColumn<String>(
@@ -7642,6 +7705,7 @@ class $SavingTableTable extends SavingTable
     isSaveMonthly,
     type,
     currentAmount,
+    displayOrder,
     userId,
     moneyStorageId,
     categoryId,
@@ -7804,6 +7868,15 @@ class $SavingTableTable extends SavingTable
         ),
       );
     }
+    if (data.containsKey('display_order')) {
+      context.handle(
+        _displayOrderMeta,
+        displayOrder.isAcceptableOrUnknown(
+          data['display_order']!,
+          _displayOrderMeta,
+        ),
+      );
+    }
     if (data.containsKey('user_id')) {
       context.handle(
         _userIdMeta,
@@ -7914,6 +7987,10 @@ class $SavingTableTable extends SavingTable
         DriftSqlType.double,
         data['${effectivePrefix}current_amount'],
       )!,
+      displayOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}display_order'],
+      )!,
       userId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}user_id'],
@@ -7955,6 +8032,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
   final bool isSaveMonthly;
   final String type;
   final double currentAmount;
+  final int displayOrder;
   final String? userId;
   final String? moneyStorageId;
 
@@ -7980,6 +8058,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     required this.isSaveMonthly,
     required this.type,
     required this.currentAmount,
+    required this.displayOrder,
     this.userId,
     this.moneyStorageId,
     this.categoryId,
@@ -8012,6 +8091,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     map['is_save_monthly'] = Variable<bool>(isSaveMonthly);
     map['type'] = Variable<String>(type);
     map['current_amount'] = Variable<double>(currentAmount);
+    map['display_order'] = Variable<int>(displayOrder);
     if (!nullToAbsent || userId != null) {
       map['user_id'] = Variable<String>(userId);
     }
@@ -8049,6 +8129,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       isSaveMonthly: Value(isSaveMonthly),
       type: Value(type),
       currentAmount: Value(currentAmount),
+      displayOrder: Value(displayOrder),
       userId: userId == null && nullToAbsent
           ? const Value.absent()
           : Value(userId),
@@ -8086,6 +8167,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       isSaveMonthly: serializer.fromJson<bool>(json['isSaveMonthly']),
       type: serializer.fromJson<String>(json['type']),
       currentAmount: serializer.fromJson<double>(json['currentAmount']),
+      displayOrder: serializer.fromJson<int>(json['displayOrder']),
       userId: serializer.fromJson<String?>(json['userId']),
       moneyStorageId: serializer.fromJson<String?>(json['moneyStorageId']),
       categoryId: serializer.fromJson<String?>(json['categoryId']),
@@ -8114,6 +8196,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       'isSaveMonthly': serializer.toJson<bool>(isSaveMonthly),
       'type': serializer.toJson<String>(type),
       'currentAmount': serializer.toJson<double>(currentAmount),
+      'displayOrder': serializer.toJson<int>(displayOrder),
       'userId': serializer.toJson<String?>(userId),
       'moneyStorageId': serializer.toJson<String?>(moneyStorageId),
       'categoryId': serializer.toJson<String?>(categoryId),
@@ -8140,6 +8223,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     bool? isSaveMonthly,
     String? type,
     double? currentAmount,
+    int? displayOrder,
     Value<String?> userId = const Value.absent(),
     Value<String?> moneyStorageId = const Value.absent(),
     Value<String?> categoryId = const Value.absent(),
@@ -8163,6 +8247,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
     type: type ?? this.type,
     currentAmount: currentAmount ?? this.currentAmount,
+    displayOrder: displayOrder ?? this.displayOrder,
     userId: userId.present ? userId.value : this.userId,
     moneyStorageId: moneyStorageId.present
         ? moneyStorageId.value
@@ -8208,6 +8293,9 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
       currentAmount: data.currentAmount.present
           ? data.currentAmount.value
           : this.currentAmount,
+      displayOrder: data.displayOrder.present
+          ? data.displayOrder.value
+          : this.displayOrder,
       userId: data.userId.present ? data.userId.value : this.userId,
       moneyStorageId: data.moneyStorageId.present
           ? data.moneyStorageId.value
@@ -8240,6 +8328,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
           ..write('isSaveMonthly: $isSaveMonthly, ')
           ..write('type: $type, ')
           ..write('currentAmount: $currentAmount, ')
+          ..write('displayOrder: $displayOrder, ')
           ..write('userId: $userId, ')
           ..write('moneyStorageId: $moneyStorageId, ')
           ..write('categoryId: $categoryId')
@@ -8268,6 +8357,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
     isSaveMonthly,
     type,
     currentAmount,
+    displayOrder,
     userId,
     moneyStorageId,
     categoryId,
@@ -8295,6 +8385,7 @@ class SvngSaving extends DataClass implements Insertable<SvngSaving> {
           other.isSaveMonthly == this.isSaveMonthly &&
           other.type == this.type &&
           other.currentAmount == this.currentAmount &&
+          other.displayOrder == this.displayOrder &&
           other.userId == this.userId &&
           other.moneyStorageId == this.moneyStorageId &&
           other.categoryId == this.categoryId);
@@ -8320,6 +8411,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
   final Value<bool> isSaveMonthly;
   final Value<String> type;
   final Value<double> currentAmount;
+  final Value<int> displayOrder;
   final Value<String?> userId;
   final Value<String?> moneyStorageId;
   final Value<String?> categoryId;
@@ -8344,6 +8436,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.isSaveMonthly = const Value.absent(),
     this.type = const Value.absent(),
     this.currentAmount = const Value.absent(),
+    this.displayOrder = const Value.absent(),
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
     this.categoryId = const Value.absent(),
@@ -8369,6 +8462,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     this.isSaveMonthly = const Value.absent(),
     required String type,
     this.currentAmount = const Value.absent(),
+    this.displayOrder = const Value.absent(),
     this.userId = const Value.absent(),
     this.moneyStorageId = const Value.absent(),
     this.categoryId = const Value.absent(),
@@ -8397,6 +8491,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     Expression<bool>? isSaveMonthly,
     Expression<String>? type,
     Expression<double>? currentAmount,
+    Expression<int>? displayOrder,
     Expression<String>? userId,
     Expression<String>? moneyStorageId,
     Expression<String>? categoryId,
@@ -8422,6 +8517,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       if (isSaveMonthly != null) 'is_save_monthly': isSaveMonthly,
       if (type != null) 'type': type,
       if (currentAmount != null) 'current_amount': currentAmount,
+      if (displayOrder != null) 'display_order': displayOrder,
       if (userId != null) 'user_id': userId,
       if (moneyStorageId != null) 'money_storage_id': moneyStorageId,
       if (categoryId != null) 'category_id': categoryId,
@@ -8449,6 +8545,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     Value<bool>? isSaveMonthly,
     Value<String>? type,
     Value<double>? currentAmount,
+    Value<int>? displayOrder,
     Value<String?>? userId,
     Value<String?>? moneyStorageId,
     Value<String?>? categoryId,
@@ -8474,6 +8571,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
       isSaveMonthly: isSaveMonthly ?? this.isSaveMonthly,
       type: type ?? this.type,
       currentAmount: currentAmount ?? this.currentAmount,
+      displayOrder: displayOrder ?? this.displayOrder,
       userId: userId ?? this.userId,
       moneyStorageId: moneyStorageId ?? this.moneyStorageId,
       categoryId: categoryId ?? this.categoryId,
@@ -8541,6 +8639,9 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
     if (currentAmount.present) {
       map['current_amount'] = Variable<double>(currentAmount.value);
     }
+    if (displayOrder.present) {
+      map['display_order'] = Variable<int>(displayOrder.value);
+    }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
     }
@@ -8578,6 +8679,7 @@ class SavingTableCompanion extends UpdateCompanion<SvngSaving> {
           ..write('isSaveMonthly: $isSaveMonthly, ')
           ..write('type: $type, ')
           ..write('currentAmount: $currentAmount, ')
+          ..write('displayOrder: $displayOrder, ')
           ..write('userId: $userId, ')
           ..write('moneyStorageId: $moneyStorageId, ')
           ..write('categoryId: $categoryId, ')
@@ -30693,6 +30795,7 @@ typedef $$MoneyStorageTableTableCreateCompanionBuilder =
       required String longName,
       required String shortName,
       required String type,
+      Value<int> displayOrder,
       Value<String?> userId,
       Value<int> rowid,
     });
@@ -30707,6 +30810,7 @@ typedef $$MoneyStorageTableTableUpdateCompanionBuilder =
       Value<String> longName,
       Value<String> shortName,
       Value<String> type,
+      Value<int> displayOrder,
       Value<String?> userId,
       Value<int> rowid,
     });
@@ -30819,6 +30923,11 @@ class $$MoneyStorageTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$UserTableTableFilterComposer get userId {
     final $$UserTableTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -30922,6 +31031,11 @@ class $$MoneyStorageTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$UserTableTableOrderingComposer get userId {
     final $$UserTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -30987,6 +31101,11 @@ class $$MoneyStorageTableTableAnnotationComposer
 
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => column,
+  );
 
   $$UserTableTableAnnotationComposer get userId {
     final $$UserTableTableAnnotationComposer composer = $composerBuilder(
@@ -31079,6 +31198,7 @@ class $$MoneyStorageTableTableTableManager
                 Value<String> longName = const Value.absent(),
                 Value<String> shortName = const Value.absent(),
                 Value<String> type = const Value.absent(),
+                Value<int> displayOrder = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MoneyStorageTableCompanion(
@@ -31091,6 +31211,7 @@ class $$MoneyStorageTableTableTableManager
                 longName: longName,
                 shortName: shortName,
                 type: type,
+                displayOrder: displayOrder,
                 userId: userId,
                 rowid: rowid,
               ),
@@ -31105,6 +31226,7 @@ class $$MoneyStorageTableTableTableManager
                 required String longName,
                 required String shortName,
                 required String type,
+                Value<int> displayOrder = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => MoneyStorageTableCompanion.insert(
@@ -31117,6 +31239,7 @@ class $$MoneyStorageTableTableTableManager
                 longName: longName,
                 shortName: shortName,
                 type: type,
+                displayOrder: displayOrder,
                 userId: userId,
                 rowid: rowid,
               ),
@@ -31232,6 +31355,7 @@ typedef $$SavingTableTableCreateCompanionBuilder =
       Value<bool> isSaveMonthly,
       required String type,
       Value<double> currentAmount,
+      Value<int> displayOrder,
       Value<String?> userId,
       Value<String?> moneyStorageId,
       Value<String?> categoryId,
@@ -31258,6 +31382,7 @@ typedef $$SavingTableTableUpdateCompanionBuilder =
       Value<bool> isSaveMonthly,
       Value<String> type,
       Value<double> currentAmount,
+      Value<int> displayOrder,
       Value<String?> userId,
       Value<String?> moneyStorageId,
       Value<String?> categoryId,
@@ -31642,6 +31767,11 @@ class $$SavingTableTableFilterComposer
 
   ColumnFilters<double> get currentAmount => $composableBuilder(
     column: $table.currentAmount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -32031,6 +32161,11 @@ class $$SavingTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$UserTableTableOrderingComposer get userId {
     final $$UserTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -32182,6 +32317,11 @@ class $$SavingTableTableAnnotationComposer
 
   GeneratedColumn<double> get currentAmount => $composableBuilder(
     column: $table.currentAmount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get displayOrder => $composableBuilder(
+    column: $table.displayOrder,
     builder: (column) => column,
   );
 
@@ -32528,6 +32668,7 @@ class $$SavingTableTableTableManager
                 Value<bool> isSaveMonthly = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<double> currentAmount = const Value.absent(),
+                Value<int> displayOrder = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> moneyStorageId = const Value.absent(),
                 Value<String?> categoryId = const Value.absent(),
@@ -32552,6 +32693,7 @@ class $$SavingTableTableTableManager
                 isSaveMonthly: isSaveMonthly,
                 type: type,
                 currentAmount: currentAmount,
+                displayOrder: displayOrder,
                 userId: userId,
                 moneyStorageId: moneyStorageId,
                 categoryId: categoryId,
@@ -32578,6 +32720,7 @@ class $$SavingTableTableTableManager
                 Value<bool> isSaveMonthly = const Value.absent(),
                 required String type,
                 Value<double> currentAmount = const Value.absent(),
+                Value<int> displayOrder = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> moneyStorageId = const Value.absent(),
                 Value<String?> categoryId = const Value.absent(),
@@ -32602,6 +32745,7 @@ class $$SavingTableTableTableManager
                 isSaveMonthly: isSaveMonthly,
                 type: type,
                 currentAmount: currentAmount,
+                displayOrder: displayOrder,
                 userId: userId,
                 moneyStorageId: moneyStorageId,
                 categoryId: categoryId,

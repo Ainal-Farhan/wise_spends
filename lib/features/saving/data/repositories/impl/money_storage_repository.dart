@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/data/db/app_database.dart';
@@ -81,12 +82,28 @@ class MoneyStorageRepository extends IMoneyStorageRepository {
     }
   }
 
+  @override
+  Future<void> reorderMoneyStorages(List<String> orderedMoneyStorageIds) async {
+    try {
+      await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingManager()
+          .reorderMoneyStorages(orderedMoneyStorageIds);
+    } catch (e) {
+      throw Exception('Failed to reorder money storage: $e');
+    }
+  }
+
   // Watch all MoneyStorage entries for a specific userId
   @override
   Stream<List<SvngMoneyStorage>> watchBasedOnUserId(String userId) {
-    final query = (db.select(
-      table,
-    )..where((tbl) => tbl.userId.equals(userId))).watch();
+    final query =
+        (db.select(table)
+              ..where((tbl) => tbl.userId.equals(userId))
+              ..orderBy([
+                (tbl) => OrderingTerm.asc(tbl.displayOrder),
+                (tbl) => OrderingTerm.asc(tbl.dateCreated),
+              ]))
+            .watch();
 
     return query;
   }

@@ -52,7 +52,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration {
@@ -114,8 +114,96 @@ class AppDatabase extends _$AppDatabase {
             creditCardChargePaymentTable.deductedSavingId,
           );
         }
+        if (from < 9) {
+          await m.addColumn(savingTable, savingTable.displayOrder);
+          await m.addColumn(moneyStorageTable, moneyStorageTable.displayOrder);
+        }
+      },
+      beforeOpen: (details) async {
+        await customStatement('PRAGMA foreign_keys = ON');
+        if (!details.wasCreated) {
+          await _repairLatestSchemaData();
+        }
       },
     );
+  }
+
+  Future<void> _repairLatestSchemaData() async {
+    await transaction(() async {
+      await _repairMoneyStorageDisplayOrder();
+      await _repairSavingDisplayOrder();
+      await _repairMissingCommitmentDetails();
+    });
+  }
+
+  Future<void> _repairMoneyStorageDisplayOrder() async {
+    final rows =
+        await (select(moneyStorageTable)..orderBy([
+              (tbl) => OrderingTerm.asc(tbl.displayOrder),
+              (tbl) => OrderingTerm.asc(tbl.dateCreated),
+            ]))
+            .get();
+    if (!_needsDisplayOrderRepair(rows.map((row) => row.displayOrder))) {
+      return;
+    }
+
+    for (var index = 0; index < rows.length; index++) {
+      await (update(moneyStorageTable)
+            ..where((tbl) => tbl.id.equals(rows[index].id)))
+          .write(MoneyStorageTableCompanion(displayOrder: Value(index)));
+    }
+  }
+
+  Future<void> _repairSavingDisplayOrder() async {
+    final rows =
+        await (select(savingTable)..orderBy([
+              (tbl) => OrderingTerm.asc(tbl.displayOrder),
+              (tbl) => OrderingTerm.asc(tbl.dateCreated),
+            ]))
+            .get();
+    if (!_needsDisplayOrderRepair(rows.map((row) => row.displayOrder))) {
+      return;
+    }
+
+    for (var index = 0; index < rows.length; index++) {
+      await (update(savingTable)..where((tbl) => tbl.id.equals(rows[index].id)))
+          .write(SavingTableCompanion(displayOrder: Value(index)));
+    }
+  }
+
+  bool _needsDisplayOrderRepair(Iterable<int> values) {
+    final list = values.toList();
+    return list.length > 1 && list.toSet().length != list.length;
+  }
+
+  Future<void> _repairMissingCommitmentDetails() async {
+    final existingDetails = await select(commitmentDetailTable).get();
+    final existingDetailIds = existingDetails.map((row) => row.id).toSet();
+    final tasks = await select(commitmentTaskTable).get();
+
+    for (final task in tasks) {
+      if (existingDetailIds.contains(task.commitmentDetailId)) continue;
+
+      existingDetailIds.add(task.commitmentDetailId);
+      await into(commitmentDetailTable).insert(
+        CommitmentDetailTableCompanion.insert(
+          id: Value(task.commitmentDetailId),
+          createdBy: task.createdBy,
+          dateCreated: Value(task.dateCreated),
+          dateUpdated: task.dateUpdated,
+          lastModifiedBy: task.lastModifiedBy,
+          amount: task.amount,
+          description: task.name,
+          type: CommitmentDetailType.oneOff,
+          taskType: Value(task.type),
+          savingId: Value(task.sourceSavingId),
+          targetSavingId: Value(task.targetSavingId),
+          payeeId: Value(task.payeeId),
+          commitmentId: task.commitmentId,
+        ),
+        mode: InsertMode.insertOrIgnore,
+      );
+    }
   }
 
   Future<String> exportInto(final String type) async {
@@ -207,8 +295,8 @@ class AppDatabase extends _$AppDatabase {
 
     final filePicker = await FilePicker.platform.pickFiles(
       allowMultiple: false,
-      type: FileType.custom,
-      allowedExtensions: ['sqlite', 'json'],
+      type: isJson ? FileType.custom : FileType.any,
+      allowedExtensions: isJson ? ['json'] : null,
       initialDirectory: backupPath,
     );
     if (filePicker != null && filePicker.count == 1) {
@@ -255,25 +343,564 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future replaceDataFromTable(Map<String, dynamic> data) async {
-    for (final repo
-        in SingletonUtil.getSingleton<IRepositoryLocator>()!
-            .retrieveAllRepository()) {
-      await repo.deleteAll();
+    final normalizedData = _normalizeRestoreData(data);
+    final repositories =
+        SingletonUtil.getSingleton<IRepositoryLocator>()!
+            .retrieveAllRepository()
+          ..sort(
+            (a, b) => _restoreTablePriority(
+              a.tableName(),
+            ).compareTo(_restoreTablePriority(b.tableName())),
+          );
 
-      final tableData = data[repo.tableName()];
-      if (tableData == null) continue;
+    await transaction(() async {
+      for (final repo in repositories.reversed) {
+        await repo.deleteAll();
+      }
 
-      try {
-        final jsonList = (tableData as List).cast<Map<String, dynamic>>();
-        await repo.saveAllFromJson(jsonList);
-      } catch (e, stackTrace) {
-        WiseLogger().error(
-          "Error while restoring data",
-          error: e,
-          stackTrace: stackTrace,
-        );
+      for (final repo in repositories) {
+        final tableData = normalizedData[repo.tableName()];
+        if (tableData == null) continue;
+
+        try {
+          final List<Map<String, dynamic>> jsonList = (tableData as List)
+              .whereType<Map>()
+              .map<Map<String, dynamic>>(
+                (row) => Map<String, dynamic>.from(row),
+              )
+              .toList();
+          await repo.saveAllFromJson(jsonList);
+        } catch (e, stackTrace) {
+          WiseLogger().error(
+            "Error while restoring ${repo.tableName()}",
+            error: e,
+            stackTrace: stackTrace,
+          );
+          throw Exception('Failed to restore ${repo.tableName()}: $e');
+        }
+      }
+    });
+  }
+
+  int _restoreTablePriority(String tableName) {
+    const priorities = {
+      'UserTable': 10,
+      'GroupReferenceTable': 20,
+      'ReferenceTable': 21,
+      'ReferenceDataTableTable': 22,
+      'CategoryTable': 30,
+      'PayeeTable': 31,
+      'MoneyStorageTable': 32,
+      'SavingTable': 40,
+      'CreditCardTable': 41,
+      'LoanTable': 42,
+      'CommitmentTable': 43,
+      'SpendingBudgetTable': 44,
+      'SavingsPlanTable': 45,
+      'CommitmentDetailTable': 50,
+      'CommitmentTaskTable': 51,
+      'CreditCardChargeTable': 52,
+      'CreditCardPaymentTable': 53,
+      'LoanRepaymentTable': 54,
+      'SavingsPlanItemTable': 55,
+      'SavingsPlanDepositTable': 56,
+      'SavingsPlanSpendingTable': 57,
+      'SavingsPlanMilestoneTable': 58,
+      'SavingsPlanLinkedAccountTable': 59,
+      'SavingsPlanItemTagTable': 60,
+      'TransactionTable': 70,
+      'TransactionTagTable': 71,
+      'TransactionTagMapTable': 72,
+      'RecurringTransactionTable': 73,
+      'TransactionRevokeTable': 74,
+      'CreditCardChargePaymentTable': 75,
+      'ExpenseTable': 80,
+      'ExpenseReferenceTable': 81,
+      'FileStorageTable': 90,
+    };
+
+    return priorities[tableName] ?? 1000;
+  }
+
+  Map<String, dynamic> _normalizeRestoreData(Map<String, dynamic> data) {
+    final normalized = <String, dynamic>{};
+
+    for (final entry in data.entries) {
+      final tableData = entry.value;
+      if (tableData is! List) {
+        normalized[entry.key] = tableData;
+        continue;
+      }
+
+      normalized[entry.key] = tableData
+          .asMap()
+          .entries
+          .where((rowEntry) => rowEntry.value is Map)
+          .map(
+            (rowEntry) => _normalizeRestoreRow(
+              entry.key,
+              Map<String, dynamic>.from(rowEntry.value as Map),
+              rowEntry.key,
+            ),
+          )
+          .toList();
+    }
+
+    _backfillMissingMoneyStorageForSavings(normalized);
+    _backfillMissingCommitmentsForTasks(normalized);
+    _backfillCommitmentDetails(normalized);
+    _clearMissingOptionalReferences(normalized);
+
+    return normalized;
+  }
+
+  void _clearMissingOptionalReferences(Map<String, dynamic> normalized) {
+    final userIds = _restoreIds(normalized, 'UserTable');
+    final categoryIds = _restoreIds(normalized, 'CategoryTable');
+    final savingIds = _restoreIds(normalized, 'SavingTable');
+    final payeeIds = _restoreIds(normalized, 'PayeeTable');
+    final commitmentTaskIds = _restoreIds(normalized, 'CommitmentTaskTable');
+    final loanIds = _restoreIds(normalized, 'LoanTable');
+    final creditCardIds = _restoreIds(normalized, 'CreditCardTable');
+
+    _nullMissingRef(normalized, 'MoneyStorageTable', 'userId', userIds);
+    _nullMissingRef(normalized, 'SavingTable', 'userId', userIds);
+    _nullMissingRef(normalized, 'SavingTable', 'categoryId', categoryIds);
+
+    _nullMissingRef(
+      normalized,
+      'TransactionTable',
+      'destinationSavingId',
+      savingIds,
+    );
+    _nullMissingRef(normalized, 'TransactionTable', 'categoryId', categoryIds);
+    _nullMissingRef(
+      normalized,
+      'TransactionTable',
+      'commitmentTaskId',
+      commitmentTaskIds,
+    );
+    _nullMissingRef(normalized, 'TransactionTable', 'payeeId', payeeIds);
+    _nullMissingRef(normalized, 'TransactionTable', 'loanId', loanIds);
+
+    _nullMissingRef(normalized, 'CommitmentDetailTable', 'savingId', savingIds);
+    _nullMissingRef(
+      normalized,
+      'CommitmentDetailTable',
+      'targetSavingId',
+      savingIds,
+    );
+    _nullMissingRef(normalized, 'CommitmentDetailTable', 'payeeId', payeeIds);
+    _nullMissingRef(
+      normalized,
+      'CommitmentDetailTable',
+      'linkedCreditCardId',
+      creditCardIds,
+    );
+    _nullMissingRef(
+      normalized,
+      'CommitmentTaskTable',
+      'sourceSavingId',
+      savingIds,
+    );
+    _nullMissingRef(
+      normalized,
+      'CommitmentTaskTable',
+      'targetSavingId',
+      savingIds,
+    );
+    _nullMissingRef(normalized, 'CommitmentTaskTable', 'payeeId', payeeIds);
+    _nullMissingRef(
+      normalized,
+      'CommitmentTaskTable',
+      'transactionId',
+      _restoreIds(normalized, 'TransactionTable'),
+    );
+
+    _nullMissingRef(normalized, 'CreditCardTable', 'userId', userIds);
+    _nullMissingRef(
+      normalized,
+      'CreditCardChargeTable',
+      'categoryId',
+      categoryIds,
+    );
+    _nullMissingRef(
+      normalized,
+      'CreditCardChargeTable',
+      'reservedSavingId',
+      savingIds,
+    );
+    _nullMissingRef(
+      normalized,
+      'CreditCardChargePaymentTable',
+      'deductedSavingId',
+      savingIds,
+    );
+
+    _nullMissingRef(normalized, 'LoanTable', 'userId', userIds);
+  }
+
+  Set<String> _restoreIds(Map<String, dynamic> normalized, String tableName) {
+    return (normalized[tableName] as List?)
+            ?.whereType<Map>()
+            .map((row) => row['id'])
+            .whereType<String>()
+            .toSet() ??
+        <String>{};
+  }
+
+  void _backfillMissingMoneyStorageForSavings(Map<String, dynamic> normalized) {
+    final savingRows =
+        (normalized['SavingTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => row)
+            .toList() ??
+        <Map>[];
+    if (savingRows.isEmpty) return;
+
+    final moneyStorageRows =
+        (normalized['MoneyStorageTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => row)
+            .toList() ??
+        <Map>[];
+    final moneyStorageIds = moneyStorageRows
+        .map((row) => row['id'])
+        .whereType<String>()
+        .where((id) => id.trim().isNotEmpty)
+        .toSet();
+
+    final orphanedSavings = savingRows.where((row) {
+      final moneyStorageId = row['moneyStorageId'];
+      return moneyStorageId is! String ||
+          moneyStorageId.trim().isEmpty ||
+          !moneyStorageIds.contains(moneyStorageId);
+    }).toList();
+    if (orphanedSavings.isEmpty) return;
+
+    const fallbackStorageId = 'restored-unassigned-money-storage';
+    if (!moneyStorageIds.contains(fallbackStorageId)) {
+      final firstSaving = orphanedSavings.first;
+      final existingShortNames = moneyStorageRows
+          .map((row) => row['shortName'])
+          .whereType<String>()
+          .toSet();
+      final existingLongNames = moneyStorageRows
+          .map((row) => row['longName'])
+          .whereType<String>()
+          .toSet();
+      final shortName = _uniqueRestoreName('Restored', existingShortNames);
+      final longName = _uniqueRestoreName(
+        'Restored Unassigned',
+        existingLongNames,
+      );
+      moneyStorageRows.add(
+        _normalizeRestoreRow('MoneyStorageTable', {
+          'id': fallbackStorageId,
+          'createdBy': firstSaving['createdBy'] ?? 'restore',
+          'dateCreated': firstSaving['dateCreated'],
+          'dateUpdated': firstSaving['dateUpdated'],
+          'lastModifiedBy': firstSaving['lastModifiedBy'] ?? 'restore',
+          'iconUrl': '',
+          'longName': longName,
+          'shortName': shortName,
+          'type': 'General',
+          'userId': firstSaving['userId'],
+        }, moneyStorageRows.length),
+      );
+      normalized['MoneyStorageTable'] = moneyStorageRows;
+    }
+
+    for (final saving in orphanedSavings) {
+      saving['moneyStorageId'] = fallbackStorageId;
+    }
+  }
+
+  String _uniqueRestoreName(String baseName, Set<String> existingNames) {
+    if (!existingNames.contains(baseName)) return baseName;
+
+    var suffix = 2;
+    while (existingNames.contains('$baseName $suffix')) {
+      suffix++;
+    }
+    return '$baseName $suffix';
+  }
+
+  void _backfillMissingCommitmentsForTasks(Map<String, dynamic> normalized) {
+    final taskRows =
+        (normalized['CommitmentTaskTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => row)
+            .toList() ??
+        <Map>[];
+    if (taskRows.isEmpty) return;
+
+    final savingRows =
+        (normalized['SavingTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => row)
+            .toList() ??
+        <Map>[];
+    final savingIds = savingRows
+        .map((row) => row['id'])
+        .whereType<String>()
+        .where((id) => id.trim().isNotEmpty)
+        .toSet();
+    if (savingIds.isEmpty) return;
+
+    final userRows =
+        (normalized['UserTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => row)
+            .toList() ??
+        <Map>[];
+    final userIds = userRows
+        .map((row) => row['id'])
+        .whereType<String>()
+        .where((id) => id.trim().isNotEmpty)
+        .toSet();
+
+    final commitmentRows =
+        (normalized['CommitmentTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => row)
+            .toList() ??
+        <Map>[];
+    final commitmentIds = commitmentRows
+        .map((row) => row['id'])
+        .whereType<String>()
+        .where((id) => id.trim().isNotEmpty)
+        .toSet();
+
+    const fallbackCommitmentId = 'restored-unassigned-commitment';
+    var needsFallbackCommitment = false;
+
+    for (final task in taskRows) {
+      final commitmentId = task['commitmentId'];
+      if (commitmentId is! String ||
+          commitmentId.trim().isEmpty ||
+          !commitmentIds.contains(commitmentId)) {
+        task['commitmentId'] = fallbackCommitmentId;
+        needsFallbackCommitment = true;
+      }
+
+      final commitmentDetailId = task['commitmentDetailId'];
+      if (commitmentDetailId is! String || commitmentDetailId.trim().isEmpty) {
+        task['commitmentDetailId'] = 'restored-detail-${task['id']}';
       }
     }
+
+    if (needsFallbackCommitment &&
+        !commitmentIds.contains(fallbackCommitmentId)) {
+      final firstTask = taskRows.firstWhere(
+        (task) => task['commitmentId'] == fallbackCommitmentId,
+        orElse: () => taskRows.first,
+      );
+      final sourceSavingId = firstTask['sourceSavingId'];
+      final referredSavingId =
+          sourceSavingId is String && savingIds.contains(sourceSavingId)
+          ? sourceSavingId
+          : savingIds.first;
+      final saving = savingRows.firstWhere(
+        (row) => row['id'] == referredSavingId,
+        orElse: () => savingRows.first,
+      );
+      final userId =
+          saving['userId'] is String && userIds.contains(saving['userId'])
+          ? saving['userId']
+          : userIds.isNotEmpty
+          ? userIds.first
+          : null;
+
+      commitmentRows.add(
+        _normalizeRestoreRow('CommitmentTable', {
+          'id': fallbackCommitmentId,
+          'createdBy': firstTask['createdBy'] ?? 'restore',
+          'dateCreated': firstTask['dateCreated'],
+          'dateUpdated': firstTask['dateUpdated'],
+          'lastModifiedBy': firstTask['lastModifiedBy'] ?? 'restore',
+          'name': 'Restored Unassigned',
+          'description': 'Tasks restored without commitment links.',
+          'referredSavingId': referredSavingId,
+          'userId': userId,
+        }, commitmentRows.length),
+      );
+      normalized['CommitmentTable'] = commitmentRows;
+    }
+  }
+
+  void _nullMissingRef(
+    Map<String, dynamic> normalized,
+    String tableName,
+    String fieldName,
+    Set<String> validIds,
+  ) {
+    final rows = normalized[tableName];
+    if (rows is! List) return;
+
+    for (final row in rows.whereType<Map>()) {
+      final value = row[fieldName];
+      if (value is String &&
+          (value.trim().isEmpty || !validIds.contains(value))) {
+        row[fieldName] = null;
+      }
+    }
+  }
+
+  void _backfillCommitmentDetails(Map<String, dynamic> normalized) {
+    final detailRows =
+        (normalized['CommitmentDetailTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => Map<String, dynamic>.from(row))
+            .toList() ??
+        <Map<String, dynamic>>[];
+    final taskRows =
+        (normalized['CommitmentTaskTable'] as List?)
+            ?.whereType<Map>()
+            .map((row) => Map<String, dynamic>.from(row))
+            .toList() ??
+        <Map<String, dynamic>>[];
+
+    if (taskRows.isEmpty) return;
+
+    final existingDetailIds = detailRows
+        .map((row) => row['id'])
+        .whereType<String>()
+        .toSet();
+    final synthesizedDetails = <Map<String, dynamic>>[];
+
+    for (final task in taskRows) {
+      final detailId = task['commitmentDetailId'];
+      final commitmentId = task['commitmentId'];
+      if (detailId is! String ||
+          detailId.trim().isEmpty ||
+          commitmentId is! String ||
+          existingDetailIds.contains(detailId)) {
+        continue;
+      }
+
+      existingDetailIds.add(detailId);
+      synthesizedDetails.add(
+        _normalizeRestoreRow('CommitmentDetailTable', {
+          'id': detailId,
+          'createdBy': task['createdBy'],
+          'dateCreated': task['dateCreated'],
+          'dateUpdated': task['dateUpdated'],
+          'lastModifiedBy': task['lastModifiedBy'],
+          'amount': task['amount'] ?? 0.0,
+          'description': task['name'] ?? 'Restored commitment detail',
+          'type': 4,
+          'taskType': task['type'] ?? 0,
+          'savingId': task['sourceSavingId'],
+          'targetSavingId': task['targetSavingId'],
+          'payeeId': task['payeeId'],
+          'commitmentId': commitmentId,
+        }, detailRows.length + synthesizedDetails.length),
+      );
+    }
+
+    if (synthesizedDetails.isNotEmpty) {
+      normalized['CommitmentDetailTable'] = [
+        ...detailRows,
+        ...synthesizedDetails,
+      ];
+    }
+  }
+
+  Map<String, dynamic> _normalizeRestoreRow(
+    String tableName,
+    Map<String, dynamic> row,
+    int index,
+  ) {
+    final now = DateTime.now().toIso8601String();
+
+    row.putIfAbsent('id', () => UuidGenerator().v4());
+    row.putIfAbsent('createdBy', () => 'restore');
+    row.putIfAbsent('dateCreated', () => now);
+    row.putIfAbsent('dateUpdated', () => row['dateCreated'] ?? now);
+    row.putIfAbsent('lastModifiedBy', () => row['createdBy'] ?? 'restore');
+
+    switch (tableName) {
+      case 'MoneyStorageTable':
+        row.putIfAbsent('iconUrl', () => '');
+        row.putIfAbsent('type', () => 'General');
+        row.putIfAbsent('displayOrder', () => index);
+        break;
+      case 'SavingTable':
+        row.putIfAbsent('currency', () => 'MYR');
+        row.putIfAbsent('isPublic', () => false);
+        row.putIfAbsent('isHasGoal', () => false);
+        row.putIfAbsent('goal', () => 0.0);
+        row.putIfAbsent('isHasStartDate', () => false);
+        row.putIfAbsent('startDate', () => null);
+        row.putIfAbsent('isHasEndDate', () => false);
+        row.putIfAbsent('endDate', () => null);
+        row.putIfAbsent('isSaveDaily', () => false);
+        row.putIfAbsent('isSaveWeekly', () => false);
+        row.putIfAbsent('isSaveMonthly', () => false);
+        row.putIfAbsent('type', () => 'SAVING');
+        row.putIfAbsent('currentAmount', () => 0.0);
+        row.putIfAbsent('displayOrder', () => index);
+        break;
+      case 'TransactionTable':
+        row.putIfAbsent('description', () => '');
+        row.putIfAbsent('loanId', () => null);
+        break;
+      case 'CategoryTable':
+        row.putIfAbsent('iconFontFamily', () => 'MaterialIcons');
+        row.putIfAbsent('orderIndex', () => index);
+        row.putIfAbsent('isActive', () => true);
+        row.putIfAbsent('createdAt', () => row['dateCreated'] ?? now);
+        break;
+      case 'CommitmentDetailTable':
+        row.putIfAbsent('taskType', () => 0);
+        row.putIfAbsent('linkedCreditCardId', () => null);
+        row.putIfAbsent('eppTotalInstallments', () => null);
+        row.putIfAbsent('eppCompletedInstallments', () => 0);
+        break;
+      case 'CommitmentTaskTable':
+        row.putIfAbsent('isDone', () => false);
+        row.putIfAbsent('type', () => row['isThirdParty'] == true ? 1 : 0);
+        row.putIfAbsent('sourceSavingId', () => row['savingId']);
+        row.putIfAbsent('targetSavingId', () => null);
+        row.putIfAbsent('payeeId', () => null);
+        row.putIfAbsent('note', () => null);
+        row.putIfAbsent('paymentReference', () => null);
+        row.putIfAbsent('transactionId', () => null);
+        break;
+      case 'CreditCardChargeTable':
+        row.putIfAbsent('reservedSavingId', () => null);
+        row.putIfAbsent('status', () => 'posted');
+        row.putIfAbsent('isRebate', () => false);
+        break;
+      case 'CreditCardChargePaymentTable':
+        row.putIfAbsent('deductedSavingId', () => null);
+        break;
+      case 'LoanTable':
+        row.putIfAbsent('status', () => 'active');
+        row.putIfAbsent('noAutoDeduct', () => false);
+        break;
+      case 'SavingsPlanTable':
+        row.putIfAbsent('currentAmount', () => 0.0);
+        row.putIfAbsent('currency', () => 'MYR');
+        row.putIfAbsent('status', () => 'active');
+        row.putIfAbsent('createdAt', () => row['dateCreated'] ?? now);
+        break;
+      case 'SavingsPlanItemTable':
+        row.putIfAbsent('sortOrder', () => (index + 1) * 1000.0);
+        row.putIfAbsent('totalCost', () => 0.0);
+        row.putIfAbsent('depositPaid', () => 0.0);
+        row.putIfAbsent('amountPaid', () => 0.0);
+        row.putIfAbsent('isCompleted', () => false);
+        break;
+      case 'FileStorageTable':
+        row.putIfAbsent('category', () => 'document');
+        row.putIfAbsent('status', () => 'active');
+        row.putIfAbsent('isBackedUp', () => false);
+        break;
+    }
+
+    return row;
   }
 
   /// Restores data directly from [filePath] without opening a file picker.

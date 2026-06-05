@@ -121,20 +121,30 @@ class MoneyStorageScreen extends StatelessWidget {
         onRefresh: () async =>
             context.read<MoneyStorageBloc>().add(LoadMoneyStorageListEvent()),
         child: list.isNotEmpty
-            ? ListView.builder(
+            ? ReorderableListView.builder(
                 padding: const EdgeInsets.all(AppSpacing.lg),
-                itemCount: list.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _buildHeaderCard(
-                      context,
-                      totalBalance: totalBalance,
-                      accountCount: list.length,
-                      negativeCount: negativeCount,
-                    );
-                  }
-                  return _buildMoneyStorageCard(context, list[index - 1]);
+                buildDefaultDragHandles: false,
+                proxyDecorator: _buildDragProxy,
+                header: _buildHeaderCard(
+                  context,
+                  totalBalance: totalBalance,
+                  accountCount: list.length,
+                  negativeCount: negativeCount,
+                ),
+                itemCount: list.length,
+                onReorder: (oldIndex, newIndex) {
+                  final reordered = List<MoneyStorageVO>.from(list);
+                  if (newIndex > oldIndex) newIndex -= 1;
+                  final moved = reordered.removeAt(oldIndex);
+                  reordered.insert(newIndex, moved);
+                  context.read<MoneyStorageBloc>().add(
+                    ReorderMoneyStoragesEvent(
+                      reordered.map((s) => s.moneyStorage.id).toList(),
+                    ),
+                  );
                 },
+                itemBuilder: (context, index) =>
+                    _buildMoneyStorageCard(context, list[index], index),
               )
             : NoMoneyStorageEmptyState(
                 onAdd: () => context.read<MoneyStorageBloc>().add(
@@ -186,10 +196,15 @@ class MoneyStorageScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMoneyStorageCard(BuildContext context, MoneyStorageVO storage) {
+  Widget _buildMoneyStorageCard(
+    BuildContext context,
+    MoneyStorageVO storage,
+    int index,
+  ) {
     final isMinus = storage.amount < 0;
 
     return AppCard(
+      key: ValueKey(storage.moneyStorage.id),
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       onTap: () => context.read<MoneyStorageBloc>().add(
         LoadEditMoneyStorageEvent(storage.moneyStorage.id),
@@ -330,8 +345,37 @@ class MoneyStorageScreen extends StatelessWidget {
               ),
             ],
           ),
+          ReorderableDragStartListener(
+            index: index,
+            child: Padding(
+              padding: const EdgeInsets.only(left: AppSpacing.xs),
+              child: Icon(
+                Icons.drag_handle,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDragProxy(Widget child, int index, Animation<double> animation) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        final curvedValue = Curves.easeOutCubic.transform(animation.value);
+        return Transform.scale(
+          scale: 1 + (curvedValue * 0.02),
+          child: Material(
+            color: Colors.transparent,
+            elevation: 8 * curvedValue,
+            shadowColor: Theme.of(context).shadowColor.withValues(alpha: 0.18),
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 

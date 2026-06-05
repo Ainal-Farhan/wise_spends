@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:wise_spends/features/saving/data/repositories/i_money_storage_repository.dart';
+import 'package:wise_spends/features/saving/domain/entities/money_storage_vo.dart';
 import 'money_storage_event.dart';
 import 'money_storage_state.dart';
 
@@ -13,6 +14,7 @@ class MoneyStorageBloc extends Bloc<MoneyStorageEvent, MoneyStorageState> {
     on<AddMoneyStorageEvent>(_onAddMoneyStorage);
     on<UpdateMoneyStorageEvent>(_onUpdateMoneyStorage);
     on<DeleteMoneyStorageEvent>(_onDeleteMoneyStorage);
+    on<ReorderMoneyStoragesEvent>(_onReorderMoneyStorages);
   }
 
   Future<void> _onLoadMoneyStorageList(
@@ -98,6 +100,30 @@ class MoneyStorageBloc extends Bloc<MoneyStorageEvent, MoneyStorageState> {
       emit(MoneyStorageSuccess('Successfully deleted money storage'));
       // Reload the list after successful deletion
       add(LoadMoneyStorageListEvent());
+    } catch (e) {
+      emit(MoneyStorageError(e.toString()));
+    }
+  }
+
+  Future<void> _onReorderMoneyStorages(
+    ReorderMoneyStoragesEvent event,
+    Emitter<MoneyStorageState> emit,
+  ) async {
+    try {
+      final currentState = state;
+      if (currentState is MoneyStorageListLoaded) {
+        final storageMap = {
+          for (final storage in currentState.moneyStorageList)
+            storage.moneyStorage.id: storage,
+        };
+        final reorderedStorages = event.orderedMoneyStorageIds
+            .map((id) => storageMap[id])
+            .whereType<MoneyStorageVO>()
+            .toList();
+        emit(MoneyStorageListLoaded(reorderedStorages));
+      }
+
+      await _repository.reorderMoneyStorages(event.orderedMoneyStorageIds);
     } catch (e) {
       emit(MoneyStorageError(e.toString()));
     }

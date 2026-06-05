@@ -22,4 +22,5 @@ abstract class IMoneyStorageRepository
   Future<void> addMoneyStorage(String shortName, String longName);
   Future<void> updateMoneyStorage(String id, String shortName, String longName);
   Future<void> deleteMoneyStorage(String id);
+  Future<void> reorderMoneyStorages(List<String> orderedMoneyStorageIds);
 }

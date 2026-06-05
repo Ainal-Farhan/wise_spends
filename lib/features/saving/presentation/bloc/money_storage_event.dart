@@ -53,3 +53,12 @@ class DeleteMoneyStorageEvent extends MoneyStorageEvent {
   @override
   List<Object> get props => [id];
 }
+
+class ReorderMoneyStoragesEvent extends MoneyStorageEvent {
+  final List<String> orderedMoneyStorageIds;
+
+  const ReorderMoneyStoragesEvent(this.orderedMoneyStorageIds);
+
+  @override
+  List<Object> get props => [orderedMoneyStorageIds];
+}

@@ -1,5 +1,4 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
-import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/data/db/app_database.dart';
 import 'package:wise_spends/data/db/composite/saving_with_transactions.dart';
 import 'package:wise_spends/domain/usecases/i_manager.dart';
@@ -13,14 +12,15 @@ abstract class ISavingManager extends IManager {
 
   Future<List<ListSavingVO>> loadListSavingVOList();
 
-  Future<SvngSaving> addNewSaving(
-      {required String name,
-      required double initialAmount,
-      required bool isHasGoal,
-      required double goalAmount,
-      required String moneyStorageId,
-      required SavingTableType savingTableType,
-      String? categoryId});
+  Future<SvngSaving> addNewSaving({
+    required String name,
+    required double initialAmount,
+    required bool isHasGoal,
+    required double goalAmount,
+    required String moneyStorageId,
+    required String savingType,
+    String? categoryId,
+  });
 
   Future<SvngMoneyStorage> addNewMoneyStorage({
     required String shortName,
@@ -40,6 +40,10 @@ abstract class ISavingManager extends IManager {
 
   Future<void> updateSaving({required EditSavingFormVO editSavingFormVO});
 
+  Future<void> reorderSavings(List<String> orderedSavingIds);
+
+  Future<void> reorderMoneyStorages(List<String> orderedMoneyStorageIds);
+
   Future<SvngSaving?> getSavingById(String savingId);
 
   Future<List<SvngMoneyStorage>> getCurrentUserMoneyStorageList();
@@ -51,5 +55,5 @@ abstract class ISavingManager extends IManager {
   Future<bool> deleteSelectedMoneyStorage(String id);
 
   Future<List<DropDownValueModel>>
-      getCurrentUserMoneyStorageDropDownValueModelList();
+  getCurrentUserMoneyStorageDropDownValueModelList();
 }

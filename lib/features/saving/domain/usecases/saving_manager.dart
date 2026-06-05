@@ -45,7 +45,7 @@ class SavingManager extends ISavingManager {
     required bool isHasGoal,
     required double goalAmount,
     required String moneyStorageId,
-    required SavingTableType savingTableType,
+    required String savingType,
     String? categoryId,
   }) async {
     final storage = await _moneyStorageService
@@ -65,7 +65,8 @@ class SavingManager extends ISavingManager {
       isHasGoal: Value(isHasGoal),
       goal: Value(goalAmount),
       moneyStorageId: Value(moneyStorageId),
-      type: savingTableType.value,
+      type: SavingTableType.normalizeInput(savingType),
+      displayOrder: Value(await _nextSavingDisplayOrder()),
       categoryId: Value(categoryId),
     );
 
@@ -154,7 +155,7 @@ class SavingManager extends ISavingManager {
         editSavingFormVO.isHasGoal ? editSavingFormVO.goalAmount : .0,
       ),
       moneyStorageId: Value(editSavingFormVO.moneyStorageId),
-      type: Value(editSavingFormVO.savingTableType!.value),
+      type: Value(SavingTableType.normalizeInput(editSavingFormVO.savingType)),
       categoryId: Value(editSavingFormVO.categoryId),
       dateUpdated: Value(DateTime.now()),
     );
@@ -245,6 +246,7 @@ class SavingManager extends ISavingManager {
           type: type,
           dateCreated: Value(DateTime.now()),
           userId: Value(_startupManager.currentUser.id),
+          displayOrder: Value(await _nextMoneyStorageDisplayOrder()),
         );
 
     return await _moneyStorageService.add(moneyStorageTableCompanion);
@@ -263,6 +265,56 @@ class SavingManager extends ISavingManager {
     );
 
     await _moneyStorageService.updatePart(updatedMoneyStorage);
+  }
+
+  @override
+  Future<void> reorderSavings(List<String> orderedSavingIds) async {
+    for (var index = 0; index < orderedSavingIds.length; index++) {
+      await _savingService.updatePart(
+        SavingTableCompanion(
+          id: Value(orderedSavingIds[index]),
+          displayOrder: Value(index),
+          dateUpdated: Value(DateTime.now()),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<void> reorderMoneyStorages(List<String> orderedMoneyStorageIds) async {
+    for (var index = 0; index < orderedMoneyStorageIds.length; index++) {
+      await _moneyStorageService.updatePart(
+        MoneyStorageTableCompanion(
+          id: Value(orderedMoneyStorageIds[index]),
+          displayOrder: Value(index),
+          dateUpdated: Value(DateTime.now()),
+        ),
+      );
+    }
+  }
+
+  Future<int> _nextSavingDisplayOrder() async {
+    final savings = await _savingService
+        .watchAllSavingWithMoneyStorageBasedOnUserId(
+          _startupManager.currentUser.id,
+        )
+        .first;
+    if (savings.isEmpty) return 0;
+    final maxOrder = savings
+        .map((s) => s.saving.displayOrder)
+        .reduce((value, element) => value > element ? value : element);
+    return maxOrder + 1;
+  }
+
+  Future<int> _nextMoneyStorageDisplayOrder() async {
+    final storages = await _moneyStorageService
+        .watchMoneyStorageListByUserId(_startupManager.currentUser.id)
+        .first;
+    if (storages.isEmpty) return 0;
+    final maxOrder = storages
+        .map((s) => s.displayOrder)
+        .reduce((value, element) => value > element ? value : element);
+    return maxOrder + 1;
   }
 
   @override

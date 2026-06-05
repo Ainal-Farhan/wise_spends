@@ -9,6 +9,7 @@ class MoneyStorageTable extends BaseEntityTable {
   TextColumn get longName => text().unique()();
   TextColumn get shortName => text().unique()();
   TextColumn get type => text()();
+  IntColumn get displayOrder => integer().withDefault(const Constant(0))();
   TextColumn get userId => text().nullable().references(UserTable, #id)();
 
   @override
@@ -18,6 +19,7 @@ class MoneyStorageTable extends BaseEntityTable {
       'longName': longName.name,
       'shortName': shortName.name,
       'type': type.name,
+      'displayOrder': displayOrder.name,
       'userId': userId.name,
     };
   }

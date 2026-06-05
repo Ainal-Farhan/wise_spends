@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:wise_spends/core/constants/constant/domain/saving_table_type_enum.dart';
 import 'package:wise_spends/features/saving/data/repositories/i_saving_repository.dart';
+import 'package:wise_spends/features/saving/domain/entities/list_saving_vo.dart';
 import 'savings_event.dart';
 import 'savings_state.dart';
 
@@ -14,6 +16,7 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
     on<AddSavingsEvent>(_onAddSavings);
     on<UpdateSavingsEvent>(_onUpdateSavings);
     on<DeleteSavingEvent>(_onDeleteSaving);
+    on<ReorderSavingsEvent>(_onReorderSavings);
   }
 
   Future<void> _onDeleteSaving(
@@ -76,10 +79,12 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
     emit(SavingsLoading());
     try {
       final moneyStorageOptions = await _repository.getMoneyStorageOptions();
+      final savingTypeOptions = await _loadSavingTypeOptions();
       emit(
         SavingsFormLoaded(
           isEditing: false,
           moneyStorageOptions: moneyStorageOptions,
+          savingTypeOptions: savingTypeOptions,
         ),
       );
     } catch (e) {
@@ -95,6 +100,7 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
     try {
       final saving = await _repository.getSavingById(event.id);
       final moneyStorageOptions = await _repository.getMoneyStorageOptions();
+      final savingTypeOptions = await _loadSavingTypeOptions();
 
       if (saving != null) {
         emit(
@@ -102,6 +108,7 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
             isEditing: true,
             saving: saving,
             moneyStorageOptions: moneyStorageOptions,
+            savingTypeOptions: savingTypeOptions,
           ),
         );
       } else {
@@ -174,5 +181,49 @@ class SavingsBloc extends Bloc<SavingsEvent, SavingsState> {
     } catch (e) {
       emit(SavingsError(e.toString()));
     }
+  }
+
+  Future<void> _onReorderSavings(
+    ReorderSavingsEvent event,
+    Emitter<SavingsState> emit,
+  ) async {
+    try {
+      final currentState = state;
+      if (currentState is SavingsListLoaded) {
+        final savingMap = {
+          for (final saving in currentState.savingsList)
+            saving.saving.id: saving,
+        };
+        final reorderedSavings = event.orderedSavingIds
+            .map((id) => savingMap[id])
+            .whereType<ListSavingVO>()
+            .toList();
+        emit(SavingsListLoaded(reorderedSavings));
+      }
+
+      await _repository.reorderSavings(event.orderedSavingIds);
+    } catch (e) {
+      emit(SavingsError(e.toString()));
+    }
+  }
+
+  Future<List<String>> _loadSavingTypeOptions() async {
+    final options = <String>{
+      for (final type in SavingTableType.values) type.label,
+    };
+
+    try {
+      final savings = await _repository.getSavingsList();
+      for (final saving in savings) {
+        final label = SavingTableType.displayLabel(saving.saving.type).trim();
+        if (label.isNotEmpty) options.add(label);
+      }
+    } catch (_) {
+      // Form can still open with built-in options if savings fail to load.
+    }
+
+    final sortedOptions = options.toList()
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return sortedOptions;
   }
 }

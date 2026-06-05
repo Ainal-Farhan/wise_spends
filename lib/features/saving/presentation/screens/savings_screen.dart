@@ -110,6 +110,7 @@ class _SavingsScreenContent extends StatelessWidget {
             isEditing: state.isEditing,
             saving: state.saving,
             moneyStorageList: state.moneyStorageOptions,
+            savingTypeOptions: state.savingTypeOptions,
           );
         } else if (state is SavingTransactionFormLoaded) {
           return _buildTransactionForm(context, state.savingId);
@@ -177,7 +178,7 @@ class _SavingsScreenContent extends StatelessWidget {
               );
             }
             final entry = savingGroupMap.entries.elementAt(index - 1);
-            return _buildSavingGroup(context, entry);
+            return _buildSavingGroup(context, entry, savingsList);
           },
         ),
       ),
@@ -241,8 +242,9 @@ class _SavingsScreenContent extends StatelessWidget {
   Widget _buildSavingGroup(
     BuildContext context,
     MapEntry<String, List<ListSavingVO>> entry,
+    List<ListSavingVO> allSavings,
   ) {
-    final label = SavingTableType.findByValue(entry.key)?.label ?? entry.key;
+    final label = SavingTableType.displayLabel(entry.key);
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
       child: Column(
@@ -270,13 +272,46 @@ class _SavingsScreenContent extends StatelessWidget {
                 '${entry.value.length == 1 ? 'account' : 'accounts'}',
           ),
           const SizedBox(height: AppSpacing.md),
-          ...entry.value.map((s) => _buildSavingCard(context, s)),
+          ReorderableListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            buildDefaultDragHandles: false,
+            proxyDecorator: _buildDragProxy,
+            itemCount: entry.value.length,
+            onReorder: (oldIndex, newIndex) {
+              final reorderedGroup = List<ListSavingVO>.from(entry.value);
+              if (newIndex > oldIndex) newIndex -= 1;
+              final moved = reorderedGroup.removeAt(oldIndex);
+              reorderedGroup.insert(newIndex, moved);
+
+              final orderedIds = <String>[];
+              var insertedGroup = false;
+              for (final saving in allSavings) {
+                if (saving.saving.type == entry.key) {
+                  if (!insertedGroup) {
+                    orderedIds.addAll(reorderedGroup.map((s) => s.saving.id));
+                    insertedGroup = true;
+                  }
+                } else {
+                  orderedIds.add(saving.saving.id);
+                }
+              }
+
+              context.read<SavingsBloc>().add(ReorderSavingsEvent(orderedIds));
+            },
+            itemBuilder: (context, index) =>
+                _buildSavingCard(context, entry.value[index], index),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSavingCard(BuildContext context, ListSavingVO saving) {
+  Widget _buildSavingCard(
+    BuildContext context,
+    ListSavingVO saving,
+    int reorderIndex,
+  ) {
     final isMinus = saving.saving.currentAmount < 0;
     final hasGoal = saving.saving.isHasGoal && saving.saving.goal > 0;
     final progress = hasGoal
@@ -285,6 +320,7 @@ class _SavingsScreenContent extends StatelessWidget {
     final hasCategory = saving.saving.categoryId != null;
 
     return AppCard(
+      key: ValueKey(saving.saving.id),
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       onTap: () => context.read<SavingsBloc>().add(
         LoadEditSavingsEvent(saving.saving.id),
@@ -400,6 +436,16 @@ class _SavingsScreenContent extends StatelessWidget {
                   ),
                 ],
               ),
+              ReorderableDragStartListener(
+                index: reorderIndex,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: AppSpacing.xs),
+                  child: Icon(
+                    Icons.drag_handle,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
@@ -475,11 +521,31 @@ class _SavingsScreenContent extends StatelessWidget {
     );
   }
 
+  Widget _buildDragProxy(Widget child, int index, Animation<double> animation) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (context, child) {
+        final curvedValue = Curves.easeOutCubic.transform(animation.value);
+        return Transform.scale(
+          scale: 1 + (curvedValue * 0.02),
+          child: Material(
+            color: Colors.transparent,
+            elevation: 8 * curvedValue,
+            shadowColor: Theme.of(context).shadowColor.withValues(alpha: 0.18),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
   Widget _buildSavingsForm(
     BuildContext context, {
     required bool isEditing,
     dynamic saving,
     required List<dynamic> moneyStorageList,
+    required List<String> savingTypeOptions,
   }) {
     final formKey = GlobalKey<FormState>();
     final nameController = TextEditingController(
@@ -493,9 +559,12 @@ class _SavingsScreenContent extends StatelessWidget {
     final goalAmountController = TextEditingController(
       text: saving != null ? saving.saving.goal.toStringAsFixed(2) : '',
     );
+    final savingTypeController = TextEditingController(
+      text: saving != null
+          ? SavingTableType.displayLabel(saving.saving.type)
+          : SavingTableType.saving.label,
+    );
     bool isHasGoal = saving?.saving.isHasGoal ?? false;
-    String selectedSavingType =
-        saving?.saving.type ?? SavingTableType.values.first.value;
     String? selectedMoneyStorageId = saving?.moneyStorage?.id;
     String? selectedCategoryId = saving?.saving.categoryId;
 
@@ -514,11 +583,12 @@ class _SavingsScreenContent extends StatelessWidget {
         nameController: nameController,
         initialAmountController: initialAmountController,
         goalAmountController: goalAmountController,
+        savingTypeController: savingTypeController,
         isHasGoal: isHasGoal,
-        selectedSavingType: selectedSavingType,
         selectedMoneyStorageId: selectedMoneyStorageId,
         selectedCategoryId: selectedCategoryId,
         moneyStorageItems: moneyStorageItems,
+        savingTypeOptions: savingTypeOptions,
         isEditing: isEditing,
         saving: saving,
       ),
@@ -550,11 +620,12 @@ class _SavingsFormContent extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController initialAmountController;
   final TextEditingController goalAmountController;
+  final TextEditingController savingTypeController;
   final bool isHasGoal;
-  final String selectedSavingType;
   final String? selectedMoneyStorageId;
   final String? selectedCategoryId;
   final List<DropdownMenuItem<String>> moneyStorageItems;
+  final List<String> savingTypeOptions;
   final bool isEditing;
   final dynamic saving;
 
@@ -563,11 +634,12 @@ class _SavingsFormContent extends StatefulWidget {
     required this.nameController,
     required this.initialAmountController,
     required this.goalAmountController,
+    required this.savingTypeController,
     required this.isHasGoal,
-    required this.selectedSavingType,
     required this.selectedMoneyStorageId,
     required this.selectedCategoryId,
     required this.moneyStorageItems,
+    required this.savingTypeOptions,
     required this.isEditing,
     required this.saving,
   });
@@ -577,18 +649,27 @@ class _SavingsFormContent extends StatefulWidget {
 }
 
 class _SavingsFormContentState extends State<_SavingsFormContent> {
+  static const String _customSavingTypeValue = '__custom_saving_type__';
+
   String? _selectedCategoryId;
   bool _isHasGoal = false;
-  String _selectedSavingType = '';
   String? _selectedMoneyStorageId;
+  String? _selectedSavingTypeValue;
+  bool _isCustomSavingType = false;
 
   @override
   void initState() {
     super.initState();
     _selectedCategoryId = widget.selectedCategoryId;
     _isHasGoal = widget.isHasGoal;
-    _selectedSavingType = widget.selectedSavingType;
     _selectedMoneyStorageId = widget.selectedMoneyStorageId;
+    final currentSavingType = widget.savingTypeController.text.trim();
+    if (widget.savingTypeOptions.contains(currentSavingType)) {
+      _selectedSavingTypeValue = currentSavingType;
+    } else {
+      _selectedSavingTypeValue = _customSavingTypeValue;
+      _isCustomSavingType = currentSavingType.isNotEmpty;
+    }
   }
 
   @override
@@ -685,22 +766,50 @@ class _SavingsFormContentState extends State<_SavingsFormContent> {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   DropdownButtonFormField<String>(
-                    initialValue: _selectedSavingType,
+                    initialValue: _selectedSavingTypeValue,
                     decoration: InputDecoration(
                       labelText: 'general.saving_type'.tr,
                       prefixIcon: const Icon(Icons.category),
                     ),
-                    items: SavingTableType.values
-                        .map(
-                          (t) => DropdownMenuItem(
-                            value: t.value,
-                            child: Text(t.label),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (v) =>
-                        setState(() => _selectedSavingType = v ?? 'saving'),
+                    items: [
+                      ...widget.savingTypeOptions.map(
+                        (type) =>
+                            DropdownMenuItem(value: type, child: Text(type)),
+                      ),
+                      const DropdownMenuItem(
+                        value: _customSavingTypeValue,
+                        child: Text('Add custom type'),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      setState(() {
+                        _selectedSavingTypeValue = v;
+                        _isCustomSavingType = v == _customSavingTypeValue;
+                        if (!_isCustomSavingType && v != null) {
+                          widget.savingTypeController.text = v;
+                        } else if (widget.savingTypeOptions.contains(
+                          widget.savingTypeController.text.trim(),
+                        )) {
+                          widget.savingTypeController.clear();
+                        }
+                      });
+                    },
+                    validator: (v) =>
+                        v == null ? 'error.validation.required'.tr : null,
                   ),
+                  if (_isCustomSavingType) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    AppTextField(
+                      label: 'Custom Saving Type',
+                      controller: widget.savingTypeController,
+                      prefixIcon: Icons.edit,
+                      textCapitalization: TextCapitalization.words,
+                      showClearButton: true,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? 'error.validation.required'.tr
+                          : null,
+                    ),
+                  ],
                   const SizedBox(height: AppSpacing.md),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedMoneyStorageId,
@@ -763,7 +872,8 @@ class _SavingsFormContentState extends State<_SavingsFormContent> {
                                     goalAmount: goalAmount,
                                     moneyStorageId:
                                         _selectedMoneyStorageId ?? '',
-                                    savingType: _selectedSavingType,
+                                    savingType:
+                                        widget.savingTypeController.text,
                                     categoryId: _selectedCategoryId,
                                   ),
                                 );
@@ -776,7 +886,8 @@ class _SavingsFormContentState extends State<_SavingsFormContent> {
                                     goalAmount: goalAmount,
                                     moneyStorageId:
                                         _selectedMoneyStorageId ?? '',
-                                    savingType: _selectedSavingType,
+                                    savingType:
+                                        widget.savingTypeController.text,
                                     categoryId: _selectedCategoryId,
                                   ),
                                 );

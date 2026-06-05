@@ -23,10 +23,11 @@ class SavingTable extends BaseEntityTable {
       boolean().withDefault(const Constant(false))();
   TextColumn get type => text()();
   RealColumn get currentAmount => real().withDefault(const Constant(.0))();
+  IntColumn get displayOrder => integer().withDefault(const Constant(0))();
   TextColumn get userId => text().nullable().references(UserTable, #id)();
   TextColumn get moneyStorageId =>
       text().nullable().references(MoneyStorageTable, #id)();
-  
+
   /// Optional default category for transactions from this saving account
   TextColumn get categoryId =>
       text().nullable().references(CategoryTable, #id)();
@@ -53,6 +54,7 @@ class SavingTable extends BaseEntityTable {
       'isSaveWeekly': isSaveWeekly.name,
       'isSaveMonthly': isSaveMonthly.name,
       'currentAmount': currentAmount.name,
+      'displayOrder': displayOrder.name,
       'userId': userId.name,
       'moneyStorageId': moneyStorageId.name,
       'categoryId': categoryId.name,

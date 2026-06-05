@@ -102,3 +102,12 @@ class DeleteSavingEvent extends SavingsEvent {
   @override
   List<Object> get props => [id];
 }
+
+class ReorderSavingsEvent extends SavingsEvent {
+  final List<String> orderedSavingIds;
+
+  const ReorderSavingsEvent(this.orderedSavingIds);
+
+  @override
+  List<Object> get props => [orderedSavingIds];
+}

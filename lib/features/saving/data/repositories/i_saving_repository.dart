@@ -51,6 +51,8 @@ abstract class ISavingRepository
 
   Future<void> deleteSaving(String id);
 
+  Future<void> reorderSavings(List<String> orderedSavingIds);
+
   Future<List<SvngMoneyStorage>> getMoneyStorageOptions();
 
   Future<List<ListSavingVO>> getDailyUsageSavings();

@@ -26,15 +26,22 @@ class SavingsFormLoaded extends SavingsState {
   final bool isEditing;
   final ListSavingVO? saving;
   final List<SvngMoneyStorage> moneyStorageOptions;
+  final List<String> savingTypeOptions;
 
   const SavingsFormLoaded({
     required this.isEditing,
     this.saving,
     required this.moneyStorageOptions,
+    required this.savingTypeOptions,
   });
 
   @override
-  List<Object?> get props => [isEditing, saving, moneyStorageOptions];
+  List<Object?> get props => [
+    isEditing,
+    saving,
+    moneyStorageOptions,
+    savingTypeOptions,
+  ];
 }
 
 class SavingTransactionFormLoaded extends SavingsState {

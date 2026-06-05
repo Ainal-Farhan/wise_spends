@@ -125,8 +125,7 @@ class BackupService {
     try {
       final result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
-        type: FileType.custom,
-        allowedExtensions: ['zip', 'json', 'sqlite'],
+        type: FileType.any,
       );
       if (result == null || result.files.isEmpty) return false;
       final filePath = result.files.single.path;

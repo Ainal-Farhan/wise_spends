@@ -47,9 +47,9 @@ class SavingRepository extends ISavingRepository {
     String? categoryId,
   }) async {
     try {
-      final savingTypeEnum = SavingTableType.findByValue(savingType);
-      if (savingTypeEnum == null) {
-        throw Exception('Invalid saving type: $savingType');
+      final normalizedSavingType = SavingTableType.normalizeInput(savingType);
+      if (normalizedSavingType.isEmpty) {
+        throw Exception('Saving type is required');
       }
 
       await SingletonUtil.getSingleton<IManagerLocator>()!
@@ -60,7 +60,7 @@ class SavingRepository extends ISavingRepository {
             isHasGoal: isHasGoal,
             goalAmount: goalAmount,
             moneyStorageId: moneyStorageId,
-            savingTableType: savingTypeEnum,
+            savingType: normalizedSavingType,
             categoryId: categoryId,
           );
     } catch (e) {
@@ -80,9 +80,9 @@ class SavingRepository extends ISavingRepository {
     String? categoryId,
   }) async {
     try {
-      final savingTypeEnum = SavingTableType.findByValue(savingType);
-      if (savingTypeEnum == null) {
-        throw Exception('Invalid saving type: $savingType');
+      final normalizedSavingType = SavingTableType.normalizeInput(savingType);
+      if (normalizedSavingType.isEmpty) {
+        throw Exception('Saving type is required');
       }
 
       final editSavingFormVO = EditSavingFormVO(
@@ -92,7 +92,7 @@ class SavingRepository extends ISavingRepository {
         goalAmount: goalAmount,
         isHasGoal: isHasGoal,
         moneyStorageId: moneyStorageId,
-        savingTableType: savingTypeEnum,
+        savingType: normalizedSavingType,
         categoryId: categoryId,
       );
 
@@ -112,6 +112,17 @@ class SavingRepository extends ISavingRepository {
           .deleteSelectedSaving(id);
     } catch (e) {
       throw Exception('Failed to delete saving: $e');
+    }
+  }
+
+  @override
+  Future<void> reorderSavings(List<String> orderedSavingIds) async {
+    try {
+      await SingletonUtil.getSingleton<IManagerLocator>()!
+          .getSavingManager()
+          .reorderSavings(orderedSavingIds);
+    } catch (e) {
+      throw Exception('Failed to reorder savings: $e');
     }
   }
 
@@ -143,12 +154,18 @@ class SavingRepository extends ISavingRepository {
   @override
   Stream<List<SavingWithMoneyStorage>>
   watchSavingListWithMoneyStorageBasedOnUserId(String userId) {
-    final query = db.select(db.savingTable).join([
-      innerJoin(
-        db.moneyStorageTable,
-        db.moneyStorageTable.id.equalsExp(db.savingTable.moneyStorageId),
-      ),
-    ])..where(db.savingTable.userId.equals(userId));
+    final query =
+        db.select(db.savingTable).join([
+            innerJoin(
+              db.moneyStorageTable,
+              db.moneyStorageTable.id.equalsExp(db.savingTable.moneyStorageId),
+            ),
+          ])
+          ..where(db.savingTable.userId.equals(userId))
+          ..orderBy([
+            OrderingTerm.asc(db.savingTable.displayOrder),
+            OrderingTerm.asc(db.savingTable.dateCreated),
+          ]);
 
     return query.watch().map(
       (rows) => rows

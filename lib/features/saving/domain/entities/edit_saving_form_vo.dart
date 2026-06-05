@@ -8,9 +8,8 @@ class EditSavingFormVO implements IVO {
   late double goalAmount;
   late bool isHasGoal;
   late String moneyStorageId;
-  SavingTableType? savingTableType;
+  late String savingType;
   String? categoryId;
-
 
   EditSavingFormVO({
     required this.savingId,
@@ -19,7 +18,7 @@ class EditSavingFormVO implements IVO {
     required this.goalAmount,
     required this.isHasGoal,
     required this.moneyStorageId,
-    required this.savingTableType,
+    required this.savingType,
     this.categoryId,
   });
 
@@ -32,10 +31,9 @@ class EditSavingFormVO implements IVO {
     moneyStorageId = json['moneyStorageId'];
     categoryId = json['categoryId'];
     String? savingTableTypeValue = json['savingTableType'];
-
-    if (savingTableTypeValue != null) {
-      savingTableType = SavingTableType.findByValue(savingTableTypeValue);
-    }
+    savingType = savingTableTypeValue != null
+        ? SavingTableType.normalizeInput(savingTableTypeValue)
+        : SavingTableType.saving.value;
   }
 
   @override
@@ -47,9 +45,7 @@ class EditSavingFormVO implements IVO {
     data['goalAmount'] = goalAmount;
     data['isHasGoal'] = isHasGoal;
     data['moneyStorageId'] = moneyStorageId;
-    if (savingTableType != null) {
-      data['savingTableType'] = savingTableType!.value;
-    }
+    data['savingTableType'] = savingType;
     if (categoryId != null) {
       data['categoryId'] = categoryId;
     }
