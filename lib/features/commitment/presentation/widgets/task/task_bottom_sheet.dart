@@ -42,6 +42,7 @@ void showTaskBottomSheet({
 }) {
   showModalBottomSheet(
     context: context,
+    showDragHandle: false,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (_) => _TaskBottomSheet(
@@ -176,8 +177,8 @@ class _TaskBottomSheetState extends State<_TaskBottomSheet> {
       ..note = _selectedType == CommitmentTaskType.creditCardCharge
           ? widget.initial?.note
           : (_noteController.text.trim().isEmpty
-              ? null
-              : _noteController.text.trim())
+                ? null
+                : _noteController.text.trim())
       ..paymentReference = _referenceController.text.trim().isEmpty
           ? null
           : _referenceController.text.trim();

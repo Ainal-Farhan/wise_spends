@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 
 /// Hidden utility menu for accessing developer/debug tools
-/// 
+///
 /// This screen provides access to:
 /// - Log Viewer
 /// - Log Settings
@@ -152,18 +152,12 @@ class HiddenUtilityMenuScreen extends StatelessWidget {
         ),
         child: Icon(icon, color: color, size: 20),
       ),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
       subtitle: Text(
         subtitle,
         style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
       ),
-      trailing: Icon(
-        Icons.chevron_right,
-        color: Colors.grey.shade400,
-      ),
+      trailing: Icon(Icons.chevron_right, color: Colors.grey.shade400),
       onTap: onTap,
     );
   }
@@ -219,6 +213,7 @@ class HiddenUtilityMenuScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       backgroundColor: Colors.transparent,
       builder: (context) => const HiddenUtilityMenuScreen(),
     );

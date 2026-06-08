@@ -264,6 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     showModalBottomSheet(
       context: context,
+      showDragHandle: false,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
@@ -311,6 +312,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showMoreOptions(BuildContext context, UserProfile profile) {
     showModalBottomSheet(
+      showDragHandle: false,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),

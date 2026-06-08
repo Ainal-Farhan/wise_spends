@@ -450,6 +450,8 @@ class TransactionRepository extends ITransactionRepository {
         break;
       case TransactionType.loanDisbursement:
       case TransactionType.loanRepayment:
+      case TransactionType.lendingDisbursement:
+      case TransactionType.lendingRepayment:
         return;
     }
 
@@ -511,6 +513,7 @@ class TransactionRepository extends ITransactionRepository {
       commitmentTaskId: transaction.commitmentTaskId,
       payeeId: transaction.payeeId,
       loanId: transaction.loanId,
+      lendingId: transaction.lendingId,
       date: transaction.transactionDateTime ?? transaction.dateCreated,
       note: transaction.note,
       createdAt: transaction.dateCreated,

@@ -27,6 +27,7 @@ import 'package:wise_spends/data/db/domain/budget/index.dart';
 import 'package:wise_spends/data/db/domain/savings_plan/index.dart';
 import 'package:wise_spends/data/db/domain/credit_card/index.dart';
 import 'package:wise_spends/data/db/domain/loan/index.dart';
+import 'package:wise_spends/data/db/domain/lending/index.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 
 part 'app_database.g.dart';
@@ -42,6 +43,7 @@ part 'app_database.g.dart';
     ...Transaction.tableList,
     ...CreditCard.tableList,
     ...Loan.tableList,
+    ...Lending.tableList,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -52,7 +54,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration {
@@ -117,6 +119,18 @@ class AppDatabase extends _$AppDatabase {
         if (from < 9) {
           await m.addColumn(savingTable, savingTable.displayOrder);
           await m.addColumn(moneyStorageTable, moneyStorageTable.displayOrder);
+        }
+        if (from < 10) {
+          await m.createTable(lendingTable);
+          await m.createTable(lendingRepaymentTable);
+          await m.addColumn(transactionTable, transactionTable.lendingId);
+        }
+        if (from < 11) {
+          await m.addColumn(
+            creditCardTable,
+            creditCardTable.cardType as GeneratedColumn,
+          );
+          await m.addColumn(creditCardTable, creditCardTable.providerName);
         }
       },
       beforeOpen: (details) async {
@@ -394,6 +408,7 @@ class AppDatabase extends _$AppDatabase {
       'SavingTable': 40,
       'CreditCardTable': 41,
       'LoanTable': 42,
+      'LendingTable': 43,
       'CommitmentTable': 43,
       'SpendingBudgetTable': 44,
       'SavingsPlanTable': 45,
@@ -402,6 +417,7 @@ class AppDatabase extends _$AppDatabase {
       'CreditCardChargeTable': 52,
       'CreditCardPaymentTable': 53,
       'LoanRepaymentTable': 54,
+      'LendingRepaymentTable': 55,
       'SavingsPlanItemTable': 55,
       'SavingsPlanDepositTable': 56,
       'SavingsPlanSpendingTable': 57,
@@ -482,6 +498,9 @@ class AppDatabase extends _$AppDatabase {
     );
     _nullMissingRef(normalized, 'TransactionTable', 'payeeId', payeeIds);
     _nullMissingRef(normalized, 'TransactionTable', 'loanId', loanIds);
+    final lendingIds = _restoreIds(normalized, 'LendingTable');
+    _nullMissingRef(normalized, 'TransactionTable', 'lendingId', lendingIds);
+    _nullMissingRef(normalized, 'LendingTable', 'userId', userIds);
 
     _nullMissingRef(normalized, 'CommitmentDetailTable', 'savingId', savingIds);
     _nullMissingRef(
@@ -864,6 +883,7 @@ class AppDatabase extends _$AppDatabase {
       case 'TransactionTable':
         row.putIfAbsent('description', () => '');
         row.putIfAbsent('loanId', () => null);
+        row.putIfAbsent('lendingId', () => null);
         break;
       case 'CategoryTable':
         row.putIfAbsent('iconFontFamily', () => 'MaterialIcons');
@@ -898,6 +918,14 @@ class AppDatabase extends _$AppDatabase {
       case 'LoanTable':
         row.putIfAbsent('status', () => 'active');
         row.putIfAbsent('noAutoDeduct', () => false);
+        break;
+      case 'LendingTable':
+        row.putIfAbsent('status', () => 'active');
+        row.putIfAbsent('noAutoDeduct', () => false);
+        break;
+      case 'CreditCardTable':
+        row.putIfAbsent('cardType', () => 'credit_card');
+        row.putIfAbsent('providerName', () => null);
         break;
       case 'SavingsPlanTable':
         row.putIfAbsent('currentAmount', () => 0.0);

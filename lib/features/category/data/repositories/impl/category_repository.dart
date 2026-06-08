@@ -140,6 +140,8 @@ class CategoryRepository extends ICategoryRepository {
       case TransactionType.budgetPlanExpense:
       case TransactionType.loanDisbursement:
       case TransactionType.loanRepayment:
+      case TransactionType.lendingDisbursement:
+      case TransactionType.lendingRepayment:
         return [];
     }
   }

@@ -25,6 +25,8 @@ class CreditCardRepository extends ICreditCardRepository {
     required int statementDay,
     required int dueDay,
     String? note,
+    String cardType = 'credit_card',
+    String? providerName,
   }) async {
     final now = DateTime.now();
     await db.into(db.creditCardTable).insert(
@@ -36,6 +38,8 @@ class CreditCardRepository extends ICreditCardRepository {
         statementDay: statementDay,
         dueDay: dueDay,
         note: Value(note),
+        cardType: Value(cardType),
+        providerName: Value(providerName),
         createdBy: 'app',
         dateCreated: Value(now),
         dateUpdated: now,

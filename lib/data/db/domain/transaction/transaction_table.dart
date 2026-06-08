@@ -56,6 +56,10 @@ class TransactionTable extends BaseEntityTable {
   /// disbursement or repayment event.
   TextColumn get loanId => text().nullable()();
 
+  /// FK to LendingTable — set when this transaction was created by a lending
+  /// disbursement or repayment event.
+  TextColumn get lendingId => text().nullable()();
+
   // -- Metadata --------------------------------------------------------------
 
   DateTimeColumn get transactionDateTime => dateTime().nullable()();
@@ -72,6 +76,7 @@ class TransactionTable extends BaseEntityTable {
     'commitmentTaskId': commitmentTaskId.name,
     'payeeId': payeeId.name,
     'loanId': loanId.name,
+    'lendingId': lendingId.name,
     'transactionDateTime': transactionDateTime.name,
     'note': note.name,
   };

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/features/home/presentation/screens/widgets/add_charge_sheet.dart';
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 import 'package:wise_spends/router/app_router.dart';
 import 'package:wise_spends/router/route_arguments.dart';
@@ -10,6 +11,7 @@ import 'package:wise_spends/shared/theme/app_text_styles.dart';
 void showAddTransactionSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
+    showDragHandle: false,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
     builder: (context) => const _AddTransactionSheet(),
@@ -22,7 +24,7 @@ class _AddTransactionSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Container(
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest,
@@ -91,7 +93,75 @@ class _AddTransactionSheet extends StatelessWidget {
             icon: Icons.swap_horiz_rounded,
             color: colorScheme.tertiary,
           ),
+          const SizedBox(height: AppSpacing.sm),
+          _ChargeTypeOption(colorScheme: colorScheme),
         ],
+      ),
+    );
+  }
+}
+
+class _ChargeTypeOption extends StatelessWidget {
+  final ColorScheme colorScheme;
+
+  const _ChargeTypeOption({required this.colorScheme});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = colorScheme.secondary;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          Navigator.pop(context);
+          showAddChargeSheet(context);
+        },
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Ink(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: color.withValues(alpha: 0.2)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Icon(Icons.credit_card_rounded, color: color, size: 24),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Charge',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      'Add charge to a card or pay later',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -115,7 +185,7 @@ class _TransactionTypeOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -166,7 +236,10 @@ class _TransactionTypeOption extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: colorScheme.onSurfaceVariant),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: colorScheme.onSurfaceVariant,
+              ),
             ],
           ),
         ),

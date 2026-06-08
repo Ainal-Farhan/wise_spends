@@ -21,6 +21,8 @@ abstract class ICreditCardRepository
     required int statementDay,
     required int dueDay,
     String? note,
+    String cardType,
+    String? providerName,
   });
   Future<void> updateCard({
     required String id,

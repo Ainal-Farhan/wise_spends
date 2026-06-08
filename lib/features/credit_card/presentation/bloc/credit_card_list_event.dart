@@ -16,6 +16,8 @@ class AddCreditCardEvent extends CreditCardListEvent {
   final int statementDay;
   final int dueDay;
   final String? note;
+  final String cardType;
+  final String? providerName;
 
   const AddCreditCardEvent({
     required this.name,
@@ -24,6 +26,8 @@ class AddCreditCardEvent extends CreditCardListEvent {
     required this.statementDay,
     required this.dueDay,
     this.note,
+    this.cardType = 'credit_card',
+    this.providerName,
   });
 
   @override
@@ -34,6 +38,8 @@ class AddCreditCardEvent extends CreditCardListEvent {
     statementDay,
     dueDay,
     note,
+    cardType,
+    providerName,
   ];
 }
 

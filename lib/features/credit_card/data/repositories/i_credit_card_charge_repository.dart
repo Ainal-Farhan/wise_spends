@@ -37,4 +37,7 @@ abstract class ICreditCardChargeRepository
   Future<double> getTotalUnpaid(String cardId);
   Future<double> getUnpaidAmount(String chargeId);
   Future<void> deleteCompletedCharges(String cardId);
+
+  /// Returns the [limit] most recent charges across all cards, sorted newest first.
+  Future<List<CrdCardCharge>> getRecentCharges(int limit);
 }

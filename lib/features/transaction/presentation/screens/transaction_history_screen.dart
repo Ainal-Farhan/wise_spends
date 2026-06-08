@@ -595,6 +595,7 @@ class _TransactionHistoryScreenContentState
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) => BlocProvider.value(
         value: bloc,
@@ -905,6 +906,7 @@ class _TransactionHistoryScreenContentState
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       builder: (ctx) => BlocProvider.value(
         value: bloc,
         child: Container(

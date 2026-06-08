@@ -49,6 +49,10 @@ import 'package:wise_spends/features/loan/presentation/screens/loan_list_screen.
     as loan_screen;
 import 'package:wise_spends/features/loan/presentation/screens/loan_detail_screen.dart'
     as loan_detail_screen;
+import 'package:wise_spends/features/lending/presentation/screens/lending_list_screen.dart'
+    as lending_screen;
+import 'package:wise_spends/features/lending/presentation/screens/lending_detail_screen.dart'
+    as lending_detail_screen;
 
 /// Enhanced App Router with typed arguments
 /// Uses MaterialPageRoute for now, consider migrating to go_router for production
@@ -254,6 +258,19 @@ abstract class AppRouter {
         final loanId = args is String ? args : '';
         return _createRoute(
           loan_detail_screen.LoanDetailScreen(loanId: loanId),
+          settings,
+        );
+
+      case AppRoutes.lendings:
+        return _createRoute(
+          const lending_screen.LendingListScreen(),
+          settings,
+        );
+
+      case AppRoutes.lendingDetail:
+        final lendingId = args is String ? args : '';
+        return _createRoute(
+          lending_detail_screen.LendingDetailScreen(lendingId: lendingId),
           settings,
         );
 

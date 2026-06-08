@@ -104,6 +104,7 @@ class CcDayPickerField extends StatelessWidget {
 
   void _showDayPicker(BuildContext context) {
     showModalBottomSheet(
+      showDragHandle: false,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),

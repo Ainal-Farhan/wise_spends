@@ -176,7 +176,9 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.12),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.tertiary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -204,7 +206,9 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                 onPressed: () => _showDetailForm(context, state, detail),
                 icon: const Icon(Icons.edit_outlined, size: 16),
                 label: Text('general.edit'.tr),
-                style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                ),
               ),
               TextButton.icon(
                 onPressed: () async {
@@ -227,7 +231,9 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
                 },
                 icon: const Icon(Icons.delete_outline, size: 16),
                 label: Text('general.delete'.tr),
-                style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                ),
               ),
             ],
           ),
@@ -267,11 +273,17 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
       case CommitmentTaskType.creditCardCharge:
         return Row(
           children: [
-            Icon(Icons.credit_card_rounded, size: 16, color: Colors.purple[600]),
+            Icon(
+              Icons.credit_card_rounded,
+              size: 16,
+              color: Colors.purple[600],
+            ),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
-                detail.linkedCreditCardName ?? detail.linkedCreditCardId ?? 'Credit Card',
+                detail.linkedCreditCardName ??
+                    detail.linkedCreditCardId ??
+                    'Credit Card',
                 style: TextStyle(fontSize: 13, color: Colors.grey[700]),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -279,10 +291,17 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
             if (detail.isEpp)
               Text(
                 '${detail.eppCompletedInstallments}/${detail.eppTotalInstallments}',
-                style: TextStyle(fontSize: 12, color: Colors.purple[700], fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.purple[700],
+                  fontWeight: FontWeight.w600,
+                ),
               )
             else
-              Text('∞', style: TextStyle(fontSize: 14, color: Colors.purple[700])),
+              Text(
+                '∞',
+                style: TextStyle(fontSize: 14, color: Colors.purple[700]),
+              ),
           ],
         );
     }
@@ -338,6 +357,7 @@ class _CommitmentDetailScreenContent extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
+      showDragHandle: false,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(

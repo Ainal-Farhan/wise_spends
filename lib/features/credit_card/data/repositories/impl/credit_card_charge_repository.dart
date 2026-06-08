@@ -115,6 +115,14 @@ class CreditCardChargeRepository extends ICreditCardChargeRepository {
   }
 
   @override
+  Future<List<CrdCardCharge>> getRecentCharges(int limit) {
+    return (db.select(db.creditCardChargeTable)
+          ..orderBy([(t) => OrderingTerm.desc(t.chargeDate)])
+          ..limit(limit))
+        .get();
+  }
+
+  @override
   String getTypeName() => 'CreditCardChargeTable';
 
   @override

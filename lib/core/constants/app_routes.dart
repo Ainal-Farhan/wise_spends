@@ -58,6 +58,10 @@ abstract class AppRoutes {
   static const String loans = '/loans';
   static const String loanDetail = '/loans/detail';
 
+  // Lending routes
+  static const String lendings = '/lendings';
+  static const String lendingDetail = '/lendings/detail';
+
   // Developer/Debug routes
   static const String hiddenUtilityMenu = '/developer/utilities';
   static const String logViewer = '/developer/logs';

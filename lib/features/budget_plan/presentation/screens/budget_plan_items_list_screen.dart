@@ -257,6 +257,7 @@ class _BudgetPlanItemsListContentState
 
     showModalBottomSheet(
       context: context,
+      showDragHandle: false,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(
         value: bloc,
@@ -272,6 +273,7 @@ class _BudgetPlanItemsListContentState
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       builder: (_) => BlocProvider.value(
         value: context.read<BudgetPlanItemsListBloc>(),
         child: AddEditBudgetPlanItemBottomSheet(
@@ -1054,6 +1056,7 @@ class _ItemCardContent extends StatelessWidget {
 
   void _showOptions(BuildContext context) {
     showModalBottomSheet(
+      showDragHandle: false,
       context: context,
       builder: (_) => SafeArea(
         child: Column(

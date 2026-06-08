@@ -31,13 +31,23 @@ class CreditCardListScreen extends StatelessWidget {
   }
 }
 
-class _CreditCardListContent extends StatelessWidget {
+enum _CardFilterTab { all, creditCard, payLater }
+
+class _CreditCardListContent extends StatefulWidget {
   const _CreditCardListContent();
 
   @override
+  State<_CreditCardListContent> createState() => _CreditCardListContentState();
+}
+
+class _CreditCardListContentState extends State<_CreditCardListContent> {
+  _CardFilterTab _tab = _CardFilterTab.all;
+
+  @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      backgroundColor: cs.surfaceContainerHighest,
       appBar: AppBar(
         title: Text('credit_card.title'.tr),
         centerTitle: false,
@@ -63,45 +73,81 @@ class _CreditCardListContent extends StatelessWidget {
               return _EmptyState();
             }
 
-            // Summary bar totals
-            final totalDebt = state.summaries
-                .fold<double>(0, (s, c) => s + c.totalDebt);
-            final totalLimit = state.summaries
-                .fold<double>(0, (s, c) => s + c.card.creditLimit);
+            final filtered = state.summaries.where((s) {
+              return switch (_tab) {
+                _CardFilterTab.all => true,
+                _CardFilterTab.creditCard =>
+                  s.card.cardType == 'credit_card',
+                _CardFilterTab.payLater => s.card.cardType == 'pay_later',
+              };
+            }).toList();
+
+            final totalDebt =
+                filtered.fold<double>(0, (s, c) => s + c.totalDebt);
+            final totalLimit =
+                filtered.fold<double>(0, (s, c) => s + c.card.creditLimit);
 
             return CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
                   child: _SummaryHeader(
-                    cardCount: state.summaries.length,
+                    cardCount: filtered.length,
                     totalDebt: totalDebt,
                     totalLimit: totalLimit,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.sm,
+                      AppSpacing.lg,
+                      0,
+                    ),
+                    child: Row(
+                      children: _CardFilterTab.values.map((tab) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: AppSpacing.xs),
+                          child: FilterChip(
+                            label: Text(_tabLabel(tab)),
+                            selected: _tab == tab,
+                            onSelected: (_) => setState(() => _tab = tab),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(
                     AppSpacing.lg,
-                    0,
+                    AppSpacing.sm,
                     AppSpacing.lg,
                     AppSpacing.xxxl + 72,
                   ),
                   sliver: SliverList.separated(
-                    itemCount: state.summaries.length,
+                    itemCount: filtered.length,
                     separatorBuilder: (_, _) =>
                         const SizedBox(height: AppSpacing.md),
                     itemBuilder: (context, index) {
-                      final summary = state.summaries[index];
+                      final summary = filtered[index];
                       return _CreditCardTile(
                         summary: summary,
                         onTap: () => Navigator.pushNamed(
                           context,
                           AppRoutes.creditCardDetail,
                           arguments: summary.card.id,
-                        ).then((_) => context
-                            .read<CreditCardListBloc>()
-                            .add(LoadCreditCardsEvent())),
+                        ).then(
+                          (_) => context
+                              .read<CreditCardListBloc>()
+                              .add(LoadCreditCardsEvent()),
+                        ),
                         onDelete: () => _confirmDelete(
-                            context, summary.card.id, summary.card.name),
+                          context,
+                          summary.card.id,
+                          summary.card.name,
+                        ),
                       );
                     },
                   ),
@@ -114,6 +160,13 @@ class _CreditCardListContent extends StatelessWidget {
       ),
     );
   }
+
+  String _tabLabel(_CardFilterTab tab) => switch (tab) {
+    _CardFilterTab.all => 'All',
+    _CardFilterTab.creditCard => 'Credit Card',
+    _CardFilterTab.payLater => 'Pay Later',
+  };
+
 
   void _confirmDelete(BuildContext context, String id, String name) {
     showDialog(
@@ -155,17 +208,19 @@ class _CreditCardListContent extends StatelessWidget {
             BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       builder: (_) => _AddCardSheetProxy(
-        onAdd: (name, last4, limit, stmtDay, dueDay, note) {
+        onAdd: (name, last4, limit, stmtDay, dueDay, note, cardType, providerName) {
           context.read<CreditCardListBloc>().add(
-                AddCreditCardEvent(
-                  name: name,
-                  lastFourDigits: last4,
-                  creditLimit: limit,
-                  statementDay: stmtDay,
-                  dueDay: dueDay,
-                  note: note,
-                ),
-              );
+            AddCreditCardEvent(
+              name: name,
+              lastFourDigits: last4,
+              creditLimit: limit,
+              statementDay: stmtDay,
+              dueDay: dueDay,
+              note: note,
+              cardType: cardType,
+              providerName: providerName,
+            ),
+          );
         },
       ),
     );
@@ -176,7 +231,7 @@ class _CreditCardListContent extends StatelessWidget {
 /// importing the detail screen internals.  We duplicate the minimal form here
 /// since _CardFormSheet lives in credit_card_detail_screen.dart.
 class _AddCardSheetProxy extends StatefulWidget {
-  final void Function(String, String?, double, int, int, String?) onAdd;
+  final void Function(String, String?, double, int, int, String?, String, String?) onAdd;
   const _AddCardSheetProxy({required this.onAdd});
 
   @override
@@ -189,8 +244,10 @@ class _AddCardSheetProxyState extends State<_AddCardSheetProxy> {
   final _last4Ctrl = TextEditingController();
   final _limitCtrl = TextEditingController();
   final _noteCtrl = TextEditingController();
+  final _providerCtrl = TextEditingController();
   int _statementDay = 1;
   int _dueDay = 1;
+  String _cardType = 'credit_card';
 
   @override
   void dispose() {
@@ -198,6 +255,7 @@ class _AddCardSheetProxyState extends State<_AddCardSheetProxy> {
     _last4Ctrl.dispose();
     _limitCtrl.dispose();
     _noteCtrl.dispose();
+    _providerCtrl.dispose();
     super.dispose();
   }
 
@@ -246,6 +304,29 @@ class _AddCardSheetProxyState extends State<_AddCardSheetProxy> {
                 ],
               ),
               const SizedBox(height: AppSpacing.xl),
+              // Card type selector
+              Row(
+                children: [
+                  Expanded(
+                    child: _TypeButton(
+                      label: 'Credit Card',
+                      icon: Icons.credit_card_rounded,
+                      selected: _cardType == 'credit_card',
+                      onTap: () => setState(() => _cardType = 'credit_card'),
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: _TypeButton(
+                      label: 'Pay Later',
+                      icon: Icons.schedule_send_rounded,
+                      selected: _cardType == 'pay_later',
+                      onTap: () => setState(() => _cardType = 'pay_later'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
               AppTextField(
                 controller: _nameCtrl,
                 label: 'credit_card.field_name'.tr,
@@ -268,7 +349,9 @@ class _AddCardSheetProxyState extends State<_AddCardSheetProxy> {
               const SizedBox(height: AppSpacing.sm),
               AppTextField(
                 controller: _limitCtrl,
-                label: 'credit_card.field_limit'.tr,
+                label: _cardType == 'pay_later'
+                    ? 'Spending Limit'
+                    : 'credit_card.field_limit'.tr,
                 keyboardType: AppTextFieldKeyboardType.decimal,
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'general.required'.tr;
@@ -278,6 +361,13 @@ class _AddCardSheetProxyState extends State<_AddCardSheetProxy> {
                   return null;
                 },
               ),
+              if (_cardType == 'pay_later') ...[
+                const SizedBox(height: AppSpacing.sm),
+                AppTextField(
+                  controller: _providerCtrl,
+                  label: 'Provider (e.g. Atome, GrabPay Later)',
+                ),
+              ],
               const SizedBox(height: AppSpacing.md),
               CcDayPickerField(
                 label: 'credit_card.field_statement_day'.tr,
@@ -315,6 +405,10 @@ class _AddCardSheetProxyState extends State<_AddCardSheetProxy> {
                       _noteCtrl.text.trim().isEmpty
                           ? null
                           : _noteCtrl.text.trim(),
+                      _cardType,
+                      _providerCtrl.text.trim().isEmpty
+                          ? null
+                          : _providerCtrl.text.trim(),
                     );
                     Navigator.pop(context);
                   }
@@ -322,6 +416,62 @@ class _AddCardSheetProxyState extends State<_AddCardSheetProxy> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── type button ───────────────────────────────────────────────────────────────
+
+class _TypeButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _TypeButton({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.sm,
+          horizontal: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: selected ? cs.primaryContainer : cs.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(
+            color: selected ? cs.primary : cs.outlineVariant,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: selected ? cs.primary : cs.onSurfaceVariant,
+            ),
+            const SizedBox(width: AppSpacing.xs),
+            Text(
+              label,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: selected ? cs.primary : cs.onSurfaceVariant,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -476,8 +626,13 @@ class _CreditCardTile extends StatelessWidget {
                         color: cs.secondaryContainer,
                         borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
-                      child: Icon(Icons.credit_card_rounded,
-                          size: 20, color: cs.onSecondaryContainer),
+                      child: Icon(
+                        card.cardType == 'pay_later'
+                            ? Icons.schedule_send_rounded
+                            : Icons.credit_card_rounded,
+                        size: 20,
+                        color: cs.onSecondaryContainer,
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
@@ -490,7 +645,26 @@ class _CreditCardTile extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          if (card.lastFourDigits != null)
+                          if (card.cardType == 'pay_later')
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: cs.tertiaryContainer,
+                                borderRadius: BorderRadius.circular(AppRadius.xs),
+                              ),
+                              child: Text(
+                                card.providerName ?? 'Pay Later',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: cs.onTertiaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            )
+                          else if (card.lastFourDigits != null)
                             Text(
                               '•••• ${card.lastFourDigits}',
                               style: AppTextStyles.caption.copyWith(

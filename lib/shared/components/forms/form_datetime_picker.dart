@@ -46,9 +46,7 @@ class FormDateTimePicker extends StatelessWidget {
               decoration: BoxDecoration(
                 color: enabled
                     ? Theme.of(context).colorScheme.surfaceContainerHighest
-                    : Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
                   color: enabled
@@ -147,6 +145,7 @@ class FormDateTimePicker extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       backgroundColor: Colors.transparent,
       builder: (_) => _DateTimeSheet(
         initialDate: selectedDate,

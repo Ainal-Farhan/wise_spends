@@ -33,9 +33,12 @@ class FormCategorySelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null) ...[
-          Text(label!, style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              )),
+          Text(
+            label!,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+          ),
           const SizedBox(height: 8),
         ],
         InkWell(
@@ -76,8 +79,8 @@ class FormCategorySelector extends StatelessWidget {
                     child: Text(
                       selectedCategory!.name,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                        fontWeight: FontWeight.w500,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -92,8 +95,8 @@ class FormCategorySelector extends StatelessWidget {
                     child: Text(
                       hint ?? 'savings.select_default_category'.tr,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
@@ -115,6 +118,7 @@ class FormCategorySelector extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       backgroundColor: Colors.transparent,
       builder: (_) => _CategorySelectorSheet(
         categories: categories,
@@ -214,15 +218,15 @@ class _CategorySelectorSheetState extends State<_CategorySelectorSheet> {
                 Text(
                   'savings.select_default_category'.tr,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const Spacer(),
                 Text(
                   '${_filtered.length}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
@@ -265,11 +269,11 @@ class _CategorySelectorSheetState extends State<_CategorySelectorSheet> {
                       shrinkWrap: true,
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 0.82,
-                      ),
+                            crossAxisCount: 4,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 0.82,
+                          ),
                       itemCount: _filtered.length,
                       itemBuilder: (context, index) {
                         final category = _filtered[index];
@@ -347,13 +351,13 @@ class _CategoryTile extends StatelessWidget {
               child: Text(
                 category.name,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.onSurfaceVariant,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
-                      fontSize: 10,
-                      height: 1.2,
-                    ),
+                  color: isSelected
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.normal,
+                  fontSize: 10,
+                  height: 1.2,
+                ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -394,8 +398,8 @@ class _SearchEmptyState extends StatelessWidget {
             Text(
               'transaction.category.no_results'.trWith({'query': query}),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                color: colorScheme.onSurfaceVariant,
+              ),
               textAlign: TextAlign.center,
             ),
           ],

@@ -13,6 +13,13 @@ class CreditCardTable extends BaseEntityTable {
   TextColumn get note => text().nullable()();
   TextColumn get userId => text().nullable().references(UserTable, #id)();
 
+  /// 'credit_card' or 'pay_later'
+  TextColumn get cardType =>
+      text().withDefault(const Constant('credit_card'))();
+
+  /// Provider name for pay-later accounts (e.g. "Atome", "GrabPay Later")
+  TextColumn get providerName => text().nullable()();
+
   @override
   Map<String, dynamic> toMapFromSubClass() {
     return {
@@ -23,6 +30,8 @@ class CreditCardTable extends BaseEntityTable {
       'dueDay': dueDay.name,
       'note': note.name,
       'userId': userId.name,
+      'cardType': cardType.name,
+      'providerName': providerName.name,
     };
   }
 }

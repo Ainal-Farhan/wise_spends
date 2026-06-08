@@ -125,6 +125,7 @@ class _FormCategoryPickerState extends State<FormCategoryPicker> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      showDragHandle: false,
       backgroundColor: Colors.transparent,
       builder: (_) => _CategoryPickerSheet(
         categories: widget.categories,

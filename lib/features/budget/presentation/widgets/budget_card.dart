@@ -28,11 +28,11 @@ class BudgetCard extends StatelessWidget {
     final spentAmount = budget.spentAmount;
     final budgetAmount = budget.limitAmount.clamp(0.01, double.infinity);
     final progress = (spentAmount / budgetAmount).clamp(0.0, 1.0);
-    final progressColor = progress < 0.6 
-        ? colorScheme.primary 
-        : progress < 0.85 
-            ? colorScheme.tertiary 
-            : colorScheme.secondary;
+    final progressColor = progress < 0.6
+        ? colorScheme.primary
+        : progress < 0.85
+        ? colorScheme.tertiary
+        : colorScheme.secondary;
     final currencyFmt = NumberFormat.currency(symbol: 'RM ', decimalDigits: 2);
     final isInactive = !budget.isActive;
 
@@ -171,6 +171,7 @@ class BudgetCard extends StatelessWidget {
   void _showBudgetOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      showDragHandle: false,
       isScrollControlled: true,
       builder: (_) => MultiBlocProvider(
         providers: [
@@ -182,6 +183,7 @@ class BudgetCard extends StatelessWidget {
           onEdit: () {
             Navigator.pop(context);
             showModalBottomSheet(
+              showDragHandle: false,
               context: context,
               isScrollControlled: true,
               builder: (_) => MultiBlocProvider(

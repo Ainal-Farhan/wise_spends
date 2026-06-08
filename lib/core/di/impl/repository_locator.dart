@@ -67,6 +67,10 @@ import 'package:wise_spends/features/loan/data/repositories/i_loan_repository.da
 import 'package:wise_spends/features/loan/data/repositories/i_loan_repayment_repository.dart';
 import 'package:wise_spends/features/loan/data/repositories/impl/loan_repository.dart';
 import 'package:wise_spends/features/loan/data/repositories/impl/loan_repayment_repository.dart';
+import 'package:wise_spends/features/lending/data/repositories/i_lending_repository.dart';
+import 'package:wise_spends/features/lending/data/repositories/i_lending_repayment_repository.dart';
+import 'package:wise_spends/features/lending/data/repositories/impl/lending_repository.dart';
+import 'package:wise_spends/features/lending/data/repositories/impl/lending_repayment_repository.dart';
 
 class RepositoryLocator extends IRepositoryLocator {
   @override
@@ -105,6 +109,8 @@ class RepositoryLocator extends IRepositoryLocator {
       getCreditCardChargePaymentRepository(),
       getLoanRepository(),
       getLoanRepaymentRepository(),
+      getLendingRepository(),
+      getLendingRepaymentRepository(),
     ];
 
     return allRepository;
@@ -545,5 +551,27 @@ class RepositoryLocator extends IRepositoryLocator {
       );
     }
     return SingletonUtil.getSingleton<ILoanRepaymentRepository>()!;
+  }
+
+  @override
+  ILendingRepository getLendingRepository() {
+    ILendingRepository? repository =
+        SingletonUtil.getSingleton<ILendingRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ILendingRepository>(LendingRepository());
+    }
+    return SingletonUtil.getSingleton<ILendingRepository>()!;
+  }
+
+  @override
+  ILendingRepaymentRepository getLendingRepaymentRepository() {
+    ILendingRepaymentRepository? repository =
+        SingletonUtil.getSingleton<ILendingRepaymentRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<ILendingRepaymentRepository>(
+        LendingRepaymentRepository(),
+      );
+    }
+    return SingletonUtil.getSingleton<ILendingRepaymentRepository>()!;
   }
 }

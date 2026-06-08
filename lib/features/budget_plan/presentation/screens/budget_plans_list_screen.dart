@@ -785,6 +785,7 @@ class _PlanCard extends StatelessWidget {
 
   void _showOptions(BuildContext context) {
     showModalBottomSheet(
+      showDragHandle: false,
       context: context,
       builder: (_) => BlocProvider.value(
         value: context.read<BudgetPlanListBloc>(),

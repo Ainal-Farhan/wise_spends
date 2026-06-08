@@ -21,6 +21,7 @@ void showTaskGroupDetailSheet({
   void Function(dynamic task)? onDeleteTask,
 }) {
   showModalBottomSheet(
+    showDragHandle: false,
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -310,7 +311,12 @@ class _TaskItem extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
-  const _TaskItem({required this.task, required this.onTap, this.onEdit, this.onDelete});
+  const _TaskItem({
+    required this.task,
+    required this.onTap,
+    this.onEdit,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {

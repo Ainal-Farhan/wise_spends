@@ -179,6 +179,7 @@ class BudgetPlanOverviewTab extends StatelessWidget {
 
   void _showLinkAccountSheet(BuildContext context) {
     showModalBottomSheet(
+      showDragHandle: false,
       context: context,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(

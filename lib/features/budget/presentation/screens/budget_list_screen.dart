@@ -187,6 +187,7 @@ class _BudgetListScreenContent extends StatelessWidget {
   void _showFilterBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      showDragHandle: false,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(
         value: context.read<BudgetBloc>(),
@@ -197,6 +198,7 @@ class _BudgetListScreenContent extends StatelessWidget {
 
   void _showCreateBudgetDialog(BuildContext context) {
     showModalBottomSheet(
+      showDragHandle: false,
       context: context,
       isScrollControlled: true,
       builder: (_) => MultiBlocProvider(

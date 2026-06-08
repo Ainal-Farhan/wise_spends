@@ -49,6 +49,8 @@ class CreditCardListBloc
         statementDay: event.statementDay,
         dueDay: event.dueDay,
         note: event.note,
+        cardType: event.cardType,
+        providerName: event.providerName,
       );
       add(LoadCreditCardsEvent());
     } catch (e) {

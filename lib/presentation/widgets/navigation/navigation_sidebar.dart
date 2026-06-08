@@ -166,13 +166,18 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
                         ),
                         _NavItemData(
                           icon: Icons.credit_card,
-                          label: 'Credit Cards',
+                          label: 'Cards & Pay Later',
                           route: AppRoutes.creditCards,
                         ),
                         _NavItemData(
                           icon: Icons.handshake_outlined,
                           label: 'Loans',
                           route: AppRoutes.loans,
+                        ),
+                        _NavItemData(
+                          icon: Icons.volunteer_activism_outlined,
+                          label: 'Lendings',
+                          route: AppRoutes.lendings,
                         ),
                       ],
                       activeRoute: context.read<NavigationBloc>().activeRoute,

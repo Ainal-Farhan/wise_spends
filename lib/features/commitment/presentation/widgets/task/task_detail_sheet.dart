@@ -23,6 +23,7 @@ void showTaskDetailSheet({
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
+    showDragHandle: false,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -135,9 +136,13 @@ class _TaskDetailSheetState extends State<_TaskDetailSheet> {
                       ),
                   ] else if (task.type == CommitmentTaskType.cash) ...[
                     const DetailRow(label: 'Method', value: 'Cash'),
-                  ] else if (task.type == CommitmentTaskType.creditCardCharge) ...[
+                  ] else if (task.type ==
+                      CommitmentTaskType.creditCardCharge) ...[
                     DetailRow(label: 'From', value: task.sourceSavingName),
-                    const DetailRow(label: 'Method', value: 'Credit Card Charge'),
+                    const DetailRow(
+                      label: 'Method',
+                      value: 'Credit Card Charge',
+                    ),
                   ],
                   // For CC charge tasks, note field contains the card ID — skip raw display.
                   if (task.note?.isNotEmpty == true &&
@@ -303,7 +308,8 @@ class _ConfirmCompletePanel extends StatelessWidget {
           ] else if (task.type == CommitmentTaskType.creditCardCharge) ...[
             _ImpactRow(
               icon: Icons.credit_card_rounded,
-              label: '${task.sourceSavingName} — posts CC charge (reserved until bill paid)',
+              label:
+                  '${task.sourceSavingName} — posts CC charge (reserved until bill paid)',
             ),
           ],
 

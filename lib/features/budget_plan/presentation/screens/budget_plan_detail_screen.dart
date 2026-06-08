@@ -289,6 +289,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     if (!mounted) return;
     showModalBottomSheet(
       context: context,
+      showDragHandle: false,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(
         value: context.read<BudgetPlanDetailBloc>(),
@@ -343,6 +344,7 @@ class _BudgetPlanDetailContentState extends State<_BudgetPlanDetailContent>
     if (!mounted) return;
     showModalBottomSheet(
       context: context,
+      showDragHandle: false,
       isScrollControlled: true,
       builder: (_) => BlocProvider.value(
         value: context.read<BudgetPlanDetailBloc>(),

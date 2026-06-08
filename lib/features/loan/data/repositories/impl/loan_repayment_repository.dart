@@ -54,14 +54,14 @@ class LoanRepaymentRepository extends ILoanRepaymentRepository {
           ),
         );
 
-    // 2. Create a loanRepayment transaction that credits the destination saving
+    // 2. Create a loanRepayment transaction that debits the source saving
     await db
         .into(db.transactionTable)
         .insert(
           TransactionTableCompanion.insert(
             id: Value(UuidGenerator().v4()),
             type: TransactionType.loanRepayment,
-            description: Value('Repayment from $borrowerName'),
+            description: Value('Repayment to $borrowerName'),
             amount: amount,
             savingId: destinationSavingId,
             loanId: Value(loanId),
@@ -74,8 +74,8 @@ class LoanRepaymentRepository extends ILoanRepaymentRepository {
           ),
         );
 
-    // 3. Credit the destination saving
-    await _adjustSavingBalance(destinationSavingId, amount, now);
+    // 3. Deduct from the source saving (I pay back the loan)
+    await _adjustSavingBalance(destinationSavingId, -amount, now);
 
     // 4. Auto-settle the loan if fully repaid
     if (loan != null) {

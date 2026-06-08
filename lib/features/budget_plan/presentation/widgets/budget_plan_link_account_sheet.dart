@@ -68,6 +68,7 @@ class _LinkAccountSheetState extends State<LinkAccountSheet> {
 
   void _showAccountPicker() {
     showModalBottomSheet(
+      showDragHandle: false,
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

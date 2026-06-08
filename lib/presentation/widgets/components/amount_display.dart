@@ -80,6 +80,10 @@ class AmountDisplay extends StatelessWidget {
         return colorScheme.secondary;
       case TransactionType.loanRepayment:
         return colorScheme.primary;
+      case TransactionType.lendingDisbursement:
+        return colorScheme.secondary;
+      case TransactionType.lendingRepayment:
+        return colorScheme.primary;
     }
   }
 
@@ -99,6 +103,10 @@ class AmountDisplay extends StatelessWidget {
       case TransactionType.loanDisbursement:
         return '−';
       case TransactionType.loanRepayment:
+        return '+';
+      case TransactionType.lendingDisbursement:
+        return '−';
+      case TransactionType.lendingRepayment:
         return '+';
     }
   }

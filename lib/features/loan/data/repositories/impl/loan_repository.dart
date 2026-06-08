@@ -61,7 +61,7 @@ class LoanRepository extends ILoanRepository {
             TransactionTableCompanion.insert(
               id: Value(UuidGenerator().v4()),
               type: TransactionType.loanDisbursement,
-              description: Value('Loan to $borrowerName'),
+              description: Value('Loan from $borrowerName'),
               amount: principalAmount,
               savingId: sourceSavingId,
               loanId: Value(loanId),
@@ -74,8 +74,8 @@ class LoanRepository extends ILoanRepository {
             ),
           );
 
-      // 3. Deduct from source saving
-      await _adjustSavingBalance(sourceSavingId, -principalAmount, now);
+      // 3. Credit the source saving (I receive the loan money)
+      await _adjustSavingBalance(sourceSavingId, principalAmount, now);
     }
   }
 
