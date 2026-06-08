@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "4224833201",
+    "project_id": "wise-spends-app",
+    "storage_bucket": "wise-spends-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:4224833201:android:b63b9a5336b41762ee7490",
+        "android_client_info": {
+          "package_name": "com.my.aftechlabs.wise.spends"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_zHmIj-zrpbFr8fC5YstwnzgLW3xesAg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
