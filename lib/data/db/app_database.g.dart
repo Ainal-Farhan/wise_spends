@@ -23964,9 +23964,9 @@ class $LoanTableTable extends LoanTable
   late final GeneratedColumn<String> sourceSavingId = GeneratedColumn<String>(
     'source_saving_id',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES saving_table (id)',
     ),
@@ -24132,8 +24132,6 @@ class $LoanTableTable extends LoanTable
           _sourceSavingIdMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_sourceSavingIdMeta);
     }
     if (data.containsKey('note')) {
       context.handle(
@@ -24210,7 +24208,7 @@ class $LoanTableTable extends LoanTable
       sourceSavingId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}source_saving_id'],
-      )!,
+      ),
       note: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}note'],
@@ -24246,7 +24244,7 @@ class LoanLoan extends DataClass implements Insertable<LoanLoan> {
   final double principalAmount;
   final DateTime loanDate;
   final DateTime? dueDate;
-  final String sourceSavingId;
+  final String? sourceSavingId;
   final String? note;
   final String status;
   final String? userId;
@@ -24264,7 +24262,7 @@ class LoanLoan extends DataClass implements Insertable<LoanLoan> {
     required this.principalAmount,
     required this.loanDate,
     this.dueDate,
-    required this.sourceSavingId,
+    this.sourceSavingId,
     this.note,
     required this.status,
     this.userId,
@@ -24284,7 +24282,9 @@ class LoanLoan extends DataClass implements Insertable<LoanLoan> {
     if (!nullToAbsent || dueDate != null) {
       map['due_date'] = Variable<DateTime>(dueDate);
     }
-    map['source_saving_id'] = Variable<String>(sourceSavingId);
+    if (!nullToAbsent || sourceSavingId != null) {
+      map['source_saving_id'] = Variable<String>(sourceSavingId);
+    }
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
     }
@@ -24309,7 +24309,9 @@ class LoanLoan extends DataClass implements Insertable<LoanLoan> {
       dueDate: dueDate == null && nullToAbsent
           ? const Value.absent()
           : Value(dueDate),
-      sourceSavingId: Value(sourceSavingId),
+      sourceSavingId: sourceSavingId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceSavingId),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       status: Value(status),
       userId: userId == null && nullToAbsent
@@ -24334,7 +24336,7 @@ class LoanLoan extends DataClass implements Insertable<LoanLoan> {
       principalAmount: serializer.fromJson<double>(json['principalAmount']),
       loanDate: serializer.fromJson<DateTime>(json['loanDate']),
       dueDate: serializer.fromJson<DateTime?>(json['dueDate']),
-      sourceSavingId: serializer.fromJson<String>(json['sourceSavingId']),
+      sourceSavingId: serializer.fromJson<String?>(json['sourceSavingId']),
       note: serializer.fromJson<String?>(json['note']),
       status: serializer.fromJson<String>(json['status']),
       userId: serializer.fromJson<String?>(json['userId']),
@@ -24354,7 +24356,7 @@ class LoanLoan extends DataClass implements Insertable<LoanLoan> {
       'principalAmount': serializer.toJson<double>(principalAmount),
       'loanDate': serializer.toJson<DateTime>(loanDate),
       'dueDate': serializer.toJson<DateTime?>(dueDate),
-      'sourceSavingId': serializer.toJson<String>(sourceSavingId),
+      'sourceSavingId': serializer.toJson<String?>(sourceSavingId),
       'note': serializer.toJson<String?>(note),
       'status': serializer.toJson<String>(status),
       'userId': serializer.toJson<String?>(userId),
@@ -24372,7 +24374,7 @@ class LoanLoan extends DataClass implements Insertable<LoanLoan> {
     double? principalAmount,
     DateTime? loanDate,
     Value<DateTime?> dueDate = const Value.absent(),
-    String? sourceSavingId,
+    Value<String?> sourceSavingId = const Value.absent(),
     Value<String?> note = const Value.absent(),
     String? status,
     Value<String?> userId = const Value.absent(),
@@ -24387,7 +24389,9 @@ class LoanLoan extends DataClass implements Insertable<LoanLoan> {
     principalAmount: principalAmount ?? this.principalAmount,
     loanDate: loanDate ?? this.loanDate,
     dueDate: dueDate.present ? dueDate.value : this.dueDate,
-    sourceSavingId: sourceSavingId ?? this.sourceSavingId,
+    sourceSavingId: sourceSavingId.present
+        ? sourceSavingId.value
+        : this.sourceSavingId,
     note: note.present ? note.value : this.note,
     status: status ?? this.status,
     userId: userId.present ? userId.value : this.userId,
@@ -24494,7 +24498,7 @@ class LoanTableCompanion extends UpdateCompanion<LoanLoan> {
   final Value<double> principalAmount;
   final Value<DateTime> loanDate;
   final Value<DateTime?> dueDate;
-  final Value<String> sourceSavingId;
+  final Value<String?> sourceSavingId;
   final Value<String?> note;
   final Value<String> status;
   final Value<String?> userId;
@@ -24527,7 +24531,7 @@ class LoanTableCompanion extends UpdateCompanion<LoanLoan> {
     required double principalAmount,
     required DateTime loanDate,
     this.dueDate = const Value.absent(),
-    required String sourceSavingId,
+    this.sourceSavingId = const Value.absent(),
     this.note = const Value.absent(),
     this.status = const Value.absent(),
     this.userId = const Value.absent(),
@@ -24538,8 +24542,7 @@ class LoanTableCompanion extends UpdateCompanion<LoanLoan> {
        lastModifiedBy = Value(lastModifiedBy),
        borrowerName = Value(borrowerName),
        principalAmount = Value(principalAmount),
-       loanDate = Value(loanDate),
-       sourceSavingId = Value(sourceSavingId);
+       loanDate = Value(loanDate);
   static Insertable<LoanLoan> custom({
     Expression<String>? id,
     Expression<String>? createdBy,
@@ -24586,7 +24589,7 @@ class LoanTableCompanion extends UpdateCompanion<LoanLoan> {
     Value<double>? principalAmount,
     Value<DateTime>? loanDate,
     Value<DateTime?>? dueDate,
-    Value<String>? sourceSavingId,
+    Value<String?>? sourceSavingId,
     Value<String?>? note,
     Value<String>? status,
     Value<String?>? userId,
@@ -25432,9 +25435,9 @@ class $LendingTableTable extends LendingTable
   late final GeneratedColumn<String> sourceSavingId = GeneratedColumn<String>(
     'source_saving_id',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES saving_table (id)',
     ),
@@ -25603,8 +25606,6 @@ class $LendingTableTable extends LendingTable
           _sourceSavingIdMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_sourceSavingIdMeta);
     }
     if (data.containsKey('note')) {
       context.handle(
@@ -25681,7 +25682,7 @@ class $LendingTableTable extends LendingTable
       sourceSavingId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}source_saving_id'],
-      )!,
+      ),
       note: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}note'],
@@ -25717,7 +25718,7 @@ class LndngLending extends DataClass implements Insertable<LndngLending> {
   final double principalAmount;
   final DateTime lendingDate;
   final DateTime? dueDate;
-  final String sourceSavingId;
+  final String? sourceSavingId;
   final String? note;
   final String status;
   final String? userId;
@@ -25735,7 +25736,7 @@ class LndngLending extends DataClass implements Insertable<LndngLending> {
     required this.principalAmount,
     required this.lendingDate,
     this.dueDate,
-    required this.sourceSavingId,
+    this.sourceSavingId,
     this.note,
     required this.status,
     this.userId,
@@ -25755,7 +25756,9 @@ class LndngLending extends DataClass implements Insertable<LndngLending> {
     if (!nullToAbsent || dueDate != null) {
       map['due_date'] = Variable<DateTime>(dueDate);
     }
-    map['source_saving_id'] = Variable<String>(sourceSavingId);
+    if (!nullToAbsent || sourceSavingId != null) {
+      map['source_saving_id'] = Variable<String>(sourceSavingId);
+    }
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
     }
@@ -25780,7 +25783,9 @@ class LndngLending extends DataClass implements Insertable<LndngLending> {
       dueDate: dueDate == null && nullToAbsent
           ? const Value.absent()
           : Value(dueDate),
-      sourceSavingId: Value(sourceSavingId),
+      sourceSavingId: sourceSavingId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceSavingId),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       status: Value(status),
       userId: userId == null && nullToAbsent
@@ -25805,7 +25810,7 @@ class LndngLending extends DataClass implements Insertable<LndngLending> {
       principalAmount: serializer.fromJson<double>(json['principalAmount']),
       lendingDate: serializer.fromJson<DateTime>(json['lendingDate']),
       dueDate: serializer.fromJson<DateTime?>(json['dueDate']),
-      sourceSavingId: serializer.fromJson<String>(json['sourceSavingId']),
+      sourceSavingId: serializer.fromJson<String?>(json['sourceSavingId']),
       note: serializer.fromJson<String?>(json['note']),
       status: serializer.fromJson<String>(json['status']),
       userId: serializer.fromJson<String?>(json['userId']),
@@ -25825,7 +25830,7 @@ class LndngLending extends DataClass implements Insertable<LndngLending> {
       'principalAmount': serializer.toJson<double>(principalAmount),
       'lendingDate': serializer.toJson<DateTime>(lendingDate),
       'dueDate': serializer.toJson<DateTime?>(dueDate),
-      'sourceSavingId': serializer.toJson<String>(sourceSavingId),
+      'sourceSavingId': serializer.toJson<String?>(sourceSavingId),
       'note': serializer.toJson<String?>(note),
       'status': serializer.toJson<String>(status),
       'userId': serializer.toJson<String?>(userId),
@@ -25843,7 +25848,7 @@ class LndngLending extends DataClass implements Insertable<LndngLending> {
     double? principalAmount,
     DateTime? lendingDate,
     Value<DateTime?> dueDate = const Value.absent(),
-    String? sourceSavingId,
+    Value<String?> sourceSavingId = const Value.absent(),
     Value<String?> note = const Value.absent(),
     String? status,
     Value<String?> userId = const Value.absent(),
@@ -25858,7 +25863,9 @@ class LndngLending extends DataClass implements Insertable<LndngLending> {
     principalAmount: principalAmount ?? this.principalAmount,
     lendingDate: lendingDate ?? this.lendingDate,
     dueDate: dueDate.present ? dueDate.value : this.dueDate,
-    sourceSavingId: sourceSavingId ?? this.sourceSavingId,
+    sourceSavingId: sourceSavingId.present
+        ? sourceSavingId.value
+        : this.sourceSavingId,
     note: note.present ? note.value : this.note,
     status: status ?? this.status,
     userId: userId.present ? userId.value : this.userId,
@@ -25967,7 +25974,7 @@ class LendingTableCompanion extends UpdateCompanion<LndngLending> {
   final Value<double> principalAmount;
   final Value<DateTime> lendingDate;
   final Value<DateTime?> dueDate;
-  final Value<String> sourceSavingId;
+  final Value<String?> sourceSavingId;
   final Value<String?> note;
   final Value<String> status;
   final Value<String?> userId;
@@ -26000,7 +26007,7 @@ class LendingTableCompanion extends UpdateCompanion<LndngLending> {
     required double principalAmount,
     required DateTime lendingDate,
     this.dueDate = const Value.absent(),
-    required String sourceSavingId,
+    this.sourceSavingId = const Value.absent(),
     this.note = const Value.absent(),
     this.status = const Value.absent(),
     this.userId = const Value.absent(),
@@ -26011,8 +26018,7 @@ class LendingTableCompanion extends UpdateCompanion<LndngLending> {
        lastModifiedBy = Value(lastModifiedBy),
        borrowerName = Value(borrowerName),
        principalAmount = Value(principalAmount),
-       lendingDate = Value(lendingDate),
-       sourceSavingId = Value(sourceSavingId);
+       lendingDate = Value(lendingDate);
   static Insertable<LndngLending> custom({
     Expression<String>? id,
     Expression<String>? createdBy,
@@ -26059,7 +26065,7 @@ class LendingTableCompanion extends UpdateCompanion<LndngLending> {
     Value<double>? principalAmount,
     Value<DateTime>? lendingDate,
     Value<DateTime?>? dueDate,
-    Value<String>? sourceSavingId,
+    Value<String?>? sourceSavingId,
     Value<String?>? note,
     Value<String>? status,
     Value<String?>? userId,
@@ -49338,7 +49344,7 @@ typedef $$LoanTableTableCreateCompanionBuilder =
       required double principalAmount,
       required DateTime loanDate,
       Value<DateTime?> dueDate,
-      required String sourceSavingId,
+      Value<String?> sourceSavingId,
       Value<String?> note,
       Value<String> status,
       Value<String?> userId,
@@ -49356,7 +49362,7 @@ typedef $$LoanTableTableUpdateCompanionBuilder =
       Value<double> principalAmount,
       Value<DateTime> loanDate,
       Value<DateTime?> dueDate,
-      Value<String> sourceSavingId,
+      Value<String?> sourceSavingId,
       Value<String?> note,
       Value<String> status,
       Value<String?> userId,
@@ -49373,9 +49379,9 @@ final class $$LoanTableTableReferences
         $_aliasNameGenerator(db.loanTable.sourceSavingId, db.savingTable.id),
       );
 
-  $$SavingTableTableProcessedTableManager get sourceSavingId {
-    final $_column = $_itemColumn<String>('source_saving_id')!;
-
+  $$SavingTableTableProcessedTableManager? get sourceSavingId {
+    final $_column = $_itemColumn<String>('source_saving_id');
+    if ($_column == null) return null;
     final manager = $$SavingTableTableTableManager(
       $_db,
       $_db.savingTable,
@@ -49857,7 +49863,7 @@ class $$LoanTableTableTableManager
                 Value<double> principalAmount = const Value.absent(),
                 Value<DateTime> loanDate = const Value.absent(),
                 Value<DateTime?> dueDate = const Value.absent(),
-                Value<String> sourceSavingId = const Value.absent(),
+                Value<String?> sourceSavingId = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
@@ -49891,7 +49897,7 @@ class $$LoanTableTableTableManager
                 required double principalAmount,
                 required DateTime loanDate,
                 Value<DateTime?> dueDate = const Value.absent(),
-                required String sourceSavingId,
+                Value<String?> sourceSavingId = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
@@ -50566,7 +50572,7 @@ typedef $$LendingTableTableCreateCompanionBuilder =
       required double principalAmount,
       required DateTime lendingDate,
       Value<DateTime?> dueDate,
-      required String sourceSavingId,
+      Value<String?> sourceSavingId,
       Value<String?> note,
       Value<String> status,
       Value<String?> userId,
@@ -50584,7 +50590,7 @@ typedef $$LendingTableTableUpdateCompanionBuilder =
       Value<double> principalAmount,
       Value<DateTime> lendingDate,
       Value<DateTime?> dueDate,
-      Value<String> sourceSavingId,
+      Value<String?> sourceSavingId,
       Value<String?> note,
       Value<String> status,
       Value<String?> userId,
@@ -50601,9 +50607,9 @@ final class $$LendingTableTableReferences
         $_aliasNameGenerator(db.lendingTable.sourceSavingId, db.savingTable.id),
       );
 
-  $$SavingTableTableProcessedTableManager get sourceSavingId {
-    final $_column = $_itemColumn<String>('source_saving_id')!;
-
+  $$SavingTableTableProcessedTableManager? get sourceSavingId {
+    final $_column = $_itemColumn<String>('source_saving_id');
+    if ($_column == null) return null;
     final manager = $$SavingTableTableTableManager(
       $_db,
       $_db.savingTable,
@@ -51091,7 +51097,7 @@ class $$LendingTableTableTableManager
                 Value<double> principalAmount = const Value.absent(),
                 Value<DateTime> lendingDate = const Value.absent(),
                 Value<DateTime?> dueDate = const Value.absent(),
-                Value<String> sourceSavingId = const Value.absent(),
+                Value<String?> sourceSavingId = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
@@ -51125,7 +51131,7 @@ class $$LendingTableTableTableManager
                 required double principalAmount,
                 required DateTime lendingDate,
                 Value<DateTime?> dueDate = const Value.absent(),
-                required String sourceSavingId,
+                Value<String?> sourceSavingId = const Value.absent(),
                 Value<String?> note = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<String?> userId = const Value.absent(),

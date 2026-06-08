@@ -33,6 +33,9 @@ class LoanRepository extends ILoanRepository {
     final loanId = UuidGenerator().v4();
 
     // 1. Insert the loan record
+    final effectiveSavingId =
+        (noAutoDeduct || sourceSavingId.isEmpty) ? null : sourceSavingId;
+
     await db
         .into(db.loanTable)
         .insert(
@@ -42,7 +45,7 @@ class LoanRepository extends ILoanRepository {
             principalAmount: principalAmount,
             loanDate: loanDate,
             dueDate: Value(dueDate),
-            sourceSavingId: sourceSavingId,
+            sourceSavingId: Value(effectiveSavingId),
             note: Value(note),
             status: const Value('active'),
             noAutoDeduct: Value(noAutoDeduct),
@@ -53,7 +56,7 @@ class LoanRepository extends ILoanRepository {
           ),
         );
 
-    if (!noAutoDeduct && sourceSavingId.isNotEmpty) {
+    if (effectiveSavingId != null) {
       // 2. Create a loanDisbursement transaction that debits the source saving
       await db
           .into(db.transactionTable)
@@ -63,7 +66,7 @@ class LoanRepository extends ILoanRepository {
               type: TransactionType.loanDisbursement,
               description: Value('Loan from $borrowerName'),
               amount: principalAmount,
-              savingId: sourceSavingId,
+              savingId: effectiveSavingId,
               loanId: Value(loanId),
               transactionDateTime: Value(loanDate),
               note: Value(note),
@@ -75,7 +78,7 @@ class LoanRepository extends ILoanRepository {
           );
 
       // 3. Credit the source saving (I receive the loan money)
-      await _adjustSavingBalance(sourceSavingId, principalAmount, now);
+      await _adjustSavingBalance(effectiveSavingId, principalAmount, now);
     }
   }
 

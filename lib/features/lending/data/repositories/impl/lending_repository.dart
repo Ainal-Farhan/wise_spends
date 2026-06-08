@@ -32,6 +32,9 @@ class LendingRepository extends ILendingRepository {
     final now = DateTime.now();
     final lendingId = UuidGenerator().v4();
 
+    final effectiveSavingId =
+        (noAutoDeduct || sourceSavingId.isEmpty) ? null : sourceSavingId;
+
     await db.into(db.lendingTable).insert(
       LendingTableCompanion.insert(
         id: Value(lendingId),
@@ -39,7 +42,7 @@ class LendingRepository extends ILendingRepository {
         principalAmount: principalAmount,
         lendingDate: lendingDate,
         dueDate: Value(dueDate),
-        sourceSavingId: sourceSavingId,
+        sourceSavingId: Value(effectiveSavingId),
         note: Value(note),
         status: const Value('active'),
         noAutoDeduct: Value(noAutoDeduct),
@@ -50,14 +53,14 @@ class LendingRepository extends ILendingRepository {
       ),
     );
 
-    if (!noAutoDeduct && sourceSavingId.isNotEmpty) {
+    if (effectiveSavingId != null) {
       await db.into(db.transactionTable).insert(
         TransactionTableCompanion.insert(
           id: Value(UuidGenerator().v4()),
           type: TransactionType.lendingDisbursement,
           description: Value('Lent to $borrowerName'),
           amount: principalAmount,
-          savingId: sourceSavingId,
+          savingId: effectiveSavingId,
           lendingId: Value(lendingId),
           transactionDateTime: Value(lendingDate),
           note: Value(note),
@@ -68,7 +71,7 @@ class LendingRepository extends ILendingRepository {
         ),
       );
 
-      await _adjustSavingBalance(sourceSavingId, -principalAmount, now);
+      await _adjustSavingBalance(effectiveSavingId, -principalAmount, now);
     }
   }
 

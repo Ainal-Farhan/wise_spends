@@ -10,7 +10,8 @@ class LendingTable extends BaseEntityTable {
   RealColumn get principalAmount => real()();
   DateTimeColumn get lendingDate => dateTime()();
   DateTimeColumn get dueDate => dateTime().nullable()();
-  TextColumn get sourceSavingId => text().references(SavingTable, #id)();
+  TextColumn get sourceSavingId =>
+      text().nullable().references(SavingTable, #id)();
   TextColumn get note => text().nullable()();
   TextColumn get status => text().withDefault(const Constant('active'))();
   TextColumn get userId => text().nullable().references(UserTable, #id)();
