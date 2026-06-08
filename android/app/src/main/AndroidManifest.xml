@@ -47,7 +47,7 @@
             <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             <action android:name="com.my.aftechlabs.wise.spends.QUICK_EXPENSE" />
             <action android:name="com.my.aftechlabs.wise.spends.QUICK_INCOME" />
-            <action android:name="com.wisespends.app.TOGGLE_VISIBILITY" />
+            <action android:name="com.my.aftechlabs.wise.spends.TOGGLE_VISIBILITY" />
             <action android:name="com.my.aftechlabs.wise.spends.OPEN_APP" />
         </intent-filter>
         <meta-data

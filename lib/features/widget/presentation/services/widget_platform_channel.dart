@@ -8,7 +8,7 @@ import 'package:wise_spends/router/route_arguments.dart';
 
 class WidgetPlatformChannel {
   static const MethodChannel _channel = MethodChannel(
-    'com.wisespends.app/widget',
+    'com.my.aftechlabs.wise.spends/widget',
   );
 
   static void initialize() {

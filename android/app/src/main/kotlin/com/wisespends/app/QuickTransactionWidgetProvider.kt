@@ -14,10 +14,10 @@ import es.antonborri.home_widget.HomeWidgetPlugin
 class QuickTransactionWidgetProvider : AppWidgetProvider() {
 
     companion object {
-        const val ACTION_QUICK_EXPENSE = "com.wisespends.app.QUICK_EXPENSE"
-        const val ACTION_QUICK_INCOME = "com.wisespends.app.QUICK_INCOME"
-        const val ACTION_OPEN_APP = "com.wisespends.app.OPEN_APP"
-        const val ACTION_TOGGLE_VISIBILITY = "com.wisespends.app.TOGGLE_VISIBILITY"
+        const val ACTION_QUICK_EXPENSE = "com.my.aftechlabs.wise.spends.QUICK_EXPENSE"
+        const val ACTION_QUICK_INCOME = "com.my.aftechlabs.wise.spends.QUICK_INCOME"
+        const val ACTION_OPEN_APP = "com.my.aftechlabs.wise.spends.OPEN_APP"
+        const val ACTION_TOGGLE_VISIBILITY = "com.my.aftechlabs.wise.spends.TOGGLE_VISIBILITY"
     }
 
     override fun onUpdate(
