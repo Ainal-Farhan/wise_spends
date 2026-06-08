@@ -172,6 +172,8 @@ class EnglishStrings {
     'transaction.type.budget_plan_expense': 'Budget Plan Spending',
     'transaction.type.loan_disbursement': 'Loan Disbursement',
     'transaction.type.loan_repayment': 'Loan Repayment',
+    'transaction.type.lending_disbursement': 'Lending Disbursement',
+    'transaction.type.lending_repayment': 'Lending Repayment',
     'transaction.add': 'Add Transaction',
     'transaction.edit': 'Edit Transaction',
     'transaction.delete': 'Delete Transaction',
