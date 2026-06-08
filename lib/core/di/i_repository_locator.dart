@@ -35,6 +35,7 @@ import 'package:wise_spends/features/loan/data/repositories/i_loan_repository.da
 import 'package:wise_spends/features/loan/data/repositories/i_loan_repayment_repository.dart';
 import 'package:wise_spends/features/lending/data/repositories/i_lending_repository.dart';
 import 'package:wise_spends/features/lending/data/repositories/i_lending_repayment_repository.dart';
+import 'package:wise_spends/features/notifications/data/repositories/i_notification_repository.dart';
 
 abstract class IRepositoryLocator extends ILocator {
   List<ICrudRepository> retrieveAllRepository();
@@ -95,4 +96,7 @@ abstract class IRepositoryLocator extends ILocator {
   // Lending Repositories
   ILendingRepository getLendingRepository();
   ILendingRepaymentRepository getLendingRepaymentRepository();
+
+  // Notification Repository
+  INotificationRepository getNotificationRepository();
 }

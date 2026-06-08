@@ -28,6 +28,8 @@ import 'package:wise_spends/data/db/domain/savings_plan/index.dart';
 import 'package:wise_spends/data/db/domain/credit_card/index.dart';
 import 'package:wise_spends/data/db/domain/loan/index.dart';
 import 'package:wise_spends/data/db/domain/lending/index.dart';
+import 'package:wise_spends/data/db/domain/notification/index.dart'
+    as notification_domain;
 import 'package:wise_spends/features/transaction/domain/entities/transaction_entity.dart';
 
 part 'app_database.g.dart';
@@ -44,6 +46,7 @@ part 'app_database.g.dart';
     ...CreditCard.tableList,
     ...Loan.tableList,
     ...Lending.tableList,
+    ...notification_domain.Notification.tableList,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -54,7 +57,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration {
@@ -131,6 +134,9 @@ class AppDatabase extends _$AppDatabase {
             creditCardTable.cardType as GeneratedColumn,
           );
           await m.addColumn(creditCardTable, creditCardTable.providerName);
+        }
+        if (from < 12) {
+          await m.createTable(notificationTable);
         }
       },
       beforeOpen: (details) async {
@@ -424,6 +430,7 @@ class AppDatabase extends _$AppDatabase {
       'SavingsPlanMilestoneTable': 58,
       'SavingsPlanLinkedAccountTable': 59,
       'SavingsPlanItemTagTable': 60,
+      'NotificationTable': 65,
       'TransactionTable': 70,
       'TransactionTagTable': 71,
       'TransactionTagMapTable': 72,
@@ -926,6 +933,13 @@ class AppDatabase extends _$AppDatabase {
       case 'CreditCardTable':
         row.putIfAbsent('cardType', () => 'credit_card');
         row.putIfAbsent('providerName', () => null);
+        break;
+      case 'NotificationTable':
+        row.putIfAbsent('dataJson', () => '{}');
+        row.putIfAbsent('type', () => 'general');
+        row.putIfAbsent('messageId', () => null);
+        row.putIfAbsent('isRead', () => false);
+        row.putIfAbsent('receivedAt', () => row['dateCreated'] ?? now);
         break;
       case 'SavingsPlanTable':
         row.putIfAbsent('currentAmount', () => 0.0);

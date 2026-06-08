@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/core/di/i_repository_locator.dart';
+import 'package:wise_spends/core/utils/singleton_util.dart';
 import 'package:wise_spends/shared/theme/app_spacing.dart';
 import 'package:wise_spends/shared/theme/app_text_styles.dart';
 
@@ -157,14 +159,56 @@ class _TaskCountBadge extends StatelessWidget {
 class _NotificationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.notifications_outlined),
-      onPressed: () => Navigator.pushNamed(context, AppRoutes.notifications),
-      tooltip: 'Notifications',
-      constraints: const BoxConstraints(
-        minWidth: AppTouchTarget.min,
-        minHeight: AppTouchTarget.min,
-      ),
+    final repo = SingletonUtil.getSingleton<IRepositoryLocator>()
+        ?.getNotificationRepository();
+
+    return StreamBuilder<int>(
+      stream: repo?.watchUnreadCount() ?? const Stream.empty(),
+      initialData: 0,
+      builder: (context, snap) {
+        final unread = snap.data ?? 0;
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            IconButton(
+              icon: Icon(
+                unread > 0
+                    ? Icons.notifications_rounded
+                    : Icons.notifications_outlined,
+              ),
+              onPressed: () =>
+                  Navigator.pushNamed(context, AppRoutes.notifications),
+              tooltip: 'Notifications',
+              constraints: const BoxConstraints(
+                minWidth: AppTouchTarget.min,
+                minHeight: AppTouchTarget.min,
+              ),
+            ),
+            if (unread > 0)
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.error,
+                    shape: BoxShape.circle,
+                  ),
+                  constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
+                  child: Text(
+                    unread > 9 ? '9+' : '$unread',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

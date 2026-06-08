@@ -1,6 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wise_spends/core/config/localization_service.dart';
+import 'package:wise_spends/core/services/notification_service.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
 import 'package:wise_spends/core/di/i_manager_locator.dart';
 import 'package:wise_spends/core/di/i_repository_locator.dart';
@@ -26,6 +28,12 @@ import 'package:wise_spends/shared/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Must be registered before Firebase.initializeApp so background isolate
+  // has the handler available immediately.
+  NotificationService.registerBackgroundHandler();
+
+  await Firebase.initializeApp();
+
   _registerSingletons();
 
   await WidgetService.initialize();
@@ -36,6 +44,10 @@ void main() async {
   await SingletonUtil.getSingleton<IManagerLocator>()
       ?.getStartupManager()
       .onRunApp(null);
+
+  // Initialize FCM after singletons so the notification service can access
+  // the notification repository.
+  await NotificationService().initialize();
 
   runApp(const WiseSpendsApp());
 }

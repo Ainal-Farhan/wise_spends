@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wise_spends/core/constants/app_routes.dart';
+import 'package:wise_spends/core/services/notification_service.dart';
 
 /// Hidden utility menu for accessing developer/debug tools
 ///
@@ -43,6 +45,16 @@ class HiddenUtilityMenuScreen extends StatelessWidget {
                 color: Colors.green,
                 onTap: () => _navigateToLogSettings(context),
               ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildMenuSection(
+            context,
+            title: 'Push Notifications',
+            icon: Icons.notifications_active,
+            color: Colors.orange,
+            items: [
+              _FcmTokenTile(),
             ],
           ),
           const SizedBox(height: 16),
@@ -216,6 +228,100 @@ class HiddenUtilityMenuScreen extends StatelessWidget {
       showDragHandle: false,
       backgroundColor: Colors.transparent,
       builder: (context) => const HiddenUtilityMenuScreen(),
+    );
+  }
+}
+
+// ── FCM token tile — shown only in the hidden developer menu ─────────────────
+
+class _FcmTokenTile extends StatefulWidget {
+  const _FcmTokenTile();
+
+  @override
+  State<_FcmTokenTile> createState() => _FcmTokenTileState();
+}
+
+class _FcmTokenTileState extends State<_FcmTokenTile> {
+  String? _token;
+  bool _loading = true;
+  bool _copied = false;
+
+  @override
+  void initState() {
+    super.initState();
+    NotificationService().getToken().then((t) {
+      if (mounted) setState(() { _token = t; _loading = false; });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.key_rounded, size: 16, color: Colors.orange.shade700),
+                const SizedBox(width: 8),
+                const Text(
+                  'FCM Device Token',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                const Spacer(),
+                if (!_loading && _token != null)
+                  TextButton.icon(
+                    onPressed: () async {
+                      await Clipboard.setData(ClipboardData(text: _token!));
+                      setState(() => _copied = true);
+                      await Future.delayed(const Duration(seconds: 2));
+                      if (mounted) setState(() => _copied = false);
+                    },
+                    icon: Icon(
+                      _copied ? Icons.check_rounded : Icons.copy_rounded,
+                      size: 14,
+                    ),
+                    label: Text(_copied ? 'Copied' : 'Copy'),
+                    style: TextButton.styleFrom(
+                      foregroundColor:
+                          _copied ? Colors.green : Colors.orange.shade700,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (_loading)
+              const SizedBox(
+                height: 20,
+                child: Center(
+                  child: SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+              )
+            else if (_token == null)
+              const Text(
+                'Token unavailable — check Firebase setup.',
+                style: TextStyle(color: Colors.red, fontSize: 12),
+              )
+            else
+              SelectableText(
+                _token!,
+                style: const TextStyle(
+                  fontFamily: 'monospace',
+                  fontSize: 10,
+                  height: 1.4,
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

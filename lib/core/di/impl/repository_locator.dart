@@ -71,6 +71,8 @@ import 'package:wise_spends/features/lending/data/repositories/i_lending_reposit
 import 'package:wise_spends/features/lending/data/repositories/i_lending_repayment_repository.dart';
 import 'package:wise_spends/features/lending/data/repositories/impl/lending_repository.dart';
 import 'package:wise_spends/features/lending/data/repositories/impl/lending_repayment_repository.dart';
+import 'package:wise_spends/features/notifications/data/repositories/i_notification_repository.dart';
+import 'package:wise_spends/features/notifications/data/repositories/impl/notification_repository.dart';
 
 class RepositoryLocator extends IRepositoryLocator {
   @override
@@ -111,6 +113,7 @@ class RepositoryLocator extends IRepositoryLocator {
       getLoanRepaymentRepository(),
       getLendingRepository(),
       getLendingRepaymentRepository(),
+      getNotificationRepository(),
     ];
 
     return allRepository;
@@ -573,5 +576,17 @@ class RepositoryLocator extends IRepositoryLocator {
       );
     }
     return SingletonUtil.getSingleton<ILendingRepaymentRepository>()!;
+  }
+
+  @override
+  INotificationRepository getNotificationRepository() {
+    INotificationRepository? repository =
+        SingletonUtil.getSingleton<INotificationRepository>();
+    if (repository == null) {
+      SingletonUtil.registerSingleton<INotificationRepository>(
+        NotificationRepository(),
+      );
+    }
+    return SingletonUtil.getSingleton<INotificationRepository>()!;
   }
 }
